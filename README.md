@@ -1,16 +1,15 @@
-# Multi chain client
+# Multi-Chain Client
 
-Welcome to version 1.0.0 of MCC
+Welcome to version 1.0.0 of the MCC.
 
-What is MCC
+## What is the MCC?
 
-Mcc or multi chain client is a library used to query blockchain nodes in a unified manner and fetch the data from them as unified data responses as objects that hold all original information one can get form specific node and add static named properties to reposed objects.
-Currently we unify [block](./blockObjects/BlockObject.md) and [transaction](./transactionObjects/TransactionObject.md) objects. 
+MCC or Multi-Chain Client is a Typescript library that allows querying nodes from any blockchain in a unified manner. Retrieved data is encapsulated in objects that hold all the original information and allow adding static, named properties.
 
-# Docs
+## Documentation
 
-[Find them here](./docs/README.md)
+[Find it here](./docs/README.md).
 
-# For development
+## Development notes
 
-[Find resources here](./docs/forDeveloment.md)
+[Find notes for developers here](./docs/forDeveloment.md).

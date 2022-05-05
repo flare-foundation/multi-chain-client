@@ -1,49 +1,47 @@
+# Development notes
 
+## Naming conventions for types
 
-## Naming convention
+1. We use [CamelCase](https://en.wikipedia.org/wiki/Camel_case).
+2. We start with uppercase letter.
+3. For abbreviations we only use uppercase for the first letter `UseBTC` -> `UseBtc`.
 
-### For types
+We name interfaces as follows:
 
-1. We use [CamelCase](https://en.wikipedia.org/wiki/Camel_case)
-2. We start with uppercase letter
-3. For abbreviation we only use only use uppercase for first letter `UseBTC` -> `UseBtc`
+1. For method responses: ``I<ChainAssetName><MethodName>Res``
 
-We name interfaces as following:
+   For example:
 
-1. For method responses
+   ``` javascript
+   IUtxoGetTransactionRes
+   ```
 
-```
-I<ChainAssetName><MethodName>Res
-For example:
-IUtxoGetTransactionRes
-```
+2. For method inputs: ``I<ChainAssetName><MethodName>``
 
-2. For method inputs
+   For example:
 
-```
-I<ChainAssetName><MethodName>
-For example:
-IUtxoGetTransaction
-```
+   ``` javascript
+   IUtxoGetTransaction
+   ```
 
-3. For specific parts of method inputs (for example Vin For Utxo transaction creation)
+3. For specific parts of method inputs (for example Vin For Utxo transaction creation): ``II<ChainAssetName><MethodName>``
 
-```
-II<ChainAssetName><MethodName>
-For example:
-IIUtxoVin
-```
+   For example:
 
-4. For general Data Types
+   ```  javascript
+   IIUtxoVin
+   ```
 
-```
-I<ChainAssetName><DataType>
-For example:
-IUtxoScriptPubKey
-```
+4. For general Data Types: ``I<ChainAssetName><DataType>``
 
-## To use this with attestor client
+   For example:
 
-1. Make sure this repo and attester-client repo are in the same root
-2. If you make changes to MCC make sure to rebuild it `yarn build`
-3. Rebuild the local dependency in attester client with `yarn install --force`
+   ``` javascript
+   IUtxoScriptPubKey
+   ```
+
+## To use this with the attestor client
+
+1. Make sure this repo and the attestor-client repo are in the same root.
+2. If you make changes to MCC make sure to rebuild it with `yarn build`
+3. Rebuild the local dependency in attestor client with `yarn install --force`

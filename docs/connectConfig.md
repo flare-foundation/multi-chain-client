@@ -1,24 +1,27 @@
-[Home](README.md)
-
 # Connect config
 
 To connect to nodes one must provide:
-- basic information such as rpc endpoint and credentials.
 
-But Mcc clients also enable users to overwrite some parameters of the client such as:
-- loggingOptions : callback functionalities,
-- rateLimitOptions : configure load balancers and retry logic, timeouts and more. 
+- Basic information such as rpc endpoint and credentials.
+
+But MCC clients also enable users to overwrite some parameters of the client such as:
+
+- ``loggingOptions``: Callback functionalities.
+- ``rateLimitOptions``: Configure load balancers, retry logic, timeouts and more.
 
 ## Basic credentials
 
-This part is dependent on underlying blockchain, currently for Btc and btc like chains one must provide:
+This part is dependent on the underlying blockchain.
 
-* url: string = "";
-* username: string = "";
-* password: string = "";
+### BTC and BTC-like chains
 
-minimal example 
-```javascript
+- ``url``: string = ""
+- ``username``: string = ""
+- ``password``: string = ""
+
+Example:
+
+``` javascript
 const connectConfig = {
    url:'https://myAwesomeBtcNode.com/',
    username: 'user',
@@ -26,11 +29,13 @@ const connectConfig = {
 }
 ```
 
-for xrp:
+### Ripple
 
-* url: string = "";
-* username?: string;
-* password?: string;
+- ``url``: string = "
+- ``username?``: string
+- ``password?``: string
+
+Example:
 
 ```javascript
 const connectConfig = {
@@ -38,16 +43,19 @@ const connectConfig = {
 }
 ```
 
-for algo
+### Algorand
 
-* algod = new AlgoNodeApp();
-* indexer = new AlgoNodeApp();
+- ``algod`` = new AlgoNodeApp()
+- ``indexer`` = new AlgoNodeApp()
 
-where AlgoNodeApp is an object where one needs to provide 
-* url: string = "";
-* token: string = "";
+Where ``AlgoNodeApp`` is an object containing:
 
-```javascript
+- ``url``: string = "";
+- ``token``: string = "";
+
+Example:
+
+``` javascript
 const connectConfig = {
    algod: {
       url: 'https://myAwesomeXrpNode.com/algod',
@@ -59,25 +67,27 @@ const connectConfig = {
    },
 };
 ```
-## Rate Limit 
 
-with this object one can configure
+## Rate Limit
 
-* maxRequests: number;
-* perMilliseconds: number;
-* @optional() maxRPS?: number;
-* @optional() timeoutMs?: number;
-* retries: number;
-* onSend: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void;
-* onResponse: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void;
-* onPush: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void;
-* onQueueEmpty: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void;
-* onLimitReached: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void;
-* onRpsSample: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void;
-* onRetry: (retryCount?: number) => void;
+With this object one can configure:
 
-default:
-```javascript
+- ``maxRequests``: number
+- ``perMilliseconds``: number
+- ``@optional``() maxRPS?: number
+- ``@optional``() timeoutMs?: number
+- ``retries``: number
+- ``onSend``: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void
+- ``onResponse``: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void
+- ``onPush``: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void
+- ``onQueueEmpty``: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void
+- ``onLimitReached``: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void
+- ``onRpsSample``: (inProcessing?: number, inQueue?: number, reqsPs?: number, retiresPs?: number) => void
+- ``onRetry``: (retryCount?: number) => void
+
+Default values:
+
+``` javascript
 {
    maxRequests = 1;
    perMilliseconds = 1;
@@ -85,24 +95,25 @@ default:
    timeoutMs = 3000;
    retries = 10;
    onSend = undefined;
-   onResponse: undefined;
-   onPush: undefined;
-   onQueueEmpty: undefined;
-   onLimitReached: undefined;
-   onRpsSample: undefined;
-   onRetry: undefined;
+   onResponse = undefined;
+   onPush = undefined;
+   onQueueEmpty = undefined;
+   onLimitReached = undefined;
+   onRpsSample = undefined;
+   onRetry = undefined;
 }
 ```
 
-## Logging callbacks 
+## Logging callbacks
 
-* mode: "off" | "production" | "develop";
-* loggingCallback: (message: string) => void;;
-* warningCallback: (message: string) => void;;
-* exceptionCallback: (error: any, message: string) => void;;
+- ``mode``: "off" | "production" | "develop"
+- ``loggingCallback``: (message: string) => void
+- ``warningCallback``: (message: string) => void
+- ``exceptionCallback``: (error: any, message: string) => void
 
-default:
-```javascript
+Default values:
+
+``` javascript
 export function defaultLoggingCallback(message: string): void {
 }
 
@@ -124,3 +135,5 @@ export function defaultMccLoggingObject() {
    };
 }
 ```
+
+[Back to home](README.md)
