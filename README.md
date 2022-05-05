@@ -2,6 +2,12 @@
 
 Welcome to version 0 of MCC
 
+# Docs
+
+[Find them here](./docs/README.md)
+
+# For development
+
 ## Naming convention
 
 ### For types
