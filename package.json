@@ -1,0 +1,49 @@
+{
+   "name": "flare-mcc",
+   "version": "1.0.0",
+   "description": "Multi chain client",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+   "author": "Flare Networks",
+   "license": "MIT",
+   "prettier": {
+      "printWidth": 160,
+      "semi": true,
+      "singleQuote": false,
+      "trailingComma": "es5",
+      "tabWidth": 3
+   },
+   "files": [
+      "/dist"
+   ],
+   "scripts": {
+      "publish": "npm publish",
+      "pack": "npm pack",
+      "build": "tsc --allowJs",
+      "test": "mocha -r ts-node/register -r dotenv/config -t 0",
+      "test_all": "mocha -r ts-node/register -r dotenv/config test/*.ts"
+   },
+   "dependencies": {
+      "algo-msgpack-with-bigint": "^2.1.1",
+      "algosdk": "^1.13.1",
+      "axios": "^0.24.0",
+      "axios-retry": "^3.2.4",
+      "base32.js": "^0.1.0",
+      "bn": "^1.0.5",
+      "camelcase": "^6.3.0",
+      "typescript": "^4.5.4",
+      "web3": "^1.6.1",
+      "xrpl": "^2.1.1"
+   },
+   "devDependencies": {
+      "@types/node": "^17.0.13",
+      "@types/chai": "^4.3.0",
+      "@types/mocha": "^9.0.0",
+      "chai": "^4.3.4",
+      "chai-as-promised": "^7.1.1",
+      "dotenv": "^16.0.0",
+      "mocha": "^9.1.4",
+      "prettier": "^2.5.1",
+      "ts-node": "^10.4.0"
+   }
+}
