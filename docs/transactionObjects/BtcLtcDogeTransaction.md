@@ -6,7 +6,7 @@ To get transaction data from bitcoin node one must request it from the following
 
 Rpc client will return the Object with information about the transaction with TxId.
 
-```
+```json
 {                                    (json object)
   "in_active_chain" : true|false,    (boolean) Whether specified block is in the active chain or not (only present with explicit "blockhash" argument)
   "hex" : "hex",                     (string) The serialized, hex-encoded data for 'txid'
