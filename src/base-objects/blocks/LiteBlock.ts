@@ -19,7 +19,7 @@ export class LiteBlock extends BlockBase<IGetLiteBlockRes> {
    public get unixTimestamp(): number {
       return 0;
    }
-   
+
    public get transactionIds(): string[] {
       throw new Error("Method not implemented.");
    }
@@ -27,7 +27,7 @@ export class LiteBlock extends BlockBase<IGetLiteBlockRes> {
    public get stdTransactionIds(): string[] {
       throw new Error("Method not implemented.");
    }
-   
+
    public get transactionCount(): number {
       throw new Error("Method not implemented.");
    }

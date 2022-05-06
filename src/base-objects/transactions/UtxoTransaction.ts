@@ -145,7 +145,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    }
 
    public get isNativePayment(): boolean {
-      // On this chains there are no other types of transactions
+      // On these chains there are no other types of transactions
       return true;
    }
 
@@ -166,7 +166,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       this.assertValidVinIndex(vinIndex, true);
       this.assertValidVoutIndex(voutIndex, true);
 
-      // refresh the inputs if needed
+      // Refresh the inputs if needed
       if (makeFullPayment) {
          await this.makeFullPayment(client as MccUtxoClient);
       } else {
@@ -305,7 +305,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    }
 
    /**
-    * Extract vout on vout index. If vout index is not valid or data is corrupted, exception is returned.
+    * Extract vout on vout index. If vout index is not valid or data is corrupted, exception is thrown.
     * @param voutIndex vout index
     * @returns vout on vout index
     */
@@ -357,8 +357,8 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    }
 
    /**
-    * Gets the vout corresponding to vin in the given vin index. If it is not stored in in the additionalData,
-    * its fetched and updated using the client.
+    * Gets the vout corresponding to vin in the given vin index. If it is not stored in the additionalData,
+    * it's fetched and updated using the client.
     * @param vinIndex vin index
     * @param client mcc client to fetch transaction data
     * @returns input vout of the relevant utxo of the input transaction on the vin on the index `vinIndex`

@@ -2,7 +2,7 @@ import { LiteBlock } from "../base-objects/blocks/LiteBlock";
 import { MccError } from "./utils";
 
 /**
- * Opcode words to heir opcodes
+ * Opcode words to their opcodes
  * @dev https://en.bitcoin.it/wiki/Script
  */
 export enum WordToOpcode {
@@ -42,7 +42,7 @@ export async function recursive_block_tip(clinet: any, tip: LiteBlock, processHe
 ////////////////////////////
 
 /**
- * Check if return error code is -5 (cant find transaction)
+ * Check if return error code is -5 (can't find transaction)
  * @param data
  * @returns
  */

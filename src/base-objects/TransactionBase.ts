@@ -22,7 +22,7 @@ export interface PaymentSummary {
 
 export abstract class TransactionBase<T, AT> {
    data: T;
-   // we add can add additional data about transaction to this object
+   // we can add additional data about transaction to this object
    additionalData?: AT;
 
    constructor(data: T, additionalData?: AT) {
@@ -31,7 +31,7 @@ export abstract class TransactionBase<T, AT> {
    }
 
    /**
-    * Transaction hash adn TxId (for utxo hash and txid differ since segWit)
+    * Transaction hash and TxId (for utxo hash and txid differ since segWit)
     */
 
    /**
@@ -65,7 +65,7 @@ export abstract class TransactionBase<T, AT> {
    public abstract get unixTimestamp(): number;
 
    /**
-    * Returns a list of all source addresses. In account based chains only one address is present.
+    * Returns a list of all source addresses. In account-based chains only one address is present.
     * In UTXO chains addresses indicate the addresses on relevant inputs.
     * Some may be undefined, either due to non-existence on specific inputs or
     * due to not being fetched from the outputs of the corresponding input transactions.
@@ -73,7 +73,7 @@ export abstract class TransactionBase<T, AT> {
    public abstract get sourceAddresses(): (string | undefined)[];
 
    /**
-    * Array of a receiving addresses. In account based chains only one address in present.
+    * Array of a receiving addresses. In account-based chains only one address in present.
     * In UTXO chains the list indicates the addresses on the corresponding transaction outputs.
     * Some may be undefined since outputs may not have addresses defined.
     */
@@ -86,7 +86,7 @@ export abstract class TransactionBase<T, AT> {
 
    /**
     * A list of spent amounts on transaction inputs.
-    * In account based chains only one amount is present, and includes total spent amount, including fees.
+    * In account-based chains only one amount is present, and includes total spent amount, including fees.
     * In UTXO chains the spent amounts on the corresponding inputs are given in the list.
     * If the corresponding addresses are undefined and not fetched (in `sourceAddresses`), the
     * corresponding spent amounts are 0.
