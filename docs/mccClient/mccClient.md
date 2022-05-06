@@ -1,8 +1,6 @@
-[Home](../README.md)
+# MCC Object
 
-# Mcc Object
-
-Currently MCC library supports querying from 5 different blockchains:
+Currently, the MCC library supports querying from 5 different blockchains:
 
 * [Bitcoin (BTC)](./BtcLtcDogeClient.md)
 * [Litecoin (LTC)](./BtcLtcDogeClient.md)
@@ -12,14 +10,16 @@ Currently MCC library supports querying from 5 different blockchains:
 
 Each client implements the following methods:
 
-* isHealthy(): Promise<boolean>;
-* getBlock(blockNumberOrHash: number | string | any): any;
-* getBlockHeight(): Promise<number>;
-* getBlockHashFromHeight?(height: number): Promise<string | null>;
-* getTopLiteBlocks?(branch_len: number): Promise<LiteBlock[]>;
-* getTransaction(txId: string, metaData?: getTransactionOptions): any;
+* `isHealthy(): Promise<boolean>`
+* `getBlock(blockNumberOrHash: number | string | any): any`
+* `getBlockHeight(): Promise<number>`
+* `getBlockHashFromHeight?(height: number): Promise<string | null>`
+* `getTopLiteBlocks?(branch_len: number): Promise<LiteBlock[]>`
+* `getTransaction(txId: string, metaData?: getTransactionOptions): any`
 
-some clients also implement other methods such as (for more detail refer to their individual implementations):
-* listTransactions?(options?: any): any;
-* getBlockTips?(height_gte: number): Promise<LiteBlock[]>;
+Some clients also implement other methods such as (for more detail refer to their individual implementations):
 
+* `listTransactions?(options?: any): any`
+* `getBlockTips?(height_gte: number): Promise<LiteBlock[]>`
+
+[Back to home](../README.md)
