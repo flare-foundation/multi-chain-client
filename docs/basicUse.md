@@ -1,75 +1,83 @@
-[Home](README.md)
-
 # Basic Use
 
-The most basic use of mcc client is to query blocks and transactions from different blockchains. Since it is usually the best to show by example we will demonstrate how to query transaction from bitcoin network and algorand network and show the unification of query methods as well as the unification of responses we got.
+The most basic use of the MCC client is to query blocks and transactions from different blockchains. The code below demonstrates how to query a transaction from the Bitcoin and Algorand networks, showcasing the unification of query methods as well as the unification of responses.
 
-First of all one need a RPC endpoint for the underlying chain that usually comes with some credentials. For each connection we can create a MCC object that is used to query the blockchain. To start a connection one must provide the credential packed as MCCCreate object. Since connecting to different nodes is not done the same the Create object differ depending on the connected chain.
-More in detail documentation on how to connect to different chains can be found [here](./basicUse.md).
+In the MCC, connections to each blockchain are made through a different [MCC object](./mccClient/mccClient.md).
 
-Lets look at the minimal example on how to query the transaction by its transaction id (txid) from bitcoin network
-```javascript
+> **NOTE:**
+> Networks are accessed through RPC endpoints that usually require some type of credentials.
+> To start a connection credentials must be provided through the ``MCCCreate`` object, which is different depending on the connected chain.
+>
+> [Find more details here](./connectConfig.md).
+
+Let's take a look at the minimal example to query a block and a transaction from the Bitcoin network by their height and transaction id (``txid``) respectively:
+
+``` javascript
 // Configuration object
 const connectConfig = {
-   url:'https://myAwesomeBtcNode.com/',
+   url: 'https://myAwesomeBtcNode.com/',
    username: 'user',
    password: 'pass',
 }
 
-// Mcc object used to connect to Bitcoin node
+// MCC object used to connect to Bitcoin node
 const MccClient = new MCC.BTC(connectConfig);
 
 // Query block by its height
-const block = await MccClient.getBlock(750_000)
+const block = await MccClient.getBlock(750_000);
 
-// use some detail about the queried block in code
-// Block height 
+// Log some details about the queried block
+// Block height
 console.log(block.number); // => 750000
-// Block Hash
+// Block hash
 console.log(block.blockHash); // => '<hash>'
 
 // Query transaction
-const transaction = await MccClient.getTransaction('<txid>')
+const transaction = await MccClient.getTransaction('<txid>');
 
-// use transaction details in code
-// transaction timestamp
+// Log some details about the queried transaction
+// Transaction timestamp
 console.log(transaction.unixTimestamp); // => unixTimestamp
-// source addresses
+// Source addresses
 console.log(transaction.sourceAddresses); // => [<address1>, <address2>, ...]
 ```
 
-Now to get block and transaction objects from totally different chain such as Ripple, in MCC we only have to modify the initialization of MCC client, all else stays the same.
+Now, to get block and transaction objects from a totally different blockchain such as Ripple, you only need to change the initialization of the MCC client, everything else remains the same.
 
-```javascript
+``` javascript
 // Configuration object
 const connectConfig = {
-   url:'https://myAwesomeXrpNode.com/',
+   url: 'https://myAwesomeXrpNode.com/',
 }
 
-// Mcc object used to connect to Bitcoin node
+// MCC object used to connect to Ripple node
 const MccClient = new MCC.XRP(connectConfig);
 
 // Query block by its height
-const block = await MccClient.getBlock(750_000)
+const block = await MccClient.getBlock(750_000);
 
-// use some detail about the queried block in code
-// Block height 
+// Log some details about the queried block
+// Block height
 console.log(block.number); // => 750000
-// Block Hash
+// Block hash
 console.log(block.blockHash); // => '<hash>'
 
 // Query transaction
-const transaction = await MccClient.getTransaction('<txid>')
+const transaction = await MccClient.getTransaction('<txid>');
 
-// use transaction details in code
-// transaction timestamp
+// Log some details about the queried transaction
+// Transaction timestamp
 console.log(transaction.unixTimestamp); // => unixTimestamp
-// source addresses
+// Source addresses
 console.log(transaction.sourceAddresses); // => [<address1>]
 ```
 
-Extended docs on all possible available Mcc clients and their methods can be found [here](./mccClient/mccClient.md)
+## For more information
 
-To read more about the block responses docs can be found [here](./blockObjects/BlockObject.md)
+- See all available MCC clients and their methods in the [mccClient object](./mccClient/mccClient.md).
 
-To read more about transaction object responses docs can be found [here](./transactionObjects/TransactionObject.md)
+- Learn about the full content of the [block object](./blockObjects/BlockObject.md).
+
+- Learn about the full content of the [transaction object](./transactionObjects/TransactionObject.md)
+
+[Back to home](README.md)
