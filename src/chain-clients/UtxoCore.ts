@@ -68,7 +68,7 @@ export class UtxoCore {
    ///////////////////////////////////////////////////////////////////////////////////////
 
    /**
-    * Getx network info
+    * Get network info
     * @returns network info details
     */
    async getNetworkInfo(retry = 0): Promise<any> {
@@ -191,7 +191,7 @@ export class UtxoCore {
             if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockHash)) {
                blockHash = unPrefix0x(blockHash);
             }
-            // TODO match with some reqex
+            // TODO match with some regex
          } else if (typeof blockHashOrHeight === "number") {
             blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
          }
@@ -441,8 +441,8 @@ export class UtxoCore {
    }
 
    /**
-    * List all unspend transactions that happened between min and max blocks before current block
-    * If we are in block 1000 and set min to 10 and max to 40 we will get all transactions that happened
+    * List all unspent transactions that happened between min and max blocks before current block
+    * If we are in block 100 and set min to 10 and max to 40 we will get all transactions that happened
     * between block 60 and 90
     * @param walletLabel
     * @param min min block offset

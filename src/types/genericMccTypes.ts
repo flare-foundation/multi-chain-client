@@ -5,7 +5,7 @@ interface BaseRpcInterface {
 }
 
 export interface ReadRpcInterface extends BaseRpcInterface {
-   // general methods
+   // General methods
    isHealthy(): Promise<boolean>;
 
    // Block data
@@ -13,7 +13,7 @@ export interface ReadRpcInterface extends BaseRpcInterface {
    getBlockHeight(): Promise<number>;
    getBlockHashFromHeight?(height: number): Promise<string | null>;
 
-   // to be used with chian tip indexer processing
+   // To be used with chain tip indexer processing
    getBlockTips?(height_gte: number): Promise<LiteBlock[]>;
    getTopLiteBlocks?(branch_len: number): Promise<LiteBlock[]>;
 
@@ -23,18 +23,18 @@ export interface ReadRpcInterface extends BaseRpcInterface {
 }
 
 export interface WriteRpcInterface extends BaseRpcInterface {
-   // wallets
+   // Wallets
 
-   // addresses
+   // Addresses
    createAddress(createAddressData: any): any;
 
-   // transactions
+   // Transactions
    createRawTransaction(walletLabel: string, vin: any[], out: any[]): any;
    signRawTransaction(walletLabel: string, rawTx: string, keysList: string[]): any;
    sendRawTransaction(walletLabel: string, signedRawTx: string): any;
    sendRawTransactionInBlock(walletLabel: string, signedRawTx: string): any;
 
-   // faucet
+   // Faucet
    fundAddress(address: string, amount: number): any;
 }
 

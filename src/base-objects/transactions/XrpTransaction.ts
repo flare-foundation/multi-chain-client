@@ -54,7 +54,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          let payment = this.data.result as Payment;
          return [payment.Destination];
       }
-      // TODO: Check if in other types of payments one has something similar to Destionation
+      // TODO: Check if in other types of payments one has something similar to Destination
       return [];
    }
 
@@ -75,7 +75,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             },
          ];
       }
-      // TODO check for other non-native payment types
+      // TODO Check for other non-native payment types
       // TODO: Check whether in some other non-payment cases spent amount is different
       return [
          {
@@ -99,7 +99,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public get type(): string {
       return this.data.result.TransactionType;
-      // possible types available at Transaction object in xrpl lib
+      // Possible types available at Transaction object in xrpl lib
    }
 
    public get isNativePayment(): boolean {
@@ -116,7 +116,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          }
          return XRP_NATIVE_TOKEN_NAME;
       }
-      // TODO check for other type of transactions
+      // TODO Check for other types of transactions
       return "";
    }
 
@@ -144,7 +144,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                return TransactionSuccessStatus.SENDER_FAILURE;
          }
       }
-      //Other codes: tef, tel, tem, ter are not applied to ledgers
+      // Other codes: tef, tel, tem, ter are not applied to ledgers
       return TransactionSuccessStatus.SENDER_FAILURE;
    }
 
@@ -157,7 +157,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          sourceAddress: this.sourceAddresses[0],
          receivingAddress: this.receivingAddresses[0],
          spentAmount: this.spentAmounts[0].amount,
-         // TODO: check if intended sent value can be set
+         // TODO: Check if intended sent value can be set
          receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? this.receivedAmounts[0].amount : toBN(0),
          oneToOne: true,
          paymentReference: this.stdPaymentReference,

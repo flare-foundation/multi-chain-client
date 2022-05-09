@@ -11,15 +11,15 @@ export const PREFIXED_STD_BLOCK_HASH_REGEX = /^(0x)?[a-fA-F0-9]{64}$/;
 /////////////////////////////
 // Minimal divisible units //
 /////////////////////////////
-// This constants are provided as conversion rate between minimal divisible unit and its token
+// These constants are provided as conversion rates between minimal divisible units and their token
 
 // Satoshi to BTC 100_000_000
 export const BTC_MDU = 1e8;
 
-// ripple drops 1_000_000
+// Ripple drops 1_000_000
 export const XRP_MDU = 1e6;
 
-// microalgo
+// Microalgo
 export const ALGO_MDU = 1e6;
 
 ////////////////////////////////
