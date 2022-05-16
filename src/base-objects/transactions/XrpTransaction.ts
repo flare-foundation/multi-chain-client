@@ -62,7 +62,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       if (!this.data.result.Fee) {
          return toBN(0);
       }
-      return toBN(this.data.result.Fee!);
+      return toBN(this.data.result.Fee);
    }
 
    public get spentAmounts(): AddressAmount[] {
@@ -121,6 +121,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get elementaryUnits(): BN {
+      // TODO this is dependent on currency we are using
       return toBN(XRP_MDU);
    }
 
