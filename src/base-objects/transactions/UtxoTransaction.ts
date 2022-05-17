@@ -365,6 +365,11 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
     */
    public async vinVoutAt(vinIndex: number, client?: MccUtxoClient) {
       // note: vinouts list is always initialized
+      if(!this.additionalData){
+         this.additionalData = {
+            vinouts: new Array(this.data.vin.length).fill(undefined),
+         };
+      }
       let vinVout = this.additionalData!.vinouts![vinIndex];
       if (vinVout) {
          return vinVout;
@@ -393,10 +398,17 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
     */
    public async makeFullPayment(client: MccUtxoClient) {
       let promises = [];
+      this.synchronizeAdditionalData();
       for (let i = 0; i < this.data.vin.length; i++) {
          promises.push(this.vinVoutAt(i, client as MccUtxoClient));
       }
       await Promise.all(promises);
+      console.log(this.additionalData);
+      for(let i = 0; i< (this.additionalData?.vinouts?.length || 0); i++ ){
+         console.log(this.additionalData?.vinouts![i]);
+         
+      }
+      
    }
 
    private processOutput(vout: IUtxoVoutTransaction | undefined) {

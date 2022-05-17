@@ -91,6 +91,8 @@ In this method we map over all vouts of transaction, filter out the ones that ar
 
 ### standardizedPaymentReference
 
+If there is only one reference in transaction (on OP_RETURN script output), and the data of that transaction is a valid 32 byte hex string it is returned, otherwise zero reference is returned
+
 ### unixTimestamp
 
 ```
@@ -147,10 +149,16 @@ Mcc adds 3 more types of transactions so this method can return one of the follo
 
 ### isNativePayment
 
+All transactions on bitcoin network are native payment transactions
+
 ### currencyName
 
+Bitcoin: BTC
+Litecoin: LTC
+DOGECOIN: DOGE
 ### elementaryUnits
 
+Satoshies: 10^(-8)
 ### successStatus
 
 The status is always: `0` - Success.
