@@ -1,3 +1,4 @@
+import { transcode } from "buffer";
 import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
 
 const BtcMccConnection = {
@@ -25,6 +26,28 @@ describe("Chain tips test ", function () {
         console.log(newTrans);
       }
       
+   });
+
+   it('Should find op return trans',async () => {
+     const h = await MccClient.getBlockHeight();
+     const block = await MccClient.getBlock(h);
+     console.log(block?.blockHash);
+     
+     for(let i = 7; i < 20; i++ ){
+        const bl = await MccClient.getBlock(h-i);
+        if(bl){
+          for(let tran of bl.stdTransactionIds){
+            const t = await MccClient.getTransaction(tran);
+            if(t){
+              if(t.type !== 'coinbase' && t.reference.length > 0){
+                console.log(t.stdTxid);
+                break    
+              }
+            } 
+          }
+        }
+        
+     }
    });
 
 });
