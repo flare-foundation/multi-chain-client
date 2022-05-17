@@ -4,7 +4,7 @@ import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types"
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
 import { WordToOpcode } from "../../utils/utxoUtils";
-import { AddressAmount, TransactionBase, PaymentSummary } from "../TransactionBase";
+import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
 // Transaction types and their description
@@ -47,7 +47,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    }
 
    public get stdPaymentReference(): string {
-      let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
+      let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0] || "") : "";
       if (!isValidBytes32Hex(paymentReference)) {
          paymentReference = ZERO_BYTES_32;
       }
