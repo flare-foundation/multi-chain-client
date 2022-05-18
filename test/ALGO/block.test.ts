@@ -66,7 +66,7 @@ describe(`Algo block processing`, async () => {
          const currHeight = await MccClient.getBlockHeight();
          console.log(currHeight);
 
-         let tblock = await MccClient.getBlock(20_617_234);
+         let tblock = await MccClient.getBlock(21_063_559);
 
          if (tblock !== null) {
             block = tblock;
@@ -99,6 +99,11 @@ describe(`Algo block processing`, async () => {
 
       it("Should get transaction count ", async function () {
          console.log(block.transactionCount);
+      });
+
+      it('Data', async function () {
+         console.log(block.data);
+         
       });
    });
 });
