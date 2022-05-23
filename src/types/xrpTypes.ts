@@ -71,3 +71,19 @@ export const HexToFlag = {
    0x00040000 : "lsfRequireAuth",
    0x00080000 : "lsfDisallowXRP"
 }
+
+export const SpecialAddressesReverse = {
+   'rrrrrrrrrrrrrrrrrrrrrhoLvTp': 'ACCOUNT_ZERO',
+   'rrrrrrrrrrrrrrrrrrrrBZbvji': 'ACCOUNT_ONE',
+   'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh': 'GENESIS_ACCOUNT',
+   'rrrrrrrrrrrrrrrrrNAMEtxvNvQ': 'RESERVATION_BLACK_HOLE',
+   'rrrrrrrrrrrrrrrrrrrn5RM1rHd': 'NaN_ADDRESS'
+}
+
+export const SpecialAddresses = {
+   ACCOUNT_ZERO : 'rrrrrrrrrrrrrrrrrrrrrhoLvTp',
+   ACCOUNT_ONE : 'rrrrrrrrrrrrrrrrrrrrBZbvji',
+   GENESIS_ACCOUNT : 'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh',
+   RESERVATION_BLACK_HOLE : 'rrrrrrrrrrrrrrrrrNAMEtxvNvQ',
+   NaN_ADDRESS : 'rrrrrrrrrrrrrrrrrrrn5RM1rHd'
+}

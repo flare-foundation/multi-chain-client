@@ -1,4 +1,4 @@
-import { MCC, XrpTransaction } from "../../src";
+import { MCC, SpecialAddresses, XrpTransaction } from "../../src";
 import { processFlags } from "../../src/utils/xrpUtils";
 
 const XRPMccConnection = {
@@ -54,6 +54,10 @@ describe("Xrpl account test testnet ", function () {
       // Get the flags
       const flags = processFlags(info.result.account_data.Flags);
       console.log(flags);
+
+      console.log(info.result.account_data.RegularKey);
+      console.log(info.result.account_data.RegularKey === SpecialAddresses.ACCOUNT_ONE);
+      
       
     });
   });
