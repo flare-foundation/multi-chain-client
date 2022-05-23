@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { MCC, SpecialAddresses } from "../../src";
 import { processFlags, processFlagsOld1, processFlagsOld2 } from "../../src/utils/xrpUtils";
 
@@ -90,6 +91,51 @@ describe("Xrpl account test testnet ", function () {
 
     });
   });
+
+  describe('step by step account info',async () => {
+    const acc = 'rD8btyHW512KmJdsQEoD9KFTMxfDbpqkkA'
+    it.only(`Should get account info at the begging`,async () => {
+      const info = await MccClient.getAccountInfo(acc, 28_014_551)
+      const flags = processFlags(info.result.account_data.Flags);
+
+      expect(flags.length).to.eq(0)
+      expect(info.result.account_data.RegularKey).to.not.eq(SpecialAddresses.ACCOUNT_ONE);
+    });
+
+    // set by tx 996CF647C655904730759CE3919E5B4F4AB6E99046EB53DA0457F1956A52B6E3
+    it.only(`Should get account info after setting default rippling`,async () => {
+      const info = await MccClient.getAccountInfo(acc, 28_014_612)
+      const flags = processFlags(info.result.account_data.Flags);
+
+      expect(flags.length).to.eq(1)
+      expect(flags.includes('lsfDefaultRipple')).to.eq(true)
+      expect(info.result.account_data.RegularKey).to.not.eq(SpecialAddresses.ACCOUNT_ONE);
+    });
+
+    // set by E547D21C4F24FC313F492828730C17B442C37038393705A18C64D400D186319D
+    it.only(`Should get account info after setting regular key to ACCOUNT_ONE`,async () => {
+      const info = await MccClient.getAccountInfo(acc, 28_014_704)
+      const flags = processFlags(info.result.account_data.Flags);
+
+      expect(flags.length).to.eq(2)
+      expect(flags.includes('lsfDefaultRipple')).to.eq(true)
+      expect(info.result.account_data.RegularKey).to.eq(SpecialAddresses.ACCOUNT_ONE);
+    });
+
+    // set by CA70256B2BC1886C5B6B40DB74C3B6B385013EF6F1C66BB940B8F31CF50D1922
+    it.only(`Should get account info after disabling master key`,async () => {
+      const info = await MccClient.getAccountInfo(acc, 28_014_733)
+      const flags = processFlags(info.result.account_data.Flags);
+
+      expect(flags.length).to.eq(3)
+      expect(flags.includes('lsfDefaultRipple')).to.eq(true)
+      expect(flags.includes('lsfDisableMaster')).to.eq(true)
+      expect(info.result.account_data.RegularKey).to.eq(SpecialAddresses.ACCOUNT_ONE);
+    });
+  });
+
+
+  
 
 });
 

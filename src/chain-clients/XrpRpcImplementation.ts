@@ -136,13 +136,19 @@ export class XRPImplementation implements ReadRpcInterface {
       }
    }
 
+   /**
+    * 
+    * @param account A unique identifier for the account, most commonly the account's Address.
+    * @param upperBound either blockHash or block number for the upper bound (The information does not contain any changes from ledger versions newer than this one.)
+    * @returns 
+    */
    async getAccountInfo(account: string, upperBound: number | string = 'current'): Promise<AccountInfoResponse>{
       const params = {
          account: account,
       } as IAccountInfoRequest
       if(typeof upperBound === "number"){
          params.ledger_index = upperBound
-      } if(upperBound === "current"){
+      } else if(upperBound === "current"){
          params.ledger_index = upperBound
       } else if(typeof upperBound === "string") {
          params.ledger_hash = upperBound
@@ -150,6 +156,8 @@ export class XRPImplementation implements ReadRpcInterface {
          this.loggingObject.exceptionCallback(upperBound,"Invalid upperBound parameter")
       }
       // AccountInfoRequest
+      // this.loggingObject.loggingCallback('Call Params')
+      // this.loggingObject.loggingCallback(JSON.stringify(params))
       let res = await this.client.post("", {
          method: "account_info",
          params: [params],
