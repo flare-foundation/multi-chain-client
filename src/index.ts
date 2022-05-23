@@ -103,6 +103,7 @@ export module MCC {
    }
 }
 
+// Object exports
 export * from "./base-objects/BlockBase";
 export * from "./base-objects/TransactionBase";
 
@@ -111,6 +112,7 @@ export * from "./types";
 // Utils exports
 export * from "./utils/algoUtils";
 export * from "./utils/utils";
+export * from './utils/xrpUtils'
 
 // retry logic
 export * from "./utils/retry";

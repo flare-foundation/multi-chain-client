@@ -17,15 +17,29 @@ describe("Xrpl account test mainnet ", function () {
 
    describe('account info',async () => {
      it(`Should get account info`,async () => {
-       const info = await MccClient.getAccountInfo('rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn')
+       const acc = 'rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn'
+       const info = await MccClient.getAccountInfo(acc)
        console.log(info);
 
        // Get the flags
        const flags = processFlags(info.result.account_data.Flags);
        console.log(flags);
-       
      });
    });
+
+   describe('account transactions',async () => {
+    it(`Should get account transactions`,async () => {
+      const acc = 'rEVd9QP2aGsJ7wuty2qV8gqMiTiA1sX2j1'
+      // get account transactions
+      const tr = await MccClient.getAccountTransactions(acc, 71_830_000, 71_844_445)
+      // const tr = await MccClient.getAccountTransactions(acc, 71_811_447)
+      
+      console.log(tr);
+      console.log(tr.result.transactions.length);
+      
+      
+    });
+  });
 
 });
 
@@ -40,8 +54,6 @@ describe("Xrpl account test testnet ", function () {
   let MccClient: MCC.XRP;
 
   before(async function () {
-    console.log(XRPMccConnectionTest);
-    
      MccClient = new MCC.XRP(XRPMccConnectionTest);
      console.log(await MccClient.isHealthy());
   });
@@ -58,11 +70,12 @@ describe("Xrpl account test testnet ", function () {
       console.log(info.result.account_data.RegularKey);
       console.log(info.result.account_data.RegularKey === SpecialAddresses.ACCOUNT_ONE);
       
-      
+
     });
   });
 
 });
+
 
 
 // testnet account

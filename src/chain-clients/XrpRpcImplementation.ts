@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { AccountInfoRequest, AccountInfoResponse, LedgerRequest } from "xrpl";
+import { AccountInfoResponse, AccountTxResponse, LedgerRequest } from "xrpl";
 import { XrpBlock, XrpTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { AccountInfoParamsObject, ChainType, getTransactionOptions, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
+import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxRequest, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
 import { MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { defaultMccLoggingObject, fillWithDefault, unPrefix0x } from "../utils/utils";
@@ -139,7 +139,7 @@ export class XRPImplementation implements ReadRpcInterface {
    async getAccountInfo(account: string, upperBound: number | string = 'current'): Promise<AccountInfoResponse>{
       const params = {
          account: account,
-      } as AccountInfoParamsObject
+      } as IAccountInfoRequest
       if(typeof upperBound === "number"){
          params.ledger_index = upperBound
       } if(upperBound === "current"){
@@ -156,6 +156,22 @@ export class XRPImplementation implements ReadRpcInterface {
       });      
       xrp_ensure_data(res.data);
       return res.data
+   }
 
+   async getAccountTransactions(account: string, lowerBound: number = -1, upperBound: number = -1): Promise<AccountTxResponse>{
+      const params = {
+         account: account,
+      } as IAccountTxRequest
+      params.ledger_index_min = lowerBound
+      params.ledger_index_max = upperBound
+      // AccountTransaction
+      this.loggingObject.loggingCallback(JSON.stringify(params))
+      
+      let res = await this.client.post("", {
+         method: "account_tx",
+         params: [params],
+      });      
+      xrp_ensure_data(res.data);
+      return res.data
    }
 }

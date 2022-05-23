@@ -1,4 +1,4 @@
-import { LedgerResponse, TxResponse } from "xrpl";
+import { AccountInfoRequest, AccountTxRequest, LedgerResponse, TxResponse } from "xrpl";
 import { LedgerIndex } from "xrpl/dist/npm/models/common";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
@@ -27,14 +27,14 @@ export interface IXrpGetBlockHeaderRes extends LedgerResponse, IIGetBlockRes {}
 /**
  * Similar to AccountInfoRequest from xrpl
  */
-export interface AccountInfoParamsObject {
-   account: string;
-   ledger_hash?: string;
-   ledger_index?: LedgerIndex;
-   queue?: boolean;
-   signer_lists?: boolean;
-   strict?: boolean;
-}
+export type IAccountInfoRequest = Omit<AccountInfoRequest, 'command'>
+
+export type IAccountTxRequest = Omit<AccountTxRequest, 'command'>
+
+
+
+
+//// CONSTANTS
 
 // maybe one day https://github.com/ripple/rippled/issues/2457
 export type AccountRootFlags =
