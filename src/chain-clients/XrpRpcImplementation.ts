@@ -164,9 +164,7 @@ export class XRPImplementation implements ReadRpcInterface {
       } as IAccountTxRequest
       params.ledger_index_min = lowerBound
       params.ledger_index_max = upperBound
-      // AccountTransaction
       this.loggingObject.loggingCallback(JSON.stringify(params))
-      
       let res = await this.client.post("", {
          method: "account_tx",
          params: [params],

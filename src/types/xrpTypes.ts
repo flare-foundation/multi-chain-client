@@ -24,18 +24,10 @@ export interface IXrpGetBlockRes extends LedgerResponse, IIGetBlockRes {}
 export interface IXrpGetBlockHeaderRes extends LedgerResponse, IIGetBlockRes {}
 
 ////
-/**
- * Similar to AccountInfoRequest from xrpl
- */
-export type IAccountInfoRequest = Omit<AccountInfoRequest, 'command'>
+// CONSTANTS
+////
 
-export type IAccountTxRequest = Omit<AccountTxRequest, 'command'>
-
-
-
-
-//// CONSTANTS
-
+// Flags
 // maybe one day https://github.com/ripple/rippled/issues/2457
 export type AccountRootFlags =
    | "lsfDefaultRipple"
@@ -50,26 +42,50 @@ export type AccountRootFlags =
 
 export const FlagToHex = {
    lsfDepositAuth:    0x01000000,
-   lsfDisableMaster:  0x00100000,
-   lsfNoFreeze:       0x00200000,
-   lsfGlobalFreeze:   0x00400000, 
    lsfDefaultRipple:  0x00800000,
-   lsfPasswordSpent:  0x00010000,
-   lsfRequireDestTag: 0x00020000,
+   lsfGlobalFreeze:   0x00400000, 
+   lsfNoFreeze:       0x00200000,
+   lsfDisableMaster:  0x00100000,
+   lsfDisallowXRP:    0x00080000,
    lsfRequireAuth:    0x00040000,
-   lsfDisallowXRP:    0x00080000
+   lsfRequireDestTag: 0x00020000,
+   lsfPasswordSpent:  0x00010000,
 }
+
+export const allHexFlags = [
+   FlagToHex.lsfDepositAuth, 
+   FlagToHex.lsfDefaultRipple,
+   FlagToHex.lsfGlobalFreeze,
+   FlagToHex.lsfNoFreeze,
+   FlagToHex.lsfDisableMaster,
+   FlagToHex.lsfDisallowXRP,
+   FlagToHex.lsfRequireAuth,
+   FlagToHex.lsfRequireDestTag,
+   FlagToHex.lsfPasswordSpent
+]
 
 export const HexToFlag = {
    0x01000000 : "lsfDepositAuth",
-   0x00100000 : "lsfDisableMaster",
-   0x00200000 : "lsfNoFreeze",
-   0x00400000 : "lsfGlobalFreeze",
    0x00800000 : "lsfDefaultRipple",
-   0x00010000 : "lsfPasswordSpent",
-   0x00020000 : "lsfRequireDestTag",
+   0x00400000 : "lsfGlobalFreeze",
+   0x00200000 : "lsfNoFreeze",
+   0x00100000 : "lsfDisableMaster",
+   0x00080000 : "lsfDisallowXRP",
    0x00040000 : "lsfRequireAuth",
-   0x00080000 : "lsfDisallowXRP"
+   0x00020000 : "lsfRequireDestTag",
+   0x00010000 : "lsfPasswordSpent"
+}
+
+export const PosToFlag = {
+   24 : "lsfDepositAuth",
+   23 : "lsfDefaultRipple",
+   22 : "lsfGlobalFreeze",
+   21 : "lsfNoFreeze",
+   20 : "lsfDisableMaster",
+   19 : "lsfDisallowXRP",
+   18 : "lsfRequireAuth",
+   17 : "lsfRequireDestTag",
+   16 : "lsfPasswordSpent"
 }
 
 export const SpecialAddressesReverse = {
@@ -87,3 +103,15 @@ export const SpecialAddresses = {
    RESERVATION_BLACK_HOLE : 'rrrrrrrrrrrrrrrrrNAMEtxvNvQ',
    NaN_ADDRESS : 'rrrrrrrrrrrrrrrrrrrn5RM1rHd'
 }
+
+
+////
+// INTERNAL USE
+////
+
+//// Params data for methods (internal use)
+export type IAccountInfoRequest = Omit<AccountInfoRequest, 'command'>
+
+export type IAccountTxRequest = Omit<AccountTxRequest, 'command'>
+
+

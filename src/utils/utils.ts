@@ -108,7 +108,7 @@ export function isValidBytes32Hex(address: string) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export function defaultLoggingCallback(message: string): void {
-   // console.log(message);
+   console.log(message);
 }
 
 export function defaultWarningCallback(message: string): void {

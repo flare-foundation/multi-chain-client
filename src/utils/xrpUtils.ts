@@ -1,4 +1,4 @@
-import { AccountRootFlags, HexToFlag } from "../types";
+import { AccountRootFlags, allHexFlags, FlagToHex, HexToFlag, PosToFlag } from "../types";
 import { XRP_UTD } from "./constants";
 import { MccError } from "./utils";
 
@@ -21,6 +21,31 @@ export function unixEpochToRippleTime(timestamp: number) {
 }
 
 export function processFlags(flag: number): AccountRootFlags[] {
+   let altFlags: AccountRootFlags[] = [];
+   const flagPos = [16,17,18,19,20,21,22,23,24]
+   for(let posFlag of flagPos){
+      if((flag >> posFlag) % 2 === 1){
+         // @ts-ignore
+         altFlags.push(PosToFlag[posFlag])
+      }  
+   }
+   return altFlags
+}
+
+export function processFlagsOld1(flag: number): AccountRootFlags[] {
+   const binFlag = flag.toString(2).padStart(8*4, "0");
+   let altFlags: AccountRootFlags[] = [];
+   for(let posFlag of allHexFlags){
+      const posFlagBin = posFlag.toString(2).padStart(8*4, "0");
+      if((flag ^ posFlag).toString(2).padStart(8*4, "0")[posFlagBin.indexOf('1')] === '0'){
+         // @ts-ignore
+         altFlags.push(HexToFlag[posFlag])
+      }
+   }
+   return altFlags
+}
+
+export function processFlagsOld2(flag: number): AccountRootFlags[] {
    const hexFlag = "0x" + flag.toString(16).padStart(8, "0");
    let Flags: AccountRootFlags[] = [];
    switch (hexFlag[5]) {

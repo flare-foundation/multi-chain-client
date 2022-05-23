@@ -1,5 +1,5 @@
-import { MCC, SpecialAddresses, XrpTransaction } from "../../src";
-import { processFlags } from "../../src/utils/xrpUtils";
+import { MCC, SpecialAddresses } from "../../src";
+import { processFlags, processFlagsOld1, processFlagsOld2 } from "../../src/utils/xrpUtils";
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || '',
@@ -31,8 +31,8 @@ describe("Xrpl account test mainnet ", function () {
     it(`Should get account transactions`,async () => {
       const acc = 'rEVd9QP2aGsJ7wuty2qV8gqMiTiA1sX2j1'
       // get account transactions
-      const tr = await MccClient.getAccountTransactions(acc, 71_830_000, 71_844_445)
-      // const tr = await MccClient.getAccountTransactions(acc, 71_811_447)
+      // const tr = await MccClient.getAccountTransactions(acc, 71_844_000, 71_844_445)
+      const tr = await MccClient.getAccountTransactions(acc)
       
       console.log(tr);
       console.log(tr.result.transactions.length);
@@ -64,8 +64,25 @@ describe("Xrpl account test testnet ", function () {
       console.log(info);
 
       // Get the flags
+
+      console.time('Flag new1')
       const flags = processFlags(info.result.account_data.Flags);
+      console.timeEnd('Flag new1')
+
+      console.time('Flag old1')
+      const oldFlags = processFlagsOld1(info.result.account_data.Flags);
+      console.timeEnd('Flag old1')
+
+      console.time('Flag old2')
+      const fastFlags = processFlagsOld2(info.result.account_data.Flags);
+      console.timeEnd('Flag old2')
+
       console.log(flags);
+      console.log(oldFlags);
+      console.log(fastFlags);
+      
+      
+      
 
       console.log(info.result.account_data.RegularKey);
       console.log(info.result.account_data.RegularKey === SpecialAddresses.ACCOUNT_ONE);
