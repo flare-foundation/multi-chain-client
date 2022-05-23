@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { LedgerRequest } from "xrpl";
+import { AccountInfoRequest, AccountInfoResponse, LedgerRequest } from "xrpl";
 import { XrpBlock, XrpTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { ChainType, getTransactionOptions, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
+import { AccountInfoParamsObject, ChainType, getTransactionOptions, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
 import { MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { defaultMccLoggingObject, fillWithDefault, unPrefix0x } from "../utils/utils";
@@ -136,7 +136,26 @@ export class XRPImplementation implements ReadRpcInterface {
       }
    }
 
-   // async getBlockHashFromHeight(blockNumber: number): Promise<string | null> {
-   //    throw Error("Not Implemented");
-   // }
+   async getAccountInfo(account: string, upperBound: number | string = 'current'): Promise<AccountInfoResponse>{
+      const params = {
+         account: account,
+      } as AccountInfoParamsObject
+      if(typeof upperBound === "number"){
+         params.ledger_index = upperBound
+      } if(upperBound === "current"){
+         params.ledger_index = upperBound
+      } else if(typeof upperBound === "string") {
+         params.ledger_hash = upperBound
+      } else {
+         this.loggingObject.exceptionCallback(upperBound,"Invalid upperBound parameter")
+      }
+      // AccountInfoRequest
+      let res = await this.client.post("", {
+         method: "account_info",
+         params: [params],
+      });      
+      xrp_ensure_data(res.data);
+      return res.data
+
+   }
 }
