@@ -1,4 +1,3 @@
-import { StringMappingType } from "typescript";
 
 export type IBlock = BlockBase<any>;
 export abstract class BlockBase<B> {
@@ -18,9 +17,10 @@ export abstract class BlockBase<B> {
 }
 
 export { AlgoBlock } from "./blocks/AlgoBlock";
-export { XrpBlock } from "./blocks/XrpBlock";
-export { UtxoBlock } from "./blocks/UtxoBlock";
-
 export { BtcBlock } from "./blocks/BtcBlock";
 export { DogeBlock } from "./blocks/DogeBlock";
 export { LtcBlock } from "./blocks/LtcBlock";
+export { UtxoBlock } from "./blocks/UtxoBlock";
+export { XrpBlock } from "./blocks/XrpBlock";
+
+
