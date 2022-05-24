@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { AccountInfoResponse, AccountTxResponse, LedgerRequest } from "xrpl";
+import { AccountInfoResponse, AccountTxResponse, LedgerRequest, ServerStateResponse } from "xrpl";
 import { XrpBlock, XrpTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { XrpNodeStatus } from "../base-objects/StatusBase";
@@ -83,6 +83,10 @@ export class XRPImplementation implements ReadRpcInterface {
       }
    }
 
+   /**
+    * @deprecated Use getNodeStatus to get server info
+    * @returns
+    */
    async isHealthy(): Promise<boolean> {
       let res = await this.client.post("", {
          method: "server_info",
@@ -184,8 +188,14 @@ export class XRPImplementation implements ReadRpcInterface {
 
    /**
     * TODO implement
+    * @external_docs https://xrpl.org/server_state.html
     */
    async getNodeStatus(): Promise<XrpNodeStatus> {
-      throw new Error("Method not implemented.");
+      let res = await this.client.post("", {
+         method: "server_state",
+         params: [],
+      });
+      xrp_ensure_data(res.data);
+      return new XrpNodeStatus(res.data as ServerStateResponse);
    }
 }

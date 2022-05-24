@@ -106,6 +106,7 @@ export module MCC {
 // Object exports
 export * from "./base-objects/BlockBase";
 export * from "./base-objects/TransactionBase";
+export * from "./base-objects/StatusBase"
 
 export * from "./types";
 

@@ -1,18 +1,26 @@
+import { ServerStateResponse } from "xrpl";
+import { ServerState } from "xrpl/dist/npm/models/methods/serverInfo";
 import { NodeStatusBase } from "../StatusBase";
 
 
-export class XrpNodeStatus extends NodeStatusBase<any> {
+export class XrpNodeStatus extends NodeStatusBase<ServerStateResponse> {
   public get version(): string {
-    throw new Error("Method not implemented.");
+    return this.data.result.state.build_version;
   }
-  public get health(): string {
-    throw new Error("Method not implemented.");
+
+  /**
+   * @docs https://xrpl.org/rippled-server-states.html
+   */
+  public get state(): ServerState {
+    return this.data.result.state.server_state;
   }
+
   public get isHealthy(): boolean {
-    throw new Error("Method not implemented.");
+    return ['connected', 'syncing', 'tracking', 'full', 'validating', 'proposing'].includes(this.state);
   }
+  
   public get isSynced(): boolean {
-    throw new Error("Method not implemented.");
+    return ['full', 'validating', 'proposing'].includes(this.state)
   }
 
 }

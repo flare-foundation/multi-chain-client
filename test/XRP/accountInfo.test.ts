@@ -29,11 +29,12 @@ describe("Xrpl account test mainnet ", function () {
    });
 
    describe('account transactions',async () => {
-    it(`Should get account transactions`,async () => {
-      const acc = 'rEVd9QP2aGsJ7wuty2qV8gqMiTiA1sX2j1'
+    it.only(`Should get account transactions`,async () => {
+      // const acc = 'rEVd9QP2aGsJ7wuty2qV8gqMiTiA1sX2j1'
+      const acc = 'r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd'
       // get account transactions
-      // const tr = await MccClient.getAccountTransactions(acc, 71_844_000, 71_844_445)
-      const tr = await MccClient.getAccountTransactions(acc)
+      const tr = await MccClient.getAccountTransactions(acc, 71_859_000, 71_867_500)
+      // const tr = await MccClient.getAccountTransactions(acc)
       
       console.log(tr);
       console.log(tr.result.transactions.length);
@@ -107,6 +108,9 @@ describe("Xrpl account test testnet ", function () {
       const info = await MccClient.getAccountInfo(acc, 28_014_612)
       const flags = processFlags(info.result.account_data.Flags);
 
+      console.log(info);
+      
+
       expect(flags.length).to.eq(1)
       expect(flags.includes('lsfDefaultRipple')).to.eq(true)
       expect(info.result.account_data.RegularKey).to.not.eq(SpecialAddresses.ACCOUNT_ONE);
@@ -126,6 +130,9 @@ describe("Xrpl account test testnet ", function () {
     it.only(`Should get account info after disabling master key`,async () => {
       const info = await MccClient.getAccountInfo(acc, 28_014_733)
       const flags = processFlags(info.result.account_data.Flags);
+
+      console.log(info);
+      console.log(flags)
 
       expect(flags.length).to.eq(3)
       expect(flags.includes('lsfDefaultRipple')).to.eq(true)

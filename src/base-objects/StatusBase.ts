@@ -8,7 +8,7 @@ export abstract class NodeStatusBase<S> {
    }
 
    public abstract get version(): string;
-   public abstract get health(): string;
+   public abstract get state(): string;
 
    public abstract get isHealthy(): boolean;
    public abstract get isSynced(): boolean;
