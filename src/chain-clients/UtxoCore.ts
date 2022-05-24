@@ -2,6 +2,7 @@ import axios from "axios";
 import { UtxoBlock, UtxoTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { LiteBlock } from "../base-objects/blocks/LiteBlock";
+import { UtxoNodeStatus } from "../base-objects/StatusBase";
 import {
    getAddressByLabelResponse,
    getTransactionOptions,
@@ -10,7 +11,7 @@ import {
    IUtxoTransactionListRes,
    IUtxoWalletRes,
    RateLimitOptions,
-   UtxoMccCreate,
+   UtxoMccCreate
 } from "../types";
 import { ChainType, MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes } from "../types/utxoTypes";
@@ -346,6 +347,13 @@ export class UtxoCore {
          }
       }
       return response;
+   }
+
+   /**
+    * TODO implement
+    */
+   async getNodeStatus(): Promise<UtxoNodeStatus> {
+      throw new Error("Method not implemented.");
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////

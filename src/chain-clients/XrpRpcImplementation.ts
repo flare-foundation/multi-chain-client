@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { AccountInfoResponse, AccountTxResponse, LedgerRequest } from "xrpl";
 import { XrpBlock, XrpTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
+import { XrpNodeStatus } from "../base-objects/StatusBase";
 import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxRequest, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
 import { MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
@@ -137,23 +138,23 @@ export class XRPImplementation implements ReadRpcInterface {
    }
 
    /**
-    * 
+    *
     * @param account A unique identifier for the account, most commonly the account's Address.
     * @param upperBound either blockHash or block number for the upper bound (The information does not contain any changes from ledger versions newer than this one.)
-    * @returns 
+    * @returns
     */
-   async getAccountInfo(account: string, upperBound: number | string = 'current'): Promise<AccountInfoResponse>{
+   async getAccountInfo(account: string, upperBound: number | string = "current"): Promise<AccountInfoResponse> {
       const params = {
          account: account,
-      } as IAccountInfoRequest
-      if(typeof upperBound === "number"){
-         params.ledger_index = upperBound
-      } else if(upperBound === "current"){
-         params.ledger_index = upperBound
-      } else if(typeof upperBound === "string") {
-         params.ledger_hash = upperBound
+      } as IAccountInfoRequest;
+      if (typeof upperBound === "number") {
+         params.ledger_index = upperBound;
+      } else if (upperBound === "current") {
+         params.ledger_index = upperBound;
+      } else if (typeof upperBound === "string") {
+         params.ledger_hash = upperBound;
       } else {
-         this.loggingObject.exceptionCallback(upperBound,"Invalid upperBound parameter")
+         this.loggingObject.exceptionCallback(upperBound, "Invalid upperBound parameter");
       }
       // AccountInfoRequest
       // this.loggingObject.loggingCallback('Call Params')
@@ -161,23 +162,30 @@ export class XRPImplementation implements ReadRpcInterface {
       let res = await this.client.post("", {
          method: "account_info",
          params: [params],
-      });      
+      });
       xrp_ensure_data(res.data);
-      return res.data
+      return res.data;
    }
 
-   async getAccountTransactions(account: string, lowerBound: number = -1, upperBound: number = -1): Promise<AccountTxResponse>{
+   async getAccountTransactions(account: string, lowerBound: number = -1, upperBound: number = -1): Promise<AccountTxResponse> {
       const params = {
          account: account,
-      } as IAccountTxRequest
-      params.ledger_index_min = lowerBound
-      params.ledger_index_max = upperBound
-      this.loggingObject.loggingCallback(JSON.stringify(params))
+      } as IAccountTxRequest;
+      params.ledger_index_min = lowerBound;
+      params.ledger_index_max = upperBound;
+      this.loggingObject.loggingCallback(JSON.stringify(params));
       let res = await this.client.post("", {
          method: "account_tx",
          params: [params],
-      });      
+      });
       xrp_ensure_data(res.data);
-      return res.data
+      return res.data;
+   }
+
+   /**
+    * TODO implement
+    */
+   async getNodeStatus(): Promise<XrpNodeStatus> {
+      throw new Error("Method not implemented.");
    }
 }

@@ -1,7 +1,7 @@
-import { StatusBase } from "../StatusBase";
+import { NodeStatusBase } from "../StatusBase";
 
 
-export class XrpStatus extends StatusBase<any> {
+export class XrpNodeStatus extends NodeStatusBase<any> {
   public get version(): string {
     throw new Error("Method not implemented.");
   }

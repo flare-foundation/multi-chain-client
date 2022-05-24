@@ -2,6 +2,7 @@ import * as msgpack from "algo-msgpack-with-bigint";
 import axios from "axios";
 import { AlgoBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
+import { AlgoNodeStatus } from "../base-objects/StatusBase";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
 import {
    AlgoMccCreate,
@@ -13,7 +14,7 @@ import {
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
-   RateLimitOptions,
+   RateLimitOptions
 } from "../types";
 import { IAlgoCert } from "../types/algoTypes";
 import { MccLoggingOptionsFull } from "../types/genericMccTypes";
@@ -290,5 +291,12 @@ export class ALGOImplementation implements ReadRpcInterface {
          camelList.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
       }
       return camelList as IAlgoListTransactionRes;
+   }
+
+   /**
+    * TODO implement
+    */
+    async getNodeStatus(): Promise<AlgoNodeStatus> {
+      throw new Error("Method not implemented.");
    }
 }

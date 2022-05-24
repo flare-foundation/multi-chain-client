@@ -1,6 +1,6 @@
-export type IStatus = StatusBase<any>;
+export type IStatus = NodeStatusBase<any>;
 
-export abstract class StatusBase<S> {
+export abstract class NodeStatusBase<S> {
    data: S;
 
    constructor(data: S) {
@@ -14,6 +14,6 @@ export abstract class StatusBase<S> {
    public abstract get isSynced(): boolean;
 }
 
-export { AlgoStatus } from "./status/AlgoStatus";
-export { UtxoStatus } from "./status/UtxoStatus";
-export { XrpStatus } from "./status/XrpStatus";
+export { AlgoNodeStatus } from "./status/AlgoStatus";
+export { UtxoNodeStatus } from "./status/UtxoStatus";
+export { XrpNodeStatus } from "./status/XrpStatus";
