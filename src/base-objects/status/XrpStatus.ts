@@ -15,6 +15,11 @@ export class XrpNodeStatus extends NodeStatusBase<ServerStateResponse> {
     return this.data.result.state.server_state;
   }
 
+  public get bottomBlock(): any {
+    const Ledgers = this.data.result.state.complete_ledgers.split(',').sort()
+    return parseInt(Ledgers[Ledgers.length - 1].split('-')[0])
+  }
+
   public get isHealthy(): boolean {
     return ['connected', 'syncing', 'tracking', 'full', 'validating', 'proposing'].includes(this.state);
   }

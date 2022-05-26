@@ -180,6 +180,44 @@ export interface IUtxoTransactionAdditionalData {
    vinouts?: (IUtxoVinVoutsMapper | undefined)[];
 }
 
+// Status methods
+
+interface INetworks {                                                
+   "name" : "str",                                // network (ipv4, ipv6 or onion)
+   "limited" : true|false,                        // is the network limited using -onlynet?
+   "reachable" : true|false,                      // is the network reachable?
+   "proxy" : "str",                               // ("host:port") the proxy that is used for this network, or empty if none
+   "proxy_randomize_credentials" : true|false     // Whether randomized credentials are used
+ }
+
+interface ILocalAddresses {
+      "address" : string,                             // network address
+      "port" : number,                                    // network port
+      "score" : number                                    // relative score
+
+}
+export interface IUtxoGetNetworkInfoRes {
+   "version" : number                                 // the server version
+   "subversion" : string                              // the server subversion string
+   "protocolversion" : number                         // the protocol version
+   "localservices" : string // hexstring              // the services we offer to the network
+   "localservicesnames" : string[]                    // the services we offer to the network, in human-readable form as string array
+   "localrelay" : boolean                             // true if transaction relay is requested from peers
+   "timeoffset" : number,                                  // the time offset
+   "connections" : number,                                 // the total number of connections
+   "connections_in" : number,                              // the number of inbound connections
+   "connections_out" : number,                             // the number of outbound connections
+   "networkactive" : boolean,                      // whether p2p networking is enabled
+   "networks" : INetworks[]                           //         (json array) information per network
+   "relayfee" : number,                                    // minimum relay fee for transactions in BTC/kB
+   "incrementalfee" : number,                              // minimum fee increment for mempool limiting or BIP 125 replacement in BTC/kB
+   "localaddresses" : ILocalAddresses[]                   // list of local addresses
+   "warnings" : string   
+}
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////// MCC RPC implementation interfaces ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

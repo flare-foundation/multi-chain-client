@@ -38,3 +38,8 @@ Do you perhaps know how one can consistently get transaction history from exactl
 but then we are limited to blocks that happened in the last day (and this can in future be changed by governance proposals)
 
 Would it be ok that full Issuance Process procedure was required to be finished and attested to in the last day? That way we can simply process all transactions done by a particular account in our indexer database where we can consistently control the block range.
+
+
+We have problems syncing 
+
+https://xrpl.org/diagnosing-problems.html

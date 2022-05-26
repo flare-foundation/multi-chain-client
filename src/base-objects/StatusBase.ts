@@ -10,6 +10,11 @@ export abstract class NodeStatusBase<S> {
    public abstract get version(): string;
    public abstract get state(): string;
 
+   /** 
+    * The lowest block in the latest joined set of blocks 
+    */
+   public abstract get bottomBlock(): number;
+
    public abstract get isHealthy(): boolean;
    public abstract get isSynced(): boolean;
 }

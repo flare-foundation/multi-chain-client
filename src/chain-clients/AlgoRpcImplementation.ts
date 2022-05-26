@@ -16,7 +16,7 @@ import {
    IAlgoTransaction,
    RateLimitOptions
 } from "../types";
-import { IAlgoCert } from "../types/algoTypes";
+import { IAlgoCert, IAlgoStatusObject } from "../types/algoTypes";
 import { MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, hexToBase32, hexToBase64 } from "../utils/algoUtils";
 import { PREFIXED_STD_TXID_REGEX } from "../utils/constants";
@@ -79,6 +79,10 @@ export class ALGOImplementation implements ReadRpcInterface {
       this.chainType = ChainType.ALGO;
    }
 
+   /**
+    * @deprecated
+    * @returns 
+    */
    async isHealthy(): Promise<boolean> {
       let res = await this.algodClient.get("health"); // TODO all apps must be healthy
       const response_code = res.status;
@@ -297,6 +301,22 @@ export class ALGOImplementation implements ReadRpcInterface {
     * TODO implement
     */
     async getNodeStatus(): Promise<AlgoNodeStatus> {
-      throw new Error("Method not implemented.");
+      let res = await this.algodClient.get("health");
+      algo_ensure_data(res);
+
+      let ver = await this.algodClient.get("versions");
+      algo_ensure_data(ver);
+
+
+      let status = await this.algodClient.get("/v2/status");
+      algo_ensure_data(status);
+
+      const statusData = {
+         'health': res.status,
+         'status': toCamelCase(status.data),
+         'versions': toCamelCase(ver.data)
+      } as IAlgoStatusObject
+      
+      return new AlgoNodeStatus(statusData)
    }
 }

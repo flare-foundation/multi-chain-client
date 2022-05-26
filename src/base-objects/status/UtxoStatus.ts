@@ -1,18 +1,25 @@
+import { IUtxoGetNetworkInfoRes } from "../../types";
 import { NodeStatusBase } from "../StatusBase";
 
 
-export class UtxoNodeStatus extends NodeStatusBase<any> {
+export class UtxoNodeStatus extends NodeStatusBase<IUtxoGetNetworkInfoRes> {
   public get version(): string {
-    throw new Error("Method not implemented.");
+    return `${this.data.version}_${this.data.protocolversion}_${this.data.subversion}`
   }
   public get state(): string {
-    throw new Error("Method not implemented.");
+    return 'full'
   }
+
+  public get bottomBlock(): number {
+    return 0
+  }
+
   public get isHealthy(): boolean {
-    throw new Error("Method not implemented.");
+    return this.data.networkactive
   }
+
   public get isSynced(): boolean {
-    throw new Error("Method not implemented.");
+    return this.data.networkactive
   }
 
 }
