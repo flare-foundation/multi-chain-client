@@ -9,18 +9,21 @@ export class AlgoNodeStatus extends NodeStatusBase<IAlgoStatusObject> {
     return `${build.major}_${build.minor}_${build.buildNumber}_${build.commitHash}`
   }
   public get state(): string {
-    throw new Error("Method not implemented.");
+    // TODO 
+    return 'TODO'
   }
 
   public get bottomBlock(): number {
-    throw new Error("Method not implemented.");
+    // return this.bottomBlock
+    return 0
   }
 
   public get isHealthy(): boolean {
     return this.data.health === 200
   }
   public get isSynced(): boolean {
-    throw new Error("Method not implemented.");
+    // TODO make sure that this means it is synced
+    return this.data?.status?.catchupTime === 0
   }
 
 }

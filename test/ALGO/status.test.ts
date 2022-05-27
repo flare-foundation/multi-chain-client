@@ -53,13 +53,7 @@ describe("Block Algo base test ", function () {
 
    it("Should get full data ", async function () {
       console.log(status.data);
-      const b = await MccClient.getBlock(21_230_000)
+      const b = await MccClient.getBlockHeader(status.bottomBlock)
       console.log(b);
-      console.log(b?.blockHash)
-      console.log(b?.stdBlockHash);
-
-      21_234_692
-      21_230_000
-      21_190_001
    });
 });
