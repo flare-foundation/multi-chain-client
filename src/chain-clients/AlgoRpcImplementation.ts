@@ -315,7 +315,7 @@ export class ALGOImplementation implements ReadRpcInterface {
       if (res.status === 200) {
          // Bottom block search
          bottomBlockHeight = status.lastRound;
-         // check -1000 -1000 and -10000 blocs
+         // check -1.000 -10.000 and -100.000 blocs
          for (let checkRound = 0; checkRound < 3; checkRound++) {
             bottomBlockHeight -= Math.pow(10, 3 + checkRound);
             let blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
@@ -337,6 +337,7 @@ export class ALGOImplementation implements ReadRpcInterface {
             }
          }
       }
+
 
       const statusData = {
          health: res.status,

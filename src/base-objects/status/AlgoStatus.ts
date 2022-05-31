@@ -14,8 +14,7 @@ export class AlgoNodeStatus extends NodeStatusBase<IAlgoStatusObject> {
   }
 
   public get bottomBlock(): number {
-    // return this.bottomBlock
-    return 0
+    return this.data.bottomBlock
   }
 
   public get isHealthy(): boolean {
