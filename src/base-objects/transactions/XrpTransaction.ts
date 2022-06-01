@@ -1,6 +1,6 @@
 import BN from "bn.js";
 import { Payment, TransactionMetadata } from "xrpl";
-import { Memo } from "xrpl/dist/npm/models/common";
+import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { MccClient, TransactionSuccessStatus } from "../../types";
 import { IXrpGetTransactionRes } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
@@ -109,10 +109,8 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    public get currencyName(): string {
       // With ripple this is currency code
       if (this.type === "Payment") {
-         // @ts-ignore
-         if (this.data.result.Amount.currency) {
-            // @ts-ignore
-            return this.data.result.Amount.currency;
+         if (((this.data.result as Payment).Amount as IssuedCurrencyAmount).currency) {
+            return ((this.data.result as Payment).Amount as IssuedCurrencyAmount).currency;
          }
          return XRP_NATIVE_TOKEN_NAME;
       }
@@ -151,7 +149,25 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public async paymentSummary(client: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       if (!this.isNativePayment) {
-         return { isNativePayment: false };
+         if(this.type === 'Payment'){
+            // token transfer
+            const value = ((this.data.result as Payment).Amount as IssuedCurrencyAmount).value
+            const valueSplit = value.split('.')
+            let eleUnits = 1
+            if(valueSplit.length === 2){
+               eleUnits = Math.pow(10,valueSplit[1].length)
+            }            
+            return({
+               isNativePayment: false,
+               isTokenTransfer: true,
+               tokenElementaryUnits: toBN(eleUnits),
+               receivedTokenAmount: toBN(valueSplit.join('')),
+               tokenName: this.currencyName
+            })
+         }
+         else {
+            return { isNativePayment: false };
+         }
       }
       return {
          isNativePayment: true,
