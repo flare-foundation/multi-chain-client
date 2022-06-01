@@ -1,30 +1,44 @@
-import { IAlgoGetBlockRes } from "../../types";
-import { base64ToHex, filterHashes, txIdToHexNo0x } from "../../utils/algoUtils";
-import { prefix0x } from "../../utils/utils";
+import { IAlgoBlockMsgPack } from "../../types";
+import { base64ToHex, bytesToHex, filterHashes, hexToBase32, hexToBase64, txIdToHexNo0x } from "../../utils/algoUtils";
 import { BlockBase } from "../BlockBase";
 
-export class AlgoBlock extends BlockBase<IAlgoGetBlockRes> {
+export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
+   additionalData: any
+   constructor(data: IAlgoBlockMsgPack, additionalData?: any) {
+      super(data);
+      this.additionalData = additionalData
+   }
    public get number(): number {
-      return this.data.round;
+      return this.data?.block?.rnd;
    }
 
    public get blockHash(): string {
-      return this.data.cert.prop.dig;
+      return hexToBase64(this.data.cert.prop.dig);
+   }
+
+   // Algo special
+   public get blockHashBase32(): string {
+      return hexToBase32(this.data.cert.prop.dig);
+   }
+
+   // Algo special
+   public get blockHashBase64(): string {
+      return hexToBase64(this.data.cert.prop.dig);
    }
 
    public get stdBlockHash(): string {
-      return base64ToHex(this.data.cert.prop.dig);
+      return bytesToHex(this.data.cert.prop.dig);
    }
 
    public get unixTimestamp(): number {
-      return this.data.timestamp;
+      return this.data?.block?.ts;
    }
 
    public get transactionIds(): string[] {
-      if (this.data.transactions === undefined) {
+      if (this.data?.block?.txns === undefined) {
          return [];
       }
-      return this.data.transactions.map(filterHashes);
+      return this.data?.block?.txns.map(filterHashes);
    }
 
    public get stdTransactionIds(): string[] {
@@ -32,9 +46,9 @@ export class AlgoBlock extends BlockBase<IAlgoGetBlockRes> {
    }
 
    public get transactionCount(): number {
-      if (this.data.transactions === undefined) {
+      if (!this.data.block.txns) {
          return 0;
       }
-      return this.data.transactions.length;
+      return this.data?.block?.txns.length;
    }
 }

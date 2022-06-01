@@ -1,17 +1,12 @@
 import BN from "bn.js";
 import { MccClient, TransactionSuccessStatus } from "../../types";
-import { AlgoTransactionTypeOptions, IAlgoGetTransactionRes, IAlgoTransactionMsgPack } from "../../types/algoTypes";
+import { AlgoTransactionTypeOptions, IAlgoGetTransactionRes } from "../../types/algoTypes";
 import { base64ToHex, txIdToHexNo0x } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 const web3 = require("web3")
-/**
- * docs https://developer.algorand.org/docs/get-details/transactions/transactions/
- */
-export class AlgoTransaction extends TransactionBase<IAlgoGetTransactionRes, any> {
-
-
+export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionRes, any> {
    public get txid(): string {
       return this.hash;
    }

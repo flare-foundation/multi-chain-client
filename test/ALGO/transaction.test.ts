@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AlgoTransaction, MCC } from "../../src";
+import { AlgoIndexerTransaction, AlgoTransaction, MCC } from "../../src";
 
 // const algoCreateConfig = {
 //    algod: {
@@ -46,7 +46,7 @@ describe("Algo Transaction test ", function () {
    });
 
    describe("Transaction does not exist ", function () {
-      let transaction: AlgoTransaction;
+      let transaction: AlgoIndexerTransaction;
       const txid = "HG5KBZ3JYRUZ7XVTNU3BCLCNICDRS7RMJ4FJVTMKOFVXOWAVO25V";
 
       it("Should get transaction does not exist ", async function () {
@@ -57,7 +57,7 @@ describe("Algo Transaction test ", function () {
 
    for (let transData of TransactionsToTest) {
       describe(transData.description, function () {
-         let transaction: AlgoTransaction;
+         let transaction: AlgoIndexerTransaction;
          before(async function () {
             let transactionb = await MccClient.getTransaction(transData.txid);
             if (transactionb !== null) {

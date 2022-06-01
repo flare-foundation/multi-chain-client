@@ -51,6 +51,7 @@ export interface IAlgoBlockHeaderData {
    txns: any[]; // improve
 }
 
+// indexer block
 export interface IAlgoBlockData {
    genesisHash: string;
    genesisId: string;
@@ -86,6 +87,29 @@ export interface IAlgoGetBlockRes extends IAlgoBlockData, IIGetBlockRes {
 export interface IAlgoGetBlockHeaderRes {
    type: "IAlgoGetBlockHeaderRes";
    block: IAlgoBlockHeaderData;
+   cert: IAlgoCert;
+}
+
+interface IAlgoBlockMsgPackBlock {
+   earn: number;
+   fees: string;
+   frac: number;
+   gen: string;
+   gh: string;
+   prev: string;
+   proto: string;
+   rnd: number;
+   rwcalr: number;
+   rwd: string;
+   seed: string;
+   tc: number;
+   ts: number;
+   txn: string;
+   txns: any[]; // Array of transaction objects
+}
+
+export interface IAlgoBlockMsgPack {
+   block: IAlgoBlockMsgPackBlock;
    cert: IAlgoCert;
 }
 
@@ -144,7 +168,46 @@ export interface IAlgoTransaction {
    // * [appl] application-transaction
 }
 
+interface IALgoApar {
+   an: string;
+   au: string;
+   t: number;
+   un: string;
+}
+
+// take as reference https://github.com/algorand/go-algorand-sdk/blob/develop/types/transaction.go
+
+// todo need keyreg and afrz tx example
+export interface IAlgoTransactionMsgPack {
+   fee: number;
+   fv: number; // first valid
+   lv: number; // lastValid
+   snd: string; // sender
+   type: AlgoTransactionTypeOptions; // transaction type
+
+   note?: string; // note
+   rcv?: string; // receiver
+
+   grp?: string;
+
+   amt?: number; // in pay
+   apaa?: string[]; // in appl
+   apas?: number[]; // in appl 
+   apat?: string[]; // in appl
+   apid?: number; // in appl
+   apar?: IALgoApar; // in acfg 
+   aamt?: number; // in axfer
+   arcv?: string; // in axfer // AssetReceiver
+   xaid?: number; // in axfer
+}
+
 export type AlgoTransactionTypeOptions = "pay" | "keyreg" | "acfg" | "axfer" | "afrz" | "appl";
+// * pay    -  payment-transaction
+// * keyreg - keyreg-transaction
+// * acfg   - asset-config-transaction
+// * axfer  - asset-transfer-transaction
+// * afrz   - asset-freeze-transaction
+// * appl   - application-transaction
 export interface IAlgoLitsTransaction {
    address?: string; // Only include transactions with this address in one of the transaction fields.
    addressRole?: "sender" | "receiver" | "freeze-target"; // Combine with the address parameter to define what type of address to search for.

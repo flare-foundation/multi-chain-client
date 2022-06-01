@@ -20,6 +20,14 @@ export const INVALIDPUBKEYPAIRERROR = (algoKeyPair: IAlgoHexAddress) => {
 ////////////////////// Code ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+export function filterHashesIndexer(trans: IAlgoTransaction) {
+   if (trans.id) {
+      return trans.id;
+   } else {
+      return "";
+   }
+}
+
 export function filterHashes(trans: IAlgoTransaction) {
    if (trans.id) {
       return trans.id;
@@ -27,6 +35,7 @@ export function filterHashes(trans: IAlgoTransaction) {
       return "";
    }
 }
+
 
 ///////////////////
 // Bytes <-> Hex //
@@ -195,3 +204,8 @@ export function algo_check_expect_empty(data: any): boolean {
       return false;
    }
 }
+
+
+// address checksum
+// https://emn178.github.io/online-tools/sha512_256.html hash SHA512/256
+// https://github.com/algorand/go-algorand-sdk/blob/develop/types/address.go
