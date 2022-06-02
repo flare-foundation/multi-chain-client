@@ -253,7 +253,7 @@ export function mpEncode(obj: Record<string | number | symbol, any>) {
 //// Light (Non-Archival) block updates ////
 ////////////////////////////////////////////
 
-class StateDelta {
+export class StateDelta {
    action: number = 0;
    bytes: Uint8Array = new Uint8Array();
    uint: number | undefined = undefined;
@@ -275,7 +275,7 @@ class StateDelta {
    }
  }
  
- class EvalDelta {
+ export class EvalDelta {
    global_delta: StateDelta[] = [];
    local_deltas: { [key: number]: StateDelta[] } = {};
    logs: string[] = [];
@@ -292,9 +292,13 @@ class StateDelta {
      const ed = new EvalDelta({});
  
      if ("gd" in delta) {
-       for (const idx of delta["gd"]) {
-         ed.global_delta.push(StateDelta.fromMsgp(delta["gd"]));
-       }
+        try{
+           for (const idx of delta["gd"]) {
+             ed.global_delta.push(StateDelta.fromMsgp(delta["gd"]));
+           }
+        } catch (e) {
+         // TODO apparently not a part of txid -.-
+        }
      }
  
      if ("ld" in delta) {
@@ -334,7 +338,7 @@ class StateDelta {
    }
  }
  
- class ApplyData {
+ export class ApplyData {
    closing_amount: number = 0;
    asset_closing_amount: number = 0;
    sender_rewards: number = 0;
@@ -388,7 +392,7 @@ class StateDelta {
    }
  }
  
- class SignedTransactionWithAD {
+ export class SignedTransactionWithAD {
    txn: algosdk.SignedTransaction;
    apply_data: ApplyData | undefined = undefined;
  
@@ -448,7 +452,7 @@ class StateDelta {
  //   return proof.stibhash == generated;
  // }
  
- function hasher(data: Uint8Array): Uint8Array {
+ export function hasher(data: Uint8Array): Uint8Array {
    const tohash = concatArrays(Buffer.from("STIB"), new Uint8Array(data));
    return new Uint8Array(sha512_256.array(tohash));
  }

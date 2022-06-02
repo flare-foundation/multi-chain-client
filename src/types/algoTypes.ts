@@ -1,3 +1,4 @@
+import { EncodedTransaction } from "algosdk";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
@@ -183,27 +184,37 @@ interface IALgoApar {
 // take as reference https://github.com/algorand/go-algorand-sdk/blob/develop/types/transaction.go
 
 // todo need keyreg and afrz tx example
-export interface IAlgoTransactionMsgPack {
-   fee: number;
-   fv: number; // first valid
-   lv: number; // lastValid
-   snd: string; // sender
-   type: AlgoTransactionTypeOptions; // transaction type
+// export interface IAlgoTransactionMsgPack {
+//    fee: number;
+//    fv: number; // first valid
+//    lv: number; // lastValid
+//    snd: string; // sender
+//    type: AlgoTransactionTypeOptions; // transaction type
 
-   note?: string; // note
-   rcv?: string; // receiver
+//    note?: string; // note
+//    rcv?: string; // receiver
 
-   grp?: string;
+//    grp?: string;
 
-   amt?: number; // in pay
-   apaa?: string[]; // in appl
-   apas?: number[]; // in appl 
-   apat?: string[]; // in appl
-   apid?: number; // in appl
-   apar?: IALgoApar; // in acfg 
-   aamt?: number; // in axfer
-   arcv?: string; // in axfer // AssetReceiver
-   xaid?: number; // in axfer
+//    amt?: number; // in pay
+//    apaa?: string[]; // in appl
+//    apas?: number[]; // in appl 
+//    apat?: string[]; // in appl
+//    apid?: number; // in appl
+//    apar?: IALgoApar; // in acfg 
+//    aamt?: number; // in axfer
+//    arcv?: string; // in axfer // AssetReceiver
+//    xaid?: number; // in axfer
+// }
+
+export type IAlgoTransactionMsgPack = EncodedTransaction & {
+   txid: string; // Base32 txid as string (calculated in block processing)
+   timestamp: number; // unix timestamp from block (transactions get timestamp from block they are in)
+   hgi: boolean;
+   sig?: Buffer; // signature
+   lsig?: Buffer; // l signature
+   msig?: Buffer; // multi signature
+   sgnr?: Buffer; // s signature
 }
 
 export type AlgoTransactionTypeOptions = "pay" | "keyreg" | "acfg" | "axfer" | "afrz" | "appl";

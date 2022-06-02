@@ -66,7 +66,7 @@ describe(`Algo block processing`, async () => {
          // const currHeight = await MccClient.getBlockHeight();
          // console.log(currHeight);
 
-         let tblock = await MccClient.getIndexerBlock(21254928);
+         let tblock = await MccClient.getIndexerBlock(21_374_440);
 
          if (tblock !== null) {
             block = tblock;

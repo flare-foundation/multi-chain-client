@@ -1,34 +1,29 @@
 import BN from "bn.js";
 import { MccClient, TransactionSuccessStatus } from "../../types";
 import { AlgoTransactionTypeOptions, IAlgoGetTransactionRes, IAlgoTransactionMsgPack } from "../../types/algoTypes";
-import { base64ToHex, txIdToHexNo0x } from "../../utils/algoUtils";
+import { base32ToHex, base64ToHex, bytesToHex, hexToBase32, txIdToHexNo0x } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
-const web3 = require("web3")
+const web3 = require("web3");
 /**
  * docs https://developer.algorand.org/docs/get-details/transactions/transactions/
  */
-export class AlgoTransaction extends TransactionBase<IAlgoGetTransactionRes, any> {
-
-
+export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, any> {
    public get txid(): string {
-      return this.hash;
+      return this.data.txid;
    }
 
    public get stdTxid(): string {
-      return txIdToHexNo0x(this.txid);
+      return base32ToHex(this.data.txid);
    }
 
    public get hash(): string {
-      if (this.data.transaction.id === undefined) {
-         return "";
-      }
-      return this.data.transaction.id;
+      return this.txid;
    }
 
    public get reference(): string[] {
-      return [base64ToHex(this.data.transaction.note || "")];
+      return [bytesToHex(this.data.note) || ""];
    }
 
    public get stdPaymentReference(): string {
@@ -36,7 +31,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoGetTransactionRes, any
       try {
          // try to parse out
          paymentReference = prefix0x(web3.utils.hexToString(prefix0x(paymentReference)));
-      } catch(e) {
+      } catch (e) {
          return ZERO_BYTES_32;
       }
       if (!isValidBytes32Hex(paymentReference)) {
@@ -46,39 +41,44 @@ export class AlgoTransaction extends TransactionBase<IAlgoGetTransactionRes, any
    }
 
    public get unixTimestamp(): number {
-      if (this.data.transaction.roundTime === undefined) {
-         return 0;
-      }
-      return this.data.transaction.roundTime;
+      return this.data.timestamp;
    }
 
-   public get sourceAddresses(): string[] {
-      return [this.data.transaction.sender];
+   public get sourceAddresses(): (string | undefined)[] {
+      return [hexToBase32(this.data.snd)];
    }
 
-   public get receivingAddresses(): string[] {
-      if (this.type === "pay" && this.data.transaction.paymentTransaction) {
-         return [this.data.transaction.paymentTransaction.receiver];
-      } else if (this.type === "axfer" && this.data.transaction.assetTransferTransaction) {
-         return [this.data.transaction.assetTransferTransaction.receiver];
+   public get receivingAddresses(): (string | undefined)[] {
+      // for transactions of type pay
+      if (this.data.rcv) {
+         return [hexToBase32(this.data.rcv)];
       }
-      // TODO check other transaction types
+      // for transactions of type axfer
+      else if (this.data.arcv) {
+         return [hexToBase32(this.data.arcv)];
+      }
       return [];
    }
 
    public get fee(): BN {
-      return toBN(this.data.transaction.fee);
+      return toBN(this.data.fee || 0);
    }
 
    public get spentAmounts(): AddressAmount[] {
-      if (this.data.transaction.txType === "pay" && this.data.transaction.paymentTransaction) {
+      // for transactions of type pay
+      if (this.data.amt) {
+         let amount = this.data.amt.toString();
          return [
             {
                address: this.sourceAddresses[0],
-               amount: this.fee.add(toBN(this.data.transaction.paymentTransaction.amount)),
+               amount: this.fee.add(toBN(amount)),
             },
          ];
-      } else {
+      }
+      // for transactions of type axfer
+      // TODO
+      if (this.data.aamt) {
+         let amount = this.data.aamt.toString();
          return [
             {
                address: this.sourceAddresses[0],
@@ -86,29 +86,40 @@ export class AlgoTransaction extends TransactionBase<IAlgoGetTransactionRes, any
             },
          ];
       }
+      return [
+         {
+            address: this.sourceAddresses[0],
+            amount: this.fee,
+         },
+      ];
    }
 
    public get receivedAmounts(): AddressAmount[] {
-      if (this.type === "pay" && this.data.transaction.paymentTransaction) {
+      // for transactions of type pay
+      if (this.data.amt) {
+         let amount = this.data.amt.toString();
          return [
             {
                address: this.receivingAddresses[0],
-               amount: toBN(this.data.transaction.paymentTransaction.amount),
+               amount: toBN(amount),
             },
          ];
-      } else if (this.type === "axfer" && this.data.transaction.assetTransferTransaction) {
+      }
+      // for transactions of type axfer
+      if (this.data.aamt) {
+         let amount = this.data.aamt.toString();
          return [
             {
                address: this.receivingAddresses[0],
-               amount: toBN(this.data.transaction.assetTransferTransaction.amount),
+               amount: toBN(amount),
             },
          ];
       }
       return [];
    }
 
-   public get type(): AlgoTransactionTypeOptions {
-      return this.data.transaction.txType;
+   public get type(): string {
+      return this.data.type;
    }
 
    public get isNativePayment(): boolean {
@@ -118,8 +129,8 @@ export class AlgoTransaction extends TransactionBase<IAlgoGetTransactionRes, any
    public get currencyName(): string {
       if (this.type === "pay") {
          return ALGO_NATIVE_TOKEN_NAME;
-      } else if (this.type === "axfer" && this.data.transaction.assetTransferTransaction) {
-         return this.data.transaction.assetTransferTransaction.assetId.toString();
+      } else if (this.type === "axfer" && this.data.xaid) {
+         return this.data.xaid.toString();
       }
       return "";
    }
@@ -132,7 +143,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoGetTransactionRes, any
       // TODO research this further
       return TransactionSuccessStatus.SUCCESS;
    }
-
+   
    public async paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       if (!this.isNativePayment) {
          return { isNativePayment: false };
