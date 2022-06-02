@@ -77,7 +77,16 @@ describe("Transaction Xrp tests ", function () {
          console.log(transaction.isNativePayment);
       });
 
-      it("Should get transaction data ", async function () {
+      it("Should get payment summary ", async function () {
+         const summary = await transaction.paymentSummary(MccClient)
+         console.log(summary);
+         if(summary.tokenElementaryUnits) console.log('tokenElementaryUnits: ',summary.tokenElementaryUnits.toString(10));
+         if(summary.receivedTokenAmount) console.log('receivedTokenAmount: ',summary.receivedTokenAmount.toString(10));
+         if(summary.spentAmount) console.log('spentAmount: ',summary.spentAmount.toString(10));
+         if(summary.receivedAmount) console.log('receivedAmount: ',summary.receivedAmount.toString(10));
+       });
+
+      it.skip("Should get transaction data ", async function () {
          console.log(transaction.data);
       });
    });
@@ -145,7 +154,16 @@ describe("Transaction Xrp tests ", function () {
          console.log(transaction.isNativePayment);
       });
 
-      it("Should get transaction data ", async function () {
+      it("Should get payment summary ", async function () {
+         const summary = await transaction.paymentSummary(MccClient)
+         console.log(summary);
+         if(summary.tokenElementaryUnits) console.log('tokenElementaryUnits: ',summary.tokenElementaryUnits.toString(10));
+         if(summary.receivedTokenAmount) console.log('receivedTokenAmount: ',summary.receivedTokenAmount.toString(10));
+         if(summary.spentAmount) console.log('spentAmount: ',summary.spentAmount.toString(10));
+         if(summary.receivedAmount) console.log('receivedAmount: ',summary.receivedAmount.toString(10));
+       });
+
+      it.skip("Should get transaction data ", async function () {
          console.log(transaction.data);
       });
    });
@@ -212,6 +230,15 @@ describe("Transaction Xrp tests ", function () {
       it("Should check if native payment ", async function () {
          console.log(transaction.isNativePayment);
       });
+
+      it("Should get payment summary ", async function () {
+         const summary = await transaction.paymentSummary(MccClient)
+         console.log(summary);
+         if(summary.tokenElementaryUnits) console.log('tokenElementaryUnits: ',summary.tokenElementaryUnits.toString(10));
+         if(summary.receivedTokenAmount) console.log('receivedTokenAmount: ',summary.receivedTokenAmount.toString(10));
+         if(summary.spentAmount) console.log('spentAmount: ',summary.spentAmount.toString(10));
+         if(summary.receivedAmount) console.log('receivedAmount: ',summary.receivedAmount.toString(10));
+       });
 
       it("Should get transaction data ", async function () {
          console.log(transaction.data);
@@ -280,6 +307,15 @@ describe("Transaction Xrp tests ", function () {
       it("Should check if native payment ", async function () {
          console.log(transaction.isNativePayment);
       });
+
+      it("Should get payment summary ", async function () {
+         const summary = await transaction.paymentSummary(MccClient)
+         console.log(summary);
+         if(summary.tokenElementaryUnits) console.log('tokenElementaryUnits: ',summary.tokenElementaryUnits.toString(10));
+         if(summary.receivedTokenAmount) console.log('receivedTokenAmount: ',summary.receivedTokenAmount.toString(10));
+         if(summary.spentAmount) console.log('spentAmount: ',summary.spentAmount.toString(10));
+         if(summary.receivedAmount) console.log('receivedAmount: ',summary.receivedAmount.toString(10));
+       });
 
       it("Should get transaction data ", async function () {
          console.log(transaction.data);

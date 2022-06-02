@@ -2,6 +2,7 @@ import axios from "axios";
 import { UtxoBlock, UtxoTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { LiteBlock } from "../base-objects/blocks/LiteBlock";
+import { UtxoNodeStatus } from "../base-objects/StatusBase";
 import {
    getAddressByLabelResponse,
    getTransactionOptions,
@@ -10,10 +11,10 @@ import {
    IUtxoTransactionListRes,
    IUtxoWalletRes,
    RateLimitOptions,
-   UtxoMccCreate,
+   UtxoMccCreate
 } from "../types";
 import { ChainType, MccLoggingOptionsFull } from "../types/genericMccTypes";
-import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes } from "../types/utxoTypes";
+import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes, IUtxoGetNetworkInfoRes } from "../types/utxoTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { defaultMccLoggingObject, fillWithDefault, getSimpleRandom, sleepMs, unPrefix0x } from "../utils/utils";
 import { recursive_block_hash, recursive_block_tip, utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
@@ -346,6 +347,23 @@ export class UtxoCore {
          }
       }
       return response;
+   }
+
+   /**
+    * TODO implement
+    */
+   async getNodeStatus(): Promise<UtxoNodeStatus> {
+      let res = await this.client.post(``, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "getnetworkinfo",
+         params: [],
+      });
+      utxo_ensure_data(res.data);
+
+      console.log(res.data);
+      
+      return new UtxoNodeStatus(res.data.result as IUtxoGetNetworkInfoRes)
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////

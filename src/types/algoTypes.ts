@@ -203,6 +203,49 @@ export interface IAlgoListTransactionRes {
    transactions: IAlgoTransaction[];
 }
 
+// Algo status types
+
+export interface IAlgoGetStatus {
+   catchpoint?: string;
+   catchpointAcquiredBlocks?: number;
+   catchpointProcessedAccounts?: number;
+   catchpointTotalAccounts?: number;
+   catchpointTotalBlocks?: number;
+   catchpointVerifiedAccounts?: number;
+   catchupTime: number;
+   lastCatchpoint?: string;
+   lastRound: number;
+   lastVersion: string;
+   nextVersion: string;
+   nextVersionRound: number;
+   nextVersionSupported: boolean;
+   stoppedAtUnsupportedRound: boolean;
+   timeSinceLastRound: number;
+}
+
+export interface IAlgoBuildVersion {
+   branch: string;
+   buildNumber: number;
+   channel: string;
+   commitHash: string;
+   major: number;
+   minor: number;
+}
+
+export interface IAlgoVersion {
+   build: IAlgoBuildVersion;
+   genesisHashB64: string;
+   genesisId: string;
+   versions: string[];
+}
+
+export interface IAlgoStatusObject {
+   health: number;
+   bottomBlock: number;
+   status: IAlgoGetStatus;
+   versions: IAlgoVersion;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////// Algo utils types ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
