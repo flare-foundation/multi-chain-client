@@ -194,7 +194,7 @@ export class XRPImplementation implements ReadRpcInterface {
       let res = await this.client.post("", {
          method: "server_state",
          params: [],
-      });
+      }); // server_info
       xrp_ensure_data(res.data);
       return new XrpNodeStatus(res.data as ServerStateResponse);
    }

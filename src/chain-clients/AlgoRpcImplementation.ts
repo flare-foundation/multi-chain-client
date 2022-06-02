@@ -18,7 +18,7 @@ import {
 } from "../types";
 import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetStatus, IAlgoStatusObject } from "../types/algoTypes";
 import { MccLoggingOptionsFull } from "../types/genericMccTypes";
-import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, hexToBase32, hexToBase64 } from "../utils/algoUtils";
+import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, hexToBase32, hexToBase64, mpDecode } from "../utils/algoUtils";
 import { PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { defaultMccLoggingObject, fillWithDefault, toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
 const sha512_256 = require('js-sha512').sha512_256;
@@ -236,45 +236,8 @@ export class ALGOImplementation implements ReadRpcInterface {
          return null;
       }
       algo_ensure_data(res)
-      let res2 = await this.algodClient.get(`/v2/blocks/${round}`);
-
-      console.log(res2.data);
-      console.log(res2.data.block.txns[4]);
-      
-      const decoded = msgpack.decode(res.data)  
-
-      const encodedBack = Buffer.from(msgpack.encode(decoded,))
-      console.log(res.data);
-      console.log(encodedBack);
-
-      console.log(res.data.slice(1500,1560));
-      console.log(encodedBack.slice(1500,1560));
-
-      console.log(sha512_256(res.data));
-      console.log(sha512_256(encodedBack));
-
-            const fs = require('fs')
-
-      fs.writeFile('neki.txt', res.data, (err:any) => {
-          if (err) {
-            console.error(err)
-            return
-          }
-          //file written successfully
-        })
-
-        fs.writeFile('neki2.txt', encodedBack, (err:any) => {
-         if (err) {
-           console.error(err)
-           return
-         }
-         //file written successfully
-       })
-
-      console.log(res.data.slice(44650,44698));
-      console.log(encodedBack.slice(44650,44700));
-      
-      return new AlgoBlock(decoded as IAlgoBlockMsgPack, res2.data)
+      const decoded = mpDecode(res.data)  
+      return new AlgoBlock(decoded as IAlgoBlockMsgPack)
    }
 
    async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock | null> {

@@ -1,13 +1,18 @@
 import { IAlgoBlockMsgPack } from "../../types";
-import { base64ToHex, bytesToHex, filterHashes, hexToBase32, hexToBase64, txIdToHexNo0x } from "../../utils/algoUtils";
+import { base64ToHex, bufAddToCBufAdd, bytesToHex, filterHashes, hexToBase32, hexToBase64, txIdToHexNo0x } from "../../utils/algoUtils";
 import { BlockBase } from "../BlockBase";
+import { AlgoTransaction } from "../TransactionBase";
 
 export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
-   additionalData: any
+   transactionObjects: AlgoTransaction []
    constructor(data: IAlgoBlockMsgPack, additionalData?: any) {
       super(data);
-      this.additionalData = additionalData
+      this.transactionObjects = []
+
+
+
    }
+
    public get number(): number {
       return this.data?.block?.rnd;
    }
@@ -50,5 +55,22 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
          return 0;
       }
       return this.data?.block?.txns.length;
+   }
+
+   ////////////////////////////////////////
+   //// Additional transaction objects ////
+   ////////////////////////////////////////
+
+   processTransactions() {
+      for(let transactionBase of this.data.block.txns) {
+         // we have to ensure all addresses are buffers with checksum
+         if(transactionBase.txn.rcv) transactionBase.txn.rcv = bufAddToCBufAdd(transactionBase.txn.rcv);
+         if(transactionBase.txn.snd) transactionBase.txn.snd = bufAddToCBufAdd(transactionBase.txn.snd);
+         // const st = new SignedTransactionWithAD(
+         //    block.data.block.gh,
+         //    block.data.block.gen,
+         //    edited
+         //   )
+      }
    }
 }

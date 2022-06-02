@@ -1,3 +1,4 @@
+import { AlgoTransaction } from "../base-objects/TransactionBase";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
 import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions } from "./genericMccTypes";
@@ -90,12 +91,12 @@ export interface IAlgoGetBlockHeaderRes {
    cert: IAlgoCert;
 }
 
-interface IAlgoBlockMsgPackBlock {
+export interface IAlgoBlockMsgPackBlock {
    earn: number;
    fees: string;
    frac: number;
    gen: string;
-   gh: string;
+   gh: Buffer;
    prev: string;
    proto: string;
    rnd: number;
@@ -111,6 +112,10 @@ interface IAlgoBlockMsgPackBlock {
 export interface IAlgoBlockMsgPack {
    block: IAlgoBlockMsgPackBlock;
    cert: IAlgoCert;
+}
+
+export interface IAlgoBlockAdditionalData {
+   transactionsObjects: AlgoTransaction[]
 }
 
 export interface IAlgoSignature {

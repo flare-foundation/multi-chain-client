@@ -1,4 +1,4 @@
-import { IAlgoGetBlockRes } from "../../types";
+import { IAlgoGetBlockRes, IEmptyObject } from "../../types";
 import { base64ToHex, filterHashesIndexer, txIdToHexNo0x } from "../../utils/algoUtils";
 import { BlockBase } from "../BlockBase";
 

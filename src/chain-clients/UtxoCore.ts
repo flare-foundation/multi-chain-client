@@ -358,7 +358,7 @@ export class UtxoCore {
          id: "rpc",
          method: "getnetworkinfo",
          params: [],
-      });
+      }); // getblockchaininfo
       utxo_ensure_data(res.data);
 
       console.log(res.data);

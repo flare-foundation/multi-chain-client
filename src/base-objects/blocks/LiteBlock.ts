@@ -1,4 +1,4 @@
-import { IGetLiteBlockRes } from "../../types/genericMccTypes";
+import { IEmptyObject, IGetLiteBlockRes } from "../../types/genericMccTypes";
 import { BlockBase } from "../BlockBase";
 
 const util = require("util");
