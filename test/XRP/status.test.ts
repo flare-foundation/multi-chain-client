@@ -12,7 +12,10 @@ describe("Block Xrp base test ", function () {
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
-      status = await MccClient.getNodeStatus();
+      const tStatus = await MccClient.getNodeStatus();
+      if(tStatus){
+         status = tStatus
+      }
    });
 
    it("Should get status version ", async function () {

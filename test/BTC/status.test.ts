@@ -12,7 +12,10 @@ describe("Block BTC base test ", function () {
 
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
-      status = await MccClient.getNodeStatus();
+      const tstatus = await MccClient.getNodeStatus();
+      if(tstatus){
+         status = tstatus
+      }
    });
 
    it("Should get status version ", async function () {
