@@ -3,7 +3,7 @@ import axios from "axios";
 import { AlgoBlock, AlgoIndexerBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { AlgoNodeStatus } from "../base-objects/StatusBase";
-import { AlgoIndexerTransaction, AlgoTransaction } from "../base-objects/TransactionBase";
+import { AlgoIndexerTransaction } from "../base-objects/TransactionBase";
 import {
    AlgoMccCreate,
    ChainType,
@@ -14,7 +14,7 @@ import {
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
-   RateLimitOptions,
+   RateLimitOptions
 } from "../types";
 import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetStatus, IAlgoStatusObject } from "../types/algoTypes";
 import { MccLoggingOptionsFull } from "../types/genericMccTypes";
@@ -321,47 +321,54 @@ export class ALGOImplementation implements ReadRpcInterface {
    /**
     * TODO implement
     */
-   async getNodeStatus(): Promise<AlgoNodeStatus> {
-      let res = await this.algodClient.get("health");
-      algo_ensure_data(res);
+   async getNodeStatus(): Promise<AlgoNodeStatus | null> {
+      try {
+         let res = await this.algodClient.get("health");
+         algo_ensure_data(res);
 
-      let ver = await this.algodClient.get("versions");
-      algo_ensure_data(ver);
+         let ver = await this.algodClient.get("versions");
+         algo_ensure_data(ver);
 
-      let status = await this.algodClient.get("/v2/status");
-      algo_ensure_data(status);
-      status = toCamelCase(status.data) as IAlgoGetStatus;
+         let status = await this.algodClient.get("/v2/status");
+         algo_ensure_data(status);
+         status = toCamelCase(status.data) as IAlgoGetStatus;
 
-      let bottomBlockHeight = -1;
-      if (res.status === 200) {
-         // Bottom block search
-         bottomBlockHeight = status.lastRound;
-         // check -1.000 -10.000 and -100.000 blocs
-         for (let checkRound = 0; checkRound < 3; checkRound++) {
-            bottomBlockHeight -= Math.pow(10, 3 + checkRound);
-            let blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
-            if (blc.status !== 200) {
-               // we didn't get block
-               for (let i = 0; i < 10; i++) {
-                  bottomBlockHeight += Math.pow(10, 2 + checkRound);
-                  blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
-                  if (blc.status === 200) {
-                     break;
+         let bottomBlockHeight = -1;
+         if (res.status === 200) {
+            // Bottom block search
+            bottomBlockHeight = status.lastRound;
+            // check -1.000 -10.000 and -100.000 blocs
+            for (let checkRound = 0; checkRound < 3; checkRound++) {
+               bottomBlockHeight -= Math.pow(10, 3 + checkRound);
+               let blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
+
+               console.log(bottomBlockHeight, blc.status);
+               console.log(blc.data);
+
+               if (blc.status !== 200) {
+                  // we didn't get block
+                  for (let i = 0; i < 10; i++) {
+                     bottomBlockHeight += Math.pow(10, 2 + checkRound);
+                     blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
+                     if (blc.status === 200) {
+                        break;
+                     }
                   }
+                  // If we ever come here we are not healthy
                }
-               // If we ever come here we are not healthy
             }
          }
+
+         const statusData = {
+            health: res.status,
+            bottomBlock: bottomBlockHeight,
+            status: status,
+            versions: toCamelCase(ver.data),
+         } as IAlgoStatusObject;
+
+         return new AlgoNodeStatus(statusData);
+      } catch (e) {
+         return null;
       }
-
-
-      const statusData = {
-         health: res.status,
-         bottomBlock: bottomBlockHeight,
-         status: status,
-         versions: toCamelCase(ver.data),
-      } as IAlgoStatusObject;
-
-      return new AlgoNodeStatus(statusData);
    }
 }

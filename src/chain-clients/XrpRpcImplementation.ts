@@ -190,12 +190,16 @@ export class XRPImplementation implements ReadRpcInterface {
     * TODO implement
     * @external_docs https://xrpl.org/server_state.html
     */
-   async getNodeStatus(): Promise<XrpNodeStatus> {
-      let res = await this.client.post("", {
-         method: "server_state",
-         params: [],
-      }); // server_info
-      xrp_ensure_data(res.data);
-      return new XrpNodeStatus(res.data as ServerStateResponse);
+   async getNodeStatus(): Promise<XrpNodeStatus | null> {
+      try {
+         let res = await this.client.post("", {
+            method: "server_state",
+            params: [],
+         });
+         xrp_ensure_data(res.data);
+         return new XrpNodeStatus(res.data as ServerStateResponse);
+      } catch (e) {
+         return null;
+      }
    }
 }

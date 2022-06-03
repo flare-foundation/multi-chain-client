@@ -1,6 +1,6 @@
 {
    "name": "@flarenetwork/mcc",
-   "version": "1.0.5",
+   "version": "1.0.7",
    "description": "Multi chain client",
    "main": "dist/index.js",
    "types": "dist/index.d.ts",
@@ -23,7 +23,7 @@
       "/src"
    ],
    "scripts": {
-      "publish": "npm publish",
+      "publish": "echo npm publish",
       "pack": "npm pack",
       "build": "tsc --allowJs",
       "test": "mocha -r ts-node/register -r dotenv/config -t 0",

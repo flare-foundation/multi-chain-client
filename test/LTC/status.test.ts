@@ -1,20 +1,20 @@
-import { MCC, XrpNodeStatus } from "../../src";
+import { MCC, UtxoMccCreate, UtxoNodeStatus, XrpNodeStatus } from "../../src";
 
-const XRPMccConnection = {
-   url: process.env.XRP_URL || '',
-   username: process.env.XRP_USERNAME || '',
-   password: process.env.XRP_PASSWORD || '',
-};
+const LtcMccConnection = {
+  url: process.env.LTC_URL || '',
+  username: process.env.LTC_USERNAME || '',
+  password: process.env.LTC_PASSWORD || '',
+} as UtxoMccCreate;
 
-describe("Block Xrp base test ", function () {
-   let MccClient: MCC.XRP;
-   let status: XrpNodeStatus;
+describe("Block BTC base test ", function () {
+   let MccClient: MCC.LTC;
+   let status: UtxoNodeStatus;
 
    before(async function () {
-      MccClient = new MCC.XRP(XRPMccConnection);
-      const tStatus = await MccClient.getNodeStatus();
-      if(tStatus){
-         status = tStatus
+      MccClient = new MCC.LTC(LtcMccConnection);
+      const tstatus = await MccClient.getNodeStatus();
+      if(tstatus){
+         status = tstatus
       }
    });
 

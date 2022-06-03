@@ -1,4 +1,7 @@
+import { IBlock } from "../base-objects/BlockBase";
 import { LiteBlock } from "../base-objects/blocks/LiteBlock";
+import { INodeStatus } from "../base-objects/StatusBase";
+import { ITransaction } from "../base-objects/TransactionBase";
 
 interface BaseRpcInterface {
    chainType: ChainType;
@@ -9,7 +12,7 @@ export interface ReadRpcInterface extends BaseRpcInterface {
    isHealthy(): Promise<boolean>;
 
    // Block data
-   getBlock(blockNumberOrHash: number | string | any): any;
+   getBlock(blockNumberOrHash: number | string | any): Promise<IBlock | null> ;
    getBlockHeight(): Promise<number>;
    getBlockHashFromHeight?(height: number): Promise<string | null>;
 
@@ -18,8 +21,11 @@ export interface ReadRpcInterface extends BaseRpcInterface {
    getTopLiteBlocks?(branch_len: number): Promise<LiteBlock[]>;
 
    // Transaction data
-   getTransaction(txId: string, metaData?: getTransactionOptions): any;
+   getTransaction(txId: string, metaData?: getTransactionOptions): Promise<ITransaction | null> ;
    listTransactions?(options?: any): any;
+
+   // status 
+   getNodeStatus(): Promise<INodeStatus | null> 
 }
 
 export interface WriteRpcInterface extends BaseRpcInterface {

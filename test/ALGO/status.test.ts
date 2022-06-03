@@ -28,7 +28,10 @@ describe("Block Algo base test ", function () {
 
    before(async function () {
       MccClient = new MCC.ALGO(algoCreateConfig);
-      status = await MccClient.getNodeStatus();
+      const tStatus = await MccClient.getNodeStatus();
+      if(tStatus){
+         status = tStatus
+      }
    });
 
    it("Should get status version ", async function () {

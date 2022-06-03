@@ -14,7 +14,7 @@ import {
    UtxoMccCreate
 } from "../types";
 import { ChainType, MccLoggingOptionsFull } from "../types/genericMccTypes";
-import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes, IUtxoGetNetworkInfoRes } from "../types/utxoTypes";
+import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes, IUtxoGetNetworkInfoRes, IUtxoNodeStatus } from "../types/utxoTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { defaultMccLoggingObject, fillWithDefault, getSimpleRandom, sleepMs, unPrefix0x } from "../utils/utils";
 import { recursive_block_hash, recursive_block_tip, utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
@@ -352,18 +352,29 @@ export class UtxoCore {
    /**
     * TODO implement
     */
-   async getNodeStatus(): Promise<UtxoNodeStatus> {
-      let res = await this.client.post(``, {
-         jsonrpc: "1.0",
-         id: "rpc",
-         method: "getnetworkinfo",
-         params: [],
-      }); // getblockchaininfo
-      utxo_ensure_data(res.data);
+   async getNodeStatus(): Promise<UtxoNodeStatus | null> {
+      try{
+         let res = await this.client.post(``, {
+            jsonrpc: "1.0",
+            id: "rpc",
+            method: "getnetworkinfo", 
+            params: [],
+         });
+         utxo_ensure_data(res.data);
 
-      console.log(res.data);
-      
-      return new UtxoNodeStatus(res.data.result as IUtxoGetNetworkInfoRes)
+         let bres = await this.client.post(``, {
+            jsonrpc: "1.0",
+            id: "rpc",
+            method: "getblockchaininfo", 
+            params: [],
+         });
+         utxo_ensure_data(bres.data);
+         
+         return new UtxoNodeStatus({ ...bres.data.result, ...res.data.result } as IUtxoNodeStatus)    
+      } catch (e) {
+         return null
+      }
+
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////

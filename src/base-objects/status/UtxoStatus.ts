@@ -1,8 +1,8 @@
-import { IUtxoGetNetworkInfoRes } from "../../types";
+import { IUtxoNodeStatus } from "../../types";
 import { NodeStatusBase } from "../StatusBase";
 
 
-export class UtxoNodeStatus extends NodeStatusBase<IUtxoGetNetworkInfoRes> {
+export class UtxoNodeStatus extends NodeStatusBase<IUtxoNodeStatus> {
   public get version(): string {
     return `${this.data.version}_${this.data.protocolversion}_${this.data.subversion}`
   }
