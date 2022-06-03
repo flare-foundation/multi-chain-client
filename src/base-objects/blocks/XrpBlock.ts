@@ -1,3 +1,4 @@
+import { IEmptyObject } from "../../types";
 import { IXrpGetBlockRes } from "../../types/xrpTypes";
 import { XRP_UTD } from "../../utils/constants";
 import { BlockBase } from "../BlockBase";

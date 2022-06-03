@@ -133,6 +133,7 @@ export abstract class TransactionBase<T, AT> {
    public abstract paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary>;
 }
 
+export { AlgoIndexerTransaction } from "./transactions/AlgoIndexerTransaction";
 export { AlgoTransaction } from "./transactions/AlgoTransaction";
 export { XrpTransaction } from "./transactions/XrpTransaction";
 export { LtcTransaction } from "./transactions/LtcTransaction";

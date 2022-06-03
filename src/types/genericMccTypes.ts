@@ -120,3 +120,8 @@ export interface IGetLiteBlockRes {
    hash: string;
    number: number;
 }
+
+
+export interface IEmptyObject {
+   
+}

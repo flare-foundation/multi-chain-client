@@ -1,4 +1,4 @@
-import { IUtxoGetBlockRes } from "../../types";
+import { IEmptyObject, IUtxoGetBlockRes } from "../../types";
 import { prefix0x } from "../../utils/utils";
 import { BlockBase } from "../BlockBase";
 
