@@ -1,4 +1,5 @@
 import { LiteBlock } from "../base-objects/blocks/LiteBlock";
+import { INodeStatus } from "../base-objects/StatusBase";
 
 interface BaseRpcInterface {
    chainType: ChainType;
@@ -20,6 +21,9 @@ export interface ReadRpcInterface extends BaseRpcInterface {
    // Transaction data
    getTransaction(txId: string, metaData?: getTransactionOptions): any;
    listTransactions?(options?: any): any;
+
+   // status 
+   getNodeStatus(): Promise<INodeStatus> 
 }
 
 export interface WriteRpcInterface extends BaseRpcInterface {

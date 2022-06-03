@@ -1,4 +1,4 @@
-export type IStatus = NodeStatusBase<any>;
+export type INodeStatus = NodeStatusBase<any>;
 
 export abstract class NodeStatusBase<S> {
    data: S;
