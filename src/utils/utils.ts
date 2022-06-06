@@ -34,7 +34,7 @@ export async function sleepMs(ms: number) {
 export function unPrefix0x(tx: string) {
    if( !tx ) {
       //throw new Error( "unPrefix0x string null" );
-      console.error( `unPrefix0x null string`)
+      // console.error( `unPrefix0x null string`)
       return "0x0";
    }
    return tx.startsWith("0x") ? tx.slice(2) : tx;
@@ -43,7 +43,7 @@ export function unPrefix0x(tx: string) {
 export function prefix0x(tx: string) {
    if( !tx ) {
       //throw new Error( "prefix0x string null" );
-      console.error( `prefix0x null string`)
+      // console.error( `prefix0x null string`)
       return "0x0";
    }
    return tx.startsWith("0x") ? tx : "0x" + tx;
