@@ -1,5 +1,5 @@
 import { IAlgoBlockMsgPack, IAlgoTransactionMsgPack } from "../../types";
-import { base64ToHex, bufAddToCBufAdd, bytesToHex, filterHashes, hexToBase32, hexToBase64, SignedTransactionWithAD, txIdToHexNo0x } from "../../utils/algoUtils";
+import { bufAddToCBufAdd, bytesToHex, hexToBase32, hexToBase64, SignedTransactionWithAD } from "../../utils/algoUtils";
 import { BlockBase } from "../BlockBase";
 import { AlgoTransaction } from "../TransactionBase";
 
@@ -30,7 +30,7 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    }
 
    public get stdBlockHash(): string {
-      return bytesToHex(this.data.cert.prop.dig);
+      return bytesToHex(this.data?.cert?.prop?.dig);
    }
 
    public get unixTimestamp(): number {
@@ -57,7 +57,7 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
       if (!this.data.block.txns) {
          return 0;
       }
-      return this.data?.block?.txns.length;
+      return this.data?.block?.txns?.length;
    }
 
    ////////////////////////////////////////
@@ -88,7 +88,12 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
          if(transactionBase.msig) data.msig = transactionBase.msig;
          if(transactionBase.sgnr) data.sgnr = transactionBase.sgnr;
          this.transactionObjects.push(new AlgoTransaction(data))
-         } catch (e) {}
+         } catch (e) {
+            // TODO logger
+            // TODO What happens if there is a transaction we dont know how to process
+            console.log(`Unable to process transaction ${JSON.stringify(transactionBase)}`);
+            throw e;   
+         }
       }
    
    }

@@ -105,9 +105,6 @@ export class ALGOImplementation implements ReadRpcInterface {
       });
       algo_ensure_data(res);
       const decoded = msgpack.decode(res.data) as IAlgoGetBlockHeaderRes;
-      decoded.cert.prop.dig = hexToBase64(decoded.cert.prop.dig);
-      decoded.cert.prop.encdig = hexToBase64(decoded.cert.prop.encdig);
-      decoded.cert.prop.oprop = hexToBase64(decoded.cert.prop.oprop);
       return decoded.cert;
    }
 

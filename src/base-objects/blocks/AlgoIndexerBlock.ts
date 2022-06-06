@@ -1,5 +1,5 @@
 import { IAlgoGetBlockRes, IEmptyObject } from "../../types";
-import { base64ToHex, filterHashesIndexer, txIdToHexNo0x } from "../../utils/algoUtils";
+import { base64ToHex, bytesToHex, filterHashesIndexer, hexToBase64, txIdToHexNo0x } from "../../utils/algoUtils";
 import { BlockBase } from "../BlockBase";
 
 export class AlgoIndexerBlock extends BlockBase<IAlgoGetBlockRes> {
@@ -8,11 +8,11 @@ export class AlgoIndexerBlock extends BlockBase<IAlgoGetBlockRes> {
    }
 
    public get blockHash(): string {
-      return this.data.cert.prop.dig;
+      return hexToBase64(bytesToHex(this.data.cert.prop.dig));
    }
 
    public get stdBlockHash(): string {
-      return base64ToHex(this.data.cert.prop.dig);
+      return bytesToHex(this.data.cert.prop.dig);
    }
 
    public get unixTimestamp(): number {

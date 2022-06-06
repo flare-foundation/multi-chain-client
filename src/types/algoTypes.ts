@@ -70,9 +70,9 @@ export interface IAlgoBlockData {
 }
 
 interface IAlgoCertProp {
-   dig: string;
-   encdig: string;
-   oprop: string;
+   dig: Buffer;
+   encdig: Buffer;
+   oprop: Buffer;
 }
 export interface IAlgoCert {
    prop: IAlgoCertProp;

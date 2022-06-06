@@ -1,7 +1,7 @@
 import BN from "bn.js";
 import { MccClient, TransactionSuccessStatus } from "../../types";
-import { AlgoTransactionTypeOptions, IAlgoGetTransactionRes, IAlgoTransactionMsgPack } from "../../types/algoTypes";
-import { base32ToHex, base64ToHex, bytesToHex, hexToBase32, txIdToHexNo0x } from "../../utils/algoUtils";
+import { IAlgoTransactionMsgPack } from "../../types/algoTypes";
+import { base32ToHex, bytesToHex, hexToBase32 } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
@@ -23,11 +23,13 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
    }
 
    public get reference(): string[] {
-      return [bytesToHex(this.data.note) || ""];
+      if(this.data.note){
+         return [bytesToHex(this.data.note)];
+      } return [""]  
    }
 
    public get stdPaymentReference(): string {
-      let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
+      let paymentReference = this.reference?.length === 1 ? prefix0x(this.reference[0]) : "";
       try {
          // try to parse out
          paymentReference = prefix0x(web3.utils.hexToString(prefix0x(paymentReference)));
