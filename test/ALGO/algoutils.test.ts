@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import exp from "constants";
 import { addressToHex, base64ToHex, bytesToHex, hexToAddress, hexToBase64, hexToBytes, INVALIDADDRESERROR, txIdToHex } from "../../src/utils/algoUtils";
 
 describe("ALGO utils tests ", () => {

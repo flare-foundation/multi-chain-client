@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { MCC, SpecialAddresses } from "../../src";
 import { processFlags, processFlagsOld1, processFlagsOld2 } from "../../src/utils/xrpUtils";
+const XrpAddress = require('ripple-address-codec')
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || '',
@@ -32,6 +33,16 @@ describe("Xrpl account test mainnet ", function () {
     it.only(`Should get account transactions`,async () => {
       // const acc = 'rEVd9QP2aGsJ7wuty2qV8gqMiTiA1sX2j1'
       const acc = 'r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd'
+
+      console.log("Decoded address", acc);
+      const byts = XrpAddress.decodeAccountID(acc) // TODO add to utils
+      console.log(byts, byts.length);
+
+      const encb = XrpAddress.encodeAccountID(byts)
+
+      console.log("Back enc: ", encb);
+      console.log("Original: ", acc);
+      
       // get account transactions
       const tr = await MccClient.getAccountTransactions(acc, 71_859_000, 71_867_500)
       // const tr = await MccClient.getAccountTransactions(acc)
@@ -94,7 +105,7 @@ describe("Xrpl account test testnet ", function () {
   });
 
   describe('step by step account info',async () => {
-    const acc = 'rD8btyHW512KmJdsQEoD9KFTMxfDbpqkkA'
+    const acc = 'rD8btyHW512KmJdsQEoD9KFTMxfDbpqkkA' // my acc
     it.only(`Should get account info at the begging`,async () => {
       const info = await MccClient.getAccountInfo(acc, 28_014_551)
       const flags = processFlags(info.result.account_data.Flags);
@@ -151,3 +162,4 @@ describe("Xrpl account test testnet ", function () {
 // testnet account
 // The one rBwD7GqAPFoZvzz6YaR5HyJWD8TUoaUbJo
 
+// my rD8btyHW512KmJdsQEoD9KFTMxfDbpqkkA

@@ -339,9 +339,6 @@ export class ALGOImplementation implements ReadRpcInterface {
                bottomBlockHeight -= Math.pow(10, 3 + checkRound);
                let blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
 
-               console.log(bottomBlockHeight, blc.status);
-               console.log(blc.data);
-
                if (blc.status !== 200) {
                   // we didn't get block
                   for (let i = 0; i < 10; i++) {

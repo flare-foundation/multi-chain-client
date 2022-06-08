@@ -1,6 +1,7 @@
-import { AccountRootFlags, allHexFlags, FlagToHex, HexToFlag, PosToFlag } from "../types";
+import { AccountRootFlags, allHexFlags, HexToFlag, PosToFlag } from "../types";
 import { XRP_UTD } from "./constants";
 import { MccError } from "./utils";
+const XrpAddress = require('ripple-address-codec')
 
 ////////////////////////////
 //// MCC Error handling ////
@@ -182,4 +183,30 @@ export function processFlagsOld2(flag: number): AccountRootFlags[] {
          break;
    }
    return Flags;
+}
+
+
+///////////////////////////
+// Xrp address <-> Bytes //
+///////////////////////////
+
+export function rippleAddressToBytes(address:string){
+   if(address.length > 0){
+      if(address[0] === "r"){
+         return XrpAddress.decodeAccountID(address);
+      }
+      else {
+         // it is a ripple x address
+         const classic = XrpAddress.xAddressToClassicAddress(address)
+         return XrpAddress.decodeAccountID(classic.classicAddress);
+      }
+   } return Buffer.from([0x00])
+}
+
+export function bytesToRippleAddress(byts: Buffer){
+   if(byts.length === 20){
+      // it is a valid address
+      return XrpAddress.encodeAccountID(byts)
+   }
+   throw new Error("Not a valid ripple address")
 }

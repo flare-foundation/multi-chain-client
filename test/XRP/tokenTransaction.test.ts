@@ -99,7 +99,7 @@ describe("Transaction Xrp tests ", function () {
            console.log(transaction.successStatus);
         });
   
-        it.only("Should get payment summary ", async function () {
+        it("Should get payment summary ", async function () {
           const summary = await transaction.paymentSummary(MccClient)
           console.log(summary);
           if(summary.tokenElementaryUnits) console.log('tokenElementaryUnits: ',summary.tokenElementaryUnits.toString(10));
