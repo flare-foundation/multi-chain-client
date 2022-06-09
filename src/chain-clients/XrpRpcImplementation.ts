@@ -150,6 +150,7 @@ export class XRPImplementation implements ReadRpcInterface {
    async getAccountInfo(account: string, upperBound: number | string = "current"): Promise<AccountInfoResponse> {
       const params = {
          account: account,
+         signer_lists: true
       } as IAccountInfoRequest;
       if (typeof upperBound === "number") {
          params.ledger_index = upperBound;
@@ -161,8 +162,8 @@ export class XRPImplementation implements ReadRpcInterface {
          this.loggingObject.exceptionCallback(upperBound, "Invalid upperBound parameter");
       }
       // AccountInfoRequest
-      // this.loggingObject.loggingCallback('Call Params')
-      // this.loggingObject.loggingCallback(JSON.stringify(params))
+      this.loggingObject.loggingCallback('Call Params')
+      this.loggingObject.loggingCallback(JSON.stringify(params))
       let res = await this.client.post("", {
          method: "account_info",
          params: [params],

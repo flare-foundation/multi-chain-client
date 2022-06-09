@@ -181,4 +181,34 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          isFull: true,
       };
    }
+
+   //////////////////////////////
+   //// Xrp specific methods ////
+   //////////////////////////////
+
+   public get isAccountCreate(): boolean {
+      if(this.type === 'Payment'){
+         if(this.data.result.meta){
+            if(typeof this.data.result.meta === 'string'){
+               return false
+            }
+            const Meta = this.data.result.meta as TransactionMetadata
+            for(let elem of Meta.AffectedNodes){
+               if('CreatedNode' in elem){
+                  if('NewFields' in elem.CreatedNode){
+                     if('Account' in elem.CreatedNode.NewFields){
+                        if(elem.CreatedNode.NewFields.Account === this.receivingAddresses[0]){
+                           return true
+                        }
+                     }
+                  }
+               }
+            }
+            return false
+         }
+          
+         return false
+      }
+      return false
+   }
 }

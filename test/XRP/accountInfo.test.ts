@@ -27,10 +27,33 @@ describe("Xrpl account test mainnet ", function () {
        const flags = processFlags(info.result.account_data.Flags);
        console.log(flags);
      });
+
+     it.only(`Should get account info 2 `,async () => {
+      const acc = 'rMv1dFonUTJo4qeQDmmCuz3cXPsxy9AiHz'
+      const info = await MccClient.getAccountInfo(acc)
+      console.log(info);
+
+      // Get the flags
+      const flags = processFlags(info.result.account_data.Flags);
+      console.log(flags);
+
+      // get account founding transaction (account create)
+      const fTx = "5439BB6872644CE74A09F4654CECFC5F443E9687AD5EF6D119E729898F41A8C5"
+      const trans = await MccClient.getTransaction(fTx);
+      if(trans){
+        console.log(trans.data);
+        console.log(await trans.paymentSummary(MccClient));
+        
+        console.log(trans.isAccountCreate);
+        
+      }
+      
+    });
+     
    });
 
    describe('account transactions',async () => {
-    it.only(`Should get account transactions`,async () => {
+    it(`Should get account transactions`,async () => {
       // const acc = 'rEVd9QP2aGsJ7wuty2qV8gqMiTiA1sX2j1'
       const acc = 'r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd'
 
@@ -90,23 +113,36 @@ describe("Xrpl account test testnet ", function () {
       const fastFlags = processFlagsOld2(info.result.account_data.Flags);
       console.timeEnd('Flag old2')
 
+      console.log("Flags");
       console.log(flags);
       console.log(oldFlags);
       console.log(fastFlags);
       
       
-      
+      // Regular key
 
+      console.log("Regular key");
       console.log(info.result.account_data.RegularKey);
       console.log(info.result.account_data.RegularKey === SpecialAddresses.ACCOUNT_ONE);
-      
+
+      // Multisig check
+
+      console.log("Multisig");
+      // TODO ripple has a problem here?
+      // @ts-ignore
+      console.log(info.result.account_data?.signer_lists);
+      // @ts-ignore
+      if(info.result.account_data?.signer_lists){
+        // @ts-ignore
+        console.log(info.result.account_data?.signer_lists.length === 0);
+      }
 
     });
   });
 
   describe('step by step account info',async () => {
     const acc = 'rD8btyHW512KmJdsQEoD9KFTMxfDbpqkkA' // my acc
-    it.only(`Should get account info at the begging`,async () => {
+    it(`Should get account info at the begging`,async () => {
       const info = await MccClient.getAccountInfo(acc, 28_014_551)
       const flags = processFlags(info.result.account_data.Flags);
 
@@ -115,7 +151,7 @@ describe("Xrpl account test testnet ", function () {
     });
 
     // set by tx 996CF647C655904730759CE3919E5B4F4AB6E99046EB53DA0457F1956A52B6E3
-    it.only(`Should get account info after setting default rippling`,async () => {
+    it(`Should get account info after setting default rippling`,async () => {
       const info = await MccClient.getAccountInfo(acc, 28_014_612)
       const flags = processFlags(info.result.account_data.Flags);
 
@@ -128,7 +164,7 @@ describe("Xrpl account test testnet ", function () {
     });
 
     // set by E547D21C4F24FC313F492828730C17B442C37038393705A18C64D400D186319D
-    it.only(`Should get account info after setting regular key to ACCOUNT_ONE`,async () => {
+    it(`Should get account info after setting regular key to ACCOUNT_ONE`,async () => {
       const info = await MccClient.getAccountInfo(acc, 28_014_704)
       const flags = processFlags(info.result.account_data.Flags);
 
@@ -138,7 +174,7 @@ describe("Xrpl account test testnet ", function () {
     });
 
     // set by CA70256B2BC1886C5B6B40DB74C3B6B385013EF6F1C66BB940B8F31CF50D1922
-    it.only(`Should get account info after disabling master key`,async () => {
+    it(`Should get account info after disabling master key`,async () => {
       const info = await MccClient.getAccountInfo(acc, 28_014_733)
       const flags = processFlags(info.result.account_data.Flags);
 
