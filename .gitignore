@@ -13,3 +13,6 @@ dist
 .env
 
 *.tgz
+
+### Updatres folder for docs
+updates/*
