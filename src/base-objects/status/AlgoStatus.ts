@@ -13,10 +13,6 @@ export class AlgoNodeStatus extends NodeStatusBase<IAlgoStatusObject> {
     return 'TODO'
   }
 
-  public get bottomBlock(): number {
-    return this.data.bottomBlock
-  }
-
   public get isHealthy(): boolean {
     return this.data.health === 200
   }

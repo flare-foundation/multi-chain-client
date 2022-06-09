@@ -14,14 +14,14 @@ import {
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
-   RateLimitOptions
+   RateLimitOptions,
 } from "../types";
 import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetStatus, IAlgoStatusObject } from "../types/algoTypes";
 import { MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, hexToBase32, hexToBase64, mpDecode } from "../utils/algoUtils";
 import { PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { defaultMccLoggingObject, fillWithDefault, toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
-const sha512_256 = require('js-sha512').sha512_256;
+const sha512_256 = require("js-sha512").sha512_256;
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
@@ -38,10 +38,10 @@ export class ALGOImplementation implements ReadRpcInterface {
    chainType: ChainType;
    inRegTest: boolean;
    loggingObject: MccLoggingOptionsFull;
-   createConfig: AlgoMccCreate
+   createConfig: AlgoMccCreate;
 
    constructor(createConfig: AlgoMccCreate) {
-      this.createConfig = createConfig
+      this.createConfig = createConfig;
       const algodClient = axios.create({
          baseURL: createConfig.algod.url,
          timeout: DEFAULT_TIMEOUT,
@@ -228,19 +228,22 @@ export class ALGOImplementation implements ReadRpcInterface {
          const status = await this.getStatus();
          round = status.lastRound;
       }
-      let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {responseType: 'arraybuffer', headres: {"Content-Type": "application/msgpack"}});
+      let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
+         responseType: "arraybuffer",
+         headres: { "Content-Type": "application/msgpack" },
+      });
       if (algo_check_expect_block_out_of_range(res)) {
          return null;
       }
-      algo_ensure_data(res)
-      const decoded = mpDecode(res.data)  
-      return new AlgoBlock(decoded as IAlgoBlockMsgPack)
+      algo_ensure_data(res);
+      const decoded = mpDecode(res.data);
+      return new AlgoBlock(decoded as IAlgoBlockMsgPack);
    }
 
    async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock | null> {
-      if(!this.createConfig.indexer){
-         // No indexer 
-         return null
+      if (!this.createConfig.indexer) {
+         // No indexer
+         return null;
       }
       if (round === undefined) {
          const status = await this.getStatus();
@@ -284,6 +287,10 @@ export class ALGOImplementation implements ReadRpcInterface {
     * @returns
     */
    async getTransaction(txid: string): Promise<AlgoIndexerTransaction | null> {
+      if (!this.createConfig.indexer) {
+         // No indexer
+         return null;
+      }
       if (PREFIXED_STD_TXID_REGEX.test(txid)) {
          txid = hexToBase32(unPrefix0x(txid));
       }
@@ -295,7 +302,11 @@ export class ALGOImplementation implements ReadRpcInterface {
       return new AlgoIndexerTransaction(toCamelCase(res.data) as IAlgoGetTransactionRes) as AlgoIndexerTransaction;
    }
 
-   async listTransactions(options?: IAlgoLitsTransaction): Promise<IAlgoListTransactionRes> {
+   async listTransactions(options?: IAlgoLitsTransaction): Promise<IAlgoListTransactionRes | null> {
+      if (!this.createConfig.indexer) {
+         // No indexer
+         return null;
+      }
       let snakeObject = {};
       if (options !== undefined) {
          snakeObject = toSnakeCase(options);
@@ -330,37 +341,40 @@ export class ALGOImplementation implements ReadRpcInterface {
          algo_ensure_data(status);
          status = toCamelCase(status.data) as IAlgoGetStatus;
 
-         let bottomBlockHeight = -1;
-         if (res.status === 200) {
-            // Bottom block search
-            bottomBlockHeight = status.lastRound;
-            // check -1.000 -10.000 and -100.000 blocs
-            for (let checkRound = 0; checkRound < 3; checkRound++) {
-               bottomBlockHeight -= Math.pow(10, 3 + checkRound);
-               let blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
-
-               if (blc.status !== 200) {
-                  // we didn't get block
-                  for (let i = 0; i < 10; i++) {
-                     bottomBlockHeight += Math.pow(10, 2 + checkRound);
-                     blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
-                     if (blc.status === 200) {
-                        break;
-                     }
-                  }
-                  // If we ever come here we are not healthy
-               }
-            }
-         }
-
          const statusData = {
             health: res.status,
-            bottomBlock: bottomBlockHeight,
             status: status,
             versions: toCamelCase(ver.data),
          } as IAlgoStatusObject;
 
          return new AlgoNodeStatus(statusData);
+      } catch (e) {
+         return null;
+      }
+   }
+
+   async getBottomBlockHeight(): Promise<number | null> {
+      try {
+         let bottomBlockHeight = await this.getBlockHeight();
+
+         // check -1.000 -10.000 and -100.000 blocs
+         for (let checkRound = 0; checkRound < 3; checkRound++) {
+            bottomBlockHeight -= Math.pow(10, 3 + checkRound);
+            let blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
+
+            if (blc.status !== 200) {
+               // we didn't get block
+               for (let i = 0; i < 10; i++) {
+                  bottomBlockHeight += Math.pow(10, 2 + checkRound);
+                  blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
+                  if (blc.status === 200) {
+                     break;
+                  }
+               }
+               // If we ever come here we are not healthy
+            }
+         }
+         return bottomBlockHeight;
       } catch (e) {
          return null;
       }

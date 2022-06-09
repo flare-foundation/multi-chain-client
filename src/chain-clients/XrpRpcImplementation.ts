@@ -46,6 +46,7 @@ export class XRPImplementation implements ReadRpcInterface {
 
       this.chainType = ChainType.XRP;
    }
+   
 
    async getTransaction(txId: string, options?: getTransactionOptions): Promise<XrpTransaction | null> {
       if (PREFIXED_STD_TXID_REGEX.test(txId)) {
@@ -199,6 +200,25 @@ export class XRPImplementation implements ReadRpcInterface {
          });
          xrp_ensure_data(res.data);
          return new XrpNodeStatus(res.data as ServerStateResponse);
+      } catch (e) {
+         return null;
+      }
+   }
+
+   async getBottomBlockHeight(): Promise<number | null> {
+      try {
+         let res = await this.client.post("", {
+            method: "server_state",
+            params: [],
+         });
+         xrp_ensure_data(res.data);
+         try{
+            const Ledgers = res.data.result.state.complete_ledgers.split(',').sort()
+            return parseInt(Ledgers[Ledgers.length - 1].split('-')[0])
+          }
+          catch (e) {
+            return null
+          }
       } catch (e) {
          return null;
       }

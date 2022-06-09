@@ -15,18 +15,6 @@ export class XrpNodeStatus extends NodeStatusBase<ServerStateResponse> {
     return this.data?.result?.state?.server_state;
   }
 
-  public get bottomBlock(): any {
-    try{
-      const Ledgers = this.data.result.state.complete_ledgers.split(',').sort()
-      return parseInt(Ledgers[Ledgers.length - 1].split('-')[0])
-    }
-    catch (e) {
-      // todo get logging objects
-      console.error(e)
-      return undefined
-    }
-  }
-
   public get isHealthy(): boolean {
     return ['connected', 'syncing', 'tracking', 'full', 'validating', 'proposing'].includes(this.state);
   }

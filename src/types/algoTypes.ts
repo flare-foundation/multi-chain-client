@@ -320,7 +320,6 @@ export interface IAlgoVersion {
 
 export interface IAlgoStatusObject {
    health: number;
-   bottomBlock: number;
    status: IAlgoGetStatus;
    versions: IAlgoVersion;
 }

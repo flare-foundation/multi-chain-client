@@ -13,7 +13,7 @@ import {
    RateLimitOptions,
    UtxoMccCreate
 } from "../types";
-import { ChainType, MccLoggingOptionsFull } from "../types/genericMccTypes";
+import { ChainType, MccLoggingOptionsFull, ReadRpcInterface } from "../types/genericMccTypes";
 import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes, IUtxoGetNetworkInfoRes, IUtxoNodeStatus } from "../types/utxoTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { defaultMccLoggingObject, fillWithDefault, getSimpleRandom, sleepMs, unPrefix0x } from "../utils/utils";
@@ -24,7 +24,7 @@ const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
    maxRPS: 5,
 };
 
-export class UtxoCore {
+export class UtxoCore implements ReadRpcInterface {
    client: any;
    inRegTest: boolean;
    transactionConstructor: any;
@@ -350,7 +350,7 @@ export class UtxoCore {
    }
 
    /**
-    * TODO implement
+    * Node status query
     */
    async getNodeStatus(): Promise<UtxoNodeStatus | null> {
       try{
@@ -374,7 +374,14 @@ export class UtxoCore {
       } catch (e) {
          return null
       }
+   }
 
+   /**
+    * On Utxo chains nodes always need full history
+    * @returns 0
+    */
+   async getBottomBlockHeight(): Promise<number | null> {
+     return 0;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////

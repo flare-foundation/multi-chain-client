@@ -10,10 +10,6 @@ export class UtxoNodeStatus extends NodeStatusBase<IUtxoNodeStatus> {
     return 'full'
   }
 
-  public get bottomBlock(): number {
-    return 0
-  }
-
   public get isHealthy(): boolean {
     return this.data.networkactive
   }

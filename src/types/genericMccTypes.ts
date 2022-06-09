@@ -26,6 +26,12 @@ export interface ReadRpcInterface extends BaseRpcInterface {
 
    // status 
    getNodeStatus(): Promise<INodeStatus | null> 
+
+   // bottom block in connected node (0 if nodes dont support partial history)
+   /** 
+    * The lowest block in the latest joined set of blocks 
+    */
+   getBottomBlockHeight(): Promise<number | null>
 }
 
 export interface WriteRpcInterface extends BaseRpcInterface {
