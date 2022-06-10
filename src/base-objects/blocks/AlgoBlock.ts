@@ -4,11 +4,11 @@ import { BlockBase } from "../BlockBase";
 import { AlgoTransaction } from "../TransactionBase";
 
 export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
-   transactionObjects: AlgoTransaction []
+   transactionObjects: AlgoTransaction[];
    constructor(data: IAlgoBlockMsgPack, additionalData?: any) {
       super(data);
-      this.transactionObjects = []
-      this.processTransactions()
+      this.transactionObjects = [];
+      this.processTransactions();
    }
 
    public get number(): number {
@@ -39,14 +39,14 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
 
    public get transactionIds(): string[] {
       return this.transactionObjects.map((trasn) => {
-         return trasn.txid
-      })
+         return trasn.txid;
+      });
    }
 
    public get stdTransactionIds(): string[] {
       return this.transactionObjects.map((trasn) => {
-         return trasn.stdTxid
-      })
+         return trasn.stdTxid;
+      });
    }
 
    public get transactions(): AlgoTransaction[] {
@@ -65,36 +65,36 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    ////////////////////////////////////////
 
    processTransactions() {
-      this.transactionObjects = []
-      for(let transactionBase of this.data.block.txns) {
-         try{
-         // we have to ensure all addresses are buffers with checksum
-         if(transactionBase.txn.rcv) transactionBase.txn.rcv = bufAddToCBufAdd(transactionBase.txn.rcv);
-         if(transactionBase.txn.snd) transactionBase.txn.snd = bufAddToCBufAdd(transactionBase.txn.snd);
-         if(transactionBase.txn.arcv) transactionBase.txn.arcv = bufAddToCBufAdd(transactionBase.txn.arcv);
-         const st = new SignedTransactionWithAD(
-            this.data.block.gh,
-            this.data.block.gen,
-            transactionBase
-           )
-         const data = {
-            txid: st.txn.txn.txID(),
-            timestamp: this.unixTimestamp,
-            hgi:transactionBase.hgi,
-            ...transactionBase.txn
-         } as IAlgoTransactionMsgPack;
-         if(transactionBase.sig) data.sig = transactionBase.sig;
-         if(transactionBase.lsig) data.lsig = transactionBase.lsig;
-         if(transactionBase.msig) data.msig = transactionBase.msig;
-         if(transactionBase.sgnr) data.sgnr = transactionBase.sgnr;
-         this.transactionObjects.push(new AlgoTransaction(data))
+      this.transactionObjects = [];
+      for (let transactionBase of this.data.block.txns) {
+         try {
+            // we have to ensure all addresses are buffers with checksum
+            if (transactionBase.txn.rcv) transactionBase.txn.rcv = bufAddToCBufAdd(transactionBase.txn.rcv);
+            if (transactionBase.txn.snd) transactionBase.txn.snd = bufAddToCBufAdd(transactionBase.txn.snd);
+            if (transactionBase.txn.arcv) transactionBase.txn.arcv = bufAddToCBufAdd(transactionBase.txn.arcv);
+            const st = new SignedTransactionWithAD(this.data.block.gh, this.data.block.gen, transactionBase);
+            const data = {
+               txid: st.txn.txn.txID(),
+               timestamp: this.unixTimestamp,
+               hgi: transactionBase.hgi,
+               ...transactionBase.txn,
+            } as IAlgoTransactionMsgPack;
+            if (transactionBase.sig) data.sig = transactionBase.sig;
+            if (transactionBase.lsig) data.lsig = transactionBase.lsig;
+            if (transactionBase.msig) data.msig = transactionBase.msig;
+            if (transactionBase.sgnr) data.sgnr = transactionBase.sgnr;
+            this.transactionObjects.push(new AlgoTransaction(data));
          } catch (e) {
             // TODO logger
             // TODO What happens if there is a transaction we dont know how to process
-            console.log(`Unable to process transaction ${JSON.stringify(transactionBase)}`);
-            throw e;   
+            console.log(
+               `Unable to process transaction ${JSON.stringify(
+                  transactionBase,
+                  (key, value) => (typeof value === "bigint" ? value.toString() : value) // return everything else unchanged
+               )}`
+            );
+            throw e;
          }
       }
-   
    }
 }
