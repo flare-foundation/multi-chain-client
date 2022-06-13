@@ -3,22 +3,22 @@ import { BTCImplementation } from "./chain-clients/BtcRpcImplementation";
 import { DOGEImplementation } from "./chain-clients/DogeRpcImplementation";
 import { LTCImplementation } from "./chain-clients/LtcRpcImplementation";
 import { XRPImplementation } from "./chain-clients/XrpRpcImplementation";
-import { AlgoMccCreate, ChainType, ReadRpcInterface, RPCInterface, UtxoMccCreate, XrpMccCreate } from "./types";
+import { AlgoMccCreate, ChainType, ReadRpcInterface, UtxoMccCreate, XrpMccCreate } from "./types";
 
 export module MCC {
-   export class LTC extends LTCImplementation implements RPCInterface {
+   export class LTC extends LTCImplementation implements ReadRpcInterface {
       constructor(options: UtxoMccCreate) {
          super(options);
       }
    }
 
-   export class BTC extends BTCImplementation implements RPCInterface {
+   export class BTC extends BTCImplementation implements ReadRpcInterface {
       constructor(options: UtxoMccCreate) {
          super(options);
       }
    }
 
-   export class DOGE extends DOGEImplementation implements RPCInterface {
+   export class DOGE extends DOGEImplementation implements ReadRpcInterface {
       constructor(options: UtxoMccCreate) {
          super(options);
       }
@@ -31,8 +31,8 @@ export module MCC {
    }
 
    export class ALGO extends ALGOImplementation implements ReadRpcInterface {
-      constructor(createConfig: AlgoMccCreate) {
-         super(createConfig);
+      constructor(options: AlgoMccCreate) {
+         super(options);
       }
    }
 
@@ -105,15 +105,23 @@ export module MCC {
 
 // Object exports
 export * from "./base-objects/BlockBase";
-export * from "./base-objects/TransactionBase";
 export * from "./base-objects/StatusBase";
-
-export * from "./types";
+export * from "./base-objects/TransactionBase";
 
 // Utils exports
-export * from "./utils/algoUtils";
 export * from "./utils/utils";
+export * from "./utils/algoUtils";
 export * from "./utils/xrpUtils";
+export * from "./utils/utxoUtils";
+
+// Constants
+export * from "./utils/constants";
+
+// Type reflection
+export * from "./utils/typeReflection";
 
 // retry logic
 export * from "./utils/retry";
+
+// Types 
+export * from "./types";

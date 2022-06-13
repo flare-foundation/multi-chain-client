@@ -6,7 +6,14 @@ export abstract class BlockBase<B> {
       this.data = data;
    }
 
+   /**
+    * Block number sometimes refers to as block height or ledger height (number of block in blockchain)
+    */
    public abstract get number(): number;
+
+   /**
+    * 
+    */
    public abstract get blockHash(): string;
    public abstract get stdBlockHash(): string;
    public abstract get unixTimestamp(): number;

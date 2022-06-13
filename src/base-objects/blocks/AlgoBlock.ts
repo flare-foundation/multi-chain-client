@@ -3,6 +3,7 @@ import { bufAddToCBufAdd, bytesToHex, hexToBase32, hexToBase64, SignedTransactio
 import { BlockBase } from "../BlockBase";
 import { AlgoTransaction } from "../TransactionBase";
 
+const INVALID_NUMBER = -1
 export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    transactionObjects: AlgoTransaction[];
    constructor(data: IAlgoBlockMsgPack, additionalData?: any) {
@@ -12,7 +13,7 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    }
 
    public get number(): number {
-      return this.data?.block?.rnd;
+      return this.data?.block?.rnd || INVALID_NUMBER;
    }
 
    public get blockHash(): string {

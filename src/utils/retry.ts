@@ -71,15 +71,3 @@ export async function retry<T>(
       }
    }
 }
-
-// export async function retryMany<T>(
-//   label: string,
-//   functs: ((...args: any) => T)[],
-//   timeoutTime: number = 5000,
-//   numRetries: number = 5,
-//   backOddTimeout: number = 1000,
-//   exceptionCallback: IExceptionCallback = defaultExceptionCallback,
-//   warningCallback: ILoggingCallback = defaultWarningCallback
-// ) {
-//    return Promise.all(functs.map((funct) => retry(label, funct, timeoutTime, numRetries, backOddTimeout, exceptionCallback, warningCallback)));
-// }

@@ -196,14 +196,6 @@ export function txIdToHexNo0x(txid: string) {
    return base32ToHex(txid);
 }
 
-/////////////////////////////////
-// Algo Checksum ////////////////
-/////////////////////////////////
-
-export function checksum(str: string, algorithm: string = "sha512", encoding: string = "hex") {
-   return crypto.createHash(algorithm).update(str, "utf8").digest(encoding);
-}
-
 ////////////////////////////
 //// MCC Error handling ////
 ////////////////////////////
