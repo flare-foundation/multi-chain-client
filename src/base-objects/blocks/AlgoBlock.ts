@@ -6,7 +6,7 @@ import { AlgoTransaction } from "../TransactionBase";
 const INVALID_NUMBER = -1
 export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    transactionObjects: AlgoTransaction[];
-   constructor(data: IAlgoBlockMsgPack, additionalData?: any) {
+   constructor(data: IAlgoBlockMsgPack) {
       super(data);
       this.transactionObjects = [];
       this.processTransactions();
