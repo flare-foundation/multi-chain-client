@@ -1,7 +1,7 @@
 import { AccountRootFlags, allHexFlags, HexToFlag, PosToFlag } from "../types";
 import { XRP_UTD } from "./constants";
 import { MccError } from "./utils";
-const XrpAddress = require('ripple-address-codec')
+const XrpAddress = require("ripple-address-codec");
 
 ////////////////////////////
 //// MCC Error handling ////
@@ -23,27 +23,27 @@ export function unixEpochToRippleTime(timestamp: number) {
 
 export function processFlags(flag: number): AccountRootFlags[] {
    let altFlags: AccountRootFlags[] = [];
-   const flagPos = [16,17,18,19,20,21,22,23,24]
-   for(let posFlag of flagPos){
-      if((flag >> posFlag) % 2 === 1){
+   const flagPos = [16, 17, 18, 19, 20, 21, 22, 23, 24];
+   for (let posFlag of flagPos) {
+      if ((flag >> posFlag) % 2 === 1) {
          // @ts-ignore
-         altFlags.push(PosToFlag[posFlag])
-      }  
+         altFlags.push(PosToFlag[posFlag]);
+      }
    }
-   return altFlags
+   return altFlags;
 }
 
 export function processFlagsOld1(flag: number): AccountRootFlags[] {
-   const binFlag = flag.toString(2).padStart(8*4, "0");
+   const binFlag = flag.toString(2).padStart(8 * 4, "0");
    let altFlags: AccountRootFlags[] = [];
-   for(let posFlag of allHexFlags){
-      const posFlagBin = posFlag.toString(2).padStart(8*4, "0");
-      if((flag ^ posFlag).toString(2).padStart(8*4, "0")[posFlagBin.indexOf('1')] === '0'){
+   for (let posFlag of allHexFlags) {
+      const posFlagBin = posFlag.toString(2).padStart(8 * 4, "0");
+      if ((flag ^ posFlag).toString(2).padStart(8 * 4, "0")[posFlagBin.indexOf("1")] === "0") {
          // @ts-ignore
-         altFlags.push(HexToFlag[posFlag])
+         altFlags.push(HexToFlag[posFlag]);
       }
    }
-   return altFlags
+   return altFlags;
 }
 
 export function processFlagsOld2(flag: number): AccountRootFlags[] {
@@ -185,28 +185,27 @@ export function processFlagsOld2(flag: number): AccountRootFlags[] {
    return Flags;
 }
 
-
 ///////////////////////////
 // Xrp address <-> Bytes //
 ///////////////////////////
 
-export function rippleAddressToBytes(address:string){
-   if(address.length > 0){
-      if(address[0] === "r"){
+export function rippleAddressToBytes(address: string) {
+   if (address.length > 0) {
+      if (address[0] === "r") {
          return XrpAddress.decodeAccountID(address);
-      }
-      else {
+      } else {
          // it is a ripple x address
-         const classic = XrpAddress.xAddressToClassicAddress(address)
+         const classic = XrpAddress.xAddressToClassicAddress(address);
          return XrpAddress.decodeAccountID(classic.classicAddress);
       }
-   } return Buffer.from([0x00])
+   }
+   return Buffer.from([0x00]);
 }
 
-export function bytesToRippleAddress(byts: Buffer){
-   if(byts.length === 20){
+export function bytesToRippleAddress(byts: Buffer) {
+   if (byts.length === 20) {
       // it is a valid address
-      return XrpAddress.encodeAccountID(byts)
+      return XrpAddress.encodeAccountID(byts);
    }
-   throw new Error("Not a valid ripple address")
+   throw new Error("Not a valid ripple address");
 }

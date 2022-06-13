@@ -1,4 +1,4 @@
-Currently this method returns 
+Currently this method returns
 
 ```
 export interface AddressAmount {
@@ -8,7 +8,7 @@ export interface AddressAmount {
 }
 ```
 
-we would update it to 
+we would update it to
 
 ```
 export interface AddressAmount {
@@ -19,8 +19,6 @@ export interface AddressAmount {
 }
 ```
 
-So if we were to prove token transfers we could have an array that would bot hold token amount and 
+So if we were to prove token transfers we could have an array that would bot hold token amount and
 fee in this array, note that we would also need to update/add the support for minimal divisible amounts
- (elementary units) for each token in transaction.
-
- 
+(elementary units) for each token in transaction.

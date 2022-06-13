@@ -1,9 +1,9 @@
 import { MCC } from "../../src/index";
 import { expect } from "chai";
 
-const reg_tests_url = process.env.BTC_URL_REGTEST || '';
-const reg_test_user = process.env.BTC_USERNAME_REGTEST || '';
-const reg_test_pass = process.env.BTC_PASSWORD_REGTEST || '';
+const reg_tests_url = process.env.BTC_URL_REGTEST || "";
+const reg_test_user = process.env.BTC_USERNAME_REGTEST || "";
+const reg_test_pass = process.env.BTC_PASSWORD_REGTEST || "";
 
 import { getAddressByLabelResponse, IIUtxoVout, UtxoRpcInterface } from "../../src/types";
 

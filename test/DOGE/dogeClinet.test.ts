@@ -2,9 +2,9 @@ import { MCC } from "../../src/index";
 import { RPCInterface } from "../../src/types";
 import { expect } from "chai";
 
-const reg_tests_url = process.env.DOGE_URL_REGTEST || '';
-const reg_test_user = process.env.DOGE_USERNAME_REGTEST || '';
-const reg_test_pass = process.env.DOGE_PASSWORD_REGTEST || '';
+const reg_tests_url = process.env.DOGE_URL_REGTEST || "";
+const reg_test_user = process.env.DOGE_USERNAME_REGTEST || "";
+const reg_test_pass = process.env.DOGE_PASSWORD_REGTEST || "";
 
 const ENABLE_REG_TEST = true;
 

@@ -3,9 +3,9 @@ import { BtcTransaction, MCC, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { IUtxoVinVoutsMapper } from "../../src/types/utxoTypes";
 
 const LtcMccConnection = {
-   url: process.env.LTC_URL || '',
-   username: process.env.LTC_USERNAME || '',
-   password: process.env.LTC_PASSWORD || '',
+   url: process.env.LTC_URL || "",
+   username: process.env.LTC_USERNAME || "",
+   password: process.env.LTC_PASSWORD || "",
 } as UtxoMccCreate;
 
 async function getVinVoutsAtIndex(index: number, trans: UtxoTransaction, client: MCC.BTC) {

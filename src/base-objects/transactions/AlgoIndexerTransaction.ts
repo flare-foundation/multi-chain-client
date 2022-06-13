@@ -5,7 +5,7 @@ import { base64ToHex, txIdToHexNo0x } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
-const web3 = require("web3")
+const web3 = require("web3");
 export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionRes, any> {
    public get txid(): string {
       return this.hash;
@@ -31,7 +31,7 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
       try {
          // try to parse out
          paymentReference = prefix0x(web3.utils.hexToString(prefix0x(paymentReference)));
-      } catch(e) {
+      } catch (e) {
          return ZERO_BYTES_32;
       }
       if (!isValidBytes32Hex(paymentReference)) {

@@ -103,7 +103,7 @@ describe(`Algo block processing`, async () => {
 
       // it('Data', async function () {
       //    console.log(block.data);
-         
+
       // });
    });
 });

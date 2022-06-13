@@ -4,29 +4,29 @@ On every Blockchain Network each block contains many transactions. These transac
 
 The transaction abstract object implements the following methods:
 
-| Name: Type | Description |
-| - | - |
-| `txid: string` | Transaction id (usually the same as hash) |
-| `stdTxid: string` | MCC standardized transaction id (hex encoded string of length 64 (32 bytes) without 0x prefix) |
-| `hash: string` | Transaction hash and TxId (for UTXO hash and ``txid`` differ since segWit) |
-| `reference: string[]` | Array of all references found in transactions |
-| `stdPaymentReference: string` | MCC standardized payment reference for Flare |
-| `unixTimestamp: number` | Transaction timestamp (usually the same as block timestamp that this transaction is a part of) |
-| `sourceAddresses: string[]` | Array of all source addresses |
-| `receivingAddresses: string[]` | Array of receiving addresses |
-| `fee: BN` | Transaction fee (usually in native token) in elementary unit (MicroAlgos, ...) |
-| `spentAmounts: AddressAmount[]` | Full amount spend by transaction (usually in native token) in elementary unit (MicroAlgos, Satoshis ...) |
-| `receivedAmounts: AddressAmount[]` | Full amount received by ``receivingAddress`` in transaction (usually in native token) in elementary unit (MicroAlgos, Satoshis ...) |
-| `type: string` | This is usually transaction type from underlying chain with some other added status responses added by the MCC client |
-| `isNativePayment: boolean` | Indicator whether this transaction is native payment transaction or not (many chains support other types of transactions, usually calls to smart contracts...) |
-| `currencyName: string` | This can either be native token (such as BTC, XRP... or any other on chain token transfer or empty for non transfer transactions) |
-| `elementaryUnits: BN` | The transfer rate from elementary unit to native units (10^8 for Satoshi to BTC, for example) |
-| `successStatus: TransactionSuccessStatus` | MCC defined transaction status |
-| `paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary>` | MCC / Flare defined transaction summary |
+| Name: Type                                                                                                               | Description                                                                                                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `txid: string`                                                                                                           | Transaction id (usually the same as hash)                                                                                                                      |
+| `stdTxid: string`                                                                                                        | MCC standardized transaction id (hex encoded string of length 64 (32 bytes) without 0x prefix)                                                                 |
+| `hash: string`                                                                                                           | Transaction hash and TxId (for UTXO hash and `txid` differ since segWit)                                                                                       |
+| `reference: string[]`                                                                                                    | Array of all references found in transactions                                                                                                                  |
+| `stdPaymentReference: string`                                                                                            | MCC standardized payment reference for Flare                                                                                                                   |
+| `unixTimestamp: number`                                                                                                  | Transaction timestamp (usually the same as block timestamp that this transaction is a part of)                                                                 |
+| `sourceAddresses: string[]`                                                                                              | Array of all source addresses                                                                                                                                  |
+| `receivingAddresses: string[]`                                                                                           | Array of receiving addresses                                                                                                                                   |
+| `fee: BN`                                                                                                                | Transaction fee (usually in native token) in elementary unit (MicroAlgos, ...)                                                                                 |
+| `spentAmounts: AddressAmount[]`                                                                                          | Full amount spend by transaction (usually in native token) in elementary unit (MicroAlgos, Satoshis ...)                                                       |
+| `receivedAmounts: AddressAmount[]`                                                                                       | Full amount received by `receivingAddress` in transaction (usually in native token) in elementary unit (MicroAlgos, Satoshis ...)                              |
+| `type: string`                                                                                                           | This is usually transaction type from underlying chain with some other added status responses added by the MCC client                                          |
+| `isNativePayment: boolean`                                                                                               | Indicator whether this transaction is native payment transaction or not (many chains support other types of transactions, usually calls to smart contracts...) |
+| `currencyName: string`                                                                                                   | This can either be native token (such as BTC, XRP... or any other on chain token transfer or empty for non transfer transactions)                              |
+| `elementaryUnits: BN`                                                                                                    | The transfer rate from elementary unit to native units (10^8 for Satoshi to BTC, for example)                                                                  |
+| `successStatus: TransactionSuccessStatus`                                                                                | MCC defined transaction status                                                                                                                                 |
+| `paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary>` | MCC / Flare defined transaction summary                                                                                                                        |
 
-``AddressAmount`` objects implement the following interface:
+`AddressAmount` objects implement the following interface:
 
-``` javascript
+```javascript
 interface AddressAmount {
    address?: string;
    amount: BN;
@@ -34,97 +34,97 @@ interface AddressAmount {
 }
 ```
 
-## ``TxId``
+## `TxId`
 
-Transaction id, used to identify a transaction on a blockchain, each ``txId`` is calculated from most of the data available about the given transaction.
+Transaction id, used to identify a transaction on a blockchain, each `txId` is calculated from most of the data available about the given transaction.
 
 Output:
 
-``` text
+```text
 js  : string
 mcc : 0x padded hex string
 ```
 
-## ``Hash``
+## `Hash`
 
-Transaction hash, most of the time the same as ``TxId``, different on BTC network and its clones due to the segwit update.
+Transaction hash, most of the time the same as `TxId`, different on BTC network and its clones due to the segwit update.
 
 Output:
 
-``` text
+```text
 js  : string
 mcc : 0x padded hex string
 ```
 
-## ``stdTxid``
+## `stdTxid`
 
-Flare-specific standardized ``txId`` (hex encoded string of length 64 (32 bytes) without 0x prefix).
+Flare-specific standardized `txId` (hex encoded string of length 64 (32 bytes) without 0x prefix).
 
-``` text
+```text
 js  : string
 mcc : hex encoded string of length 64 (32 bytes) without 0x prefix
 ```
 
-## ``reference``
+## `reference`
 
 Array of all references found in transactions.
 
-``` text
+```text
 js  : string[]
 mcc : /
 ```
 
-## ``stdPaymentReference``
+## `stdPaymentReference`
 
 Returns standardized payment reference, if it exists, or null reference.
 
-```  text
+```text
 js  : string
 mcc : hex encoded string of length 64 (32 bytes) with 0x prefix, default to 0x0...0
 ```
 
-## ``unixTimestamp``
+## `unixTimestamp`
 
 Returns Unix timestamp of the transaction (block of the transaction).
 
-``` text
+```text
 js  : number
 mcc : unix timestamp (seconds since 1.1.1970)
 ```
 
-## ``sourceAddresses``
+## `sourceAddresses`
 
 Returns a list of all source addresses. In account-based chains only one address is present.
 In UTXO chains addresses indicate the addresses on relevant inputs.
 Some addresses may be undefined, either due to non-existence on specific inputs or
 due to not being fetched from the outputs of the corresponding input transactions.
 
-``` text
+```text
 js  : (string | undefined)[]
 mcc : /
 ```
 
-## ``receivingAddresses``
+## `receivingAddresses`
 
 Array of a receiving addresses. In account-based chains only one address in present.
 In UTXO chains the list indicates the addresses on the corresponding transaction outputs.
 Some addresses may be undefined since outputs may not have addresses defined.
 
-``` text
+```text
 js  : (string | undefined)[]
 mcc : /
 ```
 
-## ``fee``
+## `fee`
 
 Gets transaction fee. In some cases it can revert, since fee is not possible to calculate.
 
-``` text
+```text
 js  : BN
 mcc : /
 ```
 
-## ``spentAmounts``
+## `spentAmounts`
 
 A list of spent amounts on transaction inputs.
 In account-based chains only one amount is present, and includes total spent amount, including fees.
@@ -133,7 +133,7 @@ If the corresponding addresses are undefined and not fetched (in `sourceAddresse
 corresponding spent amounts are 0.
 The amounts are in basic units (e.g. satoshi, microalgo, ...)
 
-``` text
+```text
 AddressAmount {
    address?: string;
    amount: BN;
@@ -143,13 +143,13 @@ js  : AddressAmount[]
 mcc : /
 ```
 
-## ``receivedAmounts``
+## `receivedAmounts`
 
 A list of received amounts on transaction outputs.
 In account -based chains only one input and output exist.
 In UTXO chains the received amounts correspond to the amounts on outputs.
 
-``` text
+```text
 AddressAmount {
    address?: string;
    amount: BN;
@@ -159,47 +159,47 @@ js  : AddressAmount[]
 mcc : /
 ```
 
-## ``type``
+## `type`
 
 Returns transaction type as a string identifier. A set of types depends on a specific underlying chain.
 
-``` text
+```text
 js  : string
 mcc : "coinbase" | "payment" | "partial_payment" | "full_payment"
 ```
 
-## ``isNativePayment``
+## `isNativePayment`
 
 Indicates whether a payment is a native payment.
 
-``` text
+```text
 js  : boolean
 mcc : /
 ```
 
-## ``currencyName``
+## `currencyName`
 
 Currency name on the underlying chain.
 
-``` text
+```text
 js  : string
 mcc : "BTC" | "LTC" | "DOGE" | "XRP" | "ALGO"
 ```
 
-## ``elementaryUnits``
+## `elementaryUnits`
 
 Amount of elementary units that constitute one basic unit of currency on an underlying chain (e.g. 1 BTC = 10^8 satoshis)
 
-```  text
+```text
 js  : BN
 mcc : (e.g. 1 BTC = 10^8 satoshis)
 ```
 
-## ``successStatus``
+## `successStatus`
 
 Returns transaction success status.
 
-``` javascript
+```javascript
 TransactionSuccessStatus = {
    SUCCESS = 0,
    SENDER_FAILURE = 1,
@@ -209,13 +209,13 @@ js  : TransactionSuccessStatus
 mcc : /
 ```
 
-## ``paymentSummary``
+## `paymentSummary`
 
 `paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean)`
 
 A method to get unified information about a transaction, can also process the transactions further, on some chains (BTC and BTC like) one needs to make additional queries to blockchain node to get all information.
 
-``` javascript
+```javascript
 PaymentSummary {
    isNativePayment: boolean;
    sourceAddress?: string;
@@ -234,10 +234,10 @@ mcc : /
 
 Refer to the following docs for each individual implementation:
 
-- [BtcTransaction](./BtcLtcDogeTransaction.md)
-- [LtcTransaction](./BtcLtcDogeTransaction.md)
-- [DogeTransaction](./BtcLtcDogeTransaction.md)
-- [XrpTransaction](./XrpTransaction.md)
-- [AlgoTransaction](./AlgoTransaction.md)
+-  [BtcTransaction](./BtcLtcDogeTransaction.md)
+-  [LtcTransaction](./BtcLtcDogeTransaction.md)
+-  [DogeTransaction](./BtcLtcDogeTransaction.md)
+-  [XrpTransaction](./XrpTransaction.md)
+-  [AlgoTransaction](./AlgoTransaction.md)
 
 [Back to home](../README.md)

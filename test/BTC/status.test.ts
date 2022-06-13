@@ -1,9 +1,9 @@
 import { MCC, UtxoMccCreate, UtxoNodeStatus, XrpNodeStatus } from "../../src";
 
 const BtcMccConnection = {
-  url: process.env.BTC_URL || '',
-  username: process.env.BTC_USERNAME || '',
-  password: process.env.BTC_PASSWORD || '',
+   url: process.env.BTC_URL || "",
+   username: process.env.BTC_USERNAME || "",
+   password: process.env.BTC_PASSWORD || "",
 } as UtxoMccCreate;
 
 describe("Block BTC base test ", function () {
@@ -13,8 +13,8 @@ describe("Block BTC base test ", function () {
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
       const tstatus = await MccClient.getNodeStatus();
-      if(tstatus){
-         status = tstatus
+      if (tstatus) {
+         status = tstatus;
       }
    });
 

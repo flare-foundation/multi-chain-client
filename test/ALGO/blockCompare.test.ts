@@ -12,7 +12,7 @@ const algoCreateConfig = {
    },
 };
 
-const hei = 21_374_440
+const hei = 21_374_440;
 
 describe(`Algo block from algod and indexer compare`, async () => {
    describe(`Compare block from indexer and algod ${hei}`, function () {
@@ -60,35 +60,33 @@ describe(`Algo block from algod and indexer compare`, async () => {
       });
 
       it("Should compare transaction ids ", async function () {
-         const trans1 = block.transactionIds.sort()
-         const trans2 = IBlock.transactionIds.sort()
+         const trans1 = block.transactionIds.sort();
+         const trans2 = IBlock.transactionIds.sort();
          console.log(trans1.length === trans2.length);
-         let allSame = true; 
-         for(let i = 0; i < trans1.length; i++){
-           if(trans1[i] === trans2[i]){
-
-           } else {
-             console.log(trans1[i], trans2[i]);
-             allSame = false
-           } 
+         let allSame = true;
+         for (let i = 0; i < trans1.length; i++) {
+            if (trans1[i] === trans2[i]) {
+            } else {
+               console.log(trans1[i], trans2[i]);
+               allSame = false;
+            }
          }
-         console.log('allsame', allSame);
+         console.log("allsame", allSame);
       });
 
       it("Should compare transaction standard ids ", async function () {
-         const trans1 = block.stdTransactionIds.sort()
-         const trans2 = IBlock.stdTransactionIds.sort()
+         const trans1 = block.stdTransactionIds.sort();
+         const trans2 = IBlock.stdTransactionIds.sort();
          console.log(trans1.length === trans2.length);
-         let allSame = true; 
-         for(let i = 0; i < trans1.length; i++){
-           if(trans1[i] === trans2[i]){
-
-           } else {
-             console.log(trans1[i], trans2[i]);
-             allSame = false
-           } 
+         let allSame = true;
+         for (let i = 0; i < trans1.length; i++) {
+            if (trans1[i] === trans2[i]) {
+            } else {
+               console.log(trans1[i], trans2[i]);
+               allSame = false;
+            }
          }
-         console.log('allsame', allSame);
+         console.log("allsame", allSame);
       });
 
       it("Should compare transaction count ", async function () {

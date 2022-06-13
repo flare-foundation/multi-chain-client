@@ -2,9 +2,9 @@ import { expect } from "chai";
 import { MCC, UtxoMccCreate } from "../../src";
 
 const DogeMccConnection = {
-   url: process.env.DOGE_URL || '',
-   username: process.env.DOGE_USERNAME || '',
-   password: process.env.DOGE_PASSWORD || '',
+   url: process.env.DOGE_URL || "",
+   username: process.env.DOGE_USERNAME || "",
+   password: process.env.DOGE_PASSWORD || "",
 } as UtxoMccCreate;
 
 describe("DOGE mainnet client tests", () => {

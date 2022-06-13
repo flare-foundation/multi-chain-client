@@ -1,10 +1,10 @@
 import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
 
 const LtcMccConnection = {
-      url: process.env.LTC_URL || '',
-      username: process.env.LTC_USERNAME || '',
-      password: process.env.LTC_PASSWORD || '',
-   } as UtxoMccCreate;
+   url: process.env.LTC_URL || "",
+   username: process.env.LTC_USERNAME || "",
+   password: process.env.LTC_PASSWORD || "",
+} as UtxoMccCreate;
 
 describe("Block LTC base test ", function () {
    let MccClient: MCC.LTC;

@@ -97,7 +97,5 @@ describe("ALGO utils tests ", () => {
       });
    });
 
-   it("decode base32",async () => {
-      
-   });
+   it("decode base32", async () => {});
 });

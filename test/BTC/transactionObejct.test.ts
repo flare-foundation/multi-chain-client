@@ -2,9 +2,9 @@ import { expect } from "chai";
 import { BtcTransaction, MCC, UtxoMccCreate } from "../../src";
 
 const BtcMccConnection = {
-   url: process.env.BTC_URL || '',
-   username: process.env.BTC_USERNAME || '',
-   password: process.env.BTC_PASSWORD || '',
+   url: process.env.BTC_URL || "",
+   username: process.env.BTC_USERNAME || "",
+   password: process.env.BTC_PASSWORD || "",
 } as UtxoMccCreate;
 
 describe("Transaction Btc test ", function () {

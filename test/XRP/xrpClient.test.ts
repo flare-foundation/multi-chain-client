@@ -5,7 +5,6 @@ const public_url = "https://s1.ripple.com:51234";
 const testnet_url = "https://s.altnet.rippletest.net:51234";
 const devnet_url = "https://s.devnet.rippletest.net:51234";
 
-
 describe("XRP ripple client tests", () => {
    it.skip("should be able to connect", () => {});
 
@@ -48,7 +47,6 @@ describe("XRP ripple client tests", () => {
          let res = await XRP.getTransaction(txhash, { binary: false });
 
          console.log(res);
-
       });
    });
 });

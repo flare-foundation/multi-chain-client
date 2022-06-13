@@ -33,14 +33,14 @@ In general, there is no definition of the "source address" or the "receiving add
 
 A payment summary is an aggregate that provides a summary of a native payment transaction viewed as a transfer of funds from one address to another. It summarizes the following things:
 
-- Whether the transaction is a [native payment](./native-payment.md) or not.
-- The source address, if it exists.
-- The receiving address, if it exists.
-- The spent amount at the source address, if it exists.
-- The received amount at the receiving address, if it exists.
-- Standardized payment reference, if it exists.
-- Whether the payment is one-to-one.
-- Whether the payment is considered as a full payment (see below).
+-  Whether the transaction is a [native payment](./native-payment.md) or not.
+-  The source address, if it exists.
+-  The receiving address, if it exists.
+-  The spent amount at the source address, if it exists.
+-  The received amount at the receiving address, if it exists.
+-  Standardized payment reference, if it exists.
+-  Whether the payment is one-to-one.
+-  Whether the payment is considered as a full payment (see below).
 
 In general, one can just view a transaction as taking from a specific input (index `inUtxo`) and delivering to the specific output (index `utxo`). We call this a **partial payment**. Another alternative is to consider the indices `inUtxo` and `utxo` as the pointers to the desired source and the receiving addresses, respectively. In a **full payment** we collect the total of the amounts on all inputs that share the same source address and subtract from the total the sum of output amounts returning to the same address. In this way we obtain the real (total) spent amount from the source address. Note that the spent amount of the transaction can be even net negative. Namely, funds can be taken from other addresses on other inputs and more funds can be returned to the selected source address.
 
@@ -56,10 +56,10 @@ Consider a UTXO blockchain transaction with a given transaction id that is read 
 
 Often we are not willing or it is not necessary to read all inputs, usually to reduce the number of calls to RPC API. The MCC client library provides a class `UtxoTransaction` which incorporates the array `vinVouts` as a piece of additional data to the data obtained from the RPC API response (method `getrawtransaction`). In some cases we need to obtain just the data from certain inputs. According to the situation of how many input transaction outputs are collected in the array `vinVouts` we have the following transaction types:
 
-- `full_payment`: All the input transaction outputs are fetched in `vinVouts`.
-- `partial_payment`: Not all but at least one input transaction outputs are fetched in `vinVouts`.
-- `payment`: None of the input transaction outputs are fetched in `vinVouts`.
-- `coinbase`: Transaction is a special Coinbase transaction - no input transactions exists.
+-  `full_payment`: All the input transaction outputs are fetched in `vinVouts`.
+-  `partial_payment`: Not all but at least one input transaction outputs are fetched in `vinVouts`.
+-  `payment`: None of the input transaction outputs are fetched in `vinVouts`.
+-  `coinbase`: Transaction is a special Coinbase transaction - no input transactions exists.
 
 Next: [Native payment](./native-payment.md)
 

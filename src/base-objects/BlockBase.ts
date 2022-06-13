@@ -1,4 +1,3 @@
-
 export type IBlock = BlockBase<any>;
 export abstract class BlockBase<B> {
    data: B;
@@ -16,7 +15,6 @@ export abstract class BlockBase<B> {
    public abstract get transactionCount(): number;
 }
 
-
 export { AlgoIndexerBlock } from "./blocks/AlgoIndexerBlock";
 export { AlgoBlock } from "./blocks/AlgoBlock";
 export { BtcBlock } from "./blocks/BtcBlock";
@@ -24,5 +22,3 @@ export { DogeBlock } from "./blocks/DogeBlock";
 export { LtcBlock } from "./blocks/LtcBlock";
 export { UtxoBlock } from "./blocks/UtxoBlock";
 export { XrpBlock } from "./blocks/XrpBlock";
-
-

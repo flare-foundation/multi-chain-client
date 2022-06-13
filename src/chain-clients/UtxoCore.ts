@@ -11,10 +11,17 @@ import {
    IUtxoTransactionListRes,
    IUtxoWalletRes,
    RateLimitOptions,
-   UtxoMccCreate
+   UtxoMccCreate,
 } from "../types";
 import { ChainType, MccLoggingOptionsFull, ReadRpcInterface } from "../types/genericMccTypes";
-import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes, IUtxoGetNetworkInfoRes, IUtxoNodeStatus } from "../types/utxoTypes";
+import {
+   IUtxoChainTip,
+   IUtxoGetAlternativeBlocksOptions,
+   IUtxoGetAlternativeBlocksRes,
+   IUtxoGetBlockHeaderRes,
+   IUtxoGetNetworkInfoRes,
+   IUtxoNodeStatus,
+} from "../types/utxoTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { defaultMccLoggingObject, fillWithDefault, getSimpleRandom, sleepMs, unPrefix0x } from "../utils/utils";
 import { recursive_block_hash, recursive_block_tip, utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
@@ -353,11 +360,11 @@ export class UtxoCore implements ReadRpcInterface {
     * Node status query
     */
    async getNodeStatus(): Promise<UtxoNodeStatus | null> {
-      try{
+      try {
          let res = await this.client.post(``, {
             jsonrpc: "1.0",
             id: "rpc",
-            method: "getnetworkinfo", 
+            method: "getnetworkinfo",
             params: [],
          });
          utxo_ensure_data(res.data);
@@ -365,14 +372,14 @@ export class UtxoCore implements ReadRpcInterface {
          let bres = await this.client.post(``, {
             jsonrpc: "1.0",
             id: "rpc",
-            method: "getblockchaininfo", 
+            method: "getblockchaininfo",
             params: [],
          });
          utxo_ensure_data(bres.data);
-         
-         return new UtxoNodeStatus({ ...bres.data.result, ...res.data.result } as IUtxoNodeStatus)    
+
+         return new UtxoNodeStatus({ ...bres.data.result, ...res.data.result } as IUtxoNodeStatus);
       } catch (e) {
-         return null
+         return null;
       }
    }
 
@@ -381,7 +388,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns 0
     */
    async getBottomBlockHeight(): Promise<number | null> {
-     return 0;
+      return 0;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////

@@ -8,36 +8,36 @@
 
 We name interfaces as follows:
 
-1. For method responses: ``I<ChainAssetName><MethodName>Res``
+1. For method responses: `I<ChainAssetName><MethodName>Res`
 
    For example:
 
-   ``` javascript
-   IUtxoGetTransactionRes
+   ```javascript
+   IUtxoGetTransactionRes;
    ```
 
-2. For method inputs: ``I<ChainAssetName><MethodName>``
+2. For method inputs: `I<ChainAssetName><MethodName>`
 
    For example:
 
-   ``` javascript
-   IUtxoGetTransaction
+   ```javascript
+   IUtxoGetTransaction;
    ```
 
-3. For specific parts of method inputs (for example Vin For Utxo transaction creation): ``II<ChainAssetName><MethodName>``
+3. For specific parts of method inputs (for example Vin For Utxo transaction creation): `II<ChainAssetName><MethodName>`
 
    For example:
 
-   ```  javascript
-   IIUtxoVin
+   ```javascript
+   IIUtxoVin;
    ```
 
-4. For general Data Types: ``I<ChainAssetName><DataType>``
+4. For general Data Types: `I<ChainAssetName><DataType>`
 
    For example:
 
-   ``` javascript
-   IUtxoScriptPubKey
+   ```javascript
+   IUtxoScriptPubKey;
    ```
 
 ## To use this with the attestor client

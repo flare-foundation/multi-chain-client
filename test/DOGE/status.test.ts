@@ -1,9 +1,9 @@
 import { MCC, UtxoMccCreate, UtxoNodeStatus, XrpNodeStatus } from "../../src";
 
 const DogeMccConnection = {
-  url: process.env.DOGE_URL || '',
-  username: process.env.DOGE_USERNAME || '',
-  password: process.env.DOGE_PASSWORD || '',
+   url: process.env.DOGE_URL || "",
+   username: process.env.DOGE_USERNAME || "",
+   password: process.env.DOGE_PASSWORD || "",
 } as UtxoMccCreate;
 
 describe("Block BTC base test ", function () {
@@ -13,8 +13,8 @@ describe("Block BTC base test ", function () {
    before(async function () {
       MccClient = new MCC.DOGE(DogeMccConnection);
       const tstatus = await MccClient.getNodeStatus();
-      if(tstatus){
-         status = tstatus
+      if (tstatus) {
+         status = tstatus;
       }
    });
 

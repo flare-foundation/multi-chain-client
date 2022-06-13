@@ -107,15 +107,15 @@ describe(`Algo transaction from algod block VS from indexer compare`, async () =
       });
 
       it("Should compare transaction receivedAmounts ", async function () {
-        expect(BTrans.receivedAmounts.length).to.eq(ITrans.receivedAmounts.length);
-        ITrans.receivedAmounts.sort();
-        BTrans.receivedAmounts.sort();
-        for (let i = 0; i < BTrans.receivedAmounts.length; i++) {
-           if (ITrans.receivedAmounts[i].address && BTrans.receivedAmounts[i].address) {
-              expect(BTrans.receivedAmounts[i].address).to.eq(ITrans.receivedAmounts[i].address);
-           }
-           expect(BTrans.receivedAmounts[i].amount.toString()).to.eq(ITrans.receivedAmounts[i].amount.toString());
-        }
+         expect(BTrans.receivedAmounts.length).to.eq(ITrans.receivedAmounts.length);
+         ITrans.receivedAmounts.sort();
+         BTrans.receivedAmounts.sort();
+         for (let i = 0; i < BTrans.receivedAmounts.length; i++) {
+            if (ITrans.receivedAmounts[i].address && BTrans.receivedAmounts[i].address) {
+               expect(BTrans.receivedAmounts[i].address).to.eq(ITrans.receivedAmounts[i].address);
+            }
+            expect(BTrans.receivedAmounts[i].amount.toString()).to.eq(ITrans.receivedAmounts[i].amount.toString());
+         }
       });
 
       it("Should compare transaction type ", async function () {
@@ -141,15 +141,13 @@ describe(`Algo transaction from algod block VS from indexer compare`, async () =
       it("Should compare transaction payment summary ", async function () {
          const sum1 = await BTrans.paymentSummary();
          const sum2 = await ITrans.paymentSummary();
-         for(let key in sum1){
-           expect(sum1.hasOwnProperty(key)).to.eq(sum2.hasOwnProperty(key))
-           // @ts-ignore
-           expect(sum1[key]).to.eq(sum2[key])
+         for (let key in sum1) {
+            expect(sum1.hasOwnProperty(key)).to.eq(sum2.hasOwnProperty(key));
+            // @ts-ignore
+            expect(sum1[key]).to.eq(sum2[key]);
          }
       });
 
-      it("Should compare transaction data ", async function () {
-         
-      });
+      it("Should compare transaction data ", async function () {});
    });
 });

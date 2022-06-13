@@ -6,19 +6,19 @@ In the MCC, connections to each blockchain are made through a different [MCC obj
 
 > **NOTE:**
 > Networks are accessed through RPC endpoints that usually require some type of credentials.
-> To start a connection credentials must be provided through the ``MCCCreate`` object, which is different depending on the connected chain.
+> To start a connection credentials must be provided through the `MCCCreate` object, which is different depending on the connected chain.
 >
 > [Find more details here](./connectConfig.md).
 
-Let's take a look at the minimal example to query a block and a transaction from the Bitcoin network by their height and transaction id (``txid``) respectively:
+Let's take a look at the minimal example to query a block and a transaction from the Bitcoin network by their height and transaction id (`txid`) respectively:
 
-``` javascript
+```javascript
 // Configuration object
 const connectConfig = {
-   url: 'https://myAwesomeBtcNode.com/',
-   username: 'user',
-   password: 'pass',
-}
+   url: "https://myAwesomeBtcNode.com/",
+   username: "user",
+   password: "pass",
+};
 
 // MCC object used to connect to Bitcoin node
 const MccClient = new MCC.BTC(connectConfig);
@@ -33,7 +33,7 @@ console.log(block.number); // => 750000
 console.log(block.blockHash); // => '<hash>'
 
 // Query transaction
-const transaction = await MccClient.getTransaction('<txid>');
+const transaction = await MccClient.getTransaction("<txid>");
 
 // Log some details about the queried transaction
 // Transaction timestamp
@@ -44,11 +44,11 @@ console.log(transaction.sourceAddresses); // => [<address1>, <address2>, ...]
 
 Now, to get block and transaction objects from a totally different blockchain such as Ripple, you only need to change the initialization of the MCC client, everything else remains the same.
 
-``` javascript
+```javascript
 // Configuration object
 const connectConfig = {
-   url: 'https://myAwesomeXrpNode.com/',
-}
+   url: "https://myAwesomeXrpNode.com/",
+};
 
 // MCC object used to connect to Ripple node
 const MccClient = new MCC.XRP(connectConfig);
@@ -63,7 +63,7 @@ console.log(block.number); // => 750000
 console.log(block.blockHash); // => '<hash>'
 
 // Query transaction
-const transaction = await MccClient.getTransaction('<txid>');
+const transaction = await MccClient.getTransaction("<txid>");
 
 // Log some details about the queried transaction
 // Transaction timestamp
@@ -74,10 +74,10 @@ console.log(transaction.sourceAddresses); // => [<address1>]
 
 ## For more information
 
-- See all available MCC clients and their methods in the [mccClient object](./mccClient/mccClient.md).
+-  See all available MCC clients and their methods in the [mccClient object](./mccClient/mccClient.md).
 
-- Learn about the full content of the [block object](./blockObjects/BlockObject.md).
+-  Learn about the full content of the [block object](./blockObjects/BlockObject.md).
 
-- Learn about the full content of the [transaction object](./transactionObjects/TransactionObject.md)
+-  Learn about the full content of the [transaction object](./transactionObjects/TransactionObject.md)
 
 [Back to home](README.md)

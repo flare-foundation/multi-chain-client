@@ -23,9 +23,10 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
    }
 
    public get reference(): string[] {
-      if(this.data.note){
+      if (this.data.note) {
          return [bytesToHex(this.data.note)];
-      } return [""]  
+      }
+      return [""];
    }
 
    public get stdPaymentReference(): string {
@@ -145,7 +146,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       // TODO research this further
       return TransactionSuccessStatus.SUCCESS;
    }
-   
+
    public async paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       if (!this.isNativePayment) {
          return { isNativePayment: false };

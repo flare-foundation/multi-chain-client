@@ -50,7 +50,8 @@ export function hexToBytes(hex: string): Uint8Array {
 }
 
 // Convert a byte array to a hex string
-export function bytesToHex(bytes: Buffer | Uint8Array) { // should be buffer
+export function bytesToHex(bytes: Buffer | Uint8Array) {
+   // should be buffer
    for (var hex = [], i = 0; i < bytes.length; i++) {
       var current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
       hex.push((current >>> 4).toString(16));

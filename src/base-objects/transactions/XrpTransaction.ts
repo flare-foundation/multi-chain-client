@@ -149,23 +149,22 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public async paymentSummary(client: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       if (!this.isNativePayment) {
-         if(this.type === 'Payment'){
+         if (this.type === "Payment") {
             // token transfer
-            const value = ((this.data.result as Payment).Amount as IssuedCurrencyAmount).value
-            const valueSplit = value.split('.')
-            let eleUnits = 1
-            if(valueSplit.length === 2){
-               eleUnits = Math.pow(10,valueSplit[1].length)
-            }            
-            return({
+            const value = ((this.data.result as Payment).Amount as IssuedCurrencyAmount).value;
+            const valueSplit = value.split(".");
+            let eleUnits = 1;
+            if (valueSplit.length === 2) {
+               eleUnits = Math.pow(10, valueSplit[1].length);
+            }
+            return {
                isNativePayment: false,
                isTokenTransfer: true,
                tokenElementaryUnits: toBN(eleUnits),
-               receivedTokenAmount: toBN(valueSplit.join('')),
-               tokenName: this.currencyName
-            })
-         }
-         else {
+               receivedTokenAmount: toBN(valueSplit.join("")),
+               tokenName: this.currencyName,
+            };
+         } else {
             return { isNativePayment: false };
          }
       }
@@ -187,28 +186,28 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    //////////////////////////////
 
    public get isAccountCreate(): boolean {
-      if(this.type === 'Payment'){
-         if(this.data.result.meta){
-            if(typeof this.data.result.meta === 'string'){
-               return false
+      if (this.type === "Payment") {
+         if (this.data.result.meta) {
+            if (typeof this.data.result.meta === "string") {
+               return false;
             }
-            const Meta = this.data.result.meta as TransactionMetadata
-            for(let elem of Meta.AffectedNodes){
-               if('CreatedNode' in elem){
-                  if('NewFields' in elem.CreatedNode){
-                     if('Account' in elem.CreatedNode.NewFields){
-                        if(elem.CreatedNode.NewFields.Account === this.receivingAddresses[0]){
-                           return true
+            const Meta = this.data.result.meta as TransactionMetadata;
+            for (let elem of Meta.AffectedNodes) {
+               if ("CreatedNode" in elem) {
+                  if ("NewFields" in elem.CreatedNode) {
+                     if ("Account" in elem.CreatedNode.NewFields) {
+                        if (elem.CreatedNode.NewFields.Account === this.receivingAddresses[0]) {
+                           return true;
                         }
                      }
                   }
                }
             }
-            return false
+            return false;
          }
-          
-         return false
+
+         return false;
       }
-      return false
+      return false;
    }
 }

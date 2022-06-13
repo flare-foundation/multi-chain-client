@@ -1,9 +1,9 @@
 import { MCC, XrpNodeStatus } from "../../src";
 
 const XRPMccConnection = {
-   url: process.env.XRP_URL || '',
-   username: process.env.XRP_USERNAME || '',
-   password: process.env.XRP_PASSWORD || '',
+   url: process.env.XRP_URL || "",
+   username: process.env.XRP_USERNAME || "",
+   password: process.env.XRP_PASSWORD || "",
 };
 
 describe("Block Xrp base test ", function () {
@@ -13,8 +13,8 @@ describe("Block Xrp base test ", function () {
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
       const tStatus = await MccClient.getNodeStatus();
-      if(tStatus){
-         status = tStatus
+      if (tStatus) {
+         status = tStatus;
       }
    });
 

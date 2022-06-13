@@ -9,8 +9,9 @@ In the following documentation we will refer to response object of the RPC endpo
 ### Hash / TxId / stdTxid
 
 Each transaction response packs transaction hash as:
+
 ```javascript
-this.data.result.hash
+this.data.result.hash;
 ```
 
 ### reference
@@ -24,8 +25,9 @@ If there is only one reference that is a representation of 32 byte hex string it
 ### unixTimestamp
 
 Transaction network time we get from
+
 ```javascript
-this.data.result.date
+this.data.result.date;
 ```
 
 Adjusted to UNIX timestamp in seconds from 1.1.1970 (instead of ripples 1.1.2000)
@@ -33,22 +35,23 @@ Adjusted to UNIX timestamp in seconds from 1.1.1970 (instead of ripples 1.1.2000
 ### sourceAddress
 
 ```javascript
-[this.data.result.Account]
+[this.data.result.Account];
 ```
 
 ### receivingAddress
 
-for transactions of type `Payment` we return 
+for transactions of type `Payment` we return
+
 ```javascript
-[this.data.result.Destination]
+[this.data.result.Destination];
 ```
 
 ### fee
 
-fee used by transaction, always in XRP 
+fee used by transaction, always in XRP
 
 ```javascript
-this.data.result.Fee
+this.data.result.Fee;
 ```
 
 ### spentAmount
@@ -66,9 +69,11 @@ True: For all transactions where their type is `Payment` and the transfer is don
 ### currencyName
 
 XRP for native transactions
+
 ### elementaryUnits
 
 10^(-6) to get from XRP -> elementary unit
+
 ### successStatus
 
 The [following](https://xrpl.org/transaction-results.html) statuses should be considered
@@ -82,7 +87,6 @@ The [following](https://xrpl.org/transaction-results.html) statuses should be co
    -  [`tecNO_DST`](https://xrpl.org/tec-codes.html)
    -  [`tecNO_DST_INSUF_XRP`](https://xrpl.org/tec-codes.html)
    -  [`tecNO_PERMISSION`](https://xrpl.org/tec-codes.html)
-
 
 ## Resources
 

@@ -116,7 +116,7 @@ export interface IAlgoBlockMsgPack {
 }
 
 export interface IAlgoBlockAdditionalData {
-   transactionsObjects: AlgoTransaction[]
+   transactionsObjects: AlgoTransaction[];
 }
 
 export interface IAlgoSignature {
@@ -198,10 +198,10 @@ interface IALgoApar {
 
 //    amt?: number; // in pay
 //    apaa?: string[]; // in appl
-//    apas?: number[]; // in appl 
+//    apas?: number[]; // in appl
 //    apat?: string[]; // in appl
 //    apid?: number; // in appl
-//    apar?: IALgoApar; // in acfg 
+//    apar?: IALgoApar; // in acfg
 //    aamt?: number; // in axfer
 //    arcv?: string; // in axfer // AssetReceiver
 //    xaid?: number; // in axfer
@@ -215,7 +215,7 @@ export type IAlgoTransactionMsgPack = EncodedTransaction & {
    lsig?: Buffer; // l signature
    msig?: Buffer; // multi signature
    sgnr?: Buffer; // s signature
-}
+};
 
 export type AlgoTransactionTypeOptions = "pay" | "keyreg" | "acfg" | "axfer" | "afrz" | "appl";
 // * pay    -  payment-transaction

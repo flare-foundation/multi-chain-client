@@ -26,19 +26,17 @@ describe("Algo Transaction test ", function () {
    let MccClient: MCC.ALGO;
 
    // Testnet
-//    const TransactionsToTest = [
-//       { description: "Token Transfer transaction", txid: "DRR2GNWOBELIPHUO5PQA4PQLSFWOOIOLEH5B53RK3W2GLCOBOQTQ" },
-//       { description: "Transaction with one reference", txid: "HG5KBZ3JYRUZ7XVTNU3BCLCNICDRS7RMJ4FJVTMKOFVXOWAVO25Q" },
-//       { description: "Something odd ", txid: "BBKVLTZNWRRZ2JZIOTPYXDR7BMQ25DEC2HGMGZ5AWMOKYWCUNE4Q"},
-//   ];
+   //    const TransactionsToTest = [
+   //       { description: "Token Transfer transaction", txid: "DRR2GNWOBELIPHUO5PQA4PQLSFWOOIOLEH5B53RK3W2GLCOBOQTQ" },
+   //       { description: "Transaction with one reference", txid: "HG5KBZ3JYRUZ7XVTNU3BCLCNICDRS7RMJ4FJVTMKOFVXOWAVO25Q" },
+   //       { description: "Something odd ", txid: "BBKVLTZNWRRZ2JZIOTPYXDR7BMQ25DEC2HGMGZ5AWMOKYWCUNE4Q"},
+   //   ];
 
    // Mainnet
    const TransactionsToTest = [
-    { description: "my tx note as hex ", txid: "SKI4Z4WJZ7PJKLDL6CDXSNP7JWATKDVOXZVXUT7C2MWNGUA33DSQ" },
-    { description: "my tx note as text", txid: "IIFP4F6M2SHVOH6EM2ACCHEJXWB7CW5BPUSKRQQSSTBDREKDRGRQ" },
+      { description: "my tx note as hex ", txid: "SKI4Z4WJZ7PJKLDL6CDXSNP7JWATKDVOXZVXUT7C2MWNGUA33DSQ" },
+      { description: "my tx note as text", txid: "IIFP4F6M2SHVOH6EM2ACCHEJXWB7CW5BPUSKRQQSSTBDREKDRGRQ" },
    ];
-
-   
 
    before(async function () {
       MccClient = new MCC.ALGO(algoCreateConfig);

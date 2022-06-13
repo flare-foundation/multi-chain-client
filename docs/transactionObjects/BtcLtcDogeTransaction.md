@@ -156,12 +156,15 @@ All transactions on bitcoin network are native payment transactions
 Bitcoin: BTC
 Litecoin: LTC
 DOGECOIN: DOGE
+
 ### elementaryUnits
 
 Satoshies: 10^(-8)
+
 ### successStatus
 
 The status is always: `0` - Success.
+
 ## Resources
 
 1. https://bitcoin.stackexchange.com/questions/77699/whats-the-difference-between-txid-and-hash-getrawtransaction-bitcoind

@@ -3,9 +3,9 @@ import { BtcTransaction, MCC, MccClient, UtxoMccCreate, UtxoTransaction } from "
 import { IUtxoTransactionAdditionalData, IUtxoVinVoutsMapper } from "../../src/types/utxoTypes";
 
 const DogeMccConnection = {
-   url: process.env.DOGE_URL || '',
-   username: process.env.DOGE_USERNAME || '',
-   password: process.env.DOGE_PASSWORD || '',
+   url: process.env.DOGE_URL || "",
+   username: process.env.DOGE_USERNAME || "",
+   password: process.env.DOGE_PASSWORD || "",
 } as UtxoMccCreate;
 
 async function getVinVoutsAtIndex(index: number, trans: UtxoTransaction, client: MCC.BTC) {

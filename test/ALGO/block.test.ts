@@ -1,5 +1,5 @@
 import { AlgoBlock, base32ToHex, bufAddToCBufAdd, bytesToHex, hexToBase32, hexToBase64, MCC } from "../../src";
-const sha512_256 = require('js-sha512').sha512_256;
+const sha512_256 = require("js-sha512").sha512_256;
 import * as msgpack from "algo-msgpack-with-bigint";
 import algosdk from "algosdk";
 
@@ -21,8 +21,8 @@ describe(`Algo block processing`, async () => {
 
       before(async function () {
          MccClient = new MCC.ALGO(algoCreateConfig);
-        //  const currHeight = await MccClient.getBlockHeight();
-        //  console.log(currHeight);
+         //  const currHeight = await MccClient.getBlockHeight();
+         //  console.log(currHeight);
 
          let tblock = await MccClient.getBlock(21_374_440);
          if (tblock !== null) {

@@ -32,7 +32,7 @@ export async function sleepMs(ms: number) {
 }
 
 export function unPrefix0x(tx: string) {
-   if( !tx ) {
+   if (!tx) {
       //throw new Error( "unPrefix0x string null" );
       // console.error( `unPrefix0x null string`)
       return "0x0";
@@ -41,7 +41,7 @@ export function unPrefix0x(tx: string) {
 }
 
 export function prefix0x(tx: string) {
-   if( !tx ) {
+   if (!tx) {
       //throw new Error( "prefix0x string null" );
       // console.error( `prefix0x null string`)
       return "0x0";
@@ -118,7 +118,7 @@ export function defaultWarningCallback(message: string): void {
 export function defaultExceptionCallback(error: any, message: string): void {
    console.log(message);
    console.error(error);
-   if( error.stack ) {
+   if (error.stack) {
       console.error(error.stack);
    }
 }

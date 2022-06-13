@@ -12,7 +12,7 @@ export interface ReadRpcInterface extends BaseRpcInterface {
    isHealthy(): Promise<boolean>;
 
    // Block data
-   getBlock(blockNumberOrHash: number | string | any): Promise<IBlock | null> ;
+   getBlock(blockNumberOrHash: number | string | any): Promise<IBlock | null>;
    getBlockHeight(): Promise<number>;
    getBlockHashFromHeight?(height: number): Promise<string | null>;
 
@@ -21,17 +21,17 @@ export interface ReadRpcInterface extends BaseRpcInterface {
    getTopLiteBlocks?(branch_len: number): Promise<LiteBlock[]>;
 
    // Transaction data
-   getTransaction(txId: string, metaData?: getTransactionOptions): Promise<ITransaction | null> ;
+   getTransaction(txId: string, metaData?: getTransactionOptions): Promise<ITransaction | null>;
    listTransactions?(options?: any): any;
 
-   // status 
-   getNodeStatus(): Promise<INodeStatus | null> 
+   // status
+   getNodeStatus(): Promise<INodeStatus | null>;
 
    // bottom block in connected node (0 if nodes dont support partial history)
-   /** 
-    * The lowest block in the latest joined set of blocks 
+   /**
+    * The lowest block in the latest joined set of blocks
     */
-   getBottomBlockHeight(): Promise<number | null>
+   getBottomBlockHeight(): Promise<number | null>;
 }
 
 export interface WriteRpcInterface extends BaseRpcInterface {
@@ -127,7 +127,4 @@ export interface IGetLiteBlockRes {
    number: number;
 }
 
-
-export interface IEmptyObject {
-   
-}
+export interface IEmptyObject {}

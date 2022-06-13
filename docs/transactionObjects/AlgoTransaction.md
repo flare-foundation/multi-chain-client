@@ -11,8 +11,9 @@ In the following documentation we will refer to response object of the RPC endpo
 If transaction has id we return that in raw form (base32 encoded string)
 
 ```javascript
-this.data.transaction.id
+this.data.transaction.id;
 ```
+
 ### stdTxid
 
 Transaction id converted to 32 byte hex string with 0x prefix (standardized txid)
@@ -23,27 +24,27 @@ array of note field if note field was added to transaction
 
 ### standardizedPaymentReference
 
-if there is exactly one reference and it is a representation of 32 byte hex encoded string it is returned here, otherwise 0 reference is returned 
+if there is exactly one reference and it is a representation of 32 byte hex encoded string it is returned here, otherwise 0 reference is returned
 
 ### unixTimestamp
 
 Transaction round time (block time of a block that transaction is a part of)
 
 ```javascript
-this.data.transaction.roundTime
+this.data.transaction.roundTime;
 ```
 
 ### sourceAddress
 
-Array of length 1 that is 
+Array of length 1 that is
+
 ```javascript
-[this.data.transaction.sender]
+[this.data.transaction.sender];
 ```
 
 ### receivingAddress
 
 depending on type of transaction
-
 
 ### fee
 
@@ -53,8 +54,6 @@ depending on type of transaction
 
 ### type
 
-
-
 ### isNativePayment
 
 ### currencyName
@@ -62,7 +61,6 @@ depending on type of transaction
 ### elementaryUnits
 
 ### successStatus
-
 
 ## References
 

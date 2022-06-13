@@ -12,14 +12,14 @@ import { AlgoNodeStatus, MCC } from "../../src";
 // };
 
 const algoCreateConfig = {
-  algod: {
-     url: process.env.ALGO_ALGOD_URL_TEST || "",
-     token: process.env.ALGO_ALGOD_TOKEN_TEST || "",
-  },
-  indexer: {
-     url: process.env.ALGO_INDEXER_URL || "",
-     token: process.env.ALGO_INDEXER_TOKEN || "",
-  },
+   algod: {
+      url: process.env.ALGO_ALGOD_URL_TEST || "",
+      token: process.env.ALGO_ALGOD_TOKEN_TEST || "",
+   },
+   indexer: {
+      url: process.env.ALGO_INDEXER_URL || "",
+      token: process.env.ALGO_INDEXER_TOKEN || "",
+   },
 };
 
 describe("Block Algo base test ", function () {
@@ -29,8 +29,8 @@ describe("Block Algo base test ", function () {
    before(async function () {
       MccClient = new MCC.ALGO(algoCreateConfig);
       const tStatus = await MccClient.getNodeStatus();
-      if(tStatus){
-         status = tStatus
+      if (tStatus) {
+         status = tStatus;
       }
    });
 
@@ -56,7 +56,7 @@ describe("Block Algo base test ", function () {
 
    it("Should get full data ", async function () {
       console.log(status.data);
-      const b = await MccClient.getBlockHeader(status.bottomBlock)
+      const b = await MccClient.getBlockHeader(status.bottomBlock);
       console.log(b);
    });
 });

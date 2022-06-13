@@ -3,9 +3,9 @@ import { LedgerResponse } from "xrpl";
 import { MCC } from "../../src";
 
 const XRPMccConnection = {
-   url: process.env.XRP_URL || '',
-   username: process.env.XRP_USERNAME || '',
-   password: process.env.XRP_PASSWORD || '',
+   url: process.env.XRP_URL || "",
+   username: process.env.XRP_USERNAME || "",
+   password: process.env.XRP_PASSWORD || "",
 };
 
 describe("XRP testnet client tests", () => {
