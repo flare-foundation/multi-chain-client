@@ -47,6 +47,111 @@ export class XRPImplementation implements ReadRpcInterface {
       this.chainType = ChainType.XRP;
    }
 
+   /**
+    * @deprecated use getNodeStatus to get status object that holds the information about the health and more
+    * @returns
+    */
+   async isHealthy(): Promise<boolean> {
+      let res = await this.client.post("", {
+         method: "server_info",
+         params: [{}],
+      });
+      const validStates = ["full"];
+      xrp_ensure_data(res.data);
+      let state = res.data.result.info.server_state;
+      if (this.loggingObject.mode === "develop") this.loggingObject.loggingCallback(state);
+      return validStates.includes(state);
+   }
+
+   /**
+    * get NodeStatus object with information about node used to connect to underlying chain
+    * @external_docs https://xrpl.org/server_state.html
+    */
+   async getNodeStatus(): Promise<XrpNodeStatus | null> {
+      try {
+         let res = await this.client.post("", {
+            method: "server_state",
+            params: [],
+         });
+         xrp_ensure_data(res.data);
+         return new XrpNodeStatus(res.data as ServerStateResponse);
+      } catch (e) {
+         return null;
+      }
+   }
+
+   /**
+    * Get the height of the block from which the underlying node holds the full history
+    * @returns the block height of the first block in latest joined block set in node memory
+    */
+   async getBottomBlockHeight(): Promise<number | null> {
+      try {
+         let res = await this.client.post("", {
+            method: "server_state",
+            params: [],
+         });
+         xrp_ensure_data(res.data);
+         try {
+            const Ledgers = res.data.result.state.complete_ledgers.split(",").sort();
+            return parseInt(Ledgers[Ledgers.length - 1].split("-")[0]);
+         } catch (e) {
+            return null;
+         }
+      } catch (e) {
+         return null;
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Block methods //////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+
+   async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock | null> {
+      if (typeof blockNumberOrHash === "string") {
+         if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockNumberOrHash)) {
+            blockNumberOrHash = unPrefix0x(blockNumberOrHash);
+         }
+      }
+      try {
+         this.loggingObject.loggingCallback(`block number: ${blockNumberOrHash} `);
+
+         let res = await this.client.post("", {
+            method: "ledger",
+            params: [
+               {
+                  ledger_index: blockNumberOrHash,
+                  transactions: true,
+                  expand: true,
+                  binary: false,
+               } as LedgerRequest,
+            ],
+         });
+         xrp_ensure_data(res.data);
+         return new XrpBlock(res.data);
+      } catch (e: any) {
+         if (e?.result?.error === "lgrNotFound") {
+            return null;
+         }
+         if (e?.response?.status === 400) {
+            return null;
+         }
+         throw new Error(e);
+      }
+   }
+
+   async getBlockHeight(): Promise<number> {
+      let res = await this.client.post("", {
+         method: "ledger_closed",
+         params: [{}],
+      });
+      xrp_ensure_data(res.data);
+      return res.data.result.ledger_index;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Transaction methods ////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+
    async getTransaction(txId: string, options?: getTransactionOptions): Promise<XrpTransaction | null> {
       if (PREFIXED_STD_TXID_REGEX.test(txId)) {
          txId = unPrefix0x(txId);
@@ -83,63 +188,9 @@ export class XRPImplementation implements ReadRpcInterface {
       }
    }
 
-   /**
-    * @deprecated Use getNodeStatus to get server info
-    * @returns
-    */
-   async isHealthy(): Promise<boolean> {
-      let res = await this.client.post("", {
-         method: "server_info",
-         params: [{}],
-      });
-      const validStates = ["full"];
-      xrp_ensure_data(res.data);
-      let state = res.data.result.info.server_state;
-      if (this.loggingObject.mode === "develop") this.loggingObject.loggingCallback(state);
-      return validStates.includes(state);
-   }
-
-   async getBlockHeight(): Promise<number> {
-      let res = await this.client.post("", {
-         method: "ledger_closed",
-         params: [{}],
-      });
-      xrp_ensure_data(res.data);
-      return res.data.result.ledger_index;
-   }
-
-   async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock | null> {
-      if (typeof blockNumberOrHash === "string") {
-         if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockNumberOrHash)) {
-            blockNumberOrHash = unPrefix0x(blockNumberOrHash);
-         }
-      }
-      try {
-         this.loggingObject.loggingCallback(`block number: ${blockNumberOrHash} `);
-
-         let res = await this.client.post("", {
-            method: "ledger",
-            params: [
-               {
-                  ledger_index: blockNumberOrHash,
-                  transactions: true,
-                  expand: true,
-                  binary: false,
-               } as LedgerRequest,
-            ],
-         });
-         xrp_ensure_data(res.data);
-         return new XrpBlock(res.data);
-      } catch (e: any) {
-         if (e?.result?.error === "lgrNotFound") {
-            return null;
-         }
-         if (e?.response?.status === 400) {
-            return null;
-         }
-         throw new Error(e);
-      }
-   }
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Client specific methods ////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
 
    /**
     *
@@ -185,40 +236,5 @@ export class XRPImplementation implements ReadRpcInterface {
       });
       xrp_ensure_data(res.data);
       return res.data;
-   }
-
-   /**
-    * TODO implement
-    * @external_docs https://xrpl.org/server_state.html
-    */
-   async getNodeStatus(): Promise<XrpNodeStatus | null> {
-      try {
-         let res = await this.client.post("", {
-            method: "server_state",
-            params: [],
-         });
-         xrp_ensure_data(res.data);
-         return new XrpNodeStatus(res.data as ServerStateResponse);
-      } catch (e) {
-         return null;
-      }
-   }
-
-   async getBottomBlockHeight(): Promise<number | null> {
-      try {
-         let res = await this.client.post("", {
-            method: "server_state",
-            params: [],
-         });
-         xrp_ensure_data(res.data);
-         try {
-            const Ledgers = res.data.result.state.complete_ledgers.split(",").sort();
-            return parseInt(Ledgers[Ledgers.length - 1].split("-")[0]);
-         } catch (e) {
-            return null;
-         }
-      } catch (e) {
-         return null;
-      }
    }
 }
