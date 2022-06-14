@@ -12,13 +12,33 @@ export abstract class BlockBase<B> {
    public abstract get number(): number;
 
    /**
-    * 
+    * Block hash directly from underlying node
     */
    public abstract get blockHash(): string;
+
+   /**
+    * Flare standardized block hash (hex encoded string of length 64 (32 bytes) without 0x prefix)
+    */
    public abstract get stdBlockHash(): string;
+
+   /**
+    * block timestamp as unix time (elapsed seconds since 1.1.1970)
+    */
    public abstract get unixTimestamp(): number;
+   
+   /**
+    * Array of transaction ids of all transactions in block
+    */
    public abstract get transactionIds(): string[];
+
+   /**
+    * Array of flare standardized transaction ids in block (hex encoded string of length 64 (32 bytes) without 0x prefix)
+    */
    public abstract get stdTransactionIds(): string[];
+
+   /**
+    * Number of transactions in block
+    */
    public abstract get transactionCount(): number;
 }
 
