@@ -10,7 +10,12 @@ interface BaseRpcInterface {
 export interface ReadRpcInterface extends BaseRpcInterface {
    // General methods
    isHealthy(): Promise<boolean>;
-
+   getNodeStatus(): Promise<INodeStatus | null>;
+   /**
+    * The lowest block in the latest joined set of blocks
+    */
+   getBottomBlockHeight(): Promise<number | null>;
+   
    // Block data
    getBlock(blockNumberOrHash: number | string | any): Promise<IBlock | null>;
    getBlockHeight(): Promise<number>;
@@ -24,14 +29,7 @@ export interface ReadRpcInterface extends BaseRpcInterface {
    getTransaction(txId: string, metaData?: getTransactionOptions): Promise<ITransaction | null>;
    listTransactions?(options?: any): any;
 
-   // status
-   getNodeStatus(): Promise<INodeStatus | null>;
-
    // bottom block in connected node (0 if nodes dont support partial history)
-   /**
-    * The lowest block in the latest joined set of blocks
-    */
-   getBottomBlockHeight(): Promise<number | null>;
 }
 
 export interface WriteRpcInterface extends BaseRpcInterface {

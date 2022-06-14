@@ -15,4 +15,4 @@ Updates:
 - [ ] Standardize json Stringify (one implementation and use it everywhere)
 - [ ] Add getTransactionObjects() to block object that returns all transaction wrapped in trasnactionBase object of that underlying chain
 - [ ] Remove AlgoIndexerTrasnaction and AlgoIndexerBlock objects 
-
+- [ ] Add supported versions of underlying chains to mccClint for each chain

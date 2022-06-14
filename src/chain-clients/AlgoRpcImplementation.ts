@@ -3,7 +3,7 @@ import axios from "axios";
 import { AlgoBlock, AlgoIndexerBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { AlgoNodeStatus } from "../base-objects/StatusBase";
-import { AlgoIndexerTransaction } from "../base-objects/TransactionBase";
+import { AlgoIndexerTransaction, AlgoTransaction } from "../base-objects/TransactionBase";
 import {
    AlgoMccCreate,
    ChainType,
@@ -82,7 +82,7 @@ export class ALGOImplementation implements ReadRpcInterface {
    }
 
    /**
-    * @deprecated
+    * @deprecated use getNodeStatus to get status object that holds the information about the health and more
     * @returns
     */
    async isHealthy(): Promise<boolean> {
@@ -91,242 +91,8 @@ export class ALGOImplementation implements ReadRpcInterface {
       return response_code === 200;
    }
 
-   async getStatus(): Promise<IAlgoStatusRes> {
-      let res = await this.algodClient.get("v2/status");
-      algo_ensure_data(res);
-      return toCamelCase(res.data) as IAlgoStatusRes;
-   }
-
-   async getBlockHeaderCert(round: number): Promise<IAlgoCert> {
-      let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
-         responseType: "arraybuffer",
-         headres: { "Content-Type": "application/msgpack" },
-      });
-      algo_ensure_data(res);
-      const decoded = msgpack.decode(res.data) as IAlgoGetBlockHeaderRes;
-      return decoded.cert;
-   }
-
-   async getBlockHeader(round?: number): Promise<IAlgoGetBlockHeaderRes> {
-      if (round === undefined) {
-         const status = await this.getStatus();
-         round = status.lastRound;
-      }
-      let resorig = await this.algodClient.get(`/v2/blocks/${round}`);
-      // let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {responseType: 'arraybuffer', headres: {"Content-Type": "application/msgpack"}});
-
-      // // application/msgpack
-      // // responseEncoding: 'ascii',
-      // // console.log(res.data);
-      // const fs = require('fs')
-
-      // // fs.writeFile('neki.txt', res.data, (err:any) => {
-      // //     if (err) {
-      // //       console.error(err)
-      // //       return
-      // //     }
-      // //     //file written successfully
-      // //   })
-
-      // console.log(res.data)
-
-      // const decoded = msgpack.decode(res.data)
-
-      // // @ts-ignore
-      // console.log(decoded);
-
-      // console.log(resorig.data);
-
-      // // hexToBase32()
-
-      // // Block fees (base 32)
-      // console.log("fees")
-      // // @ts-ignore
-      // console.log(hexToBase32(decoded.block.fees))
-      // console.log(resorig.data.block.fees);
-
-      // // @ts-ignore
-      // console.log(decoded.block.fees)
-      // console.log(Buffer.from(hexToBytes(base32ToHex(resorig.data.block.fees))));
-
-      // // Block gh (base 64)
-      // console.log("gh")
-      // // @ts-ignore
-      // console.log(hexToBase64(decoded.block.gh))
-      // console.log(resorig.data.block.gh);
-
-      // // @ts-ignore
-      // console.log(decoded.block.gh)
-      // console.log(Buffer.from(hexToBytes(base64ToHex(resorig.data.block.gh))));
-
-      // // Block prev (base 32)
-      // console.log("prev")
-      // // @ts-ignore
-      // console.log(hexToBase32(decoded.block.prev))
-      // console.log(resorig.data.block.prev);
-      // // unprefix blk-
-      // console.log(resorig.data.block.prev.slice(4));
-
-      // // @ts-ignore
-      // console.log(decoded.block.prev)
-      // console.log(Buffer.from(hexToBytes(base32ToHex(resorig.data.block.prev))));
-      // // unprefix blk-
-      // console.log(Buffer.from(hexToBytes(base32ToHex(resorig.data.block.prev.slice(4)))));
-
-      // // Block rwd (base 32)
-      // console.log("rwd")
-      // // @ts-ignore
-      // console.log(hexToBase32(decoded.block.rwd))
-      // console.log(resorig.data.block.rwd);
-
-      // // @ts-ignore
-      // console.log(decoded.block.rwd)
-      // console.log(Buffer.from(hexToBytes(base32ToHex(resorig.data.block.rwd))));
-      // console.log(Buffer.from(hexToBytes(base32ToHex(resorig.data.block.rwd))).toString());
-
-      // const hash = crypto.createHash('sha256')
-      // // console.log(hash.digest('hex'));
-      // hash.update(Buffer.from(hexToBytes(base32ToHex(resorig.data.block.rwd))).toString())
-      // console.log(hash.digest('hex'));
-
-      // // Block seed (base 64)
-      // console.log("seed")
-      // // @ts-ignore
-      // console.log(hexToBase64(decoded.block.seed))
-      // console.log(resorig.data.block.seed);
-
-      // // @ts-ignore
-      // console.log(decoded.block.seed)
-      // console.log(Buffer.from(hexToBytes(base64ToHex(resorig.data.block.seed))));
-
-      // // Block txn (base 64)
-      // console.log("txn")
-      // // @ts-ignore
-      // console.log(hexToBase64(decoded.block.txn))
-      // console.log(resorig.data.block.txn);
-
-      // // @ts-ignore
-      // console.log(decoded.block.txn)
-      // console.log(Buffer.from(hexToBytes(base64ToHex(resorig.data.block.txn))));
-
-      // // msgpack specific
-
-      // // @ts-ignore
-      // console.log(decoded.cert.prop.dig);
-      // // @ts-ignore
-      // console.log(hexToBase32(decoded.cert.prop.dig))
-
-      algo_ensure_data(resorig);
-      let responseData = toCamelCase(resorig.data) as IAlgoGetBlockHeaderRes;
-      responseData.type = "IAlgoGetBlockHeaderRes";
-      return responseData;
-   }
-
-   async getBlock(round?: number): Promise<AlgoBlock | null> {
-      if (round === undefined) {
-         const status = await this.getStatus();
-         round = status.lastRound;
-      }
-      let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
-         responseType: "arraybuffer",
-         headres: { "Content-Type": "application/msgpack" },
-      });
-      if (algo_check_expect_block_out_of_range(res)) {
-         return null;
-      }
-      algo_ensure_data(res);
-      const decoded = mpDecode(res.data);
-      return new AlgoBlock(decoded as IAlgoBlockMsgPack);
-   }
-
-   async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock | null> {
-      if (!this.createConfig.indexer) {
-         // No indexer
-         return null;
-      }
-      if (round === undefined) {
-         const status = await this.getStatus();
-         round = status.lastRound - 1;
-      }
-      let res = await this.indexerClient.get(`/v2/blocks/${round}`);
-      if (algo_check_expect_block_out_of_range(res)) {
-         return null;
-      }
-      algo_ensure_data(res);
-      const cert = await this.getBlockHeaderCert(round);
-      let camelBlockRes = toCamelCase(res.data) as IAlgoGetBlockRes;
-      camelBlockRes.transactions = [];
-      camelBlockRes.type = "IAlgoGetBlockRes";
-      for (let key of Object.keys(res.data.transactions)) {
-         camelBlockRes.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
-      }
-      camelBlockRes.cert = cert;
-      return new AlgoIndexerBlock(camelBlockRes);
-   }
-
-   // async getBlockHashFromHeight(blockNumber: number): Promise<string | null> {
-   //    let header = await this.getBlockHeader(blockNumber);
-   //    if (header === null) {
-   //       return null;
-   //    } else {
-   //       console.log(header.cert);
-   //    }
-   //    // throw Error("Not Implemented")
-   //    return null;
-   // }
-
-   async getBlockHeight(): Promise<number> {
-      const blockData = await this.getBlockHeader();
-      return blockData.block.rnd;
-   }
-
    /**
-    * Get trasnaction from node by its id
-    * @param txid base32 encoded txid || standardized txid (prefixed or unprefixed)
-    * @returns
-    */
-   async getTransaction(txid: string): Promise<AlgoIndexerTransaction | null> {
-      if (!this.createConfig.indexer) {
-         // No indexer
-         return null;
-      }
-      if (PREFIXED_STD_TXID_REGEX.test(txid)) {
-         txid = hexToBase32(unPrefix0x(txid));
-      }
-      let res = await this.indexerClient.get(`/v2/transactions/${txid}`);
-      if (algo_check_expect_empty(res)) {
-         return null;
-      }
-      algo_ensure_data(res);
-      return new AlgoIndexerTransaction(toCamelCase(res.data) as IAlgoGetTransactionRes) as AlgoIndexerTransaction;
-   }
-
-   async listTransactions(options?: IAlgoLitsTransaction): Promise<IAlgoListTransactionRes | null> {
-      if (!this.createConfig.indexer) {
-         // No indexer
-         return null;
-      }
-      let snakeObject = {};
-      if (options !== undefined) {
-         snakeObject = toSnakeCase(options);
-      }
-      let res = await this.indexerClient.get(`/v2/transactions`, {
-         params: snakeObject,
-      });
-      algo_ensure_data(res);
-      let camelList = {
-         currentRound: res.data["current-round"],
-         nextToken: res.data["next-token"],
-         transactions: [] as IAlgoTransaction[],
-      };
-      for (let key of Object.keys(res.data.transactions)) {
-         camelList.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
-      }
-      return camelList as IAlgoListTransactionRes;
-   }
-
-   /**
-    * TODO implement
+    * Return node status object for Algo node
     */
    async getNodeStatus(): Promise<AlgoNodeStatus | null> {
       try {
@@ -377,5 +143,141 @@ export class ALGOImplementation implements ReadRpcInterface {
       } catch (e) {
          return null;
       }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Block methods //////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+
+   async getBlock(round?: number): Promise<AlgoBlock | null> {
+      if (round === undefined) {
+         const status = await this.getStatus();
+         round = status.lastRound;
+      }
+      let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
+         responseType: "arraybuffer",
+         headres: { "Content-Type": "application/msgpack" },
+      });
+      if (algo_check_expect_block_out_of_range(res)) {
+         return null;
+      }
+      algo_ensure_data(res);
+      const decoded = mpDecode(res.data);
+      return new AlgoBlock(decoded as IAlgoBlockMsgPack);
+   }
+
+   async getBlockHeight(): Promise<number> {
+      const blockData = await this.getBlockHeader();
+      return blockData.block.rnd;
+   }
+
+   async getTransaction(txid: string): Promise<AlgoTransaction | null> {
+      throw new Error("get transaction can't be used on Algod endpoint, use getIndexerTransaction or read transactions from block");
+   }
+
+   async listTransactions(options?: IAlgoLitsTransaction): Promise<IAlgoListTransactionRes | null> {
+      if (!this.createConfig.indexer) {
+         // No indexer
+         return null;
+      }
+      let snakeObject = {};
+      if (options !== undefined) {
+         snakeObject = toSnakeCase(options);
+      }
+      let res = await this.indexerClient.get(`/v2/transactions`, {
+         params: snakeObject,
+      });
+      algo_ensure_data(res);
+      let camelList = {
+         currentRound: res.data["current-round"],
+         nextToken: res.data["next-token"],
+         transactions: [] as IAlgoTransaction[],
+      };
+      for (let key of Object.keys(res.data.transactions)) {
+         camelList.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
+      }
+      return camelList as IAlgoListTransactionRes;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Client specific methods ////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+
+   async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock | null> {
+      if (!this.createConfig.indexer) {
+         // No indexer
+         return null;
+      }
+      if (round === undefined) {
+         const status = await this.getStatus();
+         round = status.lastRound - 1;
+      }
+      let res = await this.indexerClient.get(`/v2/blocks/${round}`);
+      if (algo_check_expect_block_out_of_range(res)) {
+         return null;
+      }
+      algo_ensure_data(res);
+      const cert = await this.getBlockHeaderCert(round);
+      let camelBlockRes = toCamelCase(res.data) as IAlgoGetBlockRes;
+      camelBlockRes.transactions = [];
+      camelBlockRes.type = "IAlgoGetBlockRes";
+      for (let key of Object.keys(res.data.transactions)) {
+         camelBlockRes.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
+      }
+      camelBlockRes.cert = cert;
+      return new AlgoIndexerBlock(camelBlockRes);
+   }
+
+   /**
+    * Get indexer transaction from node by its id
+    * @param txid base32 encoded txid || standardized txid (prefixed or unprefixed)
+    * @returns
+    */
+   async getIndexerTransaction(txid: string): Promise<AlgoIndexerTransaction | null> {
+      if (!this.createConfig.indexer) {
+         // No indexer
+         return null;
+      }
+      if (PREFIXED_STD_TXID_REGEX.test(txid)) {
+         txid = hexToBase32(unPrefix0x(txid));
+      }
+      let res = await this.indexerClient.get(`/v2/transactions/${txid}`);
+      if (algo_check_expect_empty(res)) {
+         return null;
+      }
+      algo_ensure_data(res);
+      return new AlgoIndexerTransaction(toCamelCase(res.data) as IAlgoGetTransactionRes) as AlgoIndexerTransaction;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Client helper (private) methods ////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+
+   private async getStatus(): Promise<IAlgoStatusRes> {
+      let res = await this.algodClient.get("v2/status");
+      algo_ensure_data(res);
+      return toCamelCase(res.data) as IAlgoStatusRes;
+   }
+
+   private async getBlockHeaderCert(round: number): Promise<IAlgoCert> {
+      let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
+         responseType: "arraybuffer",
+         headres: { "Content-Type": "application/msgpack" },
+      });
+      algo_ensure_data(res);
+      const decoded = msgpack.decode(res.data) as IAlgoGetBlockHeaderRes;
+      return decoded.cert;
+   }
+
+   private async getBlockHeader(round?: number): Promise<IAlgoGetBlockHeaderRes> {
+      if (round === undefined) {
+         const status = await this.getStatus();
+         round = status.lastRound;
+      }
+      let resorig = await this.algodClient.get(`/v2/blocks/${round}`);
+      algo_ensure_data(resorig);
+      let responseData = toCamelCase(resorig.data) as IAlgoGetBlockHeaderRes;
+      responseData.type = "IAlgoGetBlockHeaderRes";
+      return responseData;
    }
 }
