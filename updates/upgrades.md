@@ -1,7 +1,7 @@
 # Upgraders
 
 Priority Updates
-- [ ] Comments in BlockBase.ts
+- [x] Comments in BlockBase.ts
 
 Updates:
 - [ ] rewrite axios-rate-limit to TS
@@ -13,3 +13,6 @@ Updates:
   - [ ] Decide how to handle querrying data form possibli undefined objects (for example get number on AlgoBlock object)
   - [ ] Wrap all methods to try except in object base methods 
 - [ ] Standardize json Stringify (one implementation and use it everywhere)
+- [ ] Add getTransactionObjects() to block object that returns all transaction wrapped in trasnactionBase object of that underlying chain
+- [ ] Remove AlgoIndexerTrasnaction and AlgoIndexerBlock objects 
+
