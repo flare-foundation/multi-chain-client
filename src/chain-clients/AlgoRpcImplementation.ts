@@ -1,24 +1,22 @@
 import * as msgpack from "algo-msgpack-with-bigint";
 import axios from "axios";
-import { AlgoBlock, AlgoIndexerBlock, ReadRpcInterface } from "..";
+import { AlgoBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { AlgoNodeStatus } from "../base-objects/StatusBase";
 import { AlgoIndexerTransaction } from "../base-objects/TransactionBase";
 import {
    AlgoMccCreate,
    ChainType,
-   IAlgoGetBlockHeaderRes,
-   IAlgoGetBlockRes,
-   IAlgoGetTransactionRes,
+   IAlgoGetBlockHeaderRes, IAlgoGetTransactionRes,
    IAlgoListTransactionRes,
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
-   RateLimitOptions,
+   RateLimitOptions
 } from "../types";
 import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetStatus, IAlgoStatusObject } from "../types/algoTypes";
 import { MccLoggingOptionsFull } from "../types/genericMccTypes";
-import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, hexToBase32, hexToBase64, mpDecode } from "../utils/algoUtils";
+import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, hexToBase32, mpDecode } from "../utils/algoUtils";
 import { PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { defaultMccLoggingObject, fillWithDefault, toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
 
@@ -238,42 +236,6 @@ export class ALGOImplementation implements ReadRpcInterface {
       const decoded = mpDecode(res.data);
       return new AlgoBlock(decoded as IAlgoBlockMsgPack);
    }
-
-   async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock | null> {
-      if (!this.createConfig.indexer) {
-         // No indexer
-         return null;
-      }
-      if (round === undefined) {
-         const status = await this.getStatus();
-         round = status.lastRound - 1;
-      }
-      let res = await this.indexerClient.get(`/v2/blocks/${round}`);
-      if (algo_check_expect_block_out_of_range(res)) {
-         return null;
-      }
-      algo_ensure_data(res);
-      const cert = await this.getBlockHeaderCert(round);
-      let camelBlockRes = toCamelCase(res.data) as IAlgoGetBlockRes;
-      camelBlockRes.transactions = [];
-      camelBlockRes.type = "IAlgoGetBlockRes";
-      for (let key of Object.keys(res.data.transactions)) {
-         camelBlockRes.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
-      }
-      camelBlockRes.cert = cert;
-      return new AlgoIndexerBlock(camelBlockRes);
-   }
-
-   // async getBlockHashFromHeight(blockNumber: number): Promise<string | null> {
-   //    let header = await this.getBlockHeader(blockNumber);
-   //    if (header === null) {
-   //       return null;
-   //    } else {
-   //       console.log(header.cert);
-   //    }
-   //    // throw Error("Not Implemented")
-   //    return null;
-   // }
 
    async getBlockHeight(): Promise<number> {
       const blockData = await this.getBlockHeader();

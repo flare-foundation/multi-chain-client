@@ -22,7 +22,6 @@ export abstract class BlockBase<B> {
    public abstract get transactionCount(): number;
 }
 
-export { AlgoIndexerBlock } from "./blocks/AlgoIndexerBlock";
 export { AlgoBlock } from "./blocks/AlgoBlock";
 export { BtcBlock } from "./blocks/BtcBlock";
 export { DogeBlock } from "./blocks/DogeBlock";
