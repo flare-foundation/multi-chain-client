@@ -171,6 +171,10 @@ export class ALGOImplementation implements ReadRpcInterface {
       return blockData.block.rnd;
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Transaction methods ////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+   
    async getTransaction(txid: string): Promise<AlgoTransaction | null> {
       throw new Error("get transaction can't be used on Algod endpoint, use getIndexerTransaction or read transactions from block");
    }
