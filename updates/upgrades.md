@@ -10,5 +10,6 @@ Updates:
 - [ ] create run all tests script
 - [ ] create own or find alternative to "base32.js": "0.1.0",
 - [ ] Error handling standardized (throw new Error() vs throw MccError())
-  - [ ] Decide how to handle querrying data form possibli undefined objects (for example get number on AlgoBlock object) 
+  - [ ] Decide how to handle querrying data form possibli undefined objects (for example get number on AlgoBlock object)
+  - [ ] Wrap all methods to try except in object base methods 
 - [ ] Standardize json Stringify (one implementation and use it everywhere)
