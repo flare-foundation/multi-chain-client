@@ -3,12 +3,11 @@ import axios from "axios";
 import { AlgoBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { AlgoNodeStatus } from "../base-objects/StatusBase";
-import { AlgoIndexerTransaction, AlgoTransaction } from "../base-objects/TransactionBase";
+import { AlgoTransaction } from "../base-objects/TransactionBase";
 import {
    AlgoMccCreate,
    ChainType,
-   IAlgoGetBlockHeaderRes, IAlgoGetTransactionRes,
-   IAlgoListTransactionRes,
+   IAlgoGetBlockHeaderRes, IAlgoListTransactionRes,
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
@@ -16,9 +15,8 @@ import {
 } from "../types";
 import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetStatus, IAlgoStatusObject } from "../types/algoTypes";
 import { MccLoggingOptionsFull } from "../types/genericMccTypes";
-import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, hexToBase32, mpDecode } from "../utils/algoUtils";
-import { PREFIXED_STD_TXID_REGEX } from "../utils/constants";
-import { defaultMccLoggingObject, fillWithDefault, toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
+import { algo_check_expect_block_out_of_range, algo_ensure_data, mpDecode } from "../utils/algoUtils";
+import { defaultMccLoggingObject, fillWithDefault, toCamelCase, toSnakeCase } from "../utils/utils";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
@@ -172,7 +170,7 @@ export class ALGOImplementation implements ReadRpcInterface {
    ///////////////////////////////////////////////////////////////////////////////////////
    // Transaction methods ////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
-   
+
    async getTransaction(txid: string): Promise<AlgoTransaction | null> {
       throw new Error("get transaction can't be used on Algod endpoint, use getIndexerTransaction or read transactions from block");
    }
@@ -199,56 +197,6 @@ export class ALGOImplementation implements ReadRpcInterface {
          camelList.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
       }
       return camelList as IAlgoListTransactionRes;
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////
-   // Client specific methods ////////////////////////////////////////////////////////////
-   ///////////////////////////////////////////////////////////////////////////////////////
-
-   // async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock | null> {
-   //    if (!this.createConfig.indexer) {
-   //       // No indexer
-   //       return null;
-   //    }
-   //    if (round === undefined) {
-   //       const status = await this.getStatus();
-   //       round = status.lastRound - 1;
-   //    }
-   //    let res = await this.indexerClient.get(`/v2/blocks/${round}`);
-   //    if (algo_check_expect_block_out_of_range(res)) {
-   //       return null;
-   //    }
-   //    algo_ensure_data(res);
-   //    const cert = await this.getBlockHeaderCert(round);
-   //    let camelBlockRes = toCamelCase(res.data) as IAlgoGetBlockRes;
-   //    camelBlockRes.transactions = [];
-   //    camelBlockRes.type = "IAlgoGetBlockRes";
-   //    for (let key of Object.keys(res.data.transactions)) {
-   //       camelBlockRes.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
-   //    }
-   //    camelBlockRes.cert = cert;
-   //    return new AlgoIndexerBlock(camelBlockRes);
-   // }
-
-   /**
-    * Get indexer transaction from node by its id
-    * @param txid base32 encoded txid || standardized txid (prefixed or unprefixed)
-    * @returns
-    */
-   async getIndexerTransaction(txid: string): Promise<AlgoIndexerTransaction | null> {
-      if (!this.createConfig.indexer) {
-         // No indexer
-         return null;
-      }
-      if (PREFIXED_STD_TXID_REGEX.test(txid)) {
-         txid = hexToBase32(unPrefix0x(txid));
-      }
-      let res = await this.indexerClient.get(`/v2/transactions/${txid}`);
-      if (algo_check_expect_empty(res)) {
-         return null;
-      }
-      algo_ensure_data(res);
-      return new AlgoIndexerTransaction(toCamelCase(res.data) as IAlgoGetTransactionRes) as AlgoIndexerTransaction;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
