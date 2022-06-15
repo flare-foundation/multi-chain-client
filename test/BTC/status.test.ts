@@ -26,9 +26,6 @@ describe("Block BTC base test ", function () {
       console.log(status.state);
    });
 
-   it("Should get bottom Block ", async function () {
-      console.log(status.bottomBlock);
-   });
 
    it("Should get status isHealthy ", async function () {
       console.log(status.isHealthy);
