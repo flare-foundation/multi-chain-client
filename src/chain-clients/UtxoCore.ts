@@ -90,7 +90,7 @@ export class UtxoCore implements ReadRpcInterface {
     * On Utxo chains nodes always need full history
     * @returns 0
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async getBottomBlockHeight(): Promise<number> {
       return 0;
    }
@@ -140,17 +140,16 @@ export class UtxoCore implements ReadRpcInterface {
     * Get Block height (number of blocks) from connected chain
     * @returns block height (block count)
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async getBlockHeight(): Promise<number> {
-
-         let res = await this.client.post("", {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "getblockcount",
-            params: [],
-         });
-         utxo_ensure_data(res.data);
-         return res.data.result;
+      let res = await this.client.post("", {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "getblockcount",
+         params: [],
+      });
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -163,28 +162,27 @@ export class UtxoCore implements ReadRpcInterface {
     * @param options provide verbose:boolean, set true if you want more info such as block hash...
     * @returns transaction details
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async getTransaction(txId: string, options?: getTransactionOptions): Promise<UtxoTransaction | null> {
       if (PREFIXED_STD_TXID_REGEX.test(txId)) {
          txId = unPrefix0x(txId);
       }
       // TODO trow if txid does not match expected input
 
-         let verbose = true; // by default getting transaction is in verbose mode
-         let unTxId = unPrefix0x(txId);
-         let res = await this.client.post("", {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "getrawtransaction",
-            params: [unTxId, verbose],
-         });
-         // Error codes https://github.com/bitcoin/bitcoin/blob/master/src/rpc/protocol.h
-         if (utxo_check_expect_empty(res.data)) {
-            return null;
-         }
-         utxo_ensure_data(res.data);
-         return new this.transactionConstructor(res.data.result);
-
+      let verbose = true; // by default getting transaction is in verbose mode
+      let unTxId = unPrefix0x(txId);
+      let res = await this.client.post("", {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "getrawtransaction",
+         params: [unTxId, verbose],
+      });
+      // Error codes https://github.com/bitcoin/bitcoin/blob/master/src/rpc/protocol.h
+      if (utxo_check_expect_empty(res.data)) {
+         return null;
+      }
+      utxo_ensure_data(res.data);
+      return new this.transactionConstructor(res.data.result);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -196,29 +194,29 @@ export class UtxoCore implements ReadRpcInterface {
     * @param blockHash
     * @returns
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async getBlockHeader(blockHashOrHeight: string | number): Promise<IUtxoGetBlockHeaderRes | null> {
-         let blockHash: string | null = null;
-         if (typeof blockHashOrHeight === "string") {
-            blockHash = blockHashOrHeight as string;
-            if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockHash)) {
-               blockHash = unPrefix0x(blockHash);
-            }
-            // TODO match with some regex
-         } else if (typeof blockHashOrHeight === "number") {
-            blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
+      let blockHash: string | null = null;
+      if (typeof blockHashOrHeight === "string") {
+         blockHash = blockHashOrHeight as string;
+         if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockHash)) {
+            blockHash = unPrefix0x(blockHash);
          }
-         let res = await this.client.post("", {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "getblockheader",
-            params: [blockHash],
-         });
-         if (utxo_check_expect_empty(res.data)) {
-            return null;
-         }
-         utxo_ensure_data(res.data);
-         return res.data.result;
+         // TODO match with some regex
+      } else if (typeof blockHashOrHeight === "number") {
+         blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
+      }
+      let res = await this.client.post("", {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "getblockheader",
+         params: [blockHash],
+      });
+      if (utxo_check_expect_empty(res.data)) {
+         return null;
+      }
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 
    /**
@@ -226,7 +224,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param height_gte
     * @returns
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async getBlockTips(height_gte: number): Promise<LiteBlock[]> {
       return this.getBlockTipsHelper(height_gte);
    }
@@ -236,7 +234,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param branch_len the branch length indicating how long can branches be
     * @returns Array of LiteBlocks
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async getTopLiteBlocks(branch_len: number): Promise<LiteBlock[]> {
       const height = await this.getBlockHeight();
       return this.getBlockTipsHelper(height - branch_len, branch_len);
@@ -246,30 +244,30 @@ export class UtxoCore implements ReadRpcInterface {
     * Get an array of all alternative chain tips
     * @returns
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async getTopBlocks(option?: IUtxoGetAlternativeBlocksOptions): Promise<IUtxoGetAlternativeBlocksRes> {
-         let res = await this.client.post(``, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "getchaintips",
-            params: [],
-         });
-         utxo_ensure_data(res.data);
-         const gte_height = option?.height_gte || 0;
-         let response = res.data.result.filter((el: IUtxoChainTip) => {
-            return el.height >= gte_height;
-         });
+      let res = await this.client.post(``, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "getchaintips",
+         params: [],
+      });
+      utxo_ensure_data(res.data);
+      const gte_height = option?.height_gte || 0;
+      let response = res.data.result.filter((el: IUtxoChainTip) => {
+         return el.height >= gte_height;
+      });
 
-         if (option !== undefined) {
-            if (option.all_blocks !== undefined) {
-               let extended = response.map((el: IUtxoChainTip) => recursive_block_hash(this, el.hash, el.branchlen));
-               extended = await Promise.all(extended);
-               for (let i = 0; i < response.length; i++) {
-                  response[i].all_block_hashes = extended[i];
-               }
+      if (option !== undefined) {
+         if (option.all_blocks !== undefined) {
+            let extended = response.map((el: IUtxoChainTip) => recursive_block_hash(this, el.hash, el.branchlen));
+            extended = await Promise.all(extended);
+            for (let i = 0; i < response.length; i++) {
+               response[i].all_block_hashes = extended[i];
             }
          }
-         return response;
+      }
+      return response;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -280,20 +278,20 @@ export class UtxoCore implements ReadRpcInterface {
     * Get network info
     * @returns network info details
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    private async getNetworkInfo(retry = 0): Promise<any> {
-         let res = await this.client.post("", {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "getnetworkinfo",
-            params: [],
-         });
-         // Error codes https://github.com/bitcoin/bitcoin/blob/master/src/rpc/protocol.h
-         if (utxo_check_expect_empty(res.data)) {
-            return null;
-         }
-         utxo_ensure_data(res.data);
-         return res.data;
+      let res = await this.client.post("", {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "getnetworkinfo",
+         params: [],
+      });
+      // Error codes https://github.com/bitcoin/bitcoin/blob/master/src/rpc/protocol.h
+      if (utxo_check_expect_empty(res.data)) {
+         return null;
+      }
+      utxo_ensure_data(res.data);
+      return res.data;
    }
 
    /**
@@ -317,30 +315,30 @@ export class UtxoCore implements ReadRpcInterface {
    }
 
    /**
-    * 
-    * @param height_gte 
-    * @param mainBranchProcess 
-    * @returns 
+    *
+    * @param height_gte
+    * @param mainBranchProcess
+    * @returns
     */
    @AsyncTryCatchWrapper()
    private async getBlockTipsHelper(height_gte: number, mainBranchProcess?: number) {
-         const tips = await this.getTopBlocks({ height_gte: height_gte, all_blocks: true });
-         let mainBranchHashes: LiteBlock[] = [];
-         const activeTip = tips.filter((a) => a.status === "active")[0];
-         const ActiveTip = new LiteBlock({ hash: activeTip.hash, number: activeTip.height });
-         if (mainBranchProcess !== undefined) {
-            mainBranchHashes = await recursive_block_tip(this, ActiveTip, mainBranchProcess);
-         }
-         const allTips = tips.map((UtxoTip: IUtxoChainTip) => {
-            const tempTips = [];
-            if (UtxoTip.all_block_hashes) {
-               for (let hashIndex = 0; hashIndex < UtxoTip.all_block_hashes.length; hashIndex++) {
-                  tempTips.push(new LiteBlock({ hash: UtxoTip.all_block_hashes[hashIndex], number: UtxoTip.height - hashIndex }));
-               }
+      const tips = await this.getTopBlocks({ height_gte: height_gte, all_blocks: true });
+      let mainBranchHashes: LiteBlock[] = [];
+      const activeTip = tips.filter((a) => a.status === "active")[0];
+      const ActiveTip = new LiteBlock({ hash: activeTip.hash, number: activeTip.height });
+      if (mainBranchProcess !== undefined) {
+         mainBranchHashes = await recursive_block_tip(this, ActiveTip, mainBranchProcess);
+      }
+      const allTips = tips.map((UtxoTip: IUtxoChainTip) => {
+         const tempTips = [];
+         if (UtxoTip.all_block_hashes) {
+            for (let hashIndex = 0; hashIndex < UtxoTip.all_block_hashes.length; hashIndex++) {
+               tempTips.push(new LiteBlock({ hash: UtxoTip.all_block_hashes[hashIndex], number: UtxoTip.height - hashIndex }));
             }
-            return tempTips;
-         });
-         return allTips.reduce((acc: LiteBlock[], nev: LiteBlock[]) => acc.concat(nev), []).concat(mainBranchHashes);
+         }
+         return tempTips;
+      });
+      return allTips.reduce((acc: LiteBlock[], nev: LiteBlock[]) => acc.concat(nev), []).concat(mainBranchHashes);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -354,17 +352,17 @@ export class UtxoCore implements ReadRpcInterface {
     * @param walletLabel label of your wallet used as a reference for future use
     * @returns name of the created wallet and possible warnings
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async createWallet(walletLabel: string): Promise<IUtxoWalletRes> {
-         let res = await this.client.post("", {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "createwallet",
-            params: [walletLabel],
-         });
-         utxo_ensure_data(res.data);
-         // TODO try to import wallet if it already exists but is not imported
-         return res.data.result;
+      let res = await this.client.post("", {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "createwallet",
+         params: [walletLabel],
+      });
+      utxo_ensure_data(res.data);
+      // TODO try to import wallet if it already exists but is not imported
+      return res.data.result;
    }
 
    /**
@@ -372,16 +370,16 @@ export class UtxoCore implements ReadRpcInterface {
     * @param walletLabel wallet label to load
     * @returns
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async loadWallet(walletLabel: string): Promise<IUtxoWalletRes> {
-         let res = await this.client.post("", {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "loadwallet",
-            params: [walletLabel],
-         });
-         utxo_ensure_data(res.data);
-         return res.data.result;
+      let res = await this.client.post("", {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "loadwallet",
+         params: [walletLabel],
+      });
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 
    /**
@@ -391,32 +389,32 @@ export class UtxoCore implements ReadRpcInterface {
     * @param address_type type of address (default to "legacy") options = ["legacy", "p2sh-segwit", "bech32"]
     * @returns
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async createAddress(walletLabel: string, addressLabel: string = "", address_type: string = "legacy") {
-         let res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "getnewaddress",
-            params: [addressLabel, address_type],
-         });
-         utxo_ensure_data(res.data);
-         return res.data.result;
+      let res = await this.client.post(`wallet/${walletLabel}`, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "getnewaddress",
+         params: [addressLabel, address_type],
+      });
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 
    /**
     * List all wallets on node
     * @returns
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async listAllWallets(): Promise<string[]> {
-         let res = await this.client.post(``, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "listwallets",
-            params: [],
-         });
-         utxo_ensure_data(res.data);
-         return res.data.result;
+      let res = await this.client.post(``, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "listwallets",
+         params: [],
+      });
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 
    /**
@@ -425,21 +423,21 @@ export class UtxoCore implements ReadRpcInterface {
     * @param addressLabel label of the addresses we want to list
     * @returns
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async listAllAddressesByLabel(walletLabel: string, addressLabel: string = ""): Promise<getAddressByLabelResponse[]> {
-         let res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "getaddressesbylabel",
-            params: [addressLabel],
-         });
-         utxo_ensure_data(res.data);
-         let address_labels = Object.keys(res.data.result);
-         let response_array: getAddressByLabelResponse[] = [];
-         for (let addL of address_labels) {
-            response_array.push({ address: addL, purpose: res.data.result[addL].purpose });
-         }
-         return response_array;
+      let res = await this.client.post(`wallet/${walletLabel}`, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "getaddressesbylabel",
+         params: [addressLabel],
+      });
+      utxo_ensure_data(res.data);
+      let address_labels = Object.keys(res.data.result);
+      let response_array: getAddressByLabelResponse[] = [];
+      for (let addL of address_labels) {
+         response_array.push({ address: addL, purpose: res.data.result[addL].purpose });
+      }
+      return response_array;
    }
 
    /**
@@ -451,53 +449,53 @@ export class UtxoCore implements ReadRpcInterface {
     * @param max max block offset
     * @returns
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async listUnspentTransactions(walletLabel: string, min: number = 0, max: number = 1e6): Promise<IUtxoTransactionListRes[]> {
-         let res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "listunspent",
-            params: [min, max],
-         });
-         utxo_ensure_data(res.data);
-         return res.data.result;
+      let res = await this.client.post(`wallet/${walletLabel}`, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "listunspent",
+         params: [min, max],
+      });
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 
    @AsyncTryCatchWrapper()
    async createRawTransaction(walletLabel: string, vin: IIUtxoVin[], out: IIUtxoVout[]) {
-         let voutArr = "[";
-         let first = true;
-         for (let i of out) {
-            if (first) {
-               first = false;
-            } else {
-               voutArr += ",";
-            }
-            let row = `{"${i.address}" : ${i.amount}}`;
-            voutArr += row;
+      let voutArr = "[";
+      let first = true;
+      for (let i of out) {
+         if (first) {
+            first = false;
+         } else {
+            voutArr += ",";
          }
-         voutArr += "]";
-         let VoutArr = JSON.parse(voutArr);
-         let res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "createrawtransaction",
-            params: [vin, VoutArr],
-         });
-         utxo_ensure_data(res.data);
-         return res.data.result;
+         let row = `{"${i.address}" : ${i.amount}}`;
+         voutArr += row;
+      }
+      voutArr += "]";
+      let VoutArr = JSON.parse(voutArr);
+      let res = await this.client.post(`wallet/${walletLabel}`, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "createrawtransaction",
+         params: [vin, VoutArr],
+      });
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 
    @AsyncTryCatchWrapper()
    async signRawTransaction(walletLabel: string, rawTx: string, keysList: string[]) {
-         let res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "signrawtransactionwithkey",
-            params: [rawTx, keysList],
-         });
-         utxo_ensure_data(res.data);
-         return res.data.result;
+      let res = await this.client.post(`wallet/${walletLabel}`, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "signrawtransactionwithkey",
+         params: [rawTx, keysList],
+      });
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 
    /**
@@ -506,16 +504,16 @@ export class UtxoCore implements ReadRpcInterface {
     * @param signedRawTx hash of signed transaction
     * @returns transaction sending status
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async sendRawTransaction(walletLabel: string, signedRawTx: string) {
-         let res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "sendrawtransaction",
-            params: [signedRawTx],
-         });
-         utxo_ensure_data(res.data);
-         return res.data.result;
+      let res = await this.client.post(`wallet/${walletLabel}`, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "sendrawtransaction",
+         params: [signedRawTx],
+      });
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 
    /**
@@ -524,21 +522,21 @@ export class UtxoCore implements ReadRpcInterface {
     * @param signedRawTx hash of signed transaction
     * @returns transaction sending status
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async sendRawTransactionInBlock(walletLabel: string, signedRawTx: string) {
-         let res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "sendrawtransaction",
-            params: [signedRawTx],
-         });
-         utxo_ensure_data(res.data);
-         let tx = await this.getTransaction(res.data.result);
-         while (tx?.data.blockhash) {
-            await sleepMs(3000);
-            tx = await this.getTransaction(res.data.result);
-         }
-         return res.data.result;
+      let res = await this.client.post(`wallet/${walletLabel}`, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "sendrawtransaction",
+         params: [signedRawTx],
+      });
+      utxo_ensure_data(res.data);
+      let tx = await this.getTransaction(res.data.result);
+      while (tx?.data.blockhash) {
+         await sleepMs(3000);
+         tx = await this.getTransaction(res.data.result);
+      }
+      return res.data.result;
    }
 
    /**
@@ -548,16 +546,16 @@ export class UtxoCore implements ReadRpcInterface {
     * @param address
     * @returns private key
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async getPrivateKey(walletLabel: string, address: string) {
-         let res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "dumpprivkey",
-            params: [address],
-         });
-         utxo_ensure_data(res.data);
-         return res.data.result;
+      let res = await this.client.post(`wallet/${walletLabel}`, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "dumpprivkey",
+         params: [address],
+      });
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -572,18 +570,18 @@ export class UtxoCore implements ReadRpcInterface {
     * @param amount
     * @returns
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async fundAddress(address: string, amount: number) {
-         if (!this.inRegTest) {
-            throw Error("You have to run client in regression test mode to use this ");
-         }
-         let res = await this.client.post(`wallet/miner`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "sendtoaddress",
-            params: [address, amount],
-         });
-         utxo_ensure_data(res.data);
-         return res.data.result;
+      if (!this.inRegTest) {
+         throw Error("You have to run client in regression test mode to use this ");
+      }
+      let res = await this.client.post(`wallet/miner`, {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "sendtoaddress",
+         params: [address, amount],
+      });
+      utxo_ensure_data(res.data);
+      return res.data.result;
    }
 }
