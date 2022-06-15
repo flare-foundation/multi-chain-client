@@ -1,5 +1,7 @@
+import { mccSettings } from "../../global-settings/globalSettings";
 import { IAlgoBlockMsgPack, IAlgoTransactionMsgPack } from "../../types";
 import { bufAddToCBufAdd, bytesToHex, hexToBase32, hexToBase64, SignedTransactionWithAD } from "../../utils/algoUtils";
+import { mccJsonStringify } from "../../utils/utils";
 import { BlockBase } from "../BlockBase";
 import { AlgoTransaction } from "../TransactionBase";
 
@@ -87,12 +89,7 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
          } catch (e) {
             // TODO logger
             // TODO What happens if there is a transaction we dont know how to process
-            console.log(
-               `Unable to process transaction ${JSON.stringify(
-                  transactionBase,
-                  (key, value) => (typeof value === "bigint" ? value.toString() : value) // return everything else unchanged
-               )}`
-            );
+            mccSettings.loggingCallback(`Unable to process transaction ${mccJsonStringify(transactionBase)}`);
             throw e;
          }
       }

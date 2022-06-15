@@ -15,11 +15,10 @@ export interface ReadRpcInterface extends BaseRpcInterface {
     * The lowest block in the latest joined set of blocks
     */
    getBottomBlockHeight(): Promise<number | null>;
-   
+
    // Block data
    getBlock(blockNumberOrHash: number | string | any): Promise<IBlock | null>;
    getBlockHeight(): Promise<number>;
-   getBlockHashFromHeight?(height: number): Promise<string | null>;
 
    // To be used with chain tip indexer processing
    getBlockTips?(height_gte: number): Promise<LiteBlock[]>;
