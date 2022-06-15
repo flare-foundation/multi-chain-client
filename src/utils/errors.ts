@@ -132,7 +132,12 @@ export function TryCatchWrapper() {
                   return res;
                }
                return new Promise((resolve, reject) => {
-                  res.then(resolve).catch(reject);
+                  res.then(resolve).catch((error: any) => {
+                     if (error?.name === MCC_ERROR) {
+                        reject(error);
+                     }
+                     reject(new mccOutsideError(error));      
+                  });
                })
             } catch (error: any) {
                if (error?.name === MCC_ERROR) {
