@@ -83,21 +83,66 @@ export function SyncTryCatchWrapper() {
 
 export function GetTryCatchWrapper() {
    return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
-       
-       if(descriptor.get){
-        const originalGet = descriptor.get;
-        descriptor.get = function () {
-           try {
-              return originalGet();
-           } catch (error: any) {
-              if (error?.name === MCC_ERROR) {
-                 throw error;
-              }
-              throw new mccOutsideError(error);
-           }
-        };
-       }
-      
+
+      if (descriptor.get) {
+         const originalGet = descriptor.get;
+         descriptor.get = function () {
+            try {
+               return originalGet();
+            } catch (error: any) {
+               if (error?.name === MCC_ERROR) {
+                  throw error;
+               }
+               throw new mccOutsideError(error);
+            }
+         };
+      }
+
+      return descriptor;
+   };
+}
+
+export function isPromise(p: any) {
+   if (typeof p === 'object' && typeof p.then === 'function') {
+      return true;
+   }
+   return false;
+}
+
+export function TryCatchWrapper() {
+   return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
+      if (descriptor.get) {
+         const originalGet = descriptor.get;
+         descriptor.get = function () {
+            try {
+               return originalGet();
+            } catch (error: any) {
+               if (error?.name === MCC_ERROR) {
+                  throw error;
+               }
+               throw new mccOutsideError(error);
+            }
+         };
+      } else if (typeof descriptor.value === "function") {
+         const originalFn = descriptor.value;
+         descriptor.value = function (...args: any[]) {
+            try {
+               let res = originalFn.apply(this, args);
+               if (!isPromise(res)) {
+                  return res;
+               }
+               return new Promise((resolve, reject) => {
+                  res.then(resolve).catch(reject);
+               })
+            } catch (error: any) {
+               if (error?.name === MCC_ERROR) {
+                  throw error;
+               }
+               throw new mccOutsideError(error);
+            }
+         };
+
+      }
       return descriptor;
    };
 }
