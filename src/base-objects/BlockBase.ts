@@ -25,7 +25,7 @@ export abstract class BlockBase<B> {
     * block timestamp as unix time (elapsed seconds since 1.1.1970)
     */
    public abstract get unixTimestamp(): number;
-   
+
    /**
     * Array of transaction ids of all transactions in block
     */

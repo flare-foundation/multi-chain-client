@@ -82,8 +82,7 @@ describe("ALGO utils tests ", () => {
    });
 
    describe("ALGO checksum ", () => {
-      it.skip("shoud be able to calculate checksum ", async function () {
-      });
+      it.skip("shoud be able to calculate checksum ", async function () {});
    });
 
    it("decode base32", async () => {});

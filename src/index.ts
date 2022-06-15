@@ -123,5 +123,5 @@ export * from "./utils/typeReflection";
 // retry logic
 export * from "./utils/retry";
 
-// Types 
+// Types
 export * from "./types";

@@ -1,35 +1,30 @@
 import { IUtxoGetBlockRes } from "../../types";
-import { mccOutsideError } from "../../utils/errors";
+import { GetTryCatchWrapper, mccOutsideError } from "../../utils/errors";
 import { prefix0x } from "../../utils/utils";
 import { BlockBase } from "../BlockBase";
 
 export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
+   @GetTryCatchWrapper()
    public get number(): number {
-      try {
-         return this.data.height;
-      }
-      catch (error) {
-         throw new mccOutsideError(error);
-      }
+      return this.data.height;
    }
 
+   @GetTryCatchWrapper()
    public get blockHash(): string {
-      try {
-         return this.data.hash;
-      }
-      catch (error) {
-         throw new mccOutsideError(error);
-      }
+      return this.data.hash;
    }
 
+   @GetTryCatchWrapper()
    public get stdBlockHash(): string {
       return this.data.hash;
    }
 
+   @GetTryCatchWrapper()
    public get unixTimestamp(): number {
       return this.data.time;
    }
 
+   @GetTryCatchWrapper()
    public get transactionIds(): string[] {
       return this.data.tx!.map((tx) => {
          if (!tx) {
@@ -55,11 +50,13 @@ export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
       });
    }
 
+   @GetTryCatchWrapper()
    public get stdTransactionIds(): string[] {
       // todo: @Luka: tx is already Id on DOGE
       return this.data.tx!.map((tx) => (tx.txid ? tx.txid : (tx as any as string)));
    }
 
+   @GetTryCatchWrapper()
    public get transactionCount(): number {
       return this.data.tx.length;
    }

@@ -107,15 +107,9 @@ export function isValidBytes32Hex(address: string) {
 ////////// json stringify wrapper //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export function mccJsonStringify(toStringify: any){
-   return JSON.stringify(
-      toStringify,
-      (key, value) => (typeof value === "bigint" ? value.toString() : value),
-      2
-   )
+export function mccJsonStringify(toStringify: any) {
+   return JSON.stringify(toStringify, (key, value) => (typeof value === "bigint" ? value.toString() : value), 2);
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////// Default logging and exception callbacks /////////////////////////////////////////////////

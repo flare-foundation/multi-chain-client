@@ -4,22 +4,27 @@ import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { MccClient, TransactionSuccessStatus } from "../../types";
 import { IXrpGetTransactionRes } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
+import { AsyncTryCatchWrapper, GetTryCatchWrapper } from "../../utils/errors";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 
 export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> {
+   @GetTryCatchWrapper()
    public get txid(): string {
       return this.hash;
    }
 
+   @GetTryCatchWrapper()
    public get stdTxid(): string {
       return this.txid;
    }
 
+   @GetTryCatchWrapper()
    public get hash(): string {
       return this.data.result.hash;
    }
 
+   @GetTryCatchWrapper()
    public get reference(): string[] {
       if (this.data.result.Memos) {
          return this.data.result.Memos.map((memoobj: Memo) => {
@@ -29,6 +34,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return [];
    }
 
+   @GetTryCatchWrapper()
    public get stdPaymentReference(): string {
       let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
       if (!isValidBytes32Hex(paymentReference)) {
@@ -37,6 +43,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return paymentReference;
    }
 
+   @GetTryCatchWrapper()
    public get unixTimestamp(): number {
       return (
          XRP_UTD +
@@ -45,10 +52,12 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       );
    }
 
+   @GetTryCatchWrapper()
    public get sourceAddresses(): string[] {
       return [this.data.result.Account];
    }
 
+   @GetTryCatchWrapper()
    public get receivingAddresses(): string[] {
       if (this.data.result.TransactionType == "Payment") {
          let payment = this.data.result as Payment;
@@ -58,6 +67,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return [];
    }
 
+   @GetTryCatchWrapper()
    public get fee(): BN {
       if (!this.data.result.Fee) {
          return toBN(0);
@@ -65,6 +75,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return toBN(this.data.result.Fee);
    }
 
+   @GetTryCatchWrapper()
    public get spentAmounts(): AddressAmount[] {
       if (this.isNativePayment) {
          let payment = this.data.result as Payment;
@@ -84,6 +95,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       ];
    }
 
+   @GetTryCatchWrapper()
    public get receivedAmounts(): AddressAmount[] {
       let metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
       if (this.isNativePayment) {
@@ -97,15 +109,18 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return [];
    }
 
+   @GetTryCatchWrapper()
    public get type(): string {
       return this.data.result.TransactionType;
       // Possible types available at Transaction object in xrpl lib
    }
 
+   @GetTryCatchWrapper()
    public get isNativePayment(): boolean {
       return this.currencyName === XRP_NATIVE_TOKEN_NAME;
    }
 
+   @GetTryCatchWrapper()
    public get currencyName(): string {
       // With ripple this is currency code
       if (this.type === "Payment") {
@@ -118,11 +133,13 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return "";
    }
 
+   @GetTryCatchWrapper()
    public get elementaryUnits(): BN {
       // TODO this is dependent on currency we are using
       return toBN(XRP_MDU);
    }
 
+   @GetTryCatchWrapper()
    public get successStatus(): TransactionSuccessStatus {
       // https://xrpl.org/transaction-results.html
       let metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
@@ -147,6 +164,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return TransactionSuccessStatus.SENDER_FAILURE;
    }
 
+   @AsyncTryCatchWrapper()
    public async paymentSummary(client: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       if (!this.isNativePayment) {
          if (this.type === "Payment") {
@@ -185,6 +203,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    //// Xrp specific methods ////
    //////////////////////////////
 
+   @GetTryCatchWrapper()
    public get isAccountCreate(): boolean {
       if (this.type === "Payment") {
          if (this.data.result.meta) {

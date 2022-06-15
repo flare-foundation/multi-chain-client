@@ -1,6 +1,6 @@
 import { mccSettings } from "../global-settings/globalSettings";
 
-const MCC_ERROR = "mccError"
+const MCC_ERROR = "mccError";
 
 export enum mccErrorCode {
    InvalidParameter,
@@ -11,6 +11,8 @@ export enum mccErrorCode {
    InvalidTransaction,
 
    InvalidResponse,
+
+   InvalidMethodCall,
 
    OutsideError,
 }
@@ -49,32 +51,49 @@ export function AsyncTryCatchWrapper() {
       const originalFn = descriptor.value;
       descriptor.value = async function (...args: any[]) {
          try {
-             return await originalFn.apply(this, args);
+            return await originalFn.apply(this, args);
          } catch (error: any) {
-             if(error?.name === MCC_ERROR){
-                throw error
-             }
-             
+            if (error?.name === MCC_ERROR) {
+               throw error;
+            }
+
             throw new mccOutsideError(error);
          }
       };
       return descriptor;
    };
-};
+}
 
 export function SyncTryCatchWrapper() {
-    return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
-       const originalFn = descriptor.value;
-       descriptor.value = function (...args: any[]) {
-          try {
-              return originalFn.apply(this, args);
-          } catch (error: any) {
-              if(error?.name === MCC_ERROR){
-                 throw error
-              }
-             throw new mccOutsideError(error);
-          }
-       };
-       return descriptor;
-    };
- };
+   return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
+      const originalFn = descriptor.value;
+      descriptor.value = function (...args: any[]) {
+         try {
+            return originalFn.apply(this, args);
+         } catch (error: any) {
+            if (error?.name === MCC_ERROR) {
+               throw error;
+            }
+            throw new mccOutsideError(error);
+         }
+      };
+      return descriptor;
+   };
+}
+
+export function GetTryCatchWrapper() {
+   return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
+      const originalGet = descriptor.get;
+      descriptor.get = function (...args: any[]) {
+         try {
+            return originalGet?.apply(this);
+         } catch (error: any) {
+            if (error?.name === MCC_ERROR) {
+               throw error;
+            }
+            throw new mccOutsideError(error);
+         }
+      };
+      return descriptor;
+   };
+}

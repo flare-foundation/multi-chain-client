@@ -27,6 +27,7 @@ Mcc Client
    -  [AlgoTransaction](./transactionObjects/AlgoTransaction.md)
 
 [External docs]()
-   - [XRP](https://xrpl.org/ledger.html#ledger)
-   - [UTXO](https://developer.bitcoin.org/reference/rpc/)
-   - [ALGO](https://developer.algorand.org/docs/rest-apis/algod/v2/#getblock-response-200) 
+
+-  [XRP](https://xrpl.org/ledger.html#ledger)
+-  [UTXO](https://developer.bitcoin.org/reference/rpc/)
+-  [ALGO](https://developer.algorand.org/docs/rest-apis/algod/v2/#getblock-response-200)

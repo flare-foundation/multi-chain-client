@@ -48,11 +48,10 @@ export function Trace() {
                printArgs(target.name, methodName, args);
                let ret = original.apply(this, args);
                if (typeof ret.then === "function") {
-                ret.then(() => console.log("<= %s.%s: %s", target.name, methodName, ret));
-             } else {
-                console.log("<= %s.%s: %s", target.name, methodName, ret);
-             }
-               
+                  ret.then(() => console.log("<= %s.%s: %s", target.name, methodName, ret));
+               } else {
+                  console.log("<= %s.%s: %s", target.name, methodName, ret);
+               }
 
                return ret;
             };

@@ -65,19 +65,19 @@ export class XRPImplementation implements ReadRpcInterface {
     * Get the height of the block from which the underlying node holds the full history
     * @returns the block height of the first block in latest joined block set in node memory
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async getBottomBlockHeight(): Promise<number> {
-         let res = await this.client.post("", {
-            method: "server_state",
-            params: [],
-         });
-         xrp_ensure_data(res.data);
-         try {
-            const Ledgers = res.data.result.state.complete_ledgers.split(",").sort();
-            return parseInt(Ledgers[Ledgers.length - 1].split("-")[0]);
-         } catch (e) {
-            throw new mccOutsideError(e);
-         }
+      let res = await this.client.post("", {
+         method: "server_state",
+         params: [],
+      });
+      xrp_ensure_data(res.data);
+      try {
+         const Ledgers = res.data.result.state.complete_ledgers.split(",").sort();
+         return parseInt(Ledgers[Ledgers.length - 1].split("-")[0]);
+      } catch (e) {
+         throw new mccOutsideError(e);
+      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////

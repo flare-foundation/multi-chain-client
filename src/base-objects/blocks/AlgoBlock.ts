@@ -1,6 +1,7 @@
 import { mccSettings } from "../../global-settings/globalSettings";
 import { IAlgoBlockMsgPack, IAlgoTransactionMsgPack } from "../../types";
 import { bufAddToCBufAdd, bytesToHex, hexToBase32, hexToBase64, SignedTransactionWithAD } from "../../utils/algoUtils";
+import { GetTryCatchWrapper, SyncTryCatchWrapper } from "../../utils/errors";
 import { mccJsonStringify } from "../../utils/utils";
 import { BlockBase } from "../BlockBase";
 import { AlgoTransaction } from "../TransactionBase";
@@ -13,48 +14,58 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
       this.processTransactions();
    }
 
+   @GetTryCatchWrapper()
    public get number(): number {
       return this.data?.block?.rnd;
    }
 
+   @GetTryCatchWrapper()
    public get blockHash(): string {
       return hexToBase64(this.data.cert.prop.dig);
    }
 
    // Algo special
+   @GetTryCatchWrapper()
    public get blockHashBase32(): string {
       return hexToBase32(this.data.cert.prop.dig);
    }
 
    // Algo special
+   @GetTryCatchWrapper()
    public get blockHashBase64(): string {
       return hexToBase64(this.data.cert.prop.dig);
    }
 
+   @GetTryCatchWrapper()
    public get stdBlockHash(): string {
       return bytesToHex(this.data?.cert?.prop?.dig);
    }
 
+   @GetTryCatchWrapper()
    public get unixTimestamp(): number {
       return this.data?.block?.ts;
    }
 
+   @GetTryCatchWrapper()
    public get transactionIds(): string[] {
       return this.transactionObjects.map((trasn) => {
          return trasn.txid;
       });
    }
 
+   @GetTryCatchWrapper()
    public get stdTransactionIds(): string[] {
       return this.transactionObjects.map((trasn) => {
          return trasn.stdTxid;
       });
    }
 
+   @GetTryCatchWrapper()
    public get transactions(): AlgoTransaction[] {
       return this.transactionObjects;
    }
 
+   @GetTryCatchWrapper()
    public get transactionCount(): number {
       if (!this.data.block.txns) {
          return 0;
@@ -66,6 +77,7 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    //// Additional transaction objects ////
    ////////////////////////////////////////
 
+   @SyncTryCatchWrapper()
    processTransactions() {
       this.transactionObjects = [];
       for (let transactionBase of this.data.block.txns) {
@@ -90,7 +102,7 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
             // TODO logger
             // TODO What happens if there is a transaction we dont know how to process
             mccSettings.loggingCallback(`Unable to process transaction ${mccJsonStringify(transactionBase)}`);
-            throw e;
+            // throw e;
          }
       }
    }

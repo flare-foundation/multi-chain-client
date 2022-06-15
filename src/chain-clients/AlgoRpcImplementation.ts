@@ -7,11 +7,12 @@ import { AlgoTransaction } from "../base-objects/TransactionBase";
 import {
    AlgoMccCreate,
    ChainType,
-   IAlgoGetBlockHeaderRes, IAlgoListTransactionRes,
+   IAlgoGetBlockHeaderRes,
+   IAlgoListTransactionRes,
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
-   RateLimitOptions
+   RateLimitOptions,
 } from "../types";
 import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetStatus, IAlgoStatusObject } from "../types/algoTypes";
 import { algo_check_expect_block_out_of_range, algo_ensure_data, mpDecode } from "../utils/algoUtils";
@@ -76,7 +77,7 @@ export class ALGOImplementation implements ReadRpcInterface {
    /**
     * Return node status object for Algo node
     */
-    @AsyncTryCatchWrapper()
+   @AsyncTryCatchWrapper()
    async getNodeStatus(): Promise<AlgoNodeStatus | null> {
       try {
          let res = await this.algodClient.get("health");
@@ -163,11 +164,11 @@ export class ALGOImplementation implements ReadRpcInterface {
 
    /**
     * get Transaction cannot be called on algorand's algod client, use getIndexerTransaction instead or get transactions from block
-    * @param txid 
+    * @param txid
     */
    @AsyncTryCatchWrapper()
    async getTransaction(txid: string): Promise<AlgoTransaction> {
-      throw new mccError(mccErrorCode.InvalidMethodCall)
+      throw new mccError(mccErrorCode.InvalidMethodCall);
    }
 
    @AsyncTryCatchWrapper()
@@ -198,7 +199,7 @@ export class ALGOImplementation implements ReadRpcInterface {
    ///////////////////////////////////////////////////////////////////////////////////////
    // Client helper (private) methods ////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
-   
+
    @AsyncTryCatchWrapper()
    private async getStatus(): Promise<IAlgoStatusRes> {
       let res = await this.algodClient.get("v2/status");
