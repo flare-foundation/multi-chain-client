@@ -14,9 +14,9 @@ import {
    RateLimitOptions
 } from "../types";
 import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetStatus, IAlgoStatusObject } from "../types/algoTypes";
-import { MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { algo_check_expect_block_out_of_range, algo_ensure_data, mpDecode } from "../utils/algoUtils";
-import { defaultMccLoggingObject, fillWithDefault, toCamelCase, toSnakeCase } from "../utils/utils";
+import { AsyncTryCatchWrapper, mccError, mccErrorCode } from "../utils/errors";
+import { toCamelCase, toSnakeCase } from "../utils/utils";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
@@ -32,7 +32,6 @@ export class ALGOImplementation implements ReadRpcInterface {
    indexerClient: any;
    chainType: ChainType;
    inRegTest: boolean;
-   loggingObject: MccLoggingOptionsFull;
    createConfig: AlgoMccCreate;
 
    constructor(createConfig: AlgoMccCreate) {
@@ -71,25 +70,13 @@ export class ALGOImplementation implements ReadRpcInterface {
       } else {
          this.inRegTest = createConfig.inRegTest;
       }
-
-      this.loggingObject = createConfig.loggingOptions ? fillWithDefault(createConfig.loggingOptions) : defaultMccLoggingObject();
-
       this.chainType = ChainType.ALGO;
-   }
-
-   /**
-    * @deprecated use getNodeStatus to get status object that holds the information about the health and more
-    * @returns
-    */
-   async isHealthy(): Promise<boolean> {
-      let res = await this.algodClient.get("health"); // TODO all apps must be healthy
-      const response_code = res.status;
-      return response_code === 200;
    }
 
    /**
     * Return node status object for Algo node
     */
+    @AsyncTryCatchWrapper()
    async getNodeStatus(): Promise<AlgoNodeStatus | null> {
       try {
          let res = await this.algodClient.get("health");
@@ -114,6 +101,7 @@ export class ALGOImplementation implements ReadRpcInterface {
       }
    }
 
+   @AsyncTryCatchWrapper()
    async getBottomBlockHeight(): Promise<number | null> {
       try {
          let bottomBlockHeight = await this.getBlockHeight();
@@ -145,6 +133,7 @@ export class ALGOImplementation implements ReadRpcInterface {
    // Block methods //////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
+   @AsyncTryCatchWrapper()
    async getBlock(round?: number): Promise<AlgoBlock | null> {
       if (round === undefined) {
          const status = await this.getStatus();
@@ -162,6 +151,7 @@ export class ALGOImplementation implements ReadRpcInterface {
       return new AlgoBlock(decoded as IAlgoBlockMsgPack);
    }
 
+   @AsyncTryCatchWrapper()
    async getBlockHeight(): Promise<number> {
       const blockData = await this.getBlockHeader();
       return blockData.block.rnd;
@@ -171,10 +161,16 @@ export class ALGOImplementation implements ReadRpcInterface {
    // Transaction methods ////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   async getTransaction(txid: string): Promise<AlgoTransaction | null> {
-      throw new Error("get transaction can't be used on Algod endpoint, use getIndexerTransaction or read transactions from block");
+   /**
+    * get Transaction cannot be called on algorand's algod client, use getIndexerTransaction instead or get transactions from block
+    * @param txid 
+    */
+   @AsyncTryCatchWrapper()
+   async getTransaction(txid: string): Promise<AlgoTransaction> {
+      throw new mccError(mccErrorCode.InvalidMethodCall)
    }
 
+   @AsyncTryCatchWrapper()
    async listTransactions(options?: IAlgoLitsTransaction): Promise<IAlgoListTransactionRes | null> {
       if (!this.createConfig.indexer) {
          // No indexer
@@ -202,13 +198,15 @@ export class ALGOImplementation implements ReadRpcInterface {
    ///////////////////////////////////////////////////////////////////////////////////////
    // Client helper (private) methods ////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
-
+   
+   @AsyncTryCatchWrapper()
    private async getStatus(): Promise<IAlgoStatusRes> {
       let res = await this.algodClient.get("v2/status");
       algo_ensure_data(res);
       return toCamelCase(res.data) as IAlgoStatusRes;
    }
 
+   @AsyncTryCatchWrapper()
    private async getBlockHeaderCert(round: number): Promise<IAlgoCert> {
       let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
          responseType: "arraybuffer",
@@ -219,6 +217,7 @@ export class ALGOImplementation implements ReadRpcInterface {
       return decoded.cert;
    }
 
+   @AsyncTryCatchWrapper()
    private async getBlockHeader(round?: number): Promise<IAlgoGetBlockHeaderRes> {
       if (round === undefined) {
          const status = await this.getStatus();

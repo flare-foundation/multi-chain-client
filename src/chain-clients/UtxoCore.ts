@@ -11,14 +11,14 @@ import {
    IUtxoTransactionListRes,
    IUtxoWalletRes,
    RateLimitOptions,
-   UtxoMccCreate,
+   UtxoMccCreate
 } from "../types";
-import { ChainType, MccLoggingOptionsFull, ReadRpcInterface } from "../types/genericMccTypes";
+import { ChainType, ReadRpcInterface } from "../types/genericMccTypes";
 import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes, IUtxoNodeStatus } from "../types/utxoTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
-import { AsyncTryCatchWrapper, mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
+import { AsyncTryCatchWrapper, mccError, mccErrorCode } from "../utils/errors";
 import { Trace } from "../utils/trace";
-import { defaultMccLoggingObject, fillWithDefault, sleepMs, unPrefix0x } from "../utils/utils";
+import { sleepMs, unPrefix0x } from "../utils/utils";
 import { recursive_block_hash, recursive_block_tip, utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
 
 const DEFAULT_TIMEOUT = 60000;
@@ -32,7 +32,6 @@ export class UtxoCore implements ReadRpcInterface {
    inRegTest: boolean;
    transactionConstructor: any;
    blockConstructor: any;
-   loggingObject: MccLoggingOptionsFull;
    chainType: ChainType;
 
    constructor(createConfig: UtxoMccCreate) {
@@ -53,8 +52,6 @@ export class UtxoCore implements ReadRpcInterface {
          ...createConfig.rateLimitOptions,
       });
       this.inRegTest = createConfig.inRegTest || false;
-
-      this.loggingObject = createConfig.loggingOptions ? fillWithDefault(createConfig.loggingOptions) : defaultMccLoggingObject();
 
       // This has to be shadowed
       this.transactionConstructor = UtxoTransaction;

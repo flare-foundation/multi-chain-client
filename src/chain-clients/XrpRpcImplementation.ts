@@ -3,10 +3,12 @@ import { AccountInfoResponse, AccountTxResponse, LedgerRequest, ServerStateRespo
 import { XrpBlock, XrpTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { XrpNodeStatus } from "../base-objects/StatusBase";
+import { mccSettings } from "../global-settings/globalSettings";
 import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxRequest, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
-import { MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
-import { defaultMccLoggingObject, fillWithDefault, unPrefix0x } from "../utils/utils";
+import { AsyncTryCatchWrapper, mccOutsideError } from "../utils/errors";
+import { Trace } from "../utils/trace";
+import { unPrefix0x } from "../utils/utils";
 import { xrp_ensure_data } from "../utils/xrpUtils";
 
 const DEFAULT_TIMEOUT = 15000;
@@ -14,12 +16,12 @@ const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
    maxRPS: 5,
 };
 
+@Trace()
 export class XRPImplementation implements ReadRpcInterface {
    rippleApi: any;
    client: any;
    inRegTest: any;
    chainType: ChainType;
-   loggingObject: MccLoggingOptionsFull;
 
    constructor(createConfig: XrpMccCreate) {
       const createAxiosConfig: AxiosRequestConfig = {
@@ -42,50 +44,29 @@ export class XRPImplementation implements ReadRpcInterface {
          ...createConfig.rateLimitOptions,
       });
       this.inRegTest = createConfig.inRegTest || false;
-      this.loggingObject = createConfig.loggingOptions ? fillWithDefault(createConfig.loggingOptions) : defaultMccLoggingObject();
-
       this.chainType = ChainType.XRP;
-   }
-
-   /**
-    * @deprecated use getNodeStatus to get status object that holds the information about the health and more
-    * @returns
-    */
-   async isHealthy(): Promise<boolean> {
-      let res = await this.client.post("", {
-         method: "server_info",
-         params: [{}],
-      });
-      const validStates = ["full"];
-      xrp_ensure_data(res.data);
-      let state = res.data.result.info.server_state;
-      if (this.loggingObject.mode === "develop") this.loggingObject.loggingCallback(state);
-      return validStates.includes(state);
    }
 
    /**
     * get NodeStatus object with information about node used to connect to underlying chain
     * @external_docs https://xrpl.org/server_state.html
     */
-   async getNodeStatus(): Promise<XrpNodeStatus | null> {
-      try {
-         let res = await this.client.post("", {
-            method: "server_state",
-            params: [],
-         });
-         xrp_ensure_data(res.data);
-         return new XrpNodeStatus(res.data as ServerStateResponse);
-      } catch (e) {
-         return null;
-      }
+   @AsyncTryCatchWrapper()
+   async getNodeStatus(): Promise<XrpNodeStatus> {
+      let res = await this.client.post("", {
+         method: "server_state",
+         params: [],
+      });
+      xrp_ensure_data(res.data);
+      return new XrpNodeStatus(res.data as ServerStateResponse);
    }
 
    /**
     * Get the height of the block from which the underlying node holds the full history
     * @returns the block height of the first block in latest joined block set in node memory
     */
-   async getBottomBlockHeight(): Promise<number | null> {
-      try {
+    @AsyncTryCatchWrapper()
+   async getBottomBlockHeight(): Promise<number> {
          let res = await this.client.post("", {
             method: "server_state",
             params: [],
@@ -95,17 +76,15 @@ export class XRPImplementation implements ReadRpcInterface {
             const Ledgers = res.data.result.state.complete_ledgers.split(",").sort();
             return parseInt(Ledgers[Ledgers.length - 1].split("-")[0]);
          } catch (e) {
-            return null;
+            throw new mccOutsideError(e);
          }
-      } catch (e) {
-         return null;
-      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
    // Block methods //////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
+   @AsyncTryCatchWrapper()
    async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock | null> {
       if (typeof blockNumberOrHash === "string") {
          if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockNumberOrHash)) {
@@ -113,7 +92,7 @@ export class XRPImplementation implements ReadRpcInterface {
          }
       }
       try {
-         this.loggingObject.loggingCallback(`block number: ${blockNumberOrHash} `);
+         mccSettings.loggingCallback(`block number: ${blockNumberOrHash} `);
 
          let res = await this.client.post("", {
             method: "ledger",
@@ -139,6 +118,7 @@ export class XRPImplementation implements ReadRpcInterface {
       }
    }
 
+   @AsyncTryCatchWrapper()
    async getBlockHeight(): Promise<number> {
       let res = await this.client.post("", {
          method: "ledger_closed",
@@ -152,6 +132,7 @@ export class XRPImplementation implements ReadRpcInterface {
    // Transaction methods ////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
+   @AsyncTryCatchWrapper()
    async getTransaction(txId: string, options?: getTransactionOptions): Promise<XrpTransaction | null> {
       if (PREFIXED_STD_TXID_REGEX.test(txId)) {
          txId = unPrefix0x(txId);
@@ -198,6 +179,7 @@ export class XRPImplementation implements ReadRpcInterface {
     * @param upperBound either blockHash or block number for the upper bound (The information does not contain any changes from ledger versions newer than this one.)
     * @returns
     */
+   @AsyncTryCatchWrapper()
    async getAccountInfo(account: string, upperBound: number | string = "current"): Promise<AccountInfoResponse> {
       const params = {
          account: account,
@@ -210,11 +192,11 @@ export class XRPImplementation implements ReadRpcInterface {
       } else if (typeof upperBound === "string") {
          params.ledger_hash = upperBound;
       } else {
-         this.loggingObject.exceptionCallback(upperBound, "Invalid upperBound parameter");
+         mccSettings.errorCallback(upperBound, "Invalid upperBound parameter");
       }
       // AccountInfoRequest
-      this.loggingObject.loggingCallback("Call Params");
-      this.loggingObject.loggingCallback(JSON.stringify(params));
+      mccSettings.loggingCallback("Call Params");
+      mccSettings.loggingCallback(JSON.stringify(params));
       let res = await this.client.post("", {
          method: "account_info",
          params: [params],
@@ -223,13 +205,14 @@ export class XRPImplementation implements ReadRpcInterface {
       return res.data;
    }
 
+   @AsyncTryCatchWrapper()
    async getAccountTransactions(account: string, lowerBound: number = -1, upperBound: number = -1): Promise<AccountTxResponse> {
       const params = {
          account: account,
       } as IAccountTxRequest;
       params.ledger_index_min = lowerBound;
       params.ledger_index_max = upperBound;
-      this.loggingObject.loggingCallback(JSON.stringify(params));
+      mccSettings.loggingCallback(JSON.stringify(params));
       let res = await this.client.post("", {
          method: "account_tx",
          params: [params],
