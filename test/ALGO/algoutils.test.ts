@@ -82,18 +82,7 @@ describe("ALGO utils tests ", () => {
    });
 
    describe("ALGO checksum ", () => {
-      it("bytesarray checksum ", async function () {
-         const a = "07dacb4b6d9ed141b17576bd459ae6421d486da3d4ef2247c409a396b82ea221";
-         const expected = "07dacb4b6d9ed141b17576bd459ae6421d486da3d4ef2247c409a396b82ea22173a02619";
-
-         console.log(hexToBytes(a));
-         console.log(bytesToHex(hexToBytes(a)));
-         console.log(a);
-         let SHA256 = require("crypto-js/sha256");
-         let hash = SHA256(hexToBytes(a));
-         console.log(hash);
-         let byts = Buffer.from(hash);
-         console.log(byts);
+      it.skip("shoud be able to calculate checksum ", async function () {
       });
    });
 
