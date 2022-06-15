@@ -15,4 +15,5 @@ dist
 *.tgz
 
 ### Updatres folder for docs
-updates/*
+# updates/*
+personal/
