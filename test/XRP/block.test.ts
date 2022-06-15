@@ -12,7 +12,6 @@ describe("Block Xrp base test ", function () {
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
-      console.log(await MccClient.isHealthy());
       // let tblock = await MccClient.getBlock(70_015_100);
       let height = await MccClient.getBlockHeight();
       console.log(height);

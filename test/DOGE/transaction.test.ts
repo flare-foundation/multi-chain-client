@@ -63,7 +63,7 @@ describe("Transaction DOGE base test ", function () {
       const txid = "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d37786156ff";
 
       it("Should get network version ", async function () {
-         let res = await MccClient.getNetworkInfo();
+         let res = await MccClient.getNodeStatus();
          console.log(res);
       });
 

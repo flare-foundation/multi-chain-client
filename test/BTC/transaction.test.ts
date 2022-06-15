@@ -113,12 +113,6 @@ describe("Transaction Btc base test ", function () {
          console.log(transaction.unixTimestamp);
       });
 
-      it("Should get source address ", async function () {
-         let res = await MccClient.getNetworkInfo();
-         console.log(res);
-         console.log(transaction.sourceAddresses);
-      });
-
       it("Should get receiving address ", async function () {
          console.log(transaction.receivingAddresses);
       });

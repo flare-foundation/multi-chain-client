@@ -32,20 +32,6 @@ describe("BTC mainnet client tests", () => {
          expect(header).to.equal(null);
       });
 
-      it("Should get null for wrong height (out of range) ", async function () {
-         const blockhash = 1000000;
-         let header = await MccClient.getBlockHashFromHeight(blockhash);
-         // console.log(header);
-         expect(header).to.equal(null);
-      });
-
-      it("Should get null for wrong height huge block number ", async function () {
-         const blockhash = 50000000000;
-         let header = await MccClient.getBlockHashFromHeight(blockhash);
-         // console.log(header);
-         expect(header).to.equal(null);
-      });
-
       it("Should get null from get block fow invalid data ", async function () {
          const blockhash = 1000000;
          let header = await MccClient.getBlock(blockhash);

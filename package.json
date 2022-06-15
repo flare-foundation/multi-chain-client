@@ -27,7 +27,7 @@
       "pack": "npm pack",
       "build": "tsc --allowJs",
       "test": "mocha -r ts-node/register -r dotenv/config -t 0",
-      "test_all": "mocha -r ts-node/register -r dotenv/config test/*.ts"
+      "test_all": "mocha -r ts-node/register -r dotenv/config test/**/*.ts"
    },
    "dependencies": {
       "algo-msgpack-with-bigint": "2.1.1",

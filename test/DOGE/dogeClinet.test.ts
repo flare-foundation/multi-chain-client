@@ -27,9 +27,9 @@ describe("DOGE client tests", () => {
          it("should get transaction data", async function () {
             // Note that this transaction may not exist if we reset the node
             let tx = "242cd280ec9ce026900d18665b296c784f15ce22360296655bcdfedd55ffbec4";
-            let tx_data = await DOGE_RPC.getTransaction(tx, { verbose: true });
+            let tx_data = await DOGE_RPC.getTransaction(tx);
             const tx_block_hash = "011b06ce85759bcd0ca7e9eb60d55b4e267686d26b8f00607ac8271c86f85e34";
-            expect(tx_data.blockhash).to.equal(tx_block_hash);
+            expect(tx_data?.data?.blockhash).to.equal(tx_block_hash);
          });
       });
    }

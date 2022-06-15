@@ -29,15 +29,6 @@ describe("XRP ripple client tests", () => {
       expect(a).to.greaterThan(0);
    });
 
-   it("should check if healthy", async function () {
-      const XRP = new MCC.XRP({ url: public_url });
-      let res = await XRP.isHealthy();
-
-      console.log(res);
-
-      expect(res).to.eq(true);
-   });
-
    describe(`Public XRP ripple client tests`, () => {
       it("should get tx data for existing tx", async function () {
          const XRP = new MCC.XRP({ url: public_url });

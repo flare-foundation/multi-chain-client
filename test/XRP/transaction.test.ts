@@ -11,7 +11,6 @@ describe("Transaction Xrp tests ", function () {
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
-      console.log(MccClient.isHealthy());
    });
 
    describe("Transaction with one reference ", function () {

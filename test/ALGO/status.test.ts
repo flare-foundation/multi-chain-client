@@ -42,10 +42,6 @@ describe("Block Algo base test ", function () {
       console.log(status.state);
    });
 
-   it("Should get bottom Block ", async function () {
-      console.log(status.bottomBlock);
-   });
-
    it("Should get status isHealthy ", async function () {
       console.log(status.isHealthy);
    });
@@ -54,9 +50,4 @@ describe("Block Algo base test ", function () {
       console.log(status.isSynced);
    });
 
-   it("Should get full data ", async function () {
-      console.log(status.data);
-      const b = await MccClient.getBlockHeader(status.bottomBlock);
-      console.log(b);
-   });
 });

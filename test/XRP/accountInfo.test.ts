@@ -14,7 +14,6 @@ describe("Xrpl account test mainnet ", function () {
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
-      console.log(await MccClient.isHealthy());
    });
 
    describe("account info", async () => {
@@ -84,7 +83,6 @@ describe("Xrpl account test testnet ", function () {
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnectionTest);
-      console.log(await MccClient.isHealthy());
    });
 
    describe("account info", async () => {

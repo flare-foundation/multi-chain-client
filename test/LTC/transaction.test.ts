@@ -113,7 +113,6 @@ describe("Transaction Ltc base test ", function () {
       });
 
       it("Should get source address ", async function () {
-         let res = await MccClient.getNetworkInfo();
          console.log(transaction.sourceAddresses);
       });
 
