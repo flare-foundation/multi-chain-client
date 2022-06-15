@@ -135,7 +135,7 @@ export class ALGOImplementation implements ReadRpcInterface {
    ///////////////////////////////////////////////////////////////////////////////////////
 
    @AsyncTryCatchWrapper()
-   async getBlock(round?: number): Promise<AlgoBlock | null> {
+   async getBlock(round?: number): Promise<AlgoBlock> {
       if (round === undefined) {
          const status = await this.getStatus();
          round = status.lastRound;
@@ -145,7 +145,7 @@ export class ALGOImplementation implements ReadRpcInterface {
          headres: { "Content-Type": "application/msgpack" },
       });
       if (algo_check_expect_block_out_of_range(res)) {
-         return null;
+         throw new mccError(mccErrorCode.InvalidBlock);
       }
       algo_ensure_data(res);
       const decoded = mpDecode(res.data);

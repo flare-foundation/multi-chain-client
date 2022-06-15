@@ -18,16 +18,13 @@ describe(`Algo block processing`, async () => {
 
       before(async function () {
          MccClient = new MCC.ALGO(algoCreateConfig);
-         //  const currHeight = await MccClient.getBlockHeight();
-         //  console.log(currHeight);
+         block = await MccClient.getBlock(21_374_440);
 
-         let tblock = await MccClient.getBlock(21_374_440);
-         if (tblock !== null) {
-            block = tblock;
-         }
+         console.log("We have block");
+         
       });
 
-      it("Should get block number ", async function () {
+      it.only("Should get block number ", async function () {
          console.log(block.number);
       });
 

@@ -83,17 +83,21 @@ export function SyncTryCatchWrapper() {
 
 export function GetTryCatchWrapper() {
    return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
-      const originalGet = descriptor.get;
-      descriptor.get = function (...args: any[]) {
-         try {
-            return originalGet?.apply(this);
-         } catch (error: any) {
-            if (error?.name === MCC_ERROR) {
-               throw error;
-            }
-            throw new mccOutsideError(error);
-         }
-      };
+       
+       if(descriptor.get){
+        const originalGet = descriptor.get;
+        descriptor.get = function () {
+           try {
+              return originalGet();
+           } catch (error: any) {
+              if (error?.name === MCC_ERROR) {
+                 throw error;
+              }
+              throw new mccOutsideError(error);
+           }
+        };
+       }
+      
       return descriptor;
    };
 }

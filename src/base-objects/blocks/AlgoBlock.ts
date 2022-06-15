@@ -2,10 +2,12 @@ import { mccSettings } from "../../global-settings/globalSettings";
 import { IAlgoBlockMsgPack, IAlgoTransactionMsgPack } from "../../types";
 import { bufAddToCBufAdd, bytesToHex, hexToBase32, hexToBase64, SignedTransactionWithAD } from "../../utils/algoUtils";
 import { GetTryCatchWrapper, SyncTryCatchWrapper } from "../../utils/errors";
+import { Trace } from "../../utils/trace";
 import { mccJsonStringify } from "../../utils/utils";
 import { BlockBase } from "../BlockBase";
 import { AlgoTransaction } from "../TransactionBase";
 
+// @Trace()
 export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    transactionObjects: AlgoTransaction[];
    constructor(data: IAlgoBlockMsgPack) {
