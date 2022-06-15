@@ -9,7 +9,6 @@ interface BaseRpcInterface {
 
 export interface ReadRpcInterface extends BaseRpcInterface {
    // General methods
-   isHealthy(): Promise<boolean>;
    getNodeStatus(): Promise<INodeStatus | null>;
    /**
     * The lowest block in the latest joined set of blocks

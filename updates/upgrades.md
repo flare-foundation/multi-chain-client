@@ -12,6 +12,7 @@ Updates:
 - [ ] Error handling standardized (throw new Error() vs throw MccError())
   - [ ] Decide how to handle querrying data form possibli undefined objects (for example get number on AlgoBlock object)
   - [ ] Wrap all methods to try except in object base methods 
+  - [ ] Add method decorator for all valid method thrown errors (https://github.com/microsoft/TypeScript/issues/2607)
 - [ ] Standardize json Stringify (one implementation and use it everywhere)
 - [ ] Add getTransactionObjects() to block object that returns all transaction wrapped in trasnactionBase object of that underlying chain
 - [ ] Remove AlgoIndexerTrasnaction and AlgoIndexerBlock objects 

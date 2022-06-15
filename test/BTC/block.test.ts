@@ -1,7 +1,7 @@
 import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
 
 const BtcMccConnection = {
-   url: process.env.BTC_URL || "",
+   url: process.env.BTC_URL+"111" || "",
    username: process.env.BTC_USERNAME || "",
    password: process.env.BTC_PASSWORD || "",
 } as UtxoMccCreate;

@@ -1,14 +1,25 @@
-import { IEmptyObject, IUtxoGetBlockRes } from "../../types";
+import { IUtxoGetBlockRes } from "../../types";
+import { mccOutsideError } from "../../utils/errors";
 import { prefix0x } from "../../utils/utils";
 import { BlockBase } from "../BlockBase";
 
 export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
    public get number(): number {
-      return this.data.height;
+      try {
+         return this.data.height;
+      }
+      catch (error) {
+         throw new mccOutsideError(error);
+      }
    }
 
    public get blockHash(): string {
-      return this.data.hash;
+      try {
+         return this.data.hash;
+      }
+      catch (error) {
+         throw new mccOutsideError(error);
+      }
    }
 
    public get stdBlockHash(): string {
