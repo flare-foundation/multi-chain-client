@@ -128,7 +128,7 @@ export function TryCatchWrapper() {
          descriptor.value = function (...args: any[]) {
             try {
                let res = original.apply(this, args);
-               if (!isPromise(res)) {
+               if (!isPromise(res)) {                  
                   return res;
                }
                return new Promise((resolve, reject) => {
@@ -157,8 +157,10 @@ export function TryCatchWrapper() {
                try {
                   let res = original.apply(this, args);
                   if (!isPromise(res)) {
+                     console.log("Returning sync")
                      return res;
                   }
+                  console.log("Returning Async")
                   return new Promise((resolve, reject) => {
                      res.then(resolve).catch((error: any) => {
                         if (error?.name === MCC_ERROR) {
