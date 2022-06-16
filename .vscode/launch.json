@@ -27,7 +27,7 @@
          "console": "integratedTerminal",
          "name": "Test test/BTC/block.test.ts",
          "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/block.test.ts"]
+         "runtimeArgs": ["test", "test/BTC/block.test.ts"]
       },
 
       {
