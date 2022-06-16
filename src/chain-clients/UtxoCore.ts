@@ -17,7 +17,6 @@ import { ChainType, ReadRpcInterface } from "../types/genericMccTypes";
 import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes, IUtxoNodeStatus } from "../types/utxoTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { mccError, mccErrorCode } from "../utils/errors";
-import { Managed } from "../utils/managed";
 import { sleepMs, unPrefix0x } from "../utils/utils";
 import { recursive_block_hash, recursive_block_tip, utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
 
@@ -26,7 +25,6 @@ const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
    maxRPS: 5,
 };
 
-@Managed()
 export class UtxoCore implements ReadRpcInterface {
    client: any;
    inRegTest: boolean;

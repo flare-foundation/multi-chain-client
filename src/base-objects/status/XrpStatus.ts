@@ -1,7 +1,9 @@
 import { ServerStateResponse } from "xrpl";
 import { ServerState } from "xrpl/dist/npm/models/methods/serverInfo";
+import { Managed } from "../../utils/managed";
 import { NodeStatusBase } from "../StatusBase";
 
+@Managed()
 export class XrpNodeStatus extends NodeStatusBase<ServerStateResponse> {
    public get version(): string {
       return this.data?.result?.state?.build_version;

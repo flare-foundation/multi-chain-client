@@ -4,9 +4,11 @@ import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { MccClient, TransactionSuccessStatus } from "../../types";
 import { IXrpGetTransactionRes } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
+import { Managed } from "../../utils/managed";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 
+@Managed()
 export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> {
    public get txid(): string {
       return this.hash;

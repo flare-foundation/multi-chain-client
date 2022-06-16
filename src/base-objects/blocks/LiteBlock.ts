@@ -1,8 +1,10 @@
 import { IGetLiteBlockRes } from "../../types/genericMccTypes";
+import { Managed } from "../../utils/managed";
 import { BlockBase } from "../BlockBase";
 
 const util = require("util");
 
+@Managed()
 export class LiteBlock extends BlockBase<IGetLiteBlockRes> {
    public get number(): number {
       return this.data.number;
