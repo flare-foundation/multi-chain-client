@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
 
 const LtcMccConnection = {
@@ -9,43 +10,43 @@ const LtcMccConnection = {
 describe("Block LTC base test ", function () {
    let MccClient: MCC.LTC;
    let block: UtxoBlock;
+   const blockNumber = 2_220_000
+   
    before(async function () {
       MccClient = new MCC.LTC(LtcMccConnection);
-      let tblock = await MccClient.getBlock(2_220_000);
-      if (tblock !== null) {
-         block = tblock;
-      }
+      block = await MccClient.getBlock(blockNumber);
+   });
+
+   it("Should get block", async function () {
+      expect(block).to.not.eq(undefined);
    });
 
    it("Should get block number ", async function () {
-      console.log(block.number);
+      expect(block.number).to.eq(blockNumber);
    });
 
    it("Should get block hash ", async function () {
-      console.log(block.blockHash);
+      expect(block.blockHash).to.eq("2e7c0facdf8482585ee70161f07969e2201165a9632ea205b5f06a5ccc08c368");
    });
 
    it("Should get block standard hash ", async function () {
-      console.log(block.stdBlockHash);
+      expect(block.stdBlockHash).to.eq("2e7c0facdf8482585ee70161f07969e2201165a9632ea205b5f06a5ccc08c368");
    });
 
    it("Should get block timestamp ", async function () {
-      console.log(block.unixTimestamp);
+      expect(block.unixTimestamp).to.eq(1646170721);
    });
 
    it("Should get transaction ids ", async function () {
-      console.log(block.transactionIds);
+      expect(block.transactionIds.length).to.eq(61);
+      // TODO at least check some txids
    });
 
    it("Should get transaction standard ids ", async function () {
-      console.log(block.stdTransactionIds);
+      expect(block.stdTransactionIds.length).to.eq(61);
    });
 
    it("Should get transaction count ", async function () {
-      console.log(block.transactionCount);
+      expect(block.transactionCount).to.eq(61);
    });
-
-   // it("Should get transaction count ", async function () {
-   //     // console.log(block.data);
-   // });
 });

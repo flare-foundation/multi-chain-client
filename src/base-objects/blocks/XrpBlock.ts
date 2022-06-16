@@ -26,7 +26,7 @@ export class XrpBlock extends BlockBase<IXrpGetBlockRes> {
    }
 
    public get stdTransactionIds(): string[] {
-      throw this.transactionIds;
+      return this.transactionIds;
    }
 
    public get transactionCount(): number {

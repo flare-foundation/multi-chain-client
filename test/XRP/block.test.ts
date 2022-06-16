@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { MCC, XrpBlock } from "../../src";
 
 const XRPMccConnection = {
@@ -9,48 +10,43 @@ const XRPMccConnection = {
 describe("Block Xrp base test ", function () {
    let MccClient: MCC.XRP;
    let block: XrpBlock;
+   const blockNumber = 72_387_695
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
-      // let tblock = await MccClient.getBlock(70_015_100);
-      let height = await MccClient.getBlockHeight();
-      console.log(height);
+      block = await MccClient.getBlock(blockNumber);
+   });
 
-      let tblock = await MccClient.getBlock(height - 20);
-
-      // let tblock = await MccClient.getBlock(70_562_499);
-
-      if (tblock !== null) {
-         block = tblock;
-      }
-      console.log(block);
+   it("Should get block", async function () {
+      expect(block).to.not.eq(undefined);
    });
 
    it("Should get block number ", async function () {
-      console.log(block.number);
+      expect(block.number).to.eq(blockNumber);
    });
 
    it("Should get block hash ", async function () {
-      console.log(block.blockHash);
+      expect(block.blockHash).to.eq("2492B09472F24DB37B124A2F9D1D0FA6883EF0FE51494938A54E6CD93295C086");
    });
 
    it("Should get block standard hash ", async function () {
-      console.log(block.stdBlockHash);
+      expect(block.stdBlockHash).to.eq("2492B09472F24DB37B124A2F9D1D0FA6883EF0FE51494938A54E6CD93295C086");
    });
 
    it("Should get block timestamp ", async function () {
-      console.log(block.unixTimestamp);
+      expect(block.unixTimestamp).to.eq(1655418890);
    });
 
    it("Should get transaction ids ", async function () {
-      console.log(block.transactionIds);
+      expect(block.transactionIds.length).to.eq(42);
+      // TODO at least check some txids
    });
 
    it("Should get transaction standard ids ", async function () {
-      console.log(block.stdTransactionIds);
+      expect(block.stdTransactionIds.length).to.eq(42);
    });
 
    it("Should get transaction count ", async function () {
-      console.log(block.transactionCount);
+      expect(block.transactionCount).to.eq(42);
    });
 });
