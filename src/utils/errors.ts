@@ -110,8 +110,8 @@ export function isPromise(p: any) {
 }
 
 export function TryCatchWrapper() {
-   return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
-      if (descriptor.get) {
+   return (target: any, propertyKey?: string, descriptor?: PropertyDescriptor) => {
+      if (descriptor?.get) {
          const originalGet = descriptor.get;
          descriptor.get = function () {
             try {
@@ -123,11 +123,11 @@ export function TryCatchWrapper() {
                throw new mccOutsideError(error);
             }
          };
-      } else if (typeof descriptor.value === "function") {
-         const originalFn = descriptor.value;
+      } else if (descriptor?.value && typeof descriptor.value === "function") {
+         let original = descriptor.value;
          descriptor.value = function (...args: any[]) {
             try {
-               let res = originalFn.apply(this, args);
+               let res = original.apply(this, args);
                if (!isPromise(res)) {
                   return res;
                }
@@ -136,7 +136,7 @@ export function TryCatchWrapper() {
                      if (error?.name === MCC_ERROR) {
                         reject(error);
                      }
-                     reject(new mccOutsideError(error));      
+                     reject(new mccOutsideError(error));
                   });
                })
             } catch (error: any) {
@@ -145,9 +145,63 @@ export function TryCatchWrapper() {
                }
                throw new mccOutsideError(error);
             }
-         };
-
+         }
+      } else {
+         Object.getOwnPropertyNames(target.prototype).forEach((methodName: string) => {
+            let original = target.prototype[methodName];
+            if (typeof original !== "function" || methodName === "constructor") {
+               return;
+            }
+            // an arrow function can't be used while we have to preserve right 'this'
+            target.prototype[methodName] = function (...args: any[]) {
+               try {
+                  let res = original.apply(this, args);
+                  if (!isPromise(res)) {
+                     return res;
+                  }
+                  return new Promise((resolve, reject) => {
+                     res.then(resolve).catch((error: any) => {
+                        if (error?.name === MCC_ERROR) {
+                           reject(error);
+                        }
+                        reject(new mccOutsideError(error));
+                     });
+                  })
+               } catch (error: any) {
+                  if (error?.name === MCC_ERROR) {
+                     throw error;
+                  }
+                  throw new mccOutsideError(error);
+               }
+            }
+         });
+   
       }
-      return descriptor;
-   };
+   }
+}
+
+@TryCatchWrapper()
+export class DecoratorTest {
+   val = 3;
+   constructor() {
+      console.log("Constructor");
+   }
+
+   get getter() {
+      console.log("Getter");
+      return 1;
+   }
+
+   method(a: number, b: number) {
+      console.log(this)
+      console.log(`Method ${a}, ${b} - val: ${this.val}`);
+      return 55;
+   }
+
+   async asyncMethod(a: number, b: number) {
+      console.log(this)
+      console.log(`Async Method ${a}, ${b} - val: ${this.val}`);
+      return 55;
+   }
+
 }
