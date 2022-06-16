@@ -10,7 +10,7 @@ describe("Managed test", () => {
    let dec: ManagedTest;
 
    before(async function () {
-      //traceManager.displayTrace=true;
+      traceManager.displayTrace=true;
 
       dec = new ManagedTest();
    });
@@ -23,6 +23,9 @@ describe("Managed test", () => {
       //traceManager.showTrace();
    });
 
+   after(async function () {
+      traceManager.displayTrace=false;
+   })
 
 
    it("Managed method sync", async () => {
