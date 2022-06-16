@@ -1,6 +1,6 @@
-import { mccSettings } from "../global-settings/globalSettings";
+import { Trace } from "./trace";
 
-const MCC_ERROR = "mccError";
+export const MCC_ERROR = "mccError";
 
 export enum mccErrorCode {
    InvalidParameter,
@@ -83,7 +83,7 @@ export function SyncTryCatchWrapper() {
 
 export function GetTryCatchWrapper() {
    return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
-       
+
       //  if(descriptor.get){
       //   const originalGet = descriptor.get;
       //   descriptor.get = function () {
@@ -97,7 +97,119 @@ export function GetTryCatchWrapper() {
       //      }
       //   };
       //  }
-      
+
       return descriptor;
    };
+}
+
+export function isPromise(p: any) {
+   if (typeof p === 'object' && typeof p.then === 'function') {
+      return true;
+   }
+   return false;
+}
+
+export function TryCatchWrapper() {
+   return (target: any, propertyKey?: string, descriptor?: PropertyDescriptor) => {
+      if (descriptor?.get) {
+         const originalGet = descriptor.get;
+         descriptor.get = function () {
+            try {
+               return originalGet();
+            } catch (error: any) {
+               if (error?.name === MCC_ERROR) {
+                  throw error;
+               }
+               throw new mccOutsideError(error);
+            }
+         };
+      } else if (descriptor?.value && typeof descriptor.value === "function") {
+         let original = descriptor.value;
+         descriptor.value = function (...args: any[]) {
+            try {
+               let res = original.apply(this, args);
+               if (!isPromise(res)) {
+                  return res;
+               }
+               return new Promise((resolve, reject) => {
+                  res.then(resolve).catch((error: any) => {
+                     if (error?.name === MCC_ERROR) {
+                        reject(error);
+                     }
+                     reject(new mccOutsideError(error));
+                  });
+               })
+            } catch (error: any) {
+               if (error?.name === MCC_ERROR) {
+                  throw error;
+               }
+               throw new mccOutsideError(error);
+            }
+         }
+      } else {
+         Object.getOwnPropertyNames(target.prototype).forEach((methodName: string) => {
+            let original = target.prototype[methodName];
+            if (typeof original !== "function" || methodName === "constructor") {
+               return;
+            }
+            // an arrow function can't be used while we have to preserve right 'this'
+            target.prototype[methodName] = function (...args: any[]) {
+               try {
+                  let res = original.apply(this, args);
+                  if (!isPromise(res)) {
+                     console.log("Returning sync")
+                     return res;
+                  }
+                  console.log("Returning Async")
+                  return new Promise((resolve, reject) => {
+                     res.then(resolve).catch((error: any) => {
+                        if (error?.name === MCC_ERROR) {
+                           reject(error);
+                        }
+                        reject(new mccOutsideError(error));
+                     });
+                  })
+               } catch (error: any) {
+                  if (error?.name === MCC_ERROR) {
+                     throw error;
+                  }
+                  throw new mccOutsideError(error);
+               }
+            }
+         });
+
+      }
+   }
+}
+
+//@TryCatchWrapper()
+
+@Trace()
+export class DecoratorTest {
+   val = 3;
+   constructor() {
+      console.log("Constructor");
+   }
+
+   get getter() {
+      console.log("Getter");
+      return 1;
+   }
+
+   method(a: number, b: number) {
+      if (b === 0) throw new Error("test crash");
+
+      console.log(this)
+      console.log(`Method ${a}, ${b} - val: ${this.val}`);
+      return 55;
+   }
+
+   async asyncMethod(a: number, b: number) {
+      if (b === 0) throw new Error("test crash");
+
+      console.log(this)
+      console.log(`Async Method ${a}, ${b} - val: ${this.val}`);
+      return 55;
+   }
+
 }

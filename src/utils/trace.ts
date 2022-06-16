@@ -1,3 +1,4 @@
+import { mccOutsideError, MCC_ERROR } from "./errors";
 
 export enum TraceMethodType {
    Descriptor,
@@ -34,6 +35,8 @@ export class TraceStack {
    startTime = 0;
    endTime = 0;
 
+   error: Error | undefined;
+
    // stack
    stack: string = "";
    level: number = 0;
@@ -57,7 +60,7 @@ export class TraceStack {
 
          const traceLine = /[^(]*\(([^)]*)\)/.exec(trace[4]);
 
-         if( traceLine && traceLine.length > 1 ) {
+         if (traceLine && traceLine.length > 1) {
             this.method.source = traceLine[1];
          }
       }
@@ -73,7 +76,15 @@ export class TraceStack {
       this.ret = ret;
    }
 
+   completeException(error: Error) {
+      this.complete(undefined);
+      this.error = error;
+   }
+
    toString(): string {
+      // todo: args are not properly displayed
+      // todo: not completed
+      // todo: error
       if (this.ret) {
          return `${this.method.className}.${this.method.methodName}(${this.args.map((val) => "%s").join(", ")})=${this.ret} [${this.method.source}]`;
       }
@@ -124,22 +135,24 @@ export class TraceManager {
       this.trace.push(trace);
 
       if (this.displayTrace) {
-         console.log( `trace: ${trace.toString()}` );
+         console.log(`trace: ${trace.toString()}`);
       }
 
       return trace;
    }
 
    complete(ret: any) {
-      this.stack.pop()?.complete( ret );
+      this.stack.pop()?.complete(ret);
    }
 
-   catch(error: any) {
+   completeError(error: Error) {
+      this.stack.pop()?.completeException(error);
+   }
+
+   displayError(error: any) {
       console.log("STACK");
 
       this.showStack();
-
-      throw error;
    }
 
    showStack() {
@@ -158,29 +171,77 @@ export class TraceManager {
 
 export const traceManager = new TraceManager();
 
+function TraceStub(target: any, name: string, funct: any, cx: any, args: any[], methodType: TraceMethodType) {
+   traceManager.start(target.constructor.name, name!, ["get"], methodType);
+
+   // try {
+   //    let ret = cx ? funct.apply( cx , args ) : funct(); 
+   //    if (typeof ret.then === "function") {
+   //       ret.then(() => traceManager.complete(ret));
+   //    } else {
+   //       traceManager.complete(ret);
+   //    }
+
+   //    return ret;
+   // }
+   // catch (error) {
+   //    traceManager.catch(error);
+   // }
+
+   try {
+      let res = cx ? funct.apply(cx, args) : funct();
+
+      if (!isPromise(res)) {
+         traceManager.complete(res)
+         return res;
+      }
+      return new Promise((resolve, reject) => {
+         res.then((result: any) => {
+            traceManager.complete(result);
+
+            resolve(result);
+         }).catch((error: any) => {
+
+            if (error?.name === MCC_ERROR) {
+               traceManager.completeError(error);
+               traceManager.displayError(error);
+               reject(error);
+            }
+            else {
+               const newError = new mccOutsideError(error);
+               traceManager.completeError(newError);
+               traceManager.displayError(newError);
+               reject(newError);
+            }
+         });
+      })
+   } catch (error: any) {
+      if (error?.name === MCC_ERROR) {
+         traceManager.completeError(error);
+         traceManager.displayError(error);
+         throw error;
+      }
+      else {
+         const newError = new mccOutsideError(error);
+         traceManager.completeError(newError);
+         traceManager.displayError(newError);
+         throw new mccOutsideError(newError);
+      }
+   }
+
+}
+
+
+
+
+
 function RegisterTraceValue(target: any, name?: string, descriptor?: any) {
    //  decorating a method
    if (descriptor && descriptor.value) {
       let original = descriptor.value;
 
       descriptor.value = function (...args: any[]) {
-
-         traceManager.start(target.constructor.name, name!, args, TraceMethodType.Descriptor);
-
-         try {
-            let ret = original.apply(this, args);
-
-            if (typeof ret.then === "function") {
-               ret.then(() => traceManager.complete(ret));
-            } else {
-               traceManager.complete(ret);
-            }
-
-            return ret;
-         }
-         catch (error) {
-            traceManager.catch(error);
-         }
+         TraceStub(target.constructor.name, name!, original, this, args, TraceMethodType.Descriptor);
       };
 
       return descriptor;
@@ -189,28 +250,20 @@ function RegisterTraceValue(target: any, name?: string, descriptor?: any) {
    return null;
 }
 
+export function isPromise(p: any) {
+   if (typeof p === 'object' && typeof p.then === 'function') {
+      return true;
+   }
+   return false;
+}
+
 function RegisterTraceGetter(target: any, name?: string, descriptor?: any) {
 
    if (descriptor && descriptor.get) {
       let original = descriptor.get;
 
       descriptor.get = function () {
-
-         traceManager.start(target.constructor.name, name!, ["get"], TraceMethodType.Getter);
-
-         try {
-            let ret = original();
-            if (typeof ret.then === "function") {
-               ret.then(() => traceManager.complete(ret));
-            } else {
-               traceManager.complete(ret);
-            }
-
-            return ret;
-         }
-         catch (error) {
-            traceManager.catch(error);
-         }
+         TraceStub(target.constructor.name, name!, original, null, [], TraceMethodType.Getter);
       };
 
       return descriptor;
@@ -230,7 +283,18 @@ function RegisterTraceClass(targetClass: any) {
 
       // getter
       if (desc?.get) {
-         return RegisterTraceGetter(targetClass, methodName, desc);
+         const newDesc = RegisterTraceGetter(targetClass, methodName, desc);
+
+         Object.defineProperty(targetClass, methodName, desc);
+
+
+         const desc2 = Object.getOwnPropertyDescriptor(targetClass.prototype, methodName);
+
+
+
+         //Object.defineProperty = desc;
+
+         return newDesc;
       }
 
       let original = targetClass.prototype[methodName];
@@ -247,24 +311,7 @@ function RegisterTraceClass(targetClass: any) {
 
       // an arrow function can't be used while we have to preserve right 'this'
       targetClass.prototype[methodName] = function (...args: any[]) {
-
-         traceManager.start(targetClass.name, methodName, args, TraceMethodType.Function);
-
-         try {
-
-            let ret = original.apply(this, args);
-
-            if (typeof ret.then === "function") {
-               ret.then(() => traceManager.complete(ret));
-            } else {
-               traceManager.complete(ret);
-            }
-
-            return ret;
-         }
-         catch (error) {
-            traceManager.catch(error);
-         }
+         TraceStub(targetClass.constructor.name, methodName, original, this, args, TraceMethodType.Function);
       };
    });
 
