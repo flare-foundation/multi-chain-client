@@ -131,7 +131,7 @@ describe("BTC client tests", () => {
       expect(addresses.length).to.greaterThan(0);
    });
 
-   it.only("should get no such transaction response ", async function () {
+   it("should get no such transaction response ", async function () {
       const nBtcRpc = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass });
       let transaction = await nBtcRpc.getTransaction("ab2267bafb5a4d93486b451cf9de79dec478763e21ddd22705a24ae3aa856ec7");
       console.log(transaction);

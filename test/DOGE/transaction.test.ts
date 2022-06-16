@@ -328,7 +328,7 @@ describe("Transaction DOGE base test ", function () {
             console.log(transaction.isNativePayment);
          });
 
-         it.only("Should get transaction data ", async function () {
+         it("Should get transaction data ", async function () {
             console.log(mccJsonStringify(transaction.data));
          });
       });

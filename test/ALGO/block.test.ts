@@ -24,7 +24,7 @@ describe(`Algo block processing`, async () => {
          
       });
 
-      it.only("Should get block number ", async function () {
+      it("Should get block number ", async function () {
          console.log(block.number);
       });
 

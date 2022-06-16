@@ -23,7 +23,7 @@ describe("Decorator test", () => {
       console.log(`Result ${await dec.asyncMethod(7,8)}`);
    });
 
-   it.only("decorator getter", async () => {
+   it("decorator getter", async () => {
       console.log(dec.getter);
    });
 
