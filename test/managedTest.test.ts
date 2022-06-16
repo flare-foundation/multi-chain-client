@@ -84,4 +84,20 @@ describe("Managed test", () => {
    });
 
 
+
+
+   it.only("Managed nested test", async () => {
+
+      //traceManager.displayTrace=true;
+
+      dec.f1("123");
+
+      traceManager.showTrace(true,false,true);
+      traceManager.showMethods();
+
+      expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
+   });
+
+
+
 });

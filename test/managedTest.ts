@@ -5,11 +5,11 @@ import { Managed } from "../src/utils/managed";
 export class ManagedTest {
     val = 3;
     constructor() {
-        console.log("Constructor");
+        console.log("ManagedTest Constructor");
     }
 
     get getter() {
-        console.log("Getter");
+        console.log("ManagedTest Getter");
         return 1;
     }
 
@@ -60,5 +60,28 @@ export class ManagedTest {
     async asyncMethodThrow(a: number, b: number) {
         throw new Error("test crash");
     }
+
+
+
+
+
+    f1(param: string) {
+        this.f2( `f1(${param})->f2` );
+        this.f3( `f1(${param})->f3` );
+    }
+
+    f2(param: string) {
+        this.f3( `f2(${param})->f3` );
+    }
+
+    f3(param: string) {
+        for(let a=0; a<3; a++) {
+            this.f4( `f3(${param})->f4(${a})` );
+        }
+    }
+
+    f4(param: string) {
+    }
+
 
 }

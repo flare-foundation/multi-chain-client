@@ -1,4 +1,3 @@
-import { ErrorResponse } from "algosdk/dist/types/src/client/v2/algod/models/types";
 import { mccError, mccOutsideError, MCC_ERROR } from "./errors";
 
 export enum TraceMethodType {
@@ -15,7 +14,10 @@ export class TraceMethod {
    source: string = "";
 
    calls: number = 0;
-   allInclusiveTime: number = 0;
+   inclusiveTime: number = 0;
+   innerTime: number = 0;
+
+   methodsCalled: TraceMethod[] = [];
 
    constructor(className: string, methodName: string, methodType: TraceMethodType) {
       this.className = className;
@@ -45,16 +47,26 @@ export class TraceStack {
 
    constructor(method: TraceMethod, args: any[]) {
       this.method = method;
-      this.callIndex = method.calls;
       this.method.calls++;
+      this.callIndex = method.calls;
       this.args = args;
 
    }
 
-   start() {
-      // todo: timing
-      this.startTime = 0;
+   get systemTime(): number {
+      return new Date().getTime();
+   }
 
+   get traceTime() : number {
+      return this.endTime - this.startTime;
+   }
+
+   start() {
+      this.startTime = this.systemTime;
+
+
+      // get source line
+      // todo: not working properly because of Stub (trace line offset 7 is not correct - it changes)
       this.stack = Error().stack!;
 
       const trace = this.stack.split("\n");
@@ -77,10 +89,9 @@ export class TraceStack {
    }
 
    complete(ret: any) {
-      // todo: timing
-      this.endTime = 0;
+      this.endTime = this.systemTime;
 
-      this.method.allInclusiveTime += this.endTime - this.startTime;
+      this.method.inclusiveTime += this.traceTime;
 
       this.completed = true;
       this.ret = ret;
@@ -95,7 +106,7 @@ export class TraceStack {
       return this.args.map((val) => `${val}`).join(",");
    }
 
-   toString(): string {
+   toString(showIndent = false, showSource = true, showTiming = false): string {
       // todo: error
       // todo: display objects (json!)
 
@@ -115,11 +126,17 @@ export class TraceStack {
          status = "▶";
       }
 
+      const source = showSource ? `[${this.method.source}] ` : ``;
+
+      const indent = "".padEnd(showIndent ? this.level * 2 : 0);
+
+      const timing = showTiming ? `${this.traceTime}ms ` : ``;
+
       if (this.ret) {
-         return `${status} ${this.method.className}.${this.method.methodName}(${args})=${this.ret} [${this.method.source}]`;
+         return `${status} ${indent}${this.method.className}.${this.method.methodName}(${args})=${this.ret} ${source}${timing}`;
       }
       else {
-         return `${status} ${this.method.className}.${this.method.methodName}(${args}) [${this.method.source}]`;
+         return `${status} ${indent}${this.method.className}.${this.method.methodName}(${args}) ${source}${timing}`;
       }
    }
 
@@ -151,7 +168,6 @@ export class TraceManager {
    }
 
    createMethod(className: string, methodName: string, methodType: TraceMethodType): TraceMethod {
-
       let method = this.methods.find(x => x.className == className && x.methodName == methodName);
 
       if (method) return method;
@@ -167,6 +183,14 @@ export class TraceManager {
       const method = this.createMethod(className, methodName, methodType);
       const trace = new TraceStack(method, args);
 
+      // add methods called
+      const top = this.stack[this.stack.length - 1];
+      if (top) {
+         if (!top.method.methodsCalled.find(x => x.className == className && x.methodName == methodName)) {
+            top.method.methodsCalled.push(method);
+         }
+      }
+
       trace.start();
 
       trace.level = this.stack.length;
@@ -175,14 +199,26 @@ export class TraceManager {
       this.trace.push(trace);
 
       if (this.displayTrace) {
-         console.log(`trace: ${trace.toString()}`);
+         console.log(`trace| ${trace.toString(true,false,false)}`);
       }
 
       return trace;
    }
 
    complete(ret: any) {
-      this.stack.pop()?.complete(ret);
+
+      const last = this.stack.pop();
+
+      if( !last ) return;
+
+      last.complete(ret);
+
+      // update inner time
+      const top = this.stack[this.stack.length - 1];
+      if (top) {
+         top.method.innerTime+=last.traceTime;
+      }
+
    }
 
    completeError(error: Error) {
@@ -191,15 +227,15 @@ export class TraceManager {
 
    displayError(error: any) {
       console.log(`EXCEPTION name='${error.name}' message='${error.message}'`);
-      if( error.name===`mccError` && error.message===`OutsideError` ) {
+      if (error.name === `mccError` && error.message === `OutsideError`) {
          const innerError = (error as mccError).innerError as Error;
-         if( innerError ) {
+         if (innerError) {
             console.log(`INNER EXCEPTION name='${innerError.name}' message='${innerError.message}'`);
          }
       }
       console.log(`NODE STACK ${error.stack}`)
       this.showStack();
-      this.showTrace();
+      this.showTrace(true, false);
    }
 
    showStack() {
@@ -209,15 +245,29 @@ export class TraceManager {
       }
    }
 
-   showTrace() {
+   showTrace(indent = false, source = true, timing = false) {
       console.log("TRACE");
       for (let trace of this.trace) {
-         console.log(trace.toString());
+         console.log(trace.toString(indent, source, timing));
+      }
+   }
+
+   showMethods(indent = false, source = true, timing = false) {
+      console.log("METHODS");
+      for (let method of this.methods) {
+
+         const exclusiveTime = Math.max(0, method.inclusiveTime - method.innerTime);
+
+         console.log(`◼ ${method.className}.${method.methodName}  ${method.calls} ${method.inclusiveTime}ms ${exclusiveTime}ms`);
+
+         for (let inner of method.methodsCalled) {
+            console.log(`    ${inner.className}.${inner.methodName}`);
+         }
       }
    }
 
    clearTrace() {
-      this.trace=[];
+      this.trace = [];
    }
 
    get firstTrace(): string {
@@ -385,3 +435,12 @@ export function RegisterTraceClass(targetClass: any) {
 
    return targetClass;
 }
+
+export function round(x: number, decimal: number = 0) {
+   if (decimal === 0) return Math.round(x);
+
+   const dec10 = 10 ** decimal;
+
+   return Math.round(x * dec10) / dec10;
+}
+
