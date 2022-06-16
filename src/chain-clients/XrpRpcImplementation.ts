@@ -8,7 +8,7 @@ import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxReques
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { AsyncTryCatchWrapper, mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
 import { Trace } from "../utils/trace";
-import { unPrefix0x } from "../utils/utils";
+import { mccJsonStringify, unPrefix0x } from "../utils/utils";
 import { xrp_ensure_data } from "../utils/xrpUtils";
 
 const DEFAULT_TIMEOUT = 15000;
@@ -193,7 +193,7 @@ export class XRPImplementation implements ReadRpcInterface {
       }
       // AccountInfoRequest
       mccSettings.loggingCallback("Call Params");
-      mccSettings.loggingCallback(JSON.stringify(params));
+      mccSettings.loggingCallback(mccJsonStringify(params));
       let res = await this.client.post("", {
          method: "account_info",
          params: [params],
@@ -208,7 +208,7 @@ export class XRPImplementation implements ReadRpcInterface {
       } as IAccountTxRequest;
       params.ledger_index_min = lowerBound;
       params.ledger_index_max = upperBound;
-      mccSettings.loggingCallback(JSON.stringify(params));
+      mccSettings.loggingCallback(mccJsonStringify(params));
       let res = await this.client.post("", {
          method: "account_tx",
          params: [params],

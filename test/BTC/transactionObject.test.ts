@@ -24,7 +24,6 @@ describe("Transaction Btc test ", function () {
          if (fullTrans) {
             transaction = new BtcTransaction(fullTrans.data);
             await transaction.makeFullPayment(MccClient);
-            // console.log(JSON.stringify(transaction.additionalData, null, 2));
          }
       });
 
