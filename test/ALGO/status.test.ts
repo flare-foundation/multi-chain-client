@@ -1,28 +1,14 @@
+import { expect } from "chai";
 import { AlgoNodeStatus, MCC } from "../../src";
-
-// const algoCreateConfig = {
-//    algod: {
-//       url: process.env.ALGO_ALGOD_URL || "",
-//       token: process.env.ALGO_ALGOD_TOKEN || "",
-//    },
-//    indexer: {
-//       url: process.env.ALGO_INDEXER_URL || "",
-//       token: process.env.ALGO_INDEXER_TOKEN || "",
-//    },
-// };
 
 const algoCreateConfig = {
    algod: {
       url: process.env.ALGO_ALGOD_URL_TEST || "",
       token: process.env.ALGO_ALGOD_TOKEN_TEST || "",
    },
-   indexer: {
-      url: process.env.ALGO_INDEXER_URL || "",
-      token: process.env.ALGO_INDEXER_TOKEN || "",
-   },
 };
 
-describe("Block Algo base test ", function () {
+describe("Algo Node Status tests (LIFE: expect healthy) ", function () {
    let MccClient: MCC.ALGO;
    let status: AlgoNodeStatus;
 
@@ -35,19 +21,21 @@ describe("Block Algo base test ", function () {
    });
 
    it("Should get status version ", async function () {
-      console.log(status.version);
+      const version = status.version.split("_");
+      expect(version[0]).to.be.eq("3");
    });
 
-   it("Should get status state ", async function () {
+   it.skip("Should get status state ", async function () {
       console.log(status.state);
    });
 
    it("Should get status isHealthy ", async function () {
-      console.log(status.isHealthy);
+      // console.log(status.isHealthy);
+      expect(status.isHealthy).to.eq(true);
    });
 
    it("Should get status isSynced ", async function () {
-      console.log(status.isSynced);
+      // console.log(status.isSynced);
+      expect(status.isSynced).to.eq(true);
    });
-
 });
