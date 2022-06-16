@@ -3,8 +3,8 @@ import { AlgoNodeStatus, MCC } from "../../src";
 
 const algoCreateConfig = {
    algod: {
-      url: process.env.ALGO_ALGOD_URL_TEST || "",
-      token: process.env.ALGO_ALGOD_TOKEN_TEST || "",
+      url: process.env.ALGO_ALGOD_URL || "",
+      token: process.env.ALGO_ALGOD_TOKEN || "",
    },
 };
 

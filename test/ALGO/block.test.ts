@@ -18,10 +18,7 @@ describe(`Algo block processing`, async () => {
 
       before(async function () {
          MccClient = new MCC.ALGO(algoCreateConfig);
-         block = await MccClient.getBlock(21_374_440);
-
-         console.log("We have block");
-         
+         block = await MccClient.getBlock(21_659_776);
       });
 
       it("Should get block number ", async function () {
@@ -50,6 +47,10 @@ describe(`Algo block processing`, async () => {
 
       it("Should get transaction count ", async function () {
          console.log(block.transactionCount);
+      });
+
+      it("Should get transaction objects (ALGO SPECIFIC) ", async function () {
+         console.log(block.transactions.map((el) => el.txid));
       });
    });
 });
