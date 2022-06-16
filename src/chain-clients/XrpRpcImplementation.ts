@@ -51,7 +51,7 @@ export class XRPImplementation implements ReadRpcInterface {
     * get NodeStatus object with information about node used to connect to underlying chain
     * @external_docs https://xrpl.org/server_state.html
     */
-   @AsyncTryCatchWrapper()
+
    async getNodeStatus(): Promise<XrpNodeStatus> {
       let res = await this.client.post("", {
          method: "server_state",
@@ -65,7 +65,7 @@ export class XRPImplementation implements ReadRpcInterface {
     * Get the height of the block from which the underlying node holds the full history
     * @returns the block height of the first block in latest joined block set in node memory
     */
-   @AsyncTryCatchWrapper()
+
    async getBottomBlockHeight(): Promise<number> {
       let res = await this.client.post("", {
          method: "server_state",
@@ -84,7 +84,6 @@ export class XRPImplementation implements ReadRpcInterface {
    // Block methods //////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   @AsyncTryCatchWrapper()
    async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock | null> {
       if (typeof blockNumberOrHash === "string") {
          if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockNumberOrHash)) {
@@ -118,7 +117,6 @@ export class XRPImplementation implements ReadRpcInterface {
       }
    }
 
-   @AsyncTryCatchWrapper()
    async getBlockHeight(): Promise<number> {
       let res = await this.client.post("", {
          method: "ledger_closed",
@@ -132,7 +130,6 @@ export class XRPImplementation implements ReadRpcInterface {
    // Transaction methods ////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   @AsyncTryCatchWrapper()
    async getTransaction(txId: string, options?: getTransactionOptions): Promise<XrpTransaction | null> {
       if (PREFIXED_STD_TXID_REGEX.test(txId)) {
          txId = unPrefix0x(txId);
@@ -179,7 +176,7 @@ export class XRPImplementation implements ReadRpcInterface {
     * @param upperBound either blockHash or block number for the upper bound (The information does not contain any changes from ledger versions newer than this one.)
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async getAccountInfo(account: string, upperBound: number | string = "current"): Promise<AccountInfoResponse> {
       const params = {
          account: account,
@@ -205,7 +202,6 @@ export class XRPImplementation implements ReadRpcInterface {
       return res.data;
    }
 
-   @AsyncTryCatchWrapper()
    async getAccountTransactions(account: string, lowerBound: number = -1, upperBound: number = -1): Promise<AccountTxResponse> {
       const params = {
          account: account,

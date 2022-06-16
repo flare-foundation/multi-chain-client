@@ -4,7 +4,7 @@ import { UtxoTransaction } from "./UtxoTransaction";
 
 export class LtcTransaction extends UtxoTransaction {
    // Btc specific transaction
-   @GetTryCatchWrapper()
+
    public get currencyName(): string {
       return LTC_NATIVE_TOKEN_NAME;
    }
