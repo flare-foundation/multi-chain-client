@@ -1,11 +1,11 @@
 import { IUtxoGetBlockRes } from "../../types";
 import { GetTryCatchWrapper, mccOutsideError } from "../../utils/errors";
-import { Trace } from "../../utils/trace";
+import { Managed } from "../../utils/managed";
 import { prefix0x } from "../../utils/utils";
 import { BlockBase } from "../BlockBase";
 
 
-@Trace()
+@Managed()
 export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
    //@GetTryCatchWrapper()
    public get number(): number {

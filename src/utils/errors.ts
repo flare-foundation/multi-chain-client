@@ -1,4 +1,4 @@
-import { Trace } from "./trace";
+import { Managed } from "./managed";
 
 export const MCC_ERROR = "mccError";
 
@@ -180,36 +180,4 @@ export function TryCatchWrapper() {
 
       }
    }
-}
-
-//@TryCatchWrapper()
-
-@Trace()
-export class DecoratorTest {
-   val = 3;
-   constructor() {
-      console.log("Constructor");
-   }
-
-   get getter() {
-      console.log("Getter");
-      return 1;
-   }
-
-   method(a: number, b: number) {
-      if (b === 0) throw new Error("test crash");
-
-      console.log(this)
-      console.log(`Method ${a}, ${b} - val: ${this.val}`);
-      return 55;
-   }
-
-   async asyncMethod(a: number, b: number) {
-      if (b === 0) throw new Error("test crash");
-
-      console.log(this)
-      console.log(`Async Method ${a}, ${b} - val: ${this.val}`);
-      return 55;
-   }
-
 }

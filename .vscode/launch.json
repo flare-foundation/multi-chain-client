@@ -34,9 +34,9 @@
          "type": "node",
          "request": "launch",
          "console": "integratedTerminal",
-         "name": "Test test/decoratorTest.test.ts",
+         "name": "Test Managed",
          "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/decoratorTest.test.ts"]
+         "runtimeArgs": ["test", "test/managedTest.test.ts"]
       },
 
       {
