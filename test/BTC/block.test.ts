@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
 import { traceManager } from "../../src/utils/trace";
 
@@ -11,48 +12,45 @@ const BtcMccConnection = {
 describe("Block Btc base test ", function () {
    let MccClient: MCC.BTC;
    let block: UtxoBlock;
+   const blockNumber = 729_409
+ 
    before(async function () {
-
-      // traceManager.displayTrace=true;
-
       MccClient = new MCC.BTC(BtcMccConnection);
-      block = await MccClient.getBlock(729409);
+      block = await MccClient.getBlock(blockNumber);
 
       //traceManager.showTrace();
    });
 
+   it("Should get block", async function () {
+      expect(block).to.not.eq(undefined);
+   });
+
    it("Should get block number ", async function () {
-      console.log(block.number);
+      expect(block.number).to.eq(blockNumber);
    });
 
    it("Should get block hash ", async function () {
-      console.log(block.blockHash);
+      expect(block.blockHash).to.eq("00000000000000000002579f72f3f80f68b02767c44024d697826af787776b58");
    });
 
    it("Should get block standard hash ", async function () {
-      console.log(block.stdBlockHash);
+      expect(block.stdBlockHash).to.eq("00000000000000000002579f72f3f80f68b02767c44024d697826af787776b58");
    });
 
    it("Should get block timestamp ", async function () {
-      console.log(block.unixTimestamp);
+      expect(block.unixTimestamp).to.eq(1648480352);
    });
 
    it("Should get transaction ids ", async function () {
-      console.log(block.transactionIds);
+      expect(block.transactionIds.length).to.eq(565);
+      // TODO at least check some txids
    });
 
    it("Should get transaction standard ids ", async function () {
-      console.log(block.stdTransactionIds);
+      expect(block.stdTransactionIds.length).to.eq(565);
    });
 
    it("Should get transaction count ", async function () {
-      console.log(block.transactionCount);
+      expect(block.transactionCount).to.eq(565);
    });
-
-   // it("Should get transaction count ", async function () {
-   //    //  console.log(block.data.tx![1]);
-   //    const ind = block.data.tx!.slice(1).findIndex((el) => el.hash != el.txid);
-   //    console.log(ind);
-   //    console.log(block.data.tx![ind + 1]);
-   // });
 });
