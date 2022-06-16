@@ -1,5 +1,7 @@
 import { expect } from "chai";
+import { unPrefix0x } from "../src";
 import { IIUtxoVout } from "../src/types";
+import { addressToHex, hexToBytes } from "../src/utils/algoUtils";
 
 export const expectThrow = async (method: any, errorMessage: any) => {
    let error = null;
@@ -59,4 +61,9 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
    let signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
    const txId = await RPC.sendRawTransactionInBlock(fromWalletLabel, signedTx.hex);
    return txId;
+}
+
+export function addressToBtyeAddress(address: string) : Uint8Array {
+   const algoKeyPair = addressToHex(address);
+   return hexToBytes(unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum));
 }

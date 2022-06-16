@@ -2,7 +2,6 @@ import { IAlgoTransaction } from "../types";
 import { IAlgoHexAddress } from "../types/algoTypes";
 import { MccError, prefix0x, unPrefix0x } from "./utils";
 const base32 = require("base32.js");
-const crypto = require("crypto");
 const sha512_256 = require("js-sha512").sha512_256;
 import * as msgpack from "algo-msgpack-with-bigint";
 import algosdk from "algosdk";
@@ -21,22 +20,6 @@ export const INVALIDPUBKEYPAIRERROR = (algoKeyPair: IAlgoHexAddress) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////// Code ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export function filterHashesIndexer(trans: IAlgoTransaction) {
-   if (trans.id) {
-      return trans.id;
-   } else {
-      return "";
-   }
-}
-
-export function filterHashes(trans: IAlgoTransaction) {
-   if (trans.id) {
-      return trans.id;
-   } else {
-      return "";
-   }
-}
 
 ///////////////////
 // Bytes <-> Hex //
@@ -74,18 +57,20 @@ export function base32ToHex(data: string): string {
    const decoder = new base32.Decoder({ type: "rfc4648" });
    let out = decoder.write(data).finalize();
    return out.toString("hex");
-   // hibase 32
-   // return Buffer.from(hibase32.decode.asBytes(data)).toString("hex")
 }
 
 export function hexToBase32(hex: string | Uint8Array) {
    // old base 32 encoding
    const encoder = new base32.Encoder({ type: "rfc4648" });
-   let bufHex = Buffer.from(hex);
-   let base32Out = encoder.write(bufHex).finalize();
-   return base32Out;
-   // hibase 32
-   // return hibase32.encode(hex)
+   if (typeof hex === "string") {
+      let bufHex = Buffer.from(hex, 'hex');
+      let base32Out = encoder.write(bufHex).finalize();
+      return base32Out;
+   } else {
+      let bufHex = Buffer.from(bytesToHex(hex), 'hex');
+      let base32Out = encoder.write(bufHex).finalize();
+      return base32Out;
+   }
 }
 
 ////////////////////
@@ -96,10 +81,8 @@ export function hexToBase32(hex: string | Uint8Array) {
  * For note decoding
  * @param rawdata
  * @returns
- * @dev todo stay away from deprecated atob
  */
 export function base64ToHex(rawdata: string) {
-   // let data = atob(rawdata);
    let data = Buffer.from(rawdata, "base64").toString("binary");
    let hexData = "";
    for (let i = 0; i < data.length; i++) {
@@ -128,7 +111,6 @@ export function hexToBase64(hex: string | Uint8Array) {
  * @returns
  */
 export function base64ToText(rawdata: string) {
-   // return atob(rawdata);
    let buff = Buffer.from(rawdata, "base64");
    return buff.toString("ascii");
 }
