@@ -3,7 +3,6 @@ import { MccClient, TransactionSuccessStatus } from "../../types";
 import { IAlgoTransactionMsgPack } from "../../types/algoTypes";
 import { base32ToHex, bytesToHex, hexToBase32 } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
-import { AsyncTryCatchWrapper, GetTryCatchWrapper, SyncTryCatchWrapper } from "../../utils/errors";
 import { Managed } from "../../utils/managed";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
@@ -13,22 +12,18 @@ const web3 = require("web3");
  */
 @Managed()
 export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, any> {
-   @GetTryCatchWrapper()
    public get txid(): string {
       return this.data.txid;
    }
 
-   @GetTryCatchWrapper()
    public get stdTxid(): string {
       return base32ToHex(this.data.txid);
    }
 
-   @GetTryCatchWrapper()
    public get hash(): string {
       return this.txid;
    }
 
-   @GetTryCatchWrapper()
    public get reference(): string[] {
       if (this.data.note) {
          return [bytesToHex(this.data.note)];
@@ -36,7 +31,6 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       return [""];
    }
 
-   @GetTryCatchWrapper()
    public get stdPaymentReference(): string {
       let paymentReference = this.reference?.length === 1 ? prefix0x(this.reference[0]) : "";
       try {
@@ -51,17 +45,14 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       return paymentReference;
    }
 
-   @GetTryCatchWrapper()
    public get unixTimestamp(): number {
       return this.data.timestamp;
    }
 
-   @GetTryCatchWrapper()
    public get sourceAddresses(): (string | undefined)[] {
       return [hexToBase32(this.data.snd)];
    }
 
-   @GetTryCatchWrapper()
    public get receivingAddresses(): (string | undefined)[] {
       // for transactions of type pay
       if (this.data.rcv) {
@@ -74,12 +65,10 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       return [];
    }
 
-   @GetTryCatchWrapper()
    public get fee(): BN {
       return toBN(this.data.fee || 0);
    }
 
-   @GetTryCatchWrapper()
    public get spentAmounts(): AddressAmount[] {
       // for transactions of type pay
       if (this.data.amt) {
@@ -110,7 +99,6 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       ];
    }
 
-   @GetTryCatchWrapper()
    public get receivedAmounts(): AddressAmount[] {
       // for transactions of type pay
       if (this.data.amt) {
@@ -135,17 +123,14 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       return [];
    }
 
-   @GetTryCatchWrapper()
    public get type(): string {
       return this.data.type;
    }
 
-   @GetTryCatchWrapper()
    public get isNativePayment(): boolean {
       return this.type === "pay";
    }
 
-   @GetTryCatchWrapper()
    public get currencyName(): string {
       if (this.type === "pay") {
          return ALGO_NATIVE_TOKEN_NAME;
@@ -155,18 +140,15 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       return "";
    }
 
-   @GetTryCatchWrapper()
    public get elementaryUnits(): BN {
       return toBN(ALGO_MDU);
    }
 
-   @GetTryCatchWrapper()
    public get successStatus(): TransactionSuccessStatus {
       // TODO research this further
       return TransactionSuccessStatus.SUCCESS;
    }
 
-   @AsyncTryCatchWrapper()
    public async paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       if (!this.isNativePayment) {
          return { isNativePayment: false };

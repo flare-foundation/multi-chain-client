@@ -9,14 +9,14 @@ interface BaseRpcInterface {
 
 export interface ReadRpcInterface extends BaseRpcInterface {
    // General methods
-   getNodeStatus(): Promise<INodeStatus | null>;
+   getNodeStatus(): Promise<INodeStatus>;
    /**
     * The lowest block in the latest joined set of blocks
     */
-   getBottomBlockHeight(): Promise<number | null>;
+   getBottomBlockHeight(): Promise<number>;
 
    // Block data
-   getBlock(blockNumberOrHash: number | string | any): Promise<IBlock | null>;
+   getBlock(blockNumberOrHash: number | string | any): Promise<IBlock>;
    getBlockHeight(): Promise<number>;
 
    // To be used with chain tip indexer processing
@@ -24,7 +24,7 @@ export interface ReadRpcInterface extends BaseRpcInterface {
    getTopLiteBlocks?(branch_len: number): Promise<LiteBlock[]>;
 
    // Transaction data
-   getTransaction(txId: string, metaData?: getTransactionOptions): Promise<ITransaction | null>;
+   getTransaction(txId: string, metaData?: getTransactionOptions): Promise<ITransaction>;
    listTransactions?(options?: any): any;
 
    // bottom block in connected node (0 if nodes dont support partial history)

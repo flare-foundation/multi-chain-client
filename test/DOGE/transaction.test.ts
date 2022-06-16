@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BtcTransaction, MCC, MccClient, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { BtcTransaction, MCC, MccClient, mccJsonStringify, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { IUtxoTransactionAdditionalData, IUtxoVinVoutsMapper } from "../../src/types/utxoTypes";
 
 const DogeMccConnection = {
@@ -329,7 +329,7 @@ describe("Transaction DOGE base test ", function () {
          });
 
          it.only("Should get transaction data ", async function () {
-            console.log(JSON.stringify(transaction.data, null, 2));
+            console.log(mccJsonStringify(transaction.data));
          });
       });
    }

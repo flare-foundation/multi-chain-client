@@ -3,7 +3,6 @@ import { isValidBytes32Hex, IUtxoGetTransactionRes, MccError, prefix0x, toBN, to
 import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types";
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
-import { AsyncTryCatchWrapper, GetTryCatchWrapper } from "../../utils/errors";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 
@@ -24,22 +23,18 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       this.assertAdditionalData();
    }
 
-   @GetTryCatchWrapper()
    public get txid(): string {
       return this.data.txid;
    }
 
-   @GetTryCatchWrapper()
    public get stdTxid(): string {
       return unPrefix0x(this.txid);
    }
 
-   @GetTryCatchWrapper()
    public get hash(): string {
       return this.data.hash;
    }
 
-   @GetTryCatchWrapper()
    public get reference(): string[] {
       let references = [];
       for (let vo of this.data.vout) {
@@ -51,7 +46,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       return references;
    }
 
-   @GetTryCatchWrapper()
    public get stdPaymentReference(): string {
       let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0] || "") : "";
       if (!isValidBytes32Hex(paymentReference)) {
@@ -60,12 +54,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       return paymentReference;
    }
 
-   @GetTryCatchWrapper()
    public get unixTimestamp(): number {
       return this.data.blocktime;
    }
 
-   @GetTryCatchWrapper()
    public get sourceAddresses(): (string | undefined)[] {
       if (this.type === "coinbase") {
          // Coinbase transactions mint coins
@@ -74,7 +66,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       return this.additionalData!.vinouts!.map((mapper: IUtxoVinVoutsMapper | undefined) => mapper?.vinvout?.scriptPubKey.address);
    }
 
-   @GetTryCatchWrapper()
    public get receivingAddresses(): (string | undefined)[] {
       if (!this.data?.vout) {
          return [];
@@ -82,7 +73,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       return this.data.vout.map((vout: IUtxoVoutTransaction) => vout.scriptPubKey.address);
    }
 
-   @GetTryCatchWrapper()
    public get fee(): BN {
       const reducerFunctionVinOuts = (prev: BN, vout: IUtxoVinVoutsMapper | undefined) =>
          prev.add(toBN(Math.round((vout?.vinvout?.value || 0) * BTC_MDU).toFixed(0)));
@@ -101,7 +91,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       throw MccError("fee can't be calculated for `payment` and `partial_payment` transaction types");
    }
 
-   @GetTryCatchWrapper()
    public get spentAmounts(): AddressAmount[] {
       if (this.type === "coinbase") {
          // Coinbase transactions mint coins
@@ -121,7 +110,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       });
    }
 
-   @GetTryCatchWrapper()
    public get receivedAmounts(): AddressAmount[] {
       return this.data.vout.map((vout: IUtxoVoutTransaction) => {
          return {
@@ -132,7 +120,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       });
    }
 
-   @GetTryCatchWrapper()
    public get type(): UtxoTransactionTypeOptions {
       if (this.data.vin.length === 0 || this.data.vin[0].coinbase) {
          return "coinbase";
@@ -157,29 +144,24 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       return "payment";
    }
 
-   @GetTryCatchWrapper()
    public get isNativePayment(): boolean {
       // On these chains there are no other types of transactions
       return true;
    }
 
-   @GetTryCatchWrapper()
    public get currencyName(): string {
       // This must be shadowed
       throw new Error("Method must be implemented in different sub class");
    }
 
-   @GetTryCatchWrapper()
    public get elementaryUnits(): BN {
       return toBN(BTC_MDU);
    }
 
-   @GetTryCatchWrapper()
    public get successStatus(): TransactionSuccessStatus {
       return TransactionSuccessStatus.SUCCESS;
    }
 
-   @AsyncTryCatchWrapper()
    public async paymentSummary(client?: MccClient, vinIndex?: number, voutIndex?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       this.assertValidVinIndex(vinIndex, true);
       this.assertValidVoutIndex(voutIndex, true);

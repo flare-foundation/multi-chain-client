@@ -11,12 +11,12 @@ import {
    IUtxoTransactionListRes,
    IUtxoWalletRes,
    RateLimitOptions,
-   UtxoMccCreate,
+   UtxoMccCreate
 } from "../types";
 import { ChainType, ReadRpcInterface } from "../types/genericMccTypes";
 import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes, IUtxoNodeStatus } from "../types/utxoTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
-import { AsyncTryCatchWrapper, mccError, mccErrorCode } from "../utils/errors";
+import { mccError, mccErrorCode } from "../utils/errors";
 import { Managed } from "../utils/managed";
 import { sleepMs, unPrefix0x } from "../utils/utils";
 import { recursive_block_hash, recursive_block_tip, utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
@@ -62,8 +62,8 @@ export class UtxoCore implements ReadRpcInterface {
    /**
     * Return node status object for Utxo nodes
     */
-   @AsyncTryCatchWrapper()
-   async getNodeStatus(): Promise<UtxoNodeStatus | null> {
+
+   async getNodeStatus(): Promise<UtxoNodeStatus> {
       let res = await this.client.post(``, {
          jsonrpc: "1.0",
          id: "rpc",
@@ -87,7 +87,7 @@ export class UtxoCore implements ReadRpcInterface {
     * On Utxo chains nodes always need full history
     * @returns 0
     */
-   @AsyncTryCatchWrapper()
+
    async getBottomBlockHeight(): Promise<number> {
       return 0;
    }
@@ -105,7 +105,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param blockHashOrHeight Provide either block hash or height of the block
     * @returns All available block information
     */
-   //@AsyncTryCatchWrapper()
+   //
    async getBlock(blockHashOrHeight: string | number, retry = 3): Promise<UtxoBlock> {
       let blockHash: string | null = null;
       if (typeof blockHashOrHeight === "string") {
@@ -137,7 +137,7 @@ export class UtxoCore implements ReadRpcInterface {
     * Get Block height (number of blocks) from connected chain
     * @returns block height (block count)
     */
-   @AsyncTryCatchWrapper()
+
    async getBlockHeight(): Promise<number> {
       let res = await this.client.post("", {
          jsonrpc: "1.0",
@@ -159,8 +159,8 @@ export class UtxoCore implements ReadRpcInterface {
     * @param options provide verbose:boolean, set true if you want more info such as block hash...
     * @returns transaction details
     */
-   @AsyncTryCatchWrapper()
-   async getTransaction(txId: string, options?: getTransactionOptions): Promise<UtxoTransaction | null> {
+
+   async getTransaction(txId: string, options?: getTransactionOptions): Promise<UtxoTransaction> {
       if (PREFIXED_STD_TXID_REGEX.test(txId)) {
          txId = unPrefix0x(txId);
       }
@@ -176,7 +176,7 @@ export class UtxoCore implements ReadRpcInterface {
       });
       // Error codes https://github.com/bitcoin/bitcoin/blob/master/src/rpc/protocol.h
       if (utxo_check_expect_empty(res.data)) {
-         return null;
+         throw new mccError(mccErrorCode.InvalidTransaction);
       }
       utxo_ensure_data(res.data);
       return new this.transactionConstructor(res.data.result);
@@ -191,7 +191,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param blockHash
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async getBlockHeader(blockHashOrHeight: string | number): Promise<IUtxoGetBlockHeaderRes | null> {
       let blockHash: string | null = null;
       if (typeof blockHashOrHeight === "string") {
@@ -221,7 +221,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param height_gte
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async getBlockTips(height_gte: number): Promise<LiteBlock[]> {
       return this.getBlockTipsHelper(height_gte);
    }
@@ -231,7 +231,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param branch_len the branch length indicating how long can branches be
     * @returns Array of LiteBlocks
     */
-   @AsyncTryCatchWrapper()
+
    async getTopLiteBlocks(branch_len: number): Promise<LiteBlock[]> {
       const height = await this.getBlockHeight();
       return this.getBlockTipsHelper(height - branch_len, branch_len);
@@ -241,7 +241,7 @@ export class UtxoCore implements ReadRpcInterface {
     * Get an array of all alternative chain tips
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async getTopBlocks(option?: IUtxoGetAlternativeBlocksOptions): Promise<IUtxoGetAlternativeBlocksRes> {
       let res = await this.client.post(``, {
          jsonrpc: "1.0",
@@ -275,7 +275,7 @@ export class UtxoCore implements ReadRpcInterface {
     * Get network info
     * @returns network info details
     */
-   @AsyncTryCatchWrapper()
+
    private async getNetworkInfo(retry = 0): Promise<any> {
       let res = await this.client.post("", {
          jsonrpc: "1.0",
@@ -296,7 +296,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param blockNumber Block height
     * @returns Block hash
     */
-   @AsyncTryCatchWrapper()
+
    private async getBlockHashFromHeight(blockNumber: number): Promise<string> {
       let res = await this.client.post("", {
          jsonrpc: "1.0",
@@ -317,7 +317,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param mainBranchProcess
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    private async getBlockTipsHelper(height_gte: number, mainBranchProcess?: number) {
       const tips = await this.getTopBlocks({ height_gte: height_gte, all_blocks: true });
       let mainBranchHashes: LiteBlock[] = [];
@@ -349,7 +349,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param walletLabel label of your wallet used as a reference for future use
     * @returns name of the created wallet and possible warnings
     */
-   @AsyncTryCatchWrapper()
+
    async createWallet(walletLabel: string): Promise<IUtxoWalletRes> {
       let res = await this.client.post("", {
          jsonrpc: "1.0",
@@ -367,7 +367,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param walletLabel wallet label to load
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async loadWallet(walletLabel: string): Promise<IUtxoWalletRes> {
       let res = await this.client.post("", {
          jsonrpc: "1.0",
@@ -386,7 +386,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param address_type type of address (default to "legacy") options = ["legacy", "p2sh-segwit", "bech32"]
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async createAddress(walletLabel: string, addressLabel: string = "", address_type: string = "legacy") {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -402,7 +402,7 @@ export class UtxoCore implements ReadRpcInterface {
     * List all wallets on node
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async listAllWallets(): Promise<string[]> {
       let res = await this.client.post(``, {
          jsonrpc: "1.0",
@@ -420,7 +420,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param addressLabel label of the addresses we want to list
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async listAllAddressesByLabel(walletLabel: string, addressLabel: string = ""): Promise<getAddressByLabelResponse[]> {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -446,7 +446,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param max max block offset
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async listUnspentTransactions(walletLabel: string, min: number = 0, max: number = 1e6): Promise<IUtxoTransactionListRes[]> {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -458,7 +458,6 @@ export class UtxoCore implements ReadRpcInterface {
       return res.data.result;
    }
 
-   @AsyncTryCatchWrapper()
    async createRawTransaction(walletLabel: string, vin: IIUtxoVin[], out: IIUtxoVout[]) {
       let voutArr = "[";
       let first = true;
@@ -483,7 +482,6 @@ export class UtxoCore implements ReadRpcInterface {
       return res.data.result;
    }
 
-   @AsyncTryCatchWrapper()
    async signRawTransaction(walletLabel: string, rawTx: string, keysList: string[]) {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -501,7 +499,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param signedRawTx hash of signed transaction
     * @returns transaction sending status
     */
-   @AsyncTryCatchWrapper()
+
    async sendRawTransaction(walletLabel: string, signedRawTx: string) {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -519,7 +517,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param signedRawTx hash of signed transaction
     * @returns transaction sending status
     */
-   @AsyncTryCatchWrapper()
+
    async sendRawTransactionInBlock(walletLabel: string, signedRawTx: string) {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -543,7 +541,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param address
     * @returns private key
     */
-   @AsyncTryCatchWrapper()
+
    async getPrivateKey(walletLabel: string, address: string) {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -567,7 +565,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param amount
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async fundAddress(address: string, amount: number) {
       if (!this.inRegTest) {
          throw Error("You have to run client in regression test mode to use this ");

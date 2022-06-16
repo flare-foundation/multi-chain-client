@@ -12,11 +12,11 @@ import {
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
-   RateLimitOptions,
+   RateLimitOptions
 } from "../types";
 import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetStatus, IAlgoStatusObject } from "../types/algoTypes";
 import { algo_check_expect_block_out_of_range, algo_ensure_data, mpDecode } from "../utils/algoUtils";
-import { AsyncTryCatchWrapper, mccError, mccErrorCode } from "../utils/errors";
+import { mccError, mccErrorCode } from "../utils/errors";
 import { toCamelCase, toSnakeCase } from "../utils/utils";
 
 const DEFAULT_TIMEOUT = 60000;
@@ -77,64 +77,54 @@ export class ALGOImplementation implements ReadRpcInterface {
    /**
     * Return node status object for Algo node
     */
-   @AsyncTryCatchWrapper()
-   async getNodeStatus(): Promise<AlgoNodeStatus | null> {
-      try {
-         let res = await this.algodClient.get("health");
-         algo_ensure_data(res);
 
-         let ver = await this.algodClient.get("versions");
-         algo_ensure_data(ver);
+   async getNodeStatus(): Promise<AlgoNodeStatus> {
+      let res = await this.algodClient.get("health");
+      algo_ensure_data(res);
 
-         let status = await this.algodClient.get("/v2/status");
-         algo_ensure_data(status);
-         status = toCamelCase(status.data) as IAlgoGetStatus;
+      let ver = await this.algodClient.get("versions");
+      algo_ensure_data(ver);
 
-         const statusData = {
-            health: res.status,
-            status: status,
-            versions: toCamelCase(ver.data),
-         } as IAlgoStatusObject;
+      let status = await this.algodClient.get("/v2/status");
+      algo_ensure_data(status);
+      status = toCamelCase(status.data) as IAlgoGetStatus;
 
-         return new AlgoNodeStatus(statusData);
-      } catch (e) {
-         return null;
-      }
+      const statusData = {
+         health: res.status,
+         status: status,
+         versions: toCamelCase(ver.data),
+      } as IAlgoStatusObject;
+
+      return new AlgoNodeStatus(statusData);
    }
 
-   @AsyncTryCatchWrapper()
-   async getBottomBlockHeight(): Promise<number | null> {
-      try {
-         let bottomBlockHeight = await this.getBlockHeight();
+   async getBottomBlockHeight(): Promise<number> {
+      let bottomBlockHeight = await this.getBlockHeight();
 
-         // check -1.000 -10.000 and -100.000 blocs
-         for (let checkRound = 0; checkRound < 3; checkRound++) {
-            bottomBlockHeight -= Math.pow(10, 3 + checkRound);
-            let blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
+      // check -1.000 -10.000 and -100.000 blocs
+      for (let checkRound = 0; checkRound < 3; checkRound++) {
+         bottomBlockHeight -= Math.pow(10, 3 + checkRound);
+         let blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
 
-            if (blc.status !== 200) {
-               // we didn't get block
-               for (let i = 0; i < 10; i++) {
-                  bottomBlockHeight += Math.pow(10, 2 + checkRound);
-                  blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
-                  if (blc.status === 200) {
-                     break;
-                  }
+         if (blc.status !== 200) {
+            // we didn't get block
+            for (let i = 0; i < 10; i++) {
+               bottomBlockHeight += Math.pow(10, 2 + checkRound);
+               blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
+               if (blc.status === 200) {
+                  break;
                }
-               // If we ever come here we are not healthy
             }
+            // If we ever come here we are not healthy
          }
-         return bottomBlockHeight;
-      } catch (e) {
-         return null;
       }
+      return bottomBlockHeight;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
    // Block methods //////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   @AsyncTryCatchWrapper()
    async getBlock(round?: number): Promise<AlgoBlock> {
       if (round === undefined) {
          const status = await this.getStatus();
@@ -152,7 +142,6 @@ export class ALGOImplementation implements ReadRpcInterface {
       return new AlgoBlock(decoded as IAlgoBlockMsgPack);
    }
 
-   @AsyncTryCatchWrapper()
    async getBlockHeight(): Promise<number> {
       const blockData = await this.getBlockHeader();
       return blockData.block.rnd;
@@ -166,12 +155,11 @@ export class ALGOImplementation implements ReadRpcInterface {
     * get Transaction cannot be called on algorand's algod client, use getIndexerTransaction instead or get transactions from block
     * @param txid
     */
-   @AsyncTryCatchWrapper()
+
    async getTransaction(txid: string): Promise<AlgoTransaction> {
       throw new mccError(mccErrorCode.InvalidMethodCall);
    }
 
-   @AsyncTryCatchWrapper()
    async listTransactions(options?: IAlgoLitsTransaction): Promise<IAlgoListTransactionRes | null> {
       if (!this.createConfig.indexer) {
          // No indexer
@@ -200,14 +188,12 @@ export class ALGOImplementation implements ReadRpcInterface {
    // Client helper (private) methods ////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   @AsyncTryCatchWrapper()
    private async getStatus(): Promise<IAlgoStatusRes> {
       let res = await this.algodClient.get("v2/status");
       algo_ensure_data(res);
       return toCamelCase(res.data) as IAlgoStatusRes;
    }
 
-   @AsyncTryCatchWrapper()
    private async getBlockHeaderCert(round: number): Promise<IAlgoCert> {
       let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
          responseType: "arraybuffer",
@@ -218,7 +204,6 @@ export class ALGOImplementation implements ReadRpcInterface {
       return decoded.cert;
    }
 
-   @AsyncTryCatchWrapper()
    private async getBlockHeader(round?: number): Promise<IAlgoGetBlockHeaderRes> {
       if (round === undefined) {
          const status = await this.getStatus();

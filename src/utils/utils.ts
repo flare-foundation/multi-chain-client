@@ -2,12 +2,13 @@ import BN from "bn.js";
 import Web3 from "web3";
 import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
 const camelCase = require("camelcase");
+const safeStringify = require('fast-safe-stringify')
 
 export const ZERO_BYTES_32 = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 export function MccError(error: any) {
    try {
-      const message = JSON.stringify(error, null, 3);
+      const message = mccJsonStringify(error);
       return new Error(message);
    } catch (thisError) {
       return new Error(`MCC stringify error ${thisError}`);
@@ -108,7 +109,7 @@ export function isValidBytes32Hex(address: string) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export function mccJsonStringify(toStringify: any) {
-   return JSON.stringify(toStringify, (key, value) => (typeof value === "bigint" ? value.toString() : value), 2);
+   return safeStringify(toStringify, null, 2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

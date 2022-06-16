@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BtcTransaction, MCC, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { BtcTransaction, MCC, mccJsonStringify, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { IUtxoVinVoutsMapper } from "../../src/types/utxoTypes";
 
 const LtcMccConnection = {
@@ -79,7 +79,7 @@ describe("Transaction Ltc base test ", function () {
          if (fullTrans) {
             transaction = new BtcTransaction(fullTrans.data);
             await transaction.makeFullPayment(MccClient);
-            console.log(JSON.stringify(transaction.additionalData, null, 2));
+            console.log(mccJsonStringify(transaction.additionalData));
          }
       });
 

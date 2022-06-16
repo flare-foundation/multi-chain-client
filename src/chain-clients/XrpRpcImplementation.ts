@@ -6,9 +6,9 @@ import { XrpNodeStatus } from "../base-objects/StatusBase";
 import { mccSettings } from "../global-settings/globalSettings";
 import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxRequest, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
-import { AsyncTryCatchWrapper, mccOutsideError } from "../utils/errors";
+import { mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
 import { Managed } from "../utils/managed";
-import { unPrefix0x } from "../utils/utils";
+import { mccJsonStringify, unPrefix0x } from "../utils/utils";
 import { xrp_ensure_data } from "../utils/xrpUtils";
 
 const DEFAULT_TIMEOUT = 15000;
@@ -51,7 +51,7 @@ export class XRPImplementation implements ReadRpcInterface {
     * get NodeStatus object with information about node used to connect to underlying chain
     * @external_docs https://xrpl.org/server_state.html
     */
-   @AsyncTryCatchWrapper()
+
    async getNodeStatus(): Promise<XrpNodeStatus> {
       let res = await this.client.post("", {
          method: "server_state",
@@ -65,7 +65,7 @@ export class XRPImplementation implements ReadRpcInterface {
     * Get the height of the block from which the underlying node holds the full history
     * @returns the block height of the first block in latest joined block set in node memory
     */
-   @AsyncTryCatchWrapper()
+
    async getBottomBlockHeight(): Promise<number> {
       let res = await this.client.post("", {
          method: "server_state",
@@ -84,8 +84,7 @@ export class XRPImplementation implements ReadRpcInterface {
    // Block methods //////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   @AsyncTryCatchWrapper()
-   async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock | null> {
+   async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock> {
       if (typeof blockNumberOrHash === "string") {
          if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockNumberOrHash)) {
             blockNumberOrHash = unPrefix0x(blockNumberOrHash);
@@ -109,16 +108,15 @@ export class XRPImplementation implements ReadRpcInterface {
          return new XrpBlock(res.data);
       } catch (e: any) {
          if (e?.result?.error === "lgrNotFound") {
-            return null;
+            throw new mccError(mccErrorCode.InvalidBlock);
          }
          if (e?.response?.status === 400) {
-            return null;
+            throw new mccError(mccErrorCode.InvalidBlock);
          }
-         throw new Error(e);
+         throw e;
       }
    }
 
-   @AsyncTryCatchWrapper()
    async getBlockHeight(): Promise<number> {
       let res = await this.client.post("", {
          method: "ledger_closed",
@@ -132,8 +130,7 @@ export class XRPImplementation implements ReadRpcInterface {
    // Transaction methods ////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   @AsyncTryCatchWrapper()
-   async getTransaction(txId: string, options?: getTransactionOptions): Promise<XrpTransaction | null> {
+   async getTransaction(txId: string, options?: getTransactionOptions): Promise<XrpTransaction> {
       if (PREFIXED_STD_TXID_REGEX.test(txId)) {
          txId = unPrefix0x(txId);
       }
@@ -163,7 +160,7 @@ export class XRPImplementation implements ReadRpcInterface {
          return new XrpTransaction(res.data);
       } catch (e: any) {
          if (e.error === "txnNotFound") {
-            return null;
+            throw new mccError(mccErrorCode.InvalidTransaction);
          }
          throw e;
       }
@@ -179,7 +176,7 @@ export class XRPImplementation implements ReadRpcInterface {
     * @param upperBound either blockHash or block number for the upper bound (The information does not contain any changes from ledger versions newer than this one.)
     * @returns
     */
-   @AsyncTryCatchWrapper()
+
    async getAccountInfo(account: string, upperBound: number | string = "current"): Promise<AccountInfoResponse> {
       const params = {
          account: account,
@@ -196,7 +193,7 @@ export class XRPImplementation implements ReadRpcInterface {
       }
       // AccountInfoRequest
       mccSettings.loggingCallback("Call Params");
-      mccSettings.loggingCallback(JSON.stringify(params));
+      mccSettings.loggingCallback(mccJsonStringify(params));
       let res = await this.client.post("", {
          method: "account_info",
          params: [params],
@@ -205,14 +202,13 @@ export class XRPImplementation implements ReadRpcInterface {
       return res.data;
    }
 
-   @AsyncTryCatchWrapper()
    async getAccountTransactions(account: string, lowerBound: number = -1, upperBound: number = -1): Promise<AccountTxResponse> {
       const params = {
          account: account,
       } as IAccountTxRequest;
       params.ledger_index_min = lowerBound;
       params.ledger_index_max = upperBound;
-      mccSettings.loggingCallback(JSON.stringify(params));
+      mccSettings.loggingCallback(mccJsonStringify(params));
       let res = await this.client.post("", {
          method: "account_tx",
          params: [params],
