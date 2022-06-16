@@ -77,8 +77,25 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             },
          ];
       }
+      if(this.type === "Payment"){
+         // Token transfer
+         return [
+            {
+               address: this.sourceAddresses[0],
+               amount: this.fee
+            },
+         ];
+      }
       // TODO Check for other non-native payment types
       // TODO: Check whether in some other non-payment cases spent amount is different
+      if(this.sourceAddresses.length > 0){
+         return [
+            {
+               address: this.sourceAddresses[0],
+               amount: toBN(this.fee),
+            },
+         ];
+      }
       return [
          {
             amount: toBN(this.fee),
@@ -164,7 +181,13 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                isTokenTransfer: true,
                tokenElementaryUnits: toBN(eleUnits),
                receivedTokenAmount: toBN(valueSplit.join("")),
+               sourceAddress: this.sourceAddresses[0],
+               receivingAddress: this.receivingAddresses[0],
+               spentAmount: this.spentAmounts[0].amount, // We still spend fee
+               paymentReference: this.stdPaymentReference,
                tokenName: this.currencyName,
+               oneToOne: true,
+               isFull: true,
             };
          } else {
             return { isNativePayment: false };
