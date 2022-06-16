@@ -63,7 +63,7 @@ export class UtxoCore implements ReadRpcInterface {
     * Return node status object for Utxo nodes
     */
 
-   async getNodeStatus(): Promise<UtxoNodeStatus | null> {
+   async getNodeStatus(): Promise<UtxoNodeStatus> {
       let res = await this.client.post(``, {
          jsonrpc: "1.0",
          id: "rpc",
@@ -160,7 +160,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns transaction details
     */
 
-   async getTransaction(txId: string, options?: getTransactionOptions): Promise<UtxoTransaction | null> {
+   async getTransaction(txId: string, options?: getTransactionOptions): Promise<UtxoTransaction> {
       if (PREFIXED_STD_TXID_REGEX.test(txId)) {
          txId = unPrefix0x(txId);
       }
@@ -176,7 +176,7 @@ export class UtxoCore implements ReadRpcInterface {
       });
       // Error codes https://github.com/bitcoin/bitcoin/blob/master/src/rpc/protocol.h
       if (utxo_check_expect_empty(res.data)) {
-         return null;
+         throw new mccError(mccErrorCode.InvalidTransaction);
       }
       utxo_ensure_data(res.data);
       return new this.transactionConstructor(res.data.result);

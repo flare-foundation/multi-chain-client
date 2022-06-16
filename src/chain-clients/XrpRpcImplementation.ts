@@ -6,7 +6,7 @@ import { XrpNodeStatus } from "../base-objects/StatusBase";
 import { mccSettings } from "../global-settings/globalSettings";
 import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxRequest, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
-import { AsyncTryCatchWrapper, mccOutsideError } from "../utils/errors";
+import { AsyncTryCatchWrapper, mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
 import { Trace } from "../utils/trace";
 import { unPrefix0x } from "../utils/utils";
 import { xrp_ensure_data } from "../utils/xrpUtils";
@@ -84,7 +84,7 @@ export class XRPImplementation implements ReadRpcInterface {
    // Block methods //////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock | null> {
+   async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock> {
       if (typeof blockNumberOrHash === "string") {
          if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockNumberOrHash)) {
             blockNumberOrHash = unPrefix0x(blockNumberOrHash);
@@ -108,12 +108,12 @@ export class XRPImplementation implements ReadRpcInterface {
          return new XrpBlock(res.data);
       } catch (e: any) {
          if (e?.result?.error === "lgrNotFound") {
-            return null;
+            throw new mccError(mccErrorCode.InvalidBlock);
          }
          if (e?.response?.status === 400) {
-            return null;
+            throw new mccError(mccErrorCode.InvalidBlock);
          }
-         throw new Error(e);
+         throw e;
       }
    }
 
@@ -130,7 +130,7 @@ export class XRPImplementation implements ReadRpcInterface {
    // Transaction methods ////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   async getTransaction(txId: string, options?: getTransactionOptions): Promise<XrpTransaction | null> {
+   async getTransaction(txId: string, options?: getTransactionOptions): Promise<XrpTransaction> {
       if (PREFIXED_STD_TXID_REGEX.test(txId)) {
          txId = unPrefix0x(txId);
       }
@@ -160,7 +160,7 @@ export class XRPImplementation implements ReadRpcInterface {
          return new XrpTransaction(res.data);
       } catch (e: any) {
          if (e.error === "txnNotFound") {
-            return null;
+            throw new mccError(mccErrorCode.InvalidTransaction);
          }
          throw e;
       }

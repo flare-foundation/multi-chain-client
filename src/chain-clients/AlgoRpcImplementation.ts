@@ -78,55 +78,47 @@ export class ALGOImplementation implements ReadRpcInterface {
     * Return node status object for Algo node
     */
 
-   async getNodeStatus(): Promise<AlgoNodeStatus | null> {
-      try {
-         let res = await this.algodClient.get("health");
-         algo_ensure_data(res);
+   async getNodeStatus(): Promise<AlgoNodeStatus> {
+      let res = await this.algodClient.get("health");
+      algo_ensure_data(res);
 
-         let ver = await this.algodClient.get("versions");
-         algo_ensure_data(ver);
+      let ver = await this.algodClient.get("versions");
+      algo_ensure_data(ver);
 
-         let status = await this.algodClient.get("/v2/status");
-         algo_ensure_data(status);
-         status = toCamelCase(status.data) as IAlgoGetStatus;
+      let status = await this.algodClient.get("/v2/status");
+      algo_ensure_data(status);
+      status = toCamelCase(status.data) as IAlgoGetStatus;
 
-         const statusData = {
-            health: res.status,
-            status: status,
-            versions: toCamelCase(ver.data),
-         } as IAlgoStatusObject;
+      const statusData = {
+         health: res.status,
+         status: status,
+         versions: toCamelCase(ver.data),
+      } as IAlgoStatusObject;
 
-         return new AlgoNodeStatus(statusData);
-      } catch (e) {
-         return null;
-      }
+      return new AlgoNodeStatus(statusData);
    }
 
-   async getBottomBlockHeight(): Promise<number | null> {
-      try {
-         let bottomBlockHeight = await this.getBlockHeight();
+   async getBottomBlockHeight(): Promise<number> {
+      let bottomBlockHeight = await this.getBlockHeight();
 
-         // check -1.000 -10.000 and -100.000 blocs
-         for (let checkRound = 0; checkRound < 3; checkRound++) {
-            bottomBlockHeight -= Math.pow(10, 3 + checkRound);
-            let blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
+      // check -1.000 -10.000 and -100.000 blocs
+      for (let checkRound = 0; checkRound < 3; checkRound++) {
+         bottomBlockHeight -= Math.pow(10, 3 + checkRound);
+         let blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
 
-            if (blc.status !== 200) {
-               // we didn't get block
-               for (let i = 0; i < 10; i++) {
-                  bottomBlockHeight += Math.pow(10, 2 + checkRound);
-                  blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
-                  if (blc.status === 200) {
-                     break;
-                  }
+         if (blc.status !== 200) {
+            // we didn't get block
+            for (let i = 0; i < 10; i++) {
+               bottomBlockHeight += Math.pow(10, 2 + checkRound);
+               blc = await this.algodClient.get(`/v2/blocks/${bottomBlockHeight}`);
+               if (blc.status === 200) {
+                  break;
                }
-               // If we ever come here we are not healthy
             }
+            // If we ever come here we are not healthy
          }
-         return bottomBlockHeight;
-      } catch (e) {
-         return null;
       }
+      return bottomBlockHeight;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
