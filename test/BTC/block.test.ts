@@ -13,7 +13,7 @@ describe("Block Btc base test ", function () {
    let block: UtxoBlock;
    before(async function () {
 
-      traceManager.displayTrace=true;
+      // traceManager.displayTrace=true;
 
       MccClient = new MCC.BTC(BtcMccConnection);
       block = await MccClient.getBlock(729409);

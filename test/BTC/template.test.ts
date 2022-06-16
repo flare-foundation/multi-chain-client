@@ -26,7 +26,8 @@ describe("Chain tips test ", function () {
       }
    });
 
-   it("Should find op return trans", async () => {
+   // A test to find some transactions on btc node that have op-return script entry and are not block mining transactions
+   it.skip("Should find op return trans", async () => {
       const h = await MccClient.getBlockHeight();
       const block = await MccClient.getBlock(h);
       console.log(block?.blockHash);
