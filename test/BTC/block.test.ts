@@ -1,8 +1,9 @@
 import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
+import { traceManager } from "../../src/utils/trace";
 
 const BtcMccConnection = {
+   //url: "123" ,
    url: process.env.BTC_URL || "",
-   // url: process.env.BTC_URL+"111" || "",
    username: process.env.BTC_USERNAME || "",
    password: process.env.BTC_PASSWORD || "",
 } as UtxoMccCreate;
@@ -11,8 +12,13 @@ describe("Block Btc base test ", function () {
    let MccClient: MCC.BTC;
    let block: UtxoBlock;
    before(async function () {
+
+      traceManager.displayTrace=true;
+
       MccClient = new MCC.BTC(BtcMccConnection);
       block = await MccClient.getBlock(729409);
+
+      traceManager.showTrace();
    });
 
    it("Should get block number ", async function () {

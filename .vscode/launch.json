@@ -24,9 +24,10 @@
       {
          "type": "node",
          "request": "launch",
-         "name": "Test testnetAlgo",
+         "console": "integratedTerminal",
+         "name": "Test test/BTC/block.test.ts",
          "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/ALGO/testnetAlgo.test.ts"]
+         "runtimeArgs": ["test", "test/BTC/block.test.ts"]
       },
 
       {

@@ -48,35 +48,35 @@ export class mccOutsideError extends mccError {
 
 export function AsyncTryCatchWrapper() {
    return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
-      const originalFn = descriptor.value;
-      descriptor.value = async function (...args: any[]) {
-         try {
-            return await originalFn.apply(this, args);
-         } catch (error: any) {
-            if (error?.name === MCC_ERROR) {
-               throw error;
-            }
+      // const originalFn = descriptor.value;
+      // descriptor.value = async function (...args: any[]) {
+      //    try {
+      //       return await originalFn.apply(this, args);
+      //    } catch (error: any) {
+      //       if (error?.name === MCC_ERROR) {
+      //          throw error;
+      //       }
 
-            throw new mccOutsideError(error);
-         }
-      };
+      //       throw new mccOutsideError(error);
+      //    }
+      // };
       return descriptor;
    };
 }
 
 export function SyncTryCatchWrapper() {
    return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
-      const originalFn = descriptor.value;
-      descriptor.value = function (...args: any[]) {
-         try {
-            return originalFn.apply(this, args);
-         } catch (error: any) {
-            if (error?.name === MCC_ERROR) {
-               throw error;
-            }
-            throw new mccOutsideError(error);
-         }
-      };
+      // const originalFn = descriptor.value;
+      // descriptor.value = function (...args: any[]) {
+      //    try {
+      //       return originalFn.apply(this, args);
+      //    } catch (error: any) {
+      //       if (error?.name === MCC_ERROR) {
+      //          throw error;
+      //       }
+      //       throw new mccOutsideError(error);
+      //    }
+      // };
       return descriptor;
    };
 }
@@ -84,19 +84,19 @@ export function SyncTryCatchWrapper() {
 export function GetTryCatchWrapper() {
    return (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
        
-       if(descriptor.get){
-        const originalGet = descriptor.get;
-        descriptor.get = function () {
-           try {
-              return originalGet();
-           } catch (error: any) {
-              if (error?.name === MCC_ERROR) {
-                 throw error;
-              }
-              throw new mccOutsideError(error);
-           }
-        };
-       }
+      //  if(descriptor.get){
+      //   const originalGet = descriptor.get;
+      //   descriptor.get = function () {
+      //      try {
+      //         return originalGet();
+      //      } catch (error: any) {
+      //         if (error?.name === MCC_ERROR) {
+      //            throw error;
+      //         }
+      //         throw new mccOutsideError(error);
+      //      }
+      //   };
+      //  }
       
       return descriptor;
    };

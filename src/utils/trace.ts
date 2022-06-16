@@ -1,80 +1,287 @@
-export function Trace() {
-   var printArgs = (className: string, methodName: string, args: any[]) => {
-      console.log("=> %s.%s(" + args.map((val) => "%s").join(", ") + ")", className, methodName, ...args);
 
-      // console.log( Error().stack );
+export enum TraceMethodType {
+   Descriptor,
+   Getter,
+   Function,
+}
 
-      // try {
-      //     throw new Error("");
-      // } catch(e) {
-      //     console.log( (e as Error).stack );
-      // }
-   };
+export class TraceMethod {
+   className: string = "";
+   methodName: string = "";
+   methodType: TraceMethodType;
+   source: string = "";
 
-   return (target: any, name?: string, descriptor?: any) => {
-      if (descriptor) {
-         // decorating a method
-         if (descriptor.value) {
-            let original = descriptor.value;
+   calls: number = 0;
+   allInclusiveTime: number = 0;
 
-            descriptor.value = function (...args: any[]) {
-               printArgs(target.constructor.name, name!, args);
-               let ret = original.apply(this, args);
-               if (typeof ret.then === "function") {
-                  ret.then(() => console.log("<= %s.%s: %s", target.constructor.name, name, ret));
-               } else {
-                  console.log("<= %s.%s: %s", target.constructor.name, name, ret);
-               }
+   constructor(className: string, methodName: string, methodType: TraceMethodType) {
+      this.className = className;
+      this.methodName = methodName;
+      this.calls = 0;
+      this.methodType = methodType;
+   }
 
-               return ret;
-            };
+}
 
-            return descriptor;
-         } else if (descriptor.get){
-            let original = descriptor.get;
+export class TraceStack {
+   method: TraceMethod;
+   args: any[];
+   ret: any = null;
+   callIndex: number;
 
-            descriptor.get = function () {
-               printArgs(target.constructor.name, name!, ["get"]);
-               let ret = original();
-               if (typeof ret.then === "function") {
-                  ret.then(() => console.log("<= %s.%s: %s", target.constructor.name, name, ret));
-               } else {
-                  console.log("<= %s.%s: %s", target.constructor.name, name, ret);
-               }
+   // timing
+   completed: boolean = false;
+   startTime = 0;
+   endTime = 0;
 
-               return ret;
-            };
+   // stack
+   stack: string = "";
+   level: number = 0;
 
-            return descriptor;
+   constructor(method: TraceMethod, args: any[]) {
+      this.method = method;
+      this.callIndex = method.calls;
+      this.method.calls++;
+      this.args = args;
+
+   }
+
+   start() {
+      // todo: timing
+      this.startTime = 0;
+
+      this.stack = Error().stack!;
+
+      const trace = this.stack.split("\n");
+      if (trace.length > 4) {
+
+         const traceLine = /[^(]*\(([^)]*)\)/.exec(trace[4]);
+
+         if( traceLine && traceLine.length > 1 ) {
+            this.method.source = traceLine[1];
          }
-      } else {
-         // decorating a class
+      }
+   }
 
-         // add tracing capability to all own methods
-         // TO-DO doesn't work for constructor...
+   complete(ret: any) {
+      // todo: timing
+      this.endTime = 0;
 
-         Object.getOwnPropertyNames(target.prototype).forEach((methodName: string) => {
-            let original = target.prototype[methodName];
+      this.method.allInclusiveTime += this.endTime - this.startTime;
 
-            if (typeof original !== "function" || methodName === "constructor") {
-               return;
+      this.completed = true;
+      this.ret = ret;
+   }
+
+   toString(): string {
+      if (this.ret) {
+         return `${this.method.className}.${this.method.methodName}(${this.args.map((val) => "%s").join(", ")})=${this.ret} [${this.method.source}]`;
+      }
+      else {
+         return `${this.method.className}.${this.method.methodName}(${this.args.map((val) => "%s").join(", ")}) [${this.method.source}]`;
+      }
+   }
+
+}
+
+export class TraceManager {
+   displayTrace = false;
+
+   methods: TraceMethod[];
+
+   stack: TraceStack[];
+
+   trace: TraceStack[];
+
+   constructor() {
+      this.methods = [];
+      this.stack = [];
+      this.trace = [];
+   }
+
+   createMethod(className: string, methodName: string, methodType: TraceMethodType): TraceMethod {
+
+      let method = this.methods.find(x => x.className == className && x.methodName == methodName);
+
+      if (method) return method;
+
+      method = new TraceMethod(className, methodName, methodType);
+
+      this.methods.push(method);
+
+      return method;
+   }
+
+   start(className: string, methodName: string, args: any[], methodType: TraceMethodType): TraceStack {
+      const method = this.createMethod(className, methodName, methodType);
+      const trace = new TraceStack(method, args);
+
+      trace.start();
+
+      trace.level = this.stack.length;
+
+      this.stack.push(trace);
+      this.trace.push(trace);
+
+      if (this.displayTrace) {
+         console.log( `trace: ${trace.toString()}` );
+      }
+
+      return trace;
+   }
+
+   complete(ret: any) {
+      this.stack.pop()?.complete( ret );
+   }
+
+   catch(error: any) {
+      console.log("STACK");
+
+      this.showStack();
+
+      throw error;
+   }
+
+   showStack() {
+      for (let trace of this.stack) {
+         console.log(trace.toString());
+      }
+   }
+
+   showTrace() {
+      for (let trace of this.trace) {
+         console.log(trace.toString());
+      }
+   }
+
+}
+
+export const traceManager = new TraceManager();
+
+function RegisterTraceValue(target: any, name?: string, descriptor?: any) {
+   //  decorating a method
+   if (descriptor && descriptor.value) {
+      let original = descriptor.value;
+
+      descriptor.value = function (...args: any[]) {
+
+         traceManager.start(target.constructor.name, name!, args, TraceMethodType.Descriptor);
+
+         try {
+            let ret = original.apply(this, args);
+
+            if (typeof ret.then === "function") {
+               ret.then(() => traceManager.complete(ret));
+            } else {
+               traceManager.complete(ret);
             }
 
-            // an arrow function can't be used while we have to preserve right 'this'
-            target.prototype[methodName] = function (...args: any[]) {
-               printArgs(target.name, methodName, args);
-               let ret = original.apply(this, args);
-               if (typeof ret.then === "function") {
-                  ret.then(() => console.log("<= %s.%s: %s", target.name, methodName, ret));
-               } else {
-                  console.log("<= %s.%s: %s", target.name, methodName, ret);
-               }
+            return ret;
+         }
+         catch (error) {
+            traceManager.catch(error);
+         }
+      };
 
-               return ret;
-            };
-         });
+      return descriptor;
+   }
 
-         return target;
+   return null;
+}
+
+function RegisterTraceGetter(target: any, name?: string, descriptor?: any) {
+
+   if (descriptor && descriptor.get) {
+      let original = descriptor.get;
+
+      descriptor.get = function () {
+
+         traceManager.start(target.constructor.name, name!, ["get"], TraceMethodType.Getter);
+
+         try {
+            let ret = original();
+            if (typeof ret.then === "function") {
+               ret.then(() => traceManager.complete(ret));
+            } else {
+               traceManager.complete(ret);
+            }
+
+            return ret;
+         }
+         catch (error) {
+            traceManager.catch(error);
+         }
+      };
+
+      return descriptor;
+   }
+
+   return null;
+
+}
+
+function RegisterTraceClass(targetClass: any) {
+   // decorating a class
+
+   // add tracing capability to all own methods (doesn't work for constructor)
+   Object.getOwnPropertyNames(targetClass.prototype).forEach((methodName: string) => {
+
+      const desc = Object.getOwnPropertyDescriptor(targetClass.prototype, methodName);
+
+      // getter
+      if (desc?.get) {
+         return RegisterTraceGetter(targetClass, methodName, desc);
       }
+
+      let original = targetClass.prototype[methodName];
+
+      // constructor
+      if (methodName === "constructor") {
+         return RegisterTraceValue(targetClass, methodName, desc);
+      }
+
+      // skip non functions
+      if (typeof original !== "function") {
+         return;
+      }
+
+      // an arrow function can't be used while we have to preserve right 'this'
+      targetClass.prototype[methodName] = function (...args: any[]) {
+
+         traceManager.start(targetClass.name, methodName, args, TraceMethodType.Function);
+
+         try {
+
+            let ret = original.apply(this, args);
+
+            if (typeof ret.then === "function") {
+               ret.then(() => traceManager.complete(ret));
+            } else {
+               traceManager.complete(ret);
+            }
+
+            return ret;
+         }
+         catch (error) {
+            traceManager.catch(error);
+         }
+      };
+   });
+
+   return targetClass;
+}
+
+
+export function Trace() {
+
+   return (target: any, name?: string, descriptor?: any) => {
+
+      let trace = RegisterTraceValue(target, name, descriptor);
+      if (trace) return trace;
+
+      trace = RegisterTraceGetter(target, name, descriptor);
+      if (trace) return trace;
+
+      return RegisterTraceClass(target);
    };
 }

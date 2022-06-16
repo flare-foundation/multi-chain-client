@@ -105,7 +105,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param blockHashOrHeight Provide either block hash or height of the block
     * @returns All available block information
     */
-   @AsyncTryCatchWrapper()
+   //@AsyncTryCatchWrapper()
    async getBlock(blockHashOrHeight: string | number, retry = 3): Promise<UtxoBlock> {
       let blockHash: string | null = null;
       if (typeof blockHashOrHeight === "string") {
