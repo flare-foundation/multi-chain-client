@@ -81,21 +81,21 @@ describe("DOGE mainnet client tests", () => {
    });
 
    describe("ChainTips", async function () {
-      it.only("basic chaintips ", async function () {
+      it("basic chaintips ", async function () {
          const BtcRpc = new MCC.BTC(DogeMccConnection);
          const chaintips = await BtcRpc.getTopBlocks();
          // console.log(chaintips);
          console.log(chaintips.length);
       });
 
-      it.only("full chaintips ", async function () {
+      it("full chaintips ", async function () {
          const BtcRpc = new MCC.BTC(DogeMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ all_blocks: true });
          // console.log(chaintips);
          console.log(chaintips.length);
       });
 
-      it.only("chaintips after ", async function () {
+      it("chaintips after ", async function () {
          const BtcRpc = new MCC.BTC(DogeMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ height_gte: 4_133_821 });
          console.log(chaintips);

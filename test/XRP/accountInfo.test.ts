@@ -27,7 +27,7 @@ describe("Xrpl account test mainnet ", function () {
          console.log(flags);
       });
 
-      it.only(`Should get account info 2 `, async () => {
+      it(`Should get account info 2 `, async () => {
          const acc = "rMv1dFonUTJo4qeQDmmCuz3cXPsxy9AiHz";
          const info = await MccClient.getAccountInfo(acc);
          console.log(info);

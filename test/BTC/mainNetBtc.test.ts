@@ -112,7 +112,7 @@ describe("BTC mainnet client tests", () => {
          console.log(chaintips.length);
       });
 
-      it.only("All Block tips ", async function () {
+      it("All Block tips ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const BlockTips = await BtcRpc.getTopLiteBlocks(6);
          console.log(BlockTips);
