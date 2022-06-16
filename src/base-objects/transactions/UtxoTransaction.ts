@@ -3,7 +3,6 @@ import { isValidBytes32Hex, IUtxoGetTransactionRes, MccError, prefix0x, toBN, to
 import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types";
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
-import { AsyncTryCatchWrapper, GetTryCatchWrapper } from "../../utils/errors";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 

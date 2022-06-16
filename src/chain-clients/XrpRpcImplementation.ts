@@ -6,8 +6,8 @@ import { XrpNodeStatus } from "../base-objects/StatusBase";
 import { mccSettings } from "../global-settings/globalSettings";
 import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxRequest, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
-import { AsyncTryCatchWrapper, mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
-import { Trace } from "../utils/trace";
+import { mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
+import { Managed } from "../utils/managed";
 import { mccJsonStringify, unPrefix0x } from "../utils/utils";
 import { xrp_ensure_data } from "../utils/xrpUtils";
 
@@ -16,7 +16,7 @@ const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
    maxRPS: 5,
 };
 
-@Trace()
+@Managed()
 export class XRPImplementation implements ReadRpcInterface {
    rippleApi: any;
    client: any;

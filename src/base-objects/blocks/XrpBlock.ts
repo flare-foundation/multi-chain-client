@@ -1,8 +1,9 @@
 import { IXrpGetBlockRes } from "../../types/xrpTypes";
 import { XRP_UTD } from "../../utils/constants";
-import { GetTryCatchWrapper } from "../../utils/errors";
+import { Managed } from "../../utils/managed";
 import { BlockBase } from "../BlockBase";
 
+@Managed()
 export class XrpBlock extends BlockBase<IXrpGetBlockRes> {
    public get number(): number {
       return this.data.result.ledger_index;

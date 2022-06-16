@@ -12,11 +12,12 @@ import {
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
-   RateLimitOptions,
+   RateLimitOptions
 } from "../types";
 import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetStatus, IAlgoStatusObject } from "../types/algoTypes";
 import { algo_check_expect_block_out_of_range, algo_ensure_data, mpDecode } from "../utils/algoUtils";
-import { AsyncTryCatchWrapper, mccError, mccErrorCode } from "../utils/errors";
+import { mccError, mccErrorCode } from "../utils/errors";
+import { Managed } from "../utils/managed";
 import { toCamelCase, toSnakeCase } from "../utils/utils";
 
 const DEFAULT_TIMEOUT = 60000;
@@ -28,6 +29,7 @@ function algoResponseValidator(responseCode: number) {
    // allow any response, process them later in mcc
    return responseCode >= 200 && responseCode < 600;
 }
+@Managed()
 export class ALGOImplementation implements ReadRpcInterface {
    algodClient: any;
    indexerClient: any;

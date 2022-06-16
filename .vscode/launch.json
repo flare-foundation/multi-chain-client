@@ -27,16 +27,16 @@
          "console": "integratedTerminal",
          "name": "Test test/BTC/block.test.ts",
          "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/block.test.ts"]
+         "runtimeArgs": ["test", "test/BTC/block.test.ts"]
       },
 
       {
          "type": "node",
          "request": "launch",
          "console": "integratedTerminal",
-         "name": "Test test/decoratorTest.test.ts",
+         "name": "Test Managed",
          "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/decoratorTest.test.ts"]
+         "runtimeArgs": ["test", "test/managedTest.test.ts"]
       },
 
       {

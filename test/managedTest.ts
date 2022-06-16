@@ -1,0 +1,87 @@
+import { mccError, mccErrorCode } from "../src/utils/errors";
+import { Managed } from "../src/utils/managed";
+
+@Managed()
+export class ManagedTest {
+    val = 3;
+    constructor() {
+        console.log("ManagedTest Constructor");
+    }
+
+    get getter() {
+        console.log("ManagedTest Getter");
+        return 1;
+    }
+
+    get getterThrow() {
+        console.log("GetterThrow");
+        throw new Error("test crash");
+        return 1;
+    }
+
+    set setter(a: number) {
+        this.val = a;
+    }
+
+    set setterThrow(a: number) {
+        throw new Error("test crash");
+    }
+
+
+    method(a: number, b: number) {
+        return this.sum(a, this.mad(a, a, b));
+    }
+
+    methodThrow(a: number, b: number) {
+        throw new Error("test crash");
+    }
+
+    methodThrowMccError() {
+        throw new mccError(mccErrorCode.InvalidData);
+    }
+
+
+    mad(a: number, b: number, c: number) {
+        return a * b + c;
+    }
+
+    sum(a: number, b: number) {
+        return a + b;
+    }
+
+    mul(a: number, b: number) {
+        return a * b;
+    }
+
+    async asyncMethod(a: number, b: number) {
+        return this.mul(this.sum(a, a), this.sum(b, b));
+    }
+
+    async asyncMethodThrow(a: number, b: number) {
+        throw new Error("test crash");
+    }
+
+
+
+
+
+    f1(param: string) {
+        this.f2( `f1(${param})->f2` );
+        this.f3( `f1(${param})->f3` );
+    }
+
+    f2(param: string) {
+        this.f3( `f2(${param})->f3` );
+    }
+
+    f3(param: string) {
+        for(let a=0; a<3; a++) {
+            this.f4( `f3(${param})->f4(${a})` );
+        }
+    }
+
+    f4(param: string) {
+    }
+
+
+}

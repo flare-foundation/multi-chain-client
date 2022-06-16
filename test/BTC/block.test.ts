@@ -18,7 +18,7 @@ describe("Block Btc base test ", function () {
       MccClient = new MCC.BTC(BtcMccConnection);
       block = await MccClient.getBlock(729409);
 
-      traceManager.showTrace();
+      //traceManager.showTrace();
    });
 
    it("Should get block number ", async function () {

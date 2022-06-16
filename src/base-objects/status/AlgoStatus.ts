@@ -1,7 +1,8 @@
 import { IAlgoStatusObject } from "../../types";
-import { GetTryCatchWrapper } from "../../utils/errors";
+import { Managed } from "../../utils/managed";
 import { NodeStatusBase } from "../StatusBase";
 
+@Managed()
 export class AlgoNodeStatus extends NodeStatusBase<IAlgoStatusObject> {
    public get version(): string {
       const build = this.data.versions.build;
