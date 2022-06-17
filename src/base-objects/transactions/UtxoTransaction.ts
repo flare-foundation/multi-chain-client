@@ -5,6 +5,7 @@ import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMappe
 import { BTC_MDU } from "../../utils/constants";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
+import { Managed } from "../../utils/managed";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
 // Transaction types and their description
@@ -13,6 +14,7 @@ export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payme
 // - partial_payment : transaction with some vout of vins added to additional data
 // - full_payment    : transaction with vouts for all vins added to additional data
 
+@Managed()
 export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUtxoTransactionAdditionalData> {
    constructor(data: IUtxoGetTransactionRes, additionalData?: IUtxoTransactionAdditionalData) {
       super(data, additionalData);

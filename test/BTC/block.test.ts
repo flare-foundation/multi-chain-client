@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
+import { BtcBlock, MCC, UtxoBlock, UtxoMccCreate } from "../../src";
 import { traceManager } from "../../src/utils/trace";
 
 const BtcMccConnection = {
@@ -11,14 +11,17 @@ const BtcMccConnection = {
 
 describe("Block Btc base test ", function () {
    let MccClient: MCC.BTC;
-   let block: UtxoBlock;
+   let block: BtcBlock;
    const blockNumber = 729_409
  
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
       block = await MccClient.getBlock(blockNumber);
+   });
 
-      //traceManager.showTrace();
+   after(async function () {
+      traceManager.showTrace(true,false,true,false);
+      traceManager.showMethods();
    });
 
    it("Should get block", async function () {

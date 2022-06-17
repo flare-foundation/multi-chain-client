@@ -1,4 +1,5 @@
 import { mccError, mccOutsideError, MCC_ERROR } from "./errors";
+import { mccJsonStringify } from "./utils";
 
 export enum TraceMethodType {
    Descriptor,
@@ -106,11 +107,30 @@ export class TraceStack {
       return this.args.map((val) => `${val}`).join(",");
    }
 
-   toString(showIndent = false, showSource = true, showTiming = false): string {
+   verbose(obj: any, verbose: boolean=true, maxlength=32): string {
+      let text = "";
+
+      if( typeof obj==="string") {
+         text = obj;
+      }
+      else {
+         text=mccJsonStringify( obj );
+      }
+
+      if( verbose ) return text;
+
+      if( text.length <= maxlength ) return text;
+
+      const halve = maxlength / 2 - 2;
+
+      return text.substring(0,halve) + "..." + text.substring(text.length-halve);
+   }
+
+   toString(showIndent = false, showSource = true, showTiming = false, showVerbose=true): string {
       // todo: error
       // todo: display objects (json!)
 
-      const args = this.argsToString;
+      const args = this.verbose( this.argsToString , showVerbose );
 
       var status = "";
 
@@ -133,18 +153,18 @@ export class TraceStack {
       const timing = showTiming ? `${this.traceTime}ms ` : ``;
 
       if (this.ret) {
-         return `${status} ${indent}${this.method.className}.${this.method.methodName}(${args})=${this.ret} ${source}${timing}`;
+         return `${status} ${indent}${this.method.className}.${this.method.methodName}(${args})=${this.verbose(this.ret,showVerbose)} ${source}${timing}`;
       }
       else {
          return `${status} ${indent}${this.method.className}.${this.method.methodName}(${args}) ${source}${timing}`;
       }
    }
 
-   toShortString(): string {
-      const args = this.argsToString;
+   toShortString(showVerbose=false): string {
+      const args = this.verbose( this.argsToString , showVerbose );
 
       if (this.ret) {
-         return `${this.method.className}.${this.method.methodName}(${args})=${this.ret}`;
+         return `${this.method.className}.${this.method.methodName}(${args})=${this.verbose(this.ret,showVerbose)}`;
       }
       else {
          return `${this.method.className}.${this.method.methodName}(${args})`;
@@ -235,7 +255,7 @@ export class TraceManager {
       }
       console.log(`NODE STACK ${error.stack}`)
       this.showStack();
-      this.showTrace(true, false);
+      this.showTrace(true, false, true, false);
    }
 
    showStack() {
@@ -245,10 +265,10 @@ export class TraceManager {
       }
    }
 
-   showTrace(indent = false, source = true, timing = false) {
+   showTrace(indent = false, source = true, timing = false, verbose=false) {
       console.log("TRACE");
       for (let trace of this.trace) {
-         console.log(trace.toString(indent, source, timing));
+         console.log(trace.toString(indent, source, timing, verbose));
       }
    }
 
@@ -415,9 +435,9 @@ export function RegisterTraceClass(targetClass: any) {
 
       // constructor
       if (methodName === "constructor") {
-         RegisterTraceValue(targetClass, methodName, desc);
+         // RegisterTraceValue(targetClass, methodName, desc);
 
-         Object.defineProperty(targetClass.prototype, methodName, desc!);
+         // Object.defineProperty(targetClass.prototype, methodName, desc!);
 
          return;
       }
