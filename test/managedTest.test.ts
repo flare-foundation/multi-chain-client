@@ -1,5 +1,5 @@
 import { traceManager } from "../src/utils/trace";
-import { ManagedTest } from "./managedTest";
+import { ManagedTest, TestFunctionCall } from "./managedTest";
 
 const chai = require('chai')
 const expect = chai.expect
@@ -10,7 +10,7 @@ describe("Managed test", () => {
    let dec: ManagedTest;
 
    before(async function () {
-      traceManager.displayTrace=true;
+      //traceManager.displayTrace=true;
 
       dec = new ManagedTest();
    });
@@ -87,9 +87,22 @@ describe("Managed test", () => {
    });
 
 
+   it.only("Managed function", async () => {
 
 
-   it.only("Managed nested test", async () => {
+      TestFunctionCall( 1 , "A" );
+
+      traceManager.showTrace(true,false,true);
+      traceManager.showMethods();
+
+      expect(traceManager.firstTrace).to.eq(`.TestFunction(1,A)`);
+   });
+
+
+
+
+
+   it("Managed nested test", async () => {
 
       //traceManager.displayTrace=true;
 

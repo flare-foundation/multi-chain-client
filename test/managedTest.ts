@@ -1,5 +1,16 @@
+import { traceFunction } from "../src";
 import { mccError, mccErrorCode } from "../src/utils/errors";
 import { Managed } from "../src/utils/managed";
+
+
+
+
+export function TestFunctionCall(a: number, s: string) {    
+    traceFunction( TestFunction, a , s );
+}
+
+export function TestFunction(a: number, s: string) {    
+}
 
 @Managed()
 export class ManagedTest {

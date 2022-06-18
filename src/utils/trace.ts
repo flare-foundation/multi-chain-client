@@ -2,9 +2,9 @@ import { mccError, mccOutsideError, MCC_ERROR } from "./errors";
 import { mccJsonStringify } from "./utils";
 
 export enum TraceMethodType {
-   Descriptor,
-   Getter,
-   Setter,
+   ClassGetter,
+   ClassSetter,
+   ClassMethod,
    Function,
 }
 
@@ -104,18 +104,29 @@ export class TraceStack {
    }
 
    get argsToString(): string {
-      return this.args.map((val) => `${val}`).join(",");
+      return this.args.map((val) => this.stringifyObject(val)).join(",");
    }
 
-   verbose(obj: any, verbose: boolean=true, maxlength=32): string {
+   stringifyObject(obj: any): string {
       let text = "";
 
       if( typeof obj==="string") {
          text = obj;
       }
       else {
-         text=mccJsonStringify( obj );
+         try {
+            text=mccJsonStringify( obj );
+         }
+         catch {
+            text="error stringifying object";
+         }
       }
+
+      return text;
+   }
+
+   verbose(obj: any, verbose: boolean=true, maxlength=32): string {
+      let text = this.stringifyObject( obj );
 
       if( verbose ) return text;
 
@@ -127,8 +138,7 @@ export class TraceStack {
    }
 
    toString(showIndent = false, showSource = true, showTiming = false, showVerbose=true): string {
-      // todo: error
-      // todo: display objects (json!)
+      // todo: show if method is in error
 
       const args = this.verbose( this.argsToString , showVerbose );
 
@@ -219,7 +229,7 @@ export class TraceManager {
       this.trace.push(trace);
 
       if (this.displayTrace) {
-         console.log(`trace| ${trace.toString(true,false,false)}`);
+         console.log(`trace| ${trace.toString(true,false,false,false)}`);
       }
 
       return trace;
@@ -307,11 +317,11 @@ export class TraceManager {
 export const traceManager = new TraceManager();
 
 
-function Stub(target: any, name: string, funct: any, cx: any, args: any[], methodType: TraceMethodType) {
-   traceManager.start(target.name, name!, args, methodType);
+function Stub(className: string, name: string, funct: any, cx: any, args: any[], methodType: TraceMethodType) {
+   traceManager.start(className, name!, args, methodType);
 
    try {
-      let res = methodType === TraceMethodType.Getter ? funct.apply(cx) : funct.apply(cx, args);
+      let res = methodType === TraceMethodType.ClassGetter ? funct.apply(cx) : funct.apply(cx, args);
 
       if (!isPromise(res)) {
          traceManager.complete(res)
@@ -363,27 +373,27 @@ export function isPromise(p: any) {
 
 
 
-export function RegisterTraceValue(target: any, name?: string, descriptor?: any) {
-   //  decorating a method
-   if (descriptor && descriptor.value) {
-      let original = descriptor.value;
+// export function RegisterTraceValue(target: any, name?: string, descriptor?: any) {
+//    //  decorating a method
+//    if (descriptor && descriptor.value) {
+//       let original = descriptor.value;
 
-      descriptor.value = function (...args: any[]) {
-         return Stub(target, name!, original, this, args, TraceMethodType.Descriptor);
-      };
+//       descriptor.value = function (...args: any[]) {
+//          return Stub(target, name!, original, this, args, TraceMethodType.Descriptor);
+//       };
 
-      return descriptor;
-   }
+//       return descriptor;
+//    }
 
-   return null;
-}
+//    return null;
+// }
 
 export function RegisterTraceGetter(target: any, name?: string, descriptor?: any) {
    if (descriptor && descriptor.get) {
       let original = descriptor.get;
 
       descriptor.get = function () {
-         return Stub(target, name!, original, this, [], TraceMethodType.Getter);
+         return Stub(target.name, name!, original, this, [], TraceMethodType.ClassGetter);
       };
 
       return descriptor;
@@ -396,7 +406,7 @@ export function RegisterTraceSetter(target: any, name?: string, descriptor?: any
       let original = descriptor.set;
 
       descriptor.set = function (...args: any[]) {
-         return Stub(target, name!, original, this, args, TraceMethodType.Setter);
+         return Stub(target.name, name!, original, this, args, TraceMethodType.ClassSetter);
       };
 
       return descriptor;
@@ -416,18 +426,14 @@ export function RegisterTraceClass(targetClass: any) {
       // getter
       if (desc?.get) {
          RegisterTraceGetter(targetClass, methodName, desc);
-
          Object.defineProperty(targetClass.prototype, methodName, desc);
-
          return;
       }
 
       // setter
       if (desc?.set) {
          RegisterTraceSetter(targetClass, methodName, desc);
-
          Object.defineProperty(targetClass.prototype, methodName, desc);
-
          return;
       }
 
@@ -436,7 +442,6 @@ export function RegisterTraceClass(targetClass: any) {
       // constructor
       if (methodName === "constructor") {
          // RegisterTraceValue(targetClass, methodName, desc);
-
          // Object.defineProperty(targetClass.prototype, methodName, desc!);
 
          return;
@@ -449,11 +454,15 @@ export function RegisterTraceClass(targetClass: any) {
 
       // an arrow function can't be used while we have to preserve right 'this'
       targetClass.prototype[methodName] = function (...args: any[]) {
-         return Stub(targetClass, methodName, original, this, args, TraceMethodType.Function);
+         return Stub(targetClass.name, methodName, original, this, args, TraceMethodType.ClassMethod);
       };
    });
 
    return targetClass;
+}
+
+export function traceFunction(funct: any, ...args: any[]) {
+   return Stub("", funct.name, funct, null, args, TraceMethodType.Function);
 }
 
 export function round(x: number, decimal: number = 0) {
