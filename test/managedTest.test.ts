@@ -87,7 +87,7 @@ describe("Managed test", () => {
    });
 
 
-   it.only("Managed function", async () => {
+   it("Managed function", async () => {
 
 
       TestFunctionCall( 1 , "A" );

@@ -1,5 +1,6 @@
-import { AddressAmount, BtcTransaction, MCC, MccClient, mccJsonStringify, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
-import { IUtxoTransactionAdditionalData, IUtxoVinVoutsMapper } from "../../src/types/utxoTypes";
+import { BtcTransaction, MCC, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { IUtxoVinVoutsMapper } from "../../src/types/utxoTypes";
+import { transactionTestCases } from "../testUtils";
 
 const chai = require("chai");
 const expect = chai.expect;
@@ -158,32 +159,6 @@ describe("Transaction Btc base test ", function () {
          expect(transaction.successStatus).to.eq(0);
       });
    });
-
-   interface transactionTestCases {
-      description: string;
-      txid: string;
-      expect: expectTransactionTestCase;
-   }
-
-   interface expectTransactionTestCase {
-      txid: string;
-      stdTxid: string;
-      hash: string;
-      reference: string[];
-      stdPaymentReference: string;
-      unixTimestamp: number;
-      sourceAddresses: (string | undefined)[];
-      receivingAddresses: (string | undefined)[];
-      isFeeError: boolean;
-      fee: string; // number as a string or error string if error is expected
-      spentAmounts: AddressAmount[];
-      receivedAmounts: AddressAmount[];
-      type: string;
-      isNativePayment: boolean;
-      currencyName: string;
-      elementaryUnits: string; // number as string
-      successStatus: TransactionSuccessStatus;
-   }
 
    const TransactionsToTest: transactionTestCases[] = [
       {
