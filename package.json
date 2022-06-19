@@ -18,6 +18,28 @@
       "trailingComma": "es5",
       "tabWidth": 3
    },
+   "nyc": {
+      "extends": "@istanbuljs/nyc-config-typescript",
+      "check-coverage": true,
+      "all": true,
+      "sourceMap": true,
+      "include": [
+         "src/**/*.ts"
+      ],
+      "exclude": [
+         "src/types",
+         "src/axios-rate-limiter",
+         "src/utils/typeReflection.ts",
+         "src/utils/retry.ts"
+      ],
+      "reporter": [
+         "html",
+         "lcov",
+         "text",
+         "text-summary"
+      ],
+      "report-dir": "coverage"
+    },
    "files": [
       "/dist",
       "/src"
@@ -26,9 +48,10 @@
       "publish": "echo npm publish",
       "pack": "npm pack",
       "build": "tsc --allowJs",
-      "test": "mocha -r ts-node/register -r dotenv/config -t 0",
-      "test_all": "mocha -r ts-node/register -r dotenv/config test/**/*.ts",
-      "test_with_coverage": "env bash scripts/coverage.sh"
+      "test": "mocha -r ts-node/register -r dotenv/config --require source-map-support/register -t 0",
+      "test_all": "mocha -r ts-node/register -r dotenv/config --require source-map-support/register test/**/*.ts",
+      "test_with_coverage": "env bash scripts/coverage.sh",
+      "test:coverage": "yarn nyc yarn test_all"
    },
    "dependencies": {
       "algo-msgpack-with-bigint": "2.1.1",
@@ -55,6 +78,7 @@
       "mocha": "9.2.2",
       "nyc": "15.1.0",
       "prettier": "2.6.2",
+      "source-map-support": "0.5.21",
       "ts-node": "10.8.1"
    }
 }
