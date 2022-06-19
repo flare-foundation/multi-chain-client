@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { MCC, SpecialAddresses } from "../../src";
-import { processFlags, processFlagsOld1, processFlagsOld2 } from "../../src/utils/xrpUtils";
+import { mccSettings } from "../../src/global-settings/globalSettings";
+import { processFlags } from "../../src/utils/xrpUtils";
 const XrpAddress = require("ripple-address-codec");
 
 const XRPMccConnection = {
@@ -14,60 +15,45 @@ describe("Xrpl account test mainnet ", function () {
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
+      mccSettings.setLoggingCallback = () => {return }
+      
    });
 
    describe("account info", async () => {
       it(`Should get account info`, async () => {
          const acc = "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn";
          const info = await MccClient.getAccountInfo(acc);
-         console.log(info);
 
          // Get the flags
          const flags = processFlags(info.result.account_data.Flags);
-         console.log(flags);
+         expect(flags.length).to.eq(1)
+         expect(flags[0]).to.eq("lsfDisableMaster")
+
       });
 
       it(`Should get account info 2 `, async () => {
          const acc = "rMv1dFonUTJo4qeQDmmCuz3cXPsxy9AiHz";
          const info = await MccClient.getAccountInfo(acc);
-         console.log(info);
 
          // Get the flags
          const flags = processFlags(info.result.account_data.Flags);
-         console.log(flags);
+         expect(flags.length).to.eq(0)
 
          // get account founding transaction (account create)
          const fTx = "5439BB6872644CE74A09F4654CECFC5F443E9687AD5EF6D119E729898F41A8C5";
          const trans = await MccClient.getTransaction(fTx);
-         if (trans) {
-            console.log(trans.data);
-            console.log(await trans.paymentSummary(MccClient));
 
-            console.log(trans.isAccountCreate);
-         }
+         expect(trans.isAccountCreate).to.eq(true)
       });
    });
 
    describe("account transactions", async () => {
       it(`Should get account transactions`, async () => {
-         // const acc = 'rEVd9QP2aGsJ7wuty2qV8gqMiTiA1sX2j1'
          const acc = "r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd";
-
-         console.log("Decoded address", acc);
-         const byts = XrpAddress.decodeAccountID(acc); // TODO add to utils
-         console.log(byts, byts.length);
-
-         const encb = XrpAddress.encodeAccountID(byts);
-
-         console.log("Back enc: ", encb);
-         console.log("Original: ", acc);
 
          // get account transactions
          const tr = await MccClient.getAccountTransactions(acc, 71_859_000, 71_867_500);
-         // const tr = await MccClient.getAccountTransactions(acc)
-
-         console.log(tr);
-         console.log(tr.result.transactions.length);
+         expect(tr.result.transactions.length).to.eq(73)
       });
    });
 });
@@ -88,43 +74,24 @@ describe("Xrpl account test testnet ", function () {
    describe("account info", async () => {
       it(`Should get account info`, async () => {
          const info = await MccClient.getAccountInfo("rBwD7GqAPFoZvzz6YaR5HyJWD8TUoaUbJo");
-         console.log(info);
 
          // Get the flags
 
-         console.time("Flag new1");
          const flags = processFlags(info.result.account_data.Flags);
-         console.timeEnd("Flag new1");
 
-         console.time("Flag old1");
-         const oldFlags = processFlagsOld1(info.result.account_data.Flags);
-         console.timeEnd("Flag old1");
-
-         console.time("Flag old2");
-         const fastFlags = processFlagsOld2(info.result.account_data.Flags);
-         console.timeEnd("Flag old2");
-
-         console.log("Flags");
-         console.log(flags);
-         console.log(oldFlags);
-         console.log(fastFlags);
+         expect(flags.length).to.eq(3)
 
          // Regular key
 
-         console.log("Regular key");
-         console.log(info.result.account_data.RegularKey);
-         console.log(info.result.account_data.RegularKey === SpecialAddresses.ACCOUNT_ONE);
+         expect(info.result.account_data.RegularKey).to.eq(SpecialAddresses.ACCOUNT_ONE)
 
          // Multisig check
 
-         console.log("Multisig");
          // TODO ripple has a problem here?
-         // @ts-ignore
-         console.log(info.result.account_data?.signer_lists);
          // @ts-ignore
          if (info.result.account_data?.signer_lists) {
             // @ts-ignore
-            console.log(info.result.account_data?.signer_lists.length === 0);
+            expect(info.result.account_data?.signer_lists.length).to.eq(0)
          }
       });
    });
@@ -143,8 +110,6 @@ describe("Xrpl account test testnet ", function () {
       it(`Should get account info after setting default rippling`, async () => {
          const info = await MccClient.getAccountInfo(acc, 28_014_612);
          const flags = processFlags(info.result.account_data.Flags);
-
-         console.log(info);
 
          expect(flags.length).to.eq(1);
          expect(flags.includes("lsfDefaultRipple")).to.eq(true);
@@ -165,9 +130,6 @@ describe("Xrpl account test testnet ", function () {
       it(`Should get account info after disabling master key`, async () => {
          const info = await MccClient.getAccountInfo(acc, 28_014_733);
          const flags = processFlags(info.result.account_data.Flags);
-
-         console.log(info);
-         console.log(flags);
 
          expect(flags.length).to.eq(3);
          expect(flags.includes("lsfDefaultRipple")).to.eq(true);

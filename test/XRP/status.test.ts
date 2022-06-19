@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { MCC, XrpNodeStatus } from "../../src";
 
 const XRPMccConnection = {
@@ -12,29 +13,23 @@ describe("Block Xrp base test ", function () {
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
-      const tStatus = await MccClient.getNodeStatus();
-      if (tStatus) {
-         status = tStatus;
-      }
+      status = await MccClient.getNodeStatus();
    });
 
    it("Should get status version ", async function () {
-      console.log(status.version);
+      const version = status.version.split("_");
+      expect(version[0]).to.be.eq("1.9.1");
    });
 
    it("Should get status state ", async function () {
-      console.log(status.state);
+      expect(status.state).to.be.eq("full");
    });
 
    it("Should get status isHealthy ", async function () {
-      console.log(status.isHealthy);
+      expect(status.isHealthy).to.eq(true);
    });
 
    it("Should get status isSynced ", async function () {
-      console.log(status.isSynced);
-   });
-
-   it("Should get full data ", async function () {
-      console.log(status.data);
+      expect(status.isSynced).to.eq(true);
    });
 });

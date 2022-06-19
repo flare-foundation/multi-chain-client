@@ -29,12 +29,10 @@ describe("Block BTC base test ", function () {
    });
 
    it("Should get status isHealthy ", async function () {
-      // console.log(status.isHealthy);
       expect(status.isHealthy).to.eq(true);
    });
 
    it("Should get status isSynced ", async function () {
-      // console.log(status.isSynced);
       expect(status.isSynced).to.eq(true);
    });
 });

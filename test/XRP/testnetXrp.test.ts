@@ -1,6 +1,9 @@
-import { expect } from "chai";
-import { LedgerResponse } from "xrpl";
 import { MCC } from "../../src";
+
+const chai = require('chai')
+const expect = chai.expect
+chai.use(require('chai-as-promised'))
+
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -18,7 +21,6 @@ describe("XRP testnet client tests", () => {
    describe("Should be able to get block height", async () => {
       it(`Should be able to get block height `, async () => {
          let height = await client.getBlockHeight();
-         console.log(height);
          expect(height).to.be.greaterThan(70_000_000);
       });
    });
@@ -33,27 +35,23 @@ describe("XRP testnet client tests", () => {
          // assert(block.result.ledger_index === n);
       });
 
-      it("Should return null if block does not exist", async () => {
+      it("Should return InvalidBlock if block does not exist", async () => {
          let n = 694537820;
-         let block = await client.getBlock(n);
-         expect(block).to.equal(null);
-         // assert(block == null);
+         let block = client.getBlock(n);
+         await expect( block ).to.be.rejectedWith("OutsideError");
          n *= 100;
-         block = await client.getBlock(n);
-         expect(block).to.equal(null);
-         // assert(block == null);
+         block = client.getBlock(n);
+         await expect( block ).to.be.rejectedWith("InvalidBlock");
       });
 
       it("Should return transaction if exists", async () => {
          let txResponse = await client.getTransaction("0569969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2");
          expect(txResponse).to.not.equal(null);
-         // assert(txResponse?.result?.Account)
       });
 
       it("Should return null if transaction does not exist", async () => {
-         let txResponse = await client.getTransaction("0669969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2");
-         expect(txResponse).to.equal(null);
-         // assert(txResponse == null);
+         let txResponse = client.getTransaction("0669969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2");
+         await expect( txResponse ).to.be.rejectedWith("OutsideError");
       });
    });
 });
