@@ -80,7 +80,7 @@ describe("Transaction Btc base test ", function () {
          if (fullTrans) {
             transaction = new BtcTransaction(fullTrans.data);
             await transaction.makeFullPayment(MccClient);
-            console.log(mccJsonStringify(transaction.additionalData));
+            // console.log(mccJsonStringify(transaction.additionalData));
          }
       });
 
@@ -149,91 +149,6 @@ describe("Transaction Btc base test ", function () {
          console.log(transaction.isNativePayment);
       });
    });
-
-   // describe("Transaction partial ", function () {
-   //    const txid = "16920c5619b4c43fd5c9c0fc594153f2bf1a80c930238a8ee870aece0bc7cc59";
-
-   //    it("Should get transaction vins ", async function () {
-   //       let basetransaction = await MccClient.getTransaction(txid);
-   //       if (basetransaction) {
-   //          const full = await getVinVoutsPartial([0],basetransaction, MccClient);
-   //          console.log(full);
-   //          const addData: IUtxoTransactionAdditionalData = {
-   //             vinouts: full,
-   //          };
-   //          const transaction = new BtcTransaction(basetransaction.data, addData);
-   //          // console.log(fullTrans);
-   //          // console.log("vout", partialTrans.data.vout);
-   //          // console.log("vin", partialTrans.data.vin);
-   //          // console.log(partialTrans.hash);
-   //          // console.log(partialTrans.reference);
-   //          // console.log(partialTrans.unixTimestamp);
-   //          // console.log(partialTrans.sourceAddress);
-   //          // console.log(partialTrans.receivingAddress);
-   //          // console.log(partialTrans.fee.toString());
-   //          // console.log(partialTrans.receivedAmount);
-   //          // console.log(partialTrans.spentAmount);
-   //          // console.log(partialTrans.type);
-   //          // console.log(partialTrans.elementaryUnits.toString());
-   //          // console.log(partialTrans.successStatus);
-   //          // console.log(partialTrans.currencyName);
-   //          // console.log(partialTrans.isNativePayment);
-   //          if(transaction){
-   //             it("Should get transaction hash ", async function () {
-   //                console.log(transaction.hash);
-   //             });
-
-   //             it("Should get transaction reference array ", async function () {
-   //                console.log(transaction.reference);
-   //             });
-
-   //             it("Should get transaction timestamp ", async function () {
-   //                console.log(transaction.unixTimestamp);
-   //             });
-
-   //             it("Should get source address ", async function () {
-   //                console.log(transaction.sourceAddress);
-   //             });
-
-   //             it("Should get receiving address ", async function () {
-   //                console.log(transaction.receivingAddress);
-   //             });
-
-   //             it("Should get fee ", async function () {
-   //                console.log(transaction.fee.toString());
-   //             });
-
-   //             it("Should received amount ", async function () {
-   //                console.log(transaction.receivedAmount);
-   //             });
-
-   //             it("Should spend amount ", async function () {
-   //                console.log(transaction.spentAmount);
-   //             });
-
-   //             it("Should get type ", async function () {
-   //                console.log(transaction.type);
-   //             });
-
-   //             it("Should get elementary unit ", async function () {
-   //                console.log(transaction.elementaryUnits.toString());
-   //             });
-
-   //             it("Should get success status ", async function () {
-   //                console.log(transaction.successStatus);
-   //             });
-
-   //             it("Should get currency name ", async function () {
-   //                console.log(transaction.currencyName);
-   //             });
-
-   //             it("Should check if native payment ", async function () {
-   //                console.log(transaction.isNativePayment);
-   //             });
-   //          }
-   //       }
-   //    });
-   // });
 
    const TransactionsToTest = [
       {

@@ -96,7 +96,7 @@ describe("BTC mainnet client tests", () => {
          const chaintips = await BtcRpc.getTopBlocks();
          // console.log(chaintips);
          // console.log(chaintips.length);
-         expect(chaintips.length).to.greaterThan(13)
+         expect(chaintips.length).to.greaterThanOrEqual(14)
       });
 
       it("full chaintips ", async function () {
@@ -104,7 +104,7 @@ describe("BTC mainnet client tests", () => {
          const chaintips = await BtcRpc.getTopBlocks({ all_blocks: true });
          // console.log(chaintips);
          // console.log(chaintips.length);
-         expect(chaintips.length).to.greaterThan(13)
+         expect(chaintips.length).to.greaterThanOrEqual(14)
       });
 
       it("chaintips after ", async function () {
@@ -112,19 +112,19 @@ describe("BTC mainnet client tests", () => {
          const chaintips = await BtcRpc.getTopBlocks({ height_gte: 706_000 });
          // console.log(chaintips);
          // console.log(chaintips.length);
-         expect(chaintips.length).to.greaterThan(11)
+         expect(chaintips.length).to.greaterThanOrEqual(12)
       });
 
       it("chaintips after ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ height_gte: 706_000, all_blocks: true });
-         expect(chaintips.length).to.greaterThan(11)
+         expect(chaintips.length).to.greaterThanOrEqual(12)
       });
 
       it("All Block tips ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const BlockTips = await BtcRpc.getTopLiteBlocks(6);
-         expect(BlockTips.length).to.greaterThan(6)
+         expect(BlockTips.length).to.greaterThanOrEqual(6)
          // console.log(BlockTips);
          // console.log(BlockTips.length)
       });

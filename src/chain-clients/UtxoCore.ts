@@ -337,7 +337,19 @@ export class UtxoCore implements ReadRpcInterface {
          }
          return tempTips;
       });
-      return allTips.reduce((acc: LiteBlock[], nev: LiteBlock[]) => acc.concat(nev), []).concat(mainBranchHashes);
+      // filter out duplicates
+      const reducedTips = allTips.reduce((acc: LiteBlock[], nev: LiteBlock[]) => acc.concat(nev), []).concat(mainBranchHashes);
+      const unique = new Set()
+      return reducedTips.filter((elem: LiteBlock) => {
+         const key = `${elem.number}_${elem.blockHash}`
+         if(unique.has(key)){
+            return false
+         } else {
+            unique.add(key)
+            return true
+         }
+         
+      })
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
