@@ -60,9 +60,6 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    }
 
    public get transactionCount(): number {
-      if (!this.data.block.txns) {
-         return 0;
-      }
       return this.data?.block?.txns?.length;
    }
 

@@ -36,3 +36,16 @@ describe("Block BTC base test ", function () {
       expect(status.isSynced).to.eq(true);
    });
 });
+
+describe("BTC bottom block ", function () {
+   let MccClient: MCC.BTC;
+
+   before(async function () {
+      MccClient = new MCC.BTC(BtcMccConnection);
+   });
+
+   it("Should get status version ", async function () {
+      const bottom = await MccClient.getBottomBlockHeight()
+      expect(bottom).to.eq(0);
+   });
+});

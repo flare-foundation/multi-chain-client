@@ -9,6 +9,15 @@ const algoCreateConfig = {
 };
 
 describe(`Algo block processing`, async () => {
+   describe("Top block", function () {
+      it("Should get block", async function () {
+         const MccClient = new MCC.ALGO(algoCreateConfig);
+         const block = await MccClient.getBlock();
+
+         expect(block).to.not.eq(undefined);
+      });
+   });
+
    describe("Classic block test ", function () {
       let MccClient: MCC.ALGO;
       let block: AlgoBlock;

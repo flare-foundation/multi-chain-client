@@ -33,3 +33,17 @@ describe("Block Xrp base test ", function () {
       expect(status.isSynced).to.eq(true);
    });
 });
+
+
+describe("Xrp bottom block ", function () {
+   let MccClient: MCC.XRP;
+
+   before(async function () {
+      MccClient = new MCC.XRP(XRPMccConnection);
+   });
+
+   it("Should get status version ", async function () {
+      const bottom = await MccClient.getBottomBlockHeight()
+      expect(bottom).to.greaterThanOrEqual(32_570);
+   });
+});

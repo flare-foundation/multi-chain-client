@@ -36,3 +36,16 @@ describe("Block BTC base test ", function () {
       expect(status.isSynced).to.eq(true);
    });
 });
+
+describe("LTC bottom block ", function () {
+   let MccClient: MCC.LTC;
+
+   before(async function () {
+      MccClient = new MCC.LTC(LtcMccConnection);
+   });
+
+   it("Should get status version ", async function () {
+      const bottom = await MccClient.getBottomBlockHeight()
+      expect(bottom).to.eq(0);
+   });
+});

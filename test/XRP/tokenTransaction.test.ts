@@ -100,7 +100,7 @@ describe("Transaction Xrp tests ", function () {
             isNativePayment: false,
             currencyName: "CX1",
             elementaryUnits: "1000000", // number as string
-            successStatus: TransactionSuccessStatus.SUCCESS,
+            successStatus: TransactionSuccessStatus.SUCCESS, 
          },
       },
       {
@@ -139,73 +139,6 @@ describe("Transaction Xrp tests ", function () {
          before(async function () {
             transaction = await MccClient.getTransaction(transData.txid);
          });
-
-         it("Should get transaction hash ", async function () {
-            console.log(transaction.hash);
-         });
-
-         it("Should get transaction reference array ", async function () {
-            console.log(transaction.reference);
-         });
-
-         it("Should get transaction timestamp ", async function () {
-            console.log(transaction.unixTimestamp);
-         });
-
-         it("Should get source address ", async function () {
-            console.log(transaction.sourceAddresses);
-         });
-
-         it("Should get receiving address ", async function () {
-            console.log(transaction.receivingAddresses);
-         });
-
-         it("Should get fee ", async function () {
-            console.log(transaction.fee.toString(10));
-         });
-
-         it("Should received amount ", async function () {
-            console.log(transaction.receivedAmounts);
-         });
-
-         it("Should spend amount ", async function () {
-            console.log(transaction.spentAmounts);
-         });
-
-         it("Should get type ", async function () {
-            console.log(transaction.type);
-         });
-
-         it("Should get elementary unit ", async function () {
-            console.log(transaction.elementaryUnits.toString(10));
-         });
-
-         it("Should get success status ", async function () {
-            console.log(transaction.successStatus);
-         });
-
-         it("Should get currency name ", async function () {
-            console.log(transaction.currencyName);
-         });
-
-         it("Should check if native payment ", async function () {
-            console.log(transaction.isNativePayment);
-         });
-
-         it("Should get success Status ", async function () {
-            console.log(transaction.successStatus);
-         });
-
-         it("Should get payment summary ", async function () {
-            const summary = await transaction.paymentSummary(MccClient);
-            console.log(summary);
-            if (summary.tokenElementaryUnits) console.log("tokenElementaryUnits: ", summary.tokenElementaryUnits.toString(10));
-            if (summary.receivedTokenAmount) console.log("receivedTokenAmount: ", summary.receivedTokenAmount.toString(10));
-            if (summary.spentAmount) console.log("spentAmount: ", summary.spentAmount.toString(10));
-            if (summary.receivedAmount) console.log("receivedAmount: ", summary.receivedAmount.toString(10));
-         });
-
-         
 
          it("Should find transaction in block ", function () {
             expect(transaction).to.not.eq(undefined);
@@ -307,6 +240,17 @@ describe("Transaction Xrp tests ", function () {
          it("Should get success status ", async function () {
             expect(transaction.successStatus).to.eq(transData.expect.successStatus);
          });
+
+
+         it.skip("Should get payment summary ", async function () {
+            const summary = await transaction.paymentSummary(MccClient);
+            console.log(summary);
+            if (summary.tokenElementaryUnits) console.log("tokenElementaryUnits: ", summary.tokenElementaryUnits.toString(10));
+            if (summary.receivedTokenAmount) console.log("receivedTokenAmount: ", summary.receivedTokenAmount.toString(10));
+            if (summary.spentAmount) console.log("spentAmount: ", summary.spentAmount.toString(10));
+            if (summary.receivedAmount) console.log("receivedAmount: ", summary.receivedAmount.toString(10));
+         });
+
       });
    }
 });

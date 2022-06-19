@@ -35,3 +35,16 @@ describe("Block BTC base test ", function () {
       expect(status.isSynced).to.eq(true);
    });
 });
+
+describe("DOGE bottom block ", function () {
+   let MccClient: MCC.DOGE;
+
+   before(async function () {
+      MccClient = new MCC.DOGE(DogeMccConnection);
+   });
+
+   it("Should get status version ", async function () {
+      const bottom = await MccClient.getBottomBlockHeight()
+      expect(bottom).to.eq(0);
+   });
+});

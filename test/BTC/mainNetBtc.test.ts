@@ -90,7 +90,7 @@ describe("BTC mainnet client tests", () => {
       });
    });
 
-   describe("ChainTips", async function () {
+   describe("BTC ChainTips", async function () {
       it("basic chaintips ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const chaintips = await BtcRpc.getTopBlocks();
