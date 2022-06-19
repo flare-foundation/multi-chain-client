@@ -342,14 +342,10 @@ describe("Transaction Btc base test ", function () {
 
          it("Should get transaction reference array ", async function () {
             expect(transaction.reference.length).to.eq(transData.expect.reference.length);
-            transaction.reference.sort();
-            transData.expect.reference.sort();
-
-            console.log(transaction.reference);
-            console.log(transData.expect.reference);
-
-            for (let i = 0; i < transaction.reference.length; i++) {
-               expect(transaction.reference[i]).to.eq(transData.expect.reference[i]);
+            const a = transaction.reference.sort();
+            const b = transData.expect.reference.sort();
+            for (let i = 0; i < a.length; i++) {
+               expect(a[i]).to.eq(b[i]);
             }
          });
 
@@ -391,21 +387,21 @@ describe("Transaction Btc base test ", function () {
 
          it("Should spend amount ", async function () {
             expect(transaction.spentAmounts.length).to.eq(transData.expect.spentAmounts.length);
-            transaction.spentAmounts.sort();
-            transData.expect.spentAmounts.sort();
-            for (let i = 0; i < transaction.spentAmounts.length; i++) {
-               expect(transaction.spentAmounts[i].address).to.eq(transData.expect.spentAmounts[i].address);
-               expect(transaction.spentAmounts[i].amount.toString()).to.eq(transData.expect.spentAmounts[i].amount.toString());
+            const a = transaction.spentAmounts.sort();
+            const b = transData.expect.spentAmounts.sort();
+            for (let i = 0; i < a.length; i++) {
+               expect(a[i].address).to.eq(b[i].address);
+               expect(a[i].amount.toString()).to.eq(b[i].amount.toString());
             }
          });
 
          it("Should received amount ", async function () {
             expect(transaction.receivedAmounts.length).to.eq(transData.expect.receivedAmounts.length);
-            transaction.receivedAmounts.sort();
-            transData.expect.receivedAmounts.sort();
-            for (let i = 0; i < transaction.receivedAmounts.length; i++) {
-               expect(transaction.receivedAmounts[i].address).to.eq(transData.expect.receivedAmounts[i].address);
-               expect(transaction.receivedAmounts[i].amount.toString()).to.eq(transData.expect.receivedAmounts[i].amount.toString());
+            const a = transaction.receivedAmounts.sort();
+            const b = transData.expect.receivedAmounts.sort();
+            for (let i = 0; i < a.length; i++) {
+               expect(a[i].address).to.eq(b[i].address);
+               expect(a[i].amount.toString()).to.eq(b[i].amount.toString());
             }
          });
 
