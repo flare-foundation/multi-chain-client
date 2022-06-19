@@ -111,8 +111,10 @@ export class UtxoCore implements ReadRpcInterface {
       if (typeof blockHashOrHeight === "string") {
          blockHash = blockHashOrHeight as string;
       } else if (typeof blockHashOrHeight === "number") {
-         blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
-         if (blockHash === null) {
+         try {
+            blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
+         }
+         catch (e) {
             throw new mccError(mccErrorCode.InvalidParameter);
          }
       }
@@ -192,7 +194,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns
     */
 
-   async getBlockHeader(blockHashOrHeight: string | number): Promise<IUtxoGetBlockHeaderRes | null> {
+   async getBlockHeader(blockHashOrHeight: string | number): Promise<IUtxoGetBlockHeaderRes> {
       let blockHash: string | null = null;
       if (typeof blockHashOrHeight === "string") {
          blockHash = blockHashOrHeight as string;
@@ -210,7 +212,7 @@ export class UtxoCore implements ReadRpcInterface {
          params: [blockHash],
       });
       if (utxo_check_expect_empty(res.data)) {
-         return null;
+         throw new mccError(mccErrorCode.InvalidData);
       }
       utxo_ensure_data(res.data);
       return res.data.result;

@@ -405,9 +405,9 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          promises.push(this.vinVoutAt(i, client as MccUtxoClient));
       }
       await Promise.all(promises);
-      console.log(this.additionalData);
+      // console.log(this.additionalData);
       for (let i = 0; i < (this.additionalData?.vinouts?.length || 0); i++) {
-         console.log(this.additionalData?.vinouts![i]);
+         // console.log(this.additionalData?.vinouts![i]);
       }
    }
 

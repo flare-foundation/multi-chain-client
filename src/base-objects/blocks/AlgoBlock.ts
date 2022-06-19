@@ -91,6 +91,7 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
             if (transactionBase.sgnr) data.sgnr = transactionBase.sgnr;
             this.transactionObjects.push(new AlgoTransaction(data));
          } catch (e) {
+            /* istanbul ignore next */
             // TODO logger
             // TODO What happens if there is a transaction we dont know how to process
             mccSettings.loggingCallback(`Unable to process transaction ${mccJsonStringify(transactionBase)}`);
