@@ -1,4 +1,4 @@
-import { BtcTransaction, MCC, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { BtcTransaction, MCC, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { IUtxoVinVoutsMapper } from "../../src/types/utxoTypes";
 import { transactionTestCases } from "../testUtils";
 
@@ -12,54 +12,11 @@ const BtcMccConnection = {
    password: process.env.BTC_PASSWORD || "",
 } as UtxoMccCreate;
 
-async function getVinVoutsAtIndex(index: number, trans: UtxoTransaction, client: MCC.BTC) {
-   // const trans = await client.getTransaction(txid);
-   if (trans) {
-      const vin = trans.data.vin[index];
-      if (vin.txid) {
-         const parentTrans = await client.getTransaction(vin.txid);
-         if (parentTrans) {
-            return {
-               index: index,
-               vinvout: parentTrans.extractVoutAt(vin.vout!),
-            };
-         }
-      }
-   }
-}
-
-async function getVinVouts(trans: UtxoTransaction, client: MCC.BTC) {
-   // const trans = await client.getTransaction(txid);
-   if (trans) {
-      const vinouts: IUtxoVinVoutsMapper[] = [];
-      for (let index = 0; index < trans.data.vin.length; index++) {
-         const vinvout = await getVinVoutsAtIndex(index, trans, client);
-         if (vinvout) {
-            vinouts.push(vinvout);
-         }
-      }
-      return vinouts;
-   }
-}
-
-async function getVinVoutsPartial(partialArray: number[], trans: UtxoTransaction, client: MCC.BTC) {
-   // const trans = await client.getTransaction(txid);
-   if (trans) {
-      const vinouts: IUtxoVinVoutsMapper[] = [];
-      for (let index of partialArray) {
-         const vinvout = await getVinVoutsAtIndex(index, trans, client);
-         if (vinvout) {
-            vinouts.push(vinvout);
-         }
-      }
-      return vinouts;
-   }
-}
-
 describe("Transaction Btc base test ", function () {
    let MccClient: MCC.BTC;
 
    before(async function () {
+      traceManager.displayStateOnException = false;
       MccClient = new MCC.BTC(BtcMccConnection);
    });
 
@@ -197,6 +154,16 @@ describe("Transaction Btc base test ", function () {
             elementaryUnits: "100000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
+         summary: {
+            isNativePayment: true,
+            sourceAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
+            receivingAddress: undefined,
+            spentAmount: toBN(20000),
+            receivedAmount: toBN(0),
+            paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+            oneToOne: false,
+            isFull: true,
+         },
       },
       {
          description: "Transaction with multiple vins",
@@ -242,6 +209,16 @@ describe("Transaction Btc base test ", function () {
             elementaryUnits: "100000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
+         summary: {
+            isNativePayment: true,
+            sourceAddress: 'bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly',
+            receivingAddress: 'bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc',
+            spentAmount: toBN(3533), 
+            receivedAmount: toBN(-4405),
+            paymentReference: '0x0000000000000000000000000000000000000000000000000000000000000000',
+            oneToOne: false,
+            isFull: true
+          }
       },
       {
          description: "Coinbase transaction with more reference",
@@ -286,6 +263,16 @@ describe("Transaction Btc base test ", function () {
             elementaryUnits: "100000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
+         summary: {
+            isNativePayment: true,
+            sourceAddress: undefined,
+            receivingAddress: '1JvXhnHCi6XqcanvrZJ5s2Qiv4tsmm2UMy',
+            spentAmount: toBN(0),
+            receivedAmount: toBN(632706642),
+            paymentReference: '0x0000000000000000000000000000000000000000000000000000000000000000',
+            oneToOne: false,
+            isFull: false
+          }
       },
    ];
 
@@ -398,6 +385,23 @@ describe("Transaction Btc base test ", function () {
 
          it("Should get success status ", async function () {
             expect(transaction.successStatus).to.eq(transData.expect.successStatus);
+         });
+
+         it("Should get payment summary", async function () {
+            const summary = await transaction.paymentSummary(MccClient, 0, 0, true);
+
+            if (transData.expect.isNativePayment) {
+               expect(summary.isNativePayment).to.eq(transData.summary?.isNativePayment);
+               expect(summary.sourceAddress).to.eq(transData.summary?.sourceAddress);
+               expect(summary.receivingAddress).to.eq(transData.summary?.receivingAddress);
+               expect(summary.spentAmount?.toString()).to.eq(transData.summary?.spentAmount?.toString());
+               expect(summary.receivedAmount?.toString()).to.eq(transData.summary?.receivedAmount?.toString());
+               expect(summary.paymentReference).to.eq(transData.summary?.paymentReference);
+               expect(summary.oneToOne).to.eq(transData.summary?.oneToOne);
+               expect(summary.isFull).to.eq(transData.summary?.isFull);
+            } else {
+               expect(summary.isNativePayment).to.eq(transData.summary?.isNativePayment);
+            }
          });
       });
    }

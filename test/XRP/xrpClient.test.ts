@@ -5,7 +5,25 @@ const public_url = "https://s1.ripple.com:51234";
 const testnet_url = "https://s.altnet.rippletest.net:51234";
 const devnet_url = "https://s.devnet.rippletest.net:51234";
 
+const XRPMccConnection = {
+   url: process.env.XRP_URL || "",
+   username: process.env.XRP_USERNAME || "",
+   password: process.env.XRP_PASSWORD || "",
+};
+
 describe("XRP ripple client tests", () => {
+   describe("Should initialize", function () {
+      it("Direct initialize", async function () {
+         const client = new MCC.XRP(XRPMccConnection);
+         expect(client).to.not.eq(null);
+      });
+
+      it("Client initialize", async function () {
+         const client = MCC.Client("XRP", XRPMccConnection);
+         expect(client).to.not.eq(null);
+      });
+   });
+
    it(`should get block height from public network`, async function () {
       const XRP = new MCC.XRP({ url: public_url });
       let a = await XRP.getBlockHeight();

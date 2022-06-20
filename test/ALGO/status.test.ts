@@ -25,8 +25,9 @@ describe("Algo Node Status tests (LIFE: expect healthy) ", function () {
       expect(version[0]).to.be.eq("3");
    });
 
-   it.skip("Should get status state ", async function () {
-      console.log(status.state);
+   it("Should get status state ", async function () {
+      // TODO
+      expect(status.state).to.eq("TODO");
    });
 
    it("Should get status isHealthy ", async function () {

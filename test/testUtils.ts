@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, unPrefix0x } from "../src";
+import { AddressAmount, PaymentSummary, unPrefix0x } from "../src";
 import { IIUtxoVout, TransactionSuccessStatus } from "../src/types";
 import { addressToHex, hexToBytes } from "../src/utils/algoUtils";
 
@@ -76,6 +76,7 @@ export interface transactionTestCases {
    description: string;
    txid: string;
    expect: expectTransactionTestCase;
+   summary?: PaymentSummary
 }
 
 export interface expectTransactionTestCase {
@@ -96,4 +97,5 @@ export interface expectTransactionTestCase {
    currencyName: string;
    elementaryUnits: string; // number as string
    successStatus: TransactionSuccessStatus;
+   isOneToOne?: boolean
 }

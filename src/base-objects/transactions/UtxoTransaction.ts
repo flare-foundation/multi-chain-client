@@ -69,6 +69,8 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    }
 
    public get receivingAddresses(): (string | undefined)[] {
+      /* istanbul ignore if */
+      // Transaction should always have vout array
       if (!this.data?.vout) {
          return [];
       }
@@ -152,6 +154,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    }
 
    public get currencyName(): string {
+      /* istanbul ignore next */
       // This must be shadowed
       throw new Error("Method must be implemented in different sub class");
    }

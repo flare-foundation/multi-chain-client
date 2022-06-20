@@ -1,8 +1,8 @@
 import { MCC, traceManager, UtxoMccCreate } from "../../src";
 
-const chai = require('chai')
-const expect = chai.expect
-chai.use(require('chai-as-promised'))
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const DogeMccConnection = {
    url: process.env.DOGE_URL || "",
@@ -11,10 +11,25 @@ const DogeMccConnection = {
 } as UtxoMccCreate;
 
 describe("DOGE mainnet client tests", () => {
+   before(async function () {
+      this.timeout(10000); // set timeout to 10 sec from 2 sec
+      traceManager.displayStateOnException = false;
+   });
+
+   describe("Should initialize", function () {
+      it("Direct initialize", async function () {
+         const client = new MCC.DOGE(DogeMccConnection)
+         expect(client).to.not.eq(null);
+      })
+
+      it("Client initialize", async function () {
+         const client = MCC.Client('DOGE',DogeMccConnection)
+         expect(client).to.not.eq(null);
+      })
+   })
+
    describe("get transaction tests", function () {
       it("should get transaction ", async function () {
-         traceManager.displayStateOnException=false
-         
          const RPC = new MCC.DOGE(DogeMccConnection);
          const txid = "2d906dbce50eb47567d1decae6a0ce5267eaabe56838ea9fd700a732bbcdcb3b";
          let trans = await RPC.getTransaction(txid);
@@ -28,7 +43,7 @@ describe("DOGE mainnet client tests", () => {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const txid = "2d906dbce50eb47567d1decae6a0ce5267eaabe56838ea9fd700a732bbcdcbff";
          let trans = RPC.getTransaction(txid);
-         await expect( trans ).to.be.rejectedWith("InvalidTransaction");
+         await expect(trans).to.be.rejectedWith("InvalidTransaction");
       });
 
       it("should be able to get block height ", async function () {

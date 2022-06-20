@@ -25,12 +25,14 @@ export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
 
    public get transactionIds(): string[] {
       return this.data.tx!.map((tx) => {
+         /* istanbul ignore if */
          if (!tx) {
             return "0x0";
          }
          if (tx.txid) {
             return prefix0x(tx.txid);
          } else {
+            /* istanbul ignore next */
             if (typeof tx === "string") {
                return prefix0x(tx as any as string);
             } else {

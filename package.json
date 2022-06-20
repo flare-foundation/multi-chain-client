@@ -49,7 +49,7 @@
       "pack": "npm pack",
       "build": "tsc --allowJs",
       "test": "mocha -r ts-node/register -r dotenv/config --require source-map-support/register -t 0",
-      "test_all": "mocha -r ts-node/register -r dotenv/config --require source-map-support/register test/**/*.ts",
+      "test_all": "mocha -r ts-node/register -r dotenv/config --require source-map-support/register test/**/*.ts --timeout 10000",
       "test_with_coverage": "env bash scripts/coverage.sh",
       "test:coverage": "yarn nyc yarn test_all"
    },
