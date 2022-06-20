@@ -1,9 +1,14 @@
 import { expect } from "chai";
+import { traceManager } from "../../src";
 import { addressToHex, algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, base32ToHex, base64ToHex, base64ToText, bufAddToCBufAdd, bytesToHex, hexToAddress, hexToBase32, hexToBase64, hexToBytes, INVALIDADDRESERROR, mpDecode, mpEncode, txIdToHex, txIdToHexNo0x } from "../../src/utils/algoUtils";
 import { mccJsonStringify } from "../../src/utils/utils";
 import { addressToBtyeAddress } from "../testUtils";
 
 describe("ALGO utils tests", () => {
+   before(async function () {
+      traceManager.displayStateOnException=false
+   })
+
    describe("ALGO address <-> hex", () => {
       it("should decode address to hex pair ", function () {
          const address = "A3ANPGC7VYWWJPQUXG2NTVNQPM67BEY3V4AYFDZMA25WYD7FAC5KOCCN4A";

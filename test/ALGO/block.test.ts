@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AlgoBlock, MCC } from "../../src";
+import { AlgoBlock, MCC, traceManager } from "../../src";
 
 const algoCreateConfig = {
    algod: {
@@ -11,6 +11,7 @@ const algoCreateConfig = {
 describe(`Algo block processing`, async () => {
    describe("Top block", function () {
       it("Should get block", async function () {
+         traceManager.displayStateOnException=false
          const MccClient = new MCC.ALGO(algoCreateConfig);
          const block = await MccClient.getBlock();
 

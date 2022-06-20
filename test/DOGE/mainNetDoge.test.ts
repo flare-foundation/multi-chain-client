@@ -1,4 +1,4 @@
-import { MCC, UtxoMccCreate } from "../../src";
+import { MCC, traceManager, UtxoMccCreate } from "../../src";
 
 const chai = require('chai')
 const expect = chai.expect
@@ -13,6 +13,8 @@ const DogeMccConnection = {
 describe("DOGE mainnet client tests", () => {
    describe("get transaction tests", function () {
       it("should get transaction ", async function () {
+         traceManager.displayStateOnException=false
+         
          const RPC = new MCC.DOGE(DogeMccConnection);
          const txid = "2d906dbce50eb47567d1decae6a0ce5267eaabe56838ea9fd700a732bbcdcb3b";
          let trans = await RPC.getTransaction(txid);
@@ -84,19 +86,19 @@ describe("DOGE mainnet client tests", () => {
       it("basic chaintips ", async function () {
          const BtcRpc = new MCC.DOGE(DogeMccConnection);
          const chaintips = await BtcRpc.getTopBlocks();
-         expect(chaintips.length).to.eq(192);
+         expect(chaintips.length).to.greaterThanOrEqual(192);
       });
 
       it("full chaintips with all blocks ", async function () {
          const BtcRpc = new MCC.DOGE(DogeMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ all_blocks: true });
-         expect(chaintips.length).to.eq(192);
+         expect(chaintips.length).to.greaterThanOrEqual(192);
       });
 
       it("chaintips after block 4_133_821 ", async function () {
          const BtcRpc = new MCC.DOGE(DogeMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ height_gte: 4_133_821 });
-         expect(chaintips.length).to.eq(160);
+         expect(chaintips.length).to.greaterThanOrEqual(160);
       });
    });
 });

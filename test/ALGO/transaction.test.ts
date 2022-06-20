@@ -1,7 +1,6 @@
 import { expect } from "chai";
-import { AlgoBlock, AlgoNodeStatus, AlgoTransaction, MCC, toBN, TransactionSuccessStatus } from "../../src";
-import { traceManager } from "../../src/utils/trace";
-import { algoTransactionTestCases, transactionTestCases } from "../testUtils";
+import { AlgoBlock, AlgoTransaction, MCC, toBN, TransactionSuccessStatus } from "../../src";
+import { algoTransactionTestCases } from "../testUtils";
 
 const algoCreateConfig = {
    algod: {
