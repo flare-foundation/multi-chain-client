@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { MCC, UtxoMccCreate, UtxoNodeStatus, XrpNodeStatus } from "../../src";
 
 const BtcMccConnection = {
@@ -19,22 +20,32 @@ describe("Block BTC base test ", function () {
    });
 
    it("Should get status version ", async function () {
-      console.log(status.version);
+      const version = status.version.split("_");
+      expect(version[0]).to.be.eq("210200");
    });
 
    it("Should get status state ", async function () {
-      console.log(status.state);
+      expect(status.state).to.be.eq("full");
    });
 
    it("Should get status isHealthy ", async function () {
-      console.log(status.isHealthy);
+      expect(status.isHealthy).to.eq(true);
    });
 
    it("Should get status isSynced ", async function () {
-      console.log(status.isSynced);
+      expect(status.isSynced).to.eq(true);
+   });
+});
+
+describe("BTC bottom block ", function () {
+   let MccClient: MCC.BTC;
+
+   before(async function () {
+      MccClient = new MCC.BTC(BtcMccConnection);
    });
 
-   it("Should get full data ", async function () {
-      console.log(status.data);
+   it("Should get status version ", async function () {
+      const bottom = await MccClient.getBottomBlockHeight()
+      expect(bottom).to.eq(0);
    });
 });

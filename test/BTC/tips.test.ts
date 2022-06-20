@@ -1,4 +1,5 @@
-import { BlockBase, IBlock, IUtxoGetBlockRes, MCC, UtxoBlock, UtxoMccCreate } from "../../src";
+import { expect } from "chai";
+import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",
@@ -15,11 +16,12 @@ describe("Chain tips test ", function () {
 
    it("Should get only latest tips ", async function () {
       const tips = await MccClient.getBlockTips(730_698);
-      console.log(tips);
+      expect(tips.length).to.greaterThanOrEqual(4)
    });
 
    it("Should get tips and all blocks to certain height ", async function () {
       const tips = await MccClient.getTopLiteBlocks(5);
-      console.log(tips);
+      // Most of the time eq
+      expect(tips.length).to.greaterThanOrEqual(5)
    });
 });

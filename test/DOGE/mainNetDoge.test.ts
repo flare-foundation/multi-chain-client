@@ -1,5 +1,8 @@
-import { expect } from "chai";
 import { MCC, UtxoMccCreate } from "../../src";
+
+const chai = require('chai')
+const expect = chai.expect
+chai.use(require('chai-as-promised'))
 
 const DogeMccConnection = {
    url: process.env.DOGE_URL || "",
@@ -22,11 +25,8 @@ describe("DOGE mainnet client tests", () => {
       it("should return null if transaction does not exist ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const txid = "2d906dbce50eb47567d1decae6a0ce5267eaabe56838ea9fd700a732bbcdcbff";
-         let trans = await RPC.getTransaction(txid);
-         if (trans) {
-            expect(trans).to.equal(null);
-         }
-         // await expectThrow(trans,{ code: -5, message: 'Block not found' })
+         let trans = RPC.getTransaction(txid);
+         await expect( trans ).to.be.rejectedWith("InvalidTransaction");
       });
 
       it("should be able to get block height ", async function () {
@@ -80,26 +80,23 @@ describe("DOGE mainnet client tests", () => {
       });
    });
 
-   describe("ChainTips", async function () {
+   describe("Doge ChainTips", async function () {
       it("basic chaintips ", async function () {
-         const BtcRpc = new MCC.BTC(DogeMccConnection);
+         const BtcRpc = new MCC.DOGE(DogeMccConnection);
          const chaintips = await BtcRpc.getTopBlocks();
-         // console.log(chaintips);
-         console.log(chaintips.length);
+         expect(chaintips.length).to.eq(192);
       });
 
-      it("full chaintips ", async function () {
-         const BtcRpc = new MCC.BTC(DogeMccConnection);
+      it("full chaintips with all blocks ", async function () {
+         const BtcRpc = new MCC.DOGE(DogeMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ all_blocks: true });
-         // console.log(chaintips);
-         console.log(chaintips.length);
+         expect(chaintips.length).to.eq(192);
       });
 
-      it("chaintips after ", async function () {
-         const BtcRpc = new MCC.BTC(DogeMccConnection);
+      it("chaintips after block 4_133_821 ", async function () {
+         const BtcRpc = new MCC.DOGE(DogeMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ height_gte: 4_133_821 });
-         console.log(chaintips);
-         console.log(chaintips.length);
+         expect(chaintips.length).to.eq(160);
       });
    });
 });

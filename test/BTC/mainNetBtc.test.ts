@@ -1,5 +1,8 @@
-import { expect } from "chai";
 import { ChainType, MCC, UtxoMccCreate } from "../../src";
+
+const chai = require('chai')
+const expect = chai.expect
+chai.use(require('chai-as-promised'))
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",
@@ -27,16 +30,20 @@ describe("BTC mainnet client tests", () => {
 
       it("Should get null for wrong header ", async function () {
          const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c53ff";
-         let header = await MccClient.getBlockHeader(blockhash);
+         // let header = await MccClient.getBlockHeader(blockhash);
          // console.log(header);
-         expect(header).to.equal(null);
+         // expect(header).to.equal(null);
+         await expect( MccClient.getBlockHeader(blockhash) ).to.be.rejectedWith("InvalidData");
+
       });
 
       it("Should get null from get block fow invalid data ", async function () {
          const blockhash = 1000000;
-         let header = await MccClient.getBlock(blockhash);
+         // let header = await MccClient.getBlock(blockhash);
          // console.log(header);
-         expect(header).to.equal(null);
+         // expect(header).to.equal(null);
+         await expect( MccClient.getBlock(blockhash) ).to.be.rejectedWith("InvalidParameter");
+
       });
    });
 
@@ -83,39 +90,42 @@ describe("BTC mainnet client tests", () => {
       });
    });
 
-   describe("ChainTips", async function () {
+   describe("BTC ChainTips", async function () {
       it("basic chaintips ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const chaintips = await BtcRpc.getTopBlocks();
-         console.log(chaintips);
-         console.log(chaintips.length);
+         // console.log(chaintips);
+         // console.log(chaintips.length);
+         expect(chaintips.length).to.greaterThanOrEqual(14)
       });
 
       it("full chaintips ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ all_blocks: true });
-         console.log(chaintips);
-         console.log(chaintips.length);
+         // console.log(chaintips);
+         // console.log(chaintips.length);
+         expect(chaintips.length).to.greaterThanOrEqual(14)
       });
 
       it("chaintips after ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ height_gte: 706_000 });
-         console.log(chaintips);
-         console.log(chaintips.length);
+         // console.log(chaintips);
+         // console.log(chaintips.length);
+         expect(chaintips.length).to.greaterThanOrEqual(12)
       });
 
       it("chaintips after ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ height_gte: 706_000, all_blocks: true });
-         console.log(chaintips);
-         console.log(chaintips.length);
+         expect(chaintips.length).to.greaterThanOrEqual(12)
       });
 
       it("All Block tips ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const BlockTips = await BtcRpc.getTopLiteBlocks(6);
-         console.log(BlockTips);
+         expect(BlockTips.length).to.greaterThanOrEqual(6)
+         // console.log(BlockTips);
          // console.log(BlockTips.length)
       });
    });

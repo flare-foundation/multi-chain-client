@@ -1,4 +1,9 @@
-import { MCC, XrpTransaction } from "../../src";
+import { MCC, toBN, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { transactionTestCases } from "../testUtils";
+
+const chai = require('chai')
+const expect = chai.expect
+chai.use(require('chai-as-promised'))
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -13,93 +18,231 @@ describe("Transaction Xrp tests ", function () {
       MccClient = new MCC.XRP(XRPMccConnection);
    });
 
-   const TransactionsToTest = [
+   const TransactionsToTest : transactionTestCases[] = [
       {
          description: "Token CORE",
          txid: "546433CEADAEEDB0DF3B67221F9FE6E2041482775C4BD67F34A41476F766B189",
+         expect: {
+            txid: "546433CEADAEEDB0DF3B67221F9FE6E2041482775C4BD67F34A41476F766B189",
+            stdTxid: "546433CEADAEEDB0DF3B67221F9FE6E2041482775C4BD67F34A41476F766B189",
+            hash: "546433CEADAEEDB0DF3B67221F9FE6E2041482775C4BD67F34A41476F766B189" ,
+            reference: ["436F7265756D202824434F524529203574682041697264726F702028415052203230323220536E617073686F7429202D2049443A2032323031363834202D20636F7265756D2E636F6D"],
+            stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+            unixTimestamp: 1654092632,
+            sourceAddresses: ["rBrY6tLYMYYRRFAXwKtZoFYF6kpb7ZCore"],
+            receivingAddresses: ["rfV8YWmhx6ca8V3JFmPwnVdgGfBePobXyv"],
+            isFeeError: false,
+            fee: "10000", // number as a string
+            spentAmounts: [
+               {
+                  address: "rBrY6tLYMYYRRFAXwKtZoFYF6kpb7ZCore",
+                  amount: toBN(10000),
+               },
+            ],
+            receivedAmounts: [ ],
+            type: "Payment",
+            isNativePayment: false,
+            currencyName: "434F524500000000000000000000000000000000",
+            elementaryUnits: "1000000", // number as string
+            successStatus: TransactionSuccessStatus.SUCCESS,
+         },
       },
       {
          description: "Token LOVE",
          txid: "D0DBB956BD1DEFAB0CB46246F111B567BBD2D0CA090C26AFD57782C7C8C4BCE1",
+         expect: {
+            txid: "D0DBB956BD1DEFAB0CB46246F111B567BBD2D0CA090C26AFD57782C7C8C4BCE1",
+            stdTxid: "D0DBB956BD1DEFAB0CB46246F111B567BBD2D0CA090C26AFD57782C7C8C4BCE1",
+            hash: "D0DBB956BD1DEFAB0CB46246F111B567BBD2D0CA090C26AFD57782C7C8C4BCE1" ,
+            reference: ["596F752063616E277420757365207468652066617563657420666F7220746865206E65787420323420686F757273"],
+            stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+            unixTimestamp: 1654092640,
+            sourceAddresses: ["rMNTSXzmWmvMHGRC7QKNfdJycTPG7WxE7e"],
+            receivingAddresses: ["rG4KWDP4GHxcZ4jphagh4L5v9BSgGEWyeg"],
+            isFeeError: false,
+            fee: "50", // number as a string
+            spentAmounts: [
+               {
+                  address: "rMNTSXzmWmvMHGRC7QKNfdJycTPG7WxE7e",
+                  amount: toBN(50),
+               },
+            ],
+            receivedAmounts: [ ],
+            type: "Payment",
+            isNativePayment: false,
+            currencyName: "4C4F564500000000000000000000000000000000",
+            elementaryUnits: "1000000", // number as string
+            successStatus: TransactionSuccessStatus.SUCCESS,
+         },
       },
       {
          description: "Token CX1",
          txid: "69BE6AAD4A8D0991E72AA23ECB15C7847A0D3D44E3B23CE6BDA53701B7E0F9D2",
+         expect: {
+            txid: "69BE6AAD4A8D0991E72AA23ECB15C7847A0D3D44E3B23CE6BDA53701B7E0F9D2",
+            stdTxid: "69BE6AAD4A8D0991E72AA23ECB15C7847A0D3D44E3B23CE6BDA53701B7E0F9D2",
+            hash: "69BE6AAD4A8D0991E72AA23ECB15C7847A0D3D44E3B23CE6BDA53701B7E0F9D2" ,
+            reference: ["4358312046617563657420F09F8E89"],
+            stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+            unixTimestamp: 1654096800,
+            sourceAddresses: ["rBy7gEjA6AJytwZAUKYfXvGAf5Y1koFCX1"],
+            receivingAddresses: ["r319ERh8VWMNs9M33E6Rqdc9YQuabBEG7r"],
+            isFeeError: false,
+            fee: "20", // number as a string
+            spentAmounts: [
+               {
+                  address: "rBy7gEjA6AJytwZAUKYfXvGAf5Y1koFCX1",
+                  amount: toBN(20),
+               },
+            ],
+            receivedAmounts: [ ],
+            type: "Payment",
+            isNativePayment: false,
+            currencyName: "CX1",
+            elementaryUnits: "1000000", // number as string
+            successStatus: TransactionSuccessStatus.SUCCESS, 
+         },
       },
       {
          description: "Token Blessed",
          txid: "84464F5001B9E7FD79C448B9C5F01085ACE56E94A1F6E2A737FDE9A993086F16",
+         expect: {
+            txid: "84464F5001B9E7FD79C448B9C5F01085ACE56E94A1F6E2A737FDE9A993086F16",
+            stdTxid: "84464F5001B9E7FD79C448B9C5F01085ACE56E94A1F6E2A737FDE9A993086F16",
+            hash: "84464F5001B9E7FD79C448B9C5F01085ACE56E94A1F6E2A737FDE9A993086F16" ,
+            reference: [],
+            stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+            unixTimestamp: 1646141781,
+            sourceAddresses: ["rP6JLXtRNs3tjeYnn7zUHpbfLjuyBXqhwF"],
+            receivingAddresses: ["rBPCqK87DsSSZKewDV7QzASCysUUJA8abf"],
+            isFeeError: false,
+            fee: "10", // number as a string
+            spentAmounts: [
+               {
+                  address: "rP6JLXtRNs3tjeYnn7zUHpbfLjuyBXqhwF",
+                  amount: toBN(10),
+               },
+            ],
+            receivedAmounts: [ ],
+            type: "Payment",
+            isNativePayment: false,
+            currencyName: "426C657373656400000000000000000000000000",
+            elementaryUnits: "1000000", // number as string
+            successStatus: TransactionSuccessStatus.SUCCESS,
+         },
       },
    ];
 
-   for (let toTest of TransactionsToTest) {
-      describe(toTest.description, function () {
+   for (let transData of TransactionsToTest) {
+      describe(transData.description, function () {
          let transaction: XrpTransaction;
          before(async function () {
-            let transactionb = await MccClient.getTransaction(toTest.txid);
-            if (transactionb !== null) {
-               transaction = transactionb;
-            }
-            // console.log(transaction);
+            transaction = await MccClient.getTransaction(transData.txid);
+         });
+
+         it("Should find transaction in block ", function () {
+            expect(transaction).to.not.eq(undefined);
+         });
+
+         it("Should get transaction txid ", async function () {
+            expect(transaction.txid).to.eq(transData.expect.txid);
+         });
+
+         it("Should get standardized txid ", async function () {
+            expect(transaction.stdTxid).to.eq(transData.expect.stdTxid);
          });
 
          it("Should get transaction hash ", async function () {
-            console.log(transaction.hash);
+            expect(transaction.hash).to.eq(transData.expect.hash);
          });
 
          it("Should get transaction reference array ", async function () {
-            console.log(transaction.reference);
+            expect(transaction.reference.length).to.eq(transData.expect.reference.length);
+            const a = transaction.reference.sort();
+            const b = transData.expect.reference.sort();
+            for (let i = 0; i < a.length; i++) {
+               expect(a[i]).to.eq(b[i]);
+            }
+         });
+
+         it("Should get standardized transaction reference ", async function () {
+            expect(transaction.stdPaymentReference).to.eq(transData.expect.stdPaymentReference);
          });
 
          it("Should get transaction timestamp ", async function () {
-            console.log(transaction.unixTimestamp);
+            expect(transaction.unixTimestamp).to.eq(transData.expect.unixTimestamp);
          });
 
          it("Should get source address ", async function () {
-            console.log(transaction.sourceAddresses);
+            expect(transaction.sourceAddresses.length).to.eq(transData.expect.sourceAddresses.length);
+            const a = transaction.sourceAddresses.sort();
+            const b = transData.expect.sourceAddresses.sort();
+            for (let i = 0; i < a.length; i++) {
+               expect(a[i]).to.eq(b[i]);
+            }
          });
 
          it("Should get receiving address ", async function () {
-            console.log(transaction.receivingAddresses);
+            expect(transaction.receivingAddresses.length).to.eq(transData.expect.receivingAddresses.length);
+            const a = transaction.receivingAddresses.sort();
+            const b = transData.expect.receivingAddresses.sort();
+            for (let i = 0; i < a.length; i++) {
+               expect(a[i]).to.eq(b[i]);
+            }
          });
 
          it("Should get fee ", async function () {
-            console.log(transaction.fee.toString(10));
-         });
-
-         it("Should received amount ", async function () {
-            console.log(transaction.receivedAmounts);
+            if (transData.expect.isFeeError) {
+               expect(function () {
+                  transaction.fee;
+               }).to.throw(transData.expect.fee);
+            } else {
+               expect(transaction.fee.toString()).to.eq(transData.expect.fee);
+            }
          });
 
          it("Should spend amount ", async function () {
-            console.log(transaction.spentAmounts);
+            expect(transaction.spentAmounts.length).to.eq(transData.expect.spentAmounts.length);
+            const a = transaction.spentAmounts.sort();
+            const b = transData.expect.spentAmounts.sort();
+            for (let i = 0; i < a.length; i++) {
+               expect(a[i].address).to.eq(b[i].address);
+               expect(a[i].amount.toString()).to.eq(b[i].amount.toString());
+            }
+         });
+
+         it("Should received amount ", async function () {
+            expect(transaction.receivedAmounts.length).to.eq(transData.expect.receivedAmounts.length);
+            const a = transaction.receivedAmounts.sort();
+            const b = transData.expect.receivedAmounts.sort();
+            for (let i = 0; i < a.length; i++) {
+               expect(a[i].address).to.eq(b[i].address);
+               expect(a[i].amount.toString()).to.eq(b[i].amount.toString());
+            }
          });
 
          it("Should get type ", async function () {
-            console.log(transaction.type);
-         });
-
-         it("Should get elementary unit ", async function () {
-            console.log(transaction.elementaryUnits.toString(10));
-         });
-
-         it("Should get success status ", async function () {
-            console.log(transaction.successStatus);
-         });
-
-         it("Should get currency name ", async function () {
-            console.log(transaction.currencyName);
+            expect(transaction.type).to.eq(transData.expect.type);
          });
 
          it("Should check if native payment ", async function () {
-            console.log(transaction.isNativePayment);
+            expect(transaction.isNativePayment).to.eq(transData.expect.isNativePayment);
          });
 
-         it("Should get success Status ", async function () {
-            console.log(transaction.successStatus);
+         it("Should get currency name ", async function () {
+            expect(transaction.currencyName).to.eq(transData.expect.currencyName);
          });
 
-         it("Should get payment summary ", async function () {
+         it("Should get elementary unit ", async function () {
+            expect(transaction.elementaryUnits.toString()).to.eq(transData.expect.elementaryUnits);
+         });
+
+         it("Should get success status ", async function () {
+            expect(transaction.successStatus).to.eq(transData.expect.successStatus);
+         });
+
+
+         it.skip("Should get payment summary ", async function () {
             const summary = await transaction.paymentSummary(MccClient);
             console.log(summary);
             if (summary.tokenElementaryUnits) console.log("tokenElementaryUnits: ", summary.tokenElementaryUnits.toString(10));
@@ -108,9 +251,6 @@ describe("Transaction Xrp tests ", function () {
             if (summary.receivedAmount) console.log("receivedAmount: ", summary.receivedAmount.toString(10));
          });
 
-         it("Should get transaction data ", async function () {
-            console.log(transaction.data);
-         });
       });
    }
 });

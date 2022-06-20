@@ -83,7 +83,7 @@ export async function sendUtxoTransaction(RPC: any, fromWalletLabel: string, fro
 
 describe("BTC client tests", () => {
    describe("General functionalities", function () {
-      it("should get block height from regtest network", async function () {
+      it.skip("should get block height from regtest network", async function () {
          const BtcRpc = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass });
          let a = await BtcRpc.getBlockHeight();
          expect(a).to.greaterThan(100);
@@ -124,21 +124,21 @@ describe("BTC client tests", () => {
       // console.log(tx);
    });
 
-   it("should be able to get addresses list ", async function () {
+   it.skip("should be able to get addresses list ", async function () {
       const nBtcRpc = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass });
       let addresses = await nBtcRpc.listAllAddressesByLabel("test_wall", "test_add");
       // console.log(addresses);
       expect(addresses.length).to.greaterThan(0);
    });
 
-   it("should get no such transaction response ", async function () {
+   it.skip("should get no such transaction response ", async function () {
       const nBtcRpc = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass });
       let transaction = await nBtcRpc.getTransaction("ab2267bafb5a4d93486b451cf9de79dec478763e21ddd22705a24ae3aa856ec7");
       console.log(transaction);
       // expect(addresses.length).to.greaterThan(0);
    });
 
-   it("should check get transaction response typings ", async function () {
+   it.skip("should check get transaction response typings ", async function () {
       const nBtcRpc = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass, inRegTest: true });
       const tx = "ab2267bafb5a4d93486b451cf9de79dec478763e21ddd22705a24ae3aa856ec3";
       let txres = await nBtcRpc.getTransaction(tx);
@@ -163,91 +163,91 @@ describe("BTC client tests", () => {
       const test_acc_2_seg = "all_possible_add_seg_rec";
       const test_acc_2_bec = "all_possible_add_bec_rec";
 
-      before(async function () {
-         possibleRPC = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass, inRegTest: true });
-         try {
-            await possibleRPC.createWallet(test_wall);
-         } catch {
-            try {
-               await possibleRPC.loadWallet(test_wall);
-            } catch {}
-         }
+      // before(async function () {
+      //    possibleRPC = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass, inRegTest: true });
+      //    try {
+      //       await possibleRPC.createWallet(test_wall);
+      //    } catch {
+      //       try {
+      //          await possibleRPC.loadWallet(test_wall);
+      //       } catch {}
+      //    }
 
-         try {
-            addresses_leg = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_leg);
-         } catch {}
-         if (addresses_leg.length === 0) {
-            // we need to create legacy address
-            await possibleRPC.createAddress(test_wall, test_acc_leg, "legacy");
-         }
-         try {
-            addresses_leg_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_leg);
-         } catch {}
-         if (addresses_leg_2.length === 0) {
-            // we need to create legacy address
-            await possibleRPC.createAddress(test_wall, test_acc_2_leg, "legacy");
-         }
+      //    try {
+      //       addresses_leg = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_leg);
+      //    } catch {}
+      //    if (addresses_leg.length === 0) {
+      //       // we need to create legacy address
+      //       await possibleRPC.createAddress(test_wall, test_acc_leg, "legacy");
+      //    }
+      //    try {
+      //       addresses_leg_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_leg);
+      //    } catch {}
+      //    if (addresses_leg_2.length === 0) {
+      //       // we need to create legacy address
+      //       await possibleRPC.createAddress(test_wall, test_acc_2_leg, "legacy");
+      //    }
 
-         try {
-            addresses_seg = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_seg);
-         } catch {}
-         if (addresses_seg.length === 0) {
-            // we need to create legacy address
-            await possibleRPC.createAddress(test_wall, test_acc_seg, "p2sh-segwit");
-         }
-         try {
-            addresses_seg_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_seg);
-         } catch {}
-         if (addresses_seg_2.length === 0) {
-            // we need to create legacy address
-            await possibleRPC.createAddress(test_wall, test_acc_2_seg, "p2sh-segwit");
-         }
+      //    try {
+      //       addresses_seg = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_seg);
+      //    } catch {}
+      //    if (addresses_seg.length === 0) {
+      //       // we need to create legacy address
+      //       await possibleRPC.createAddress(test_wall, test_acc_seg, "p2sh-segwit");
+      //    }
+      //    try {
+      //       addresses_seg_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_seg);
+      //    } catch {}
+      //    if (addresses_seg_2.length === 0) {
+      //       // we need to create legacy address
+      //       await possibleRPC.createAddress(test_wall, test_acc_2_seg, "p2sh-segwit");
+      //    }
 
-         try {
-            addresses_bec = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_bec);
-         } catch {}
-         if (addresses_bec.length === 0) {
-            // we need to create legacy address
-            await possibleRPC.createAddress(test_wall, test_acc_bec, "bech32");
-         }
-         try {
-            addresses_bec_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_bec);
-         } catch {}
-         if (addresses_bec_2.length === 0) {
-            // we need to create legacy address
-            await possibleRPC.createAddress(test_wall, test_acc_2_bec, "bech32");
-         }
+      //    try {
+      //       addresses_bec = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_bec);
+      //    } catch {}
+      //    if (addresses_bec.length === 0) {
+      //       // we need to create legacy address
+      //       await possibleRPC.createAddress(test_wall, test_acc_bec, "bech32");
+      //    }
+      //    try {
+      //       addresses_bec_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_bec);
+      //    } catch {}
+      //    if (addresses_bec_2.length === 0) {
+      //       // we need to create legacy address
+      //       await possibleRPC.createAddress(test_wall, test_acc_2_bec, "bech32");
+      //    }
 
-         addresses_leg = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_leg);
-         addresses_leg_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_leg);
-         addresses_seg = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_seg);
-         addresses_seg_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_seg);
-         addresses_bec = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_bec);
-         addresses_bec_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_bec);
-      });
+      //    addresses_leg = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_leg);
+      //    addresses_leg_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_leg);
+      //    addresses_seg = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_seg);
+      //    addresses_seg_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_seg);
+      //    addresses_bec = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_bec);
+      //    addresses_bec_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_bec);
+      // });
 
-      it("should create tx legacy -> legacy", async function () {
+      it.skip("should create tx legacy -> legacy", async function () {
          await possibleRPC.fundAddress(addresses_leg[0].address, 10);
          let ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_leg[0].address, addresses_leg_2[0].address, 10 - 1e-4, 1e-4);
 
          console.log("Legacy -> Legacy: ", ttx);
       });
 
-      it("should create tx p2sh-segwit -> p2sh-segwit", async function () {
+      it.skip("should create tx p2sh-segwit -> p2sh-segwit", async function () {
          await possibleRPC.fundAddress(addresses_seg[0].address, 10);
          let ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_seg[0].address, addresses_seg_2[0].address, 10 - 1e-4, 1e-4);
 
          console.log("p2sh-segwit -> p2sh-segwit: ", ttx);
       });
 
-      it("should create tx bech32 -> bech32", async function () {
+      it.skip("should create tx bech32 -> bech32", async function () {
          await possibleRPC.fundAddress(addresses_bec[0].address, 10);
          let ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_bec[0].address, addresses_bec_2[0].address, 10 - 1e-4, 1e-4);
 
          console.log("bech32 -> bech32: ", ttx);
       });
 
-      it("should log all addresses: ", async function () {
+      it.skip("should log all addresses: ", async function () {
          console.log(addresses_leg);
          console.log(addresses_leg_2);
 

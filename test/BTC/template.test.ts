@@ -1,4 +1,4 @@
-import { transcode } from "buffer";
+import { expect } from "chai";
 import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
 
 const BtcMccConnection = {
@@ -7,7 +7,7 @@ const BtcMccConnection = {
    password: process.env.BTC_PASSWORD || "",
 } as UtxoMccCreate;
 
-describe("Chain tips test ", function () {
+describe("Template test ", function () {
    let MccClient: MCC.BTC;
    let block: UtxoBlock;
    before(async function () {
@@ -16,14 +16,16 @@ describe("Chain tips test ", function () {
 
    it("Should temp test ", async function () {
       const trans = await MccClient.getTransaction("a8e7ec78e5ee9589a93b937ac2f2c34a46b94571faeb8a52e8ca85c9c7b09d02");
-      console.log(trans);
+      const newTrans = await trans.paymentSummary(MccClient, 1, 1, true);
 
-      console.log("Augment");
-
-      if (trans) {
-         const newTrans = await trans.paymentSummary(MccClient, 1, 1, true);
-         console.log(newTrans);
-      }
+      expect(newTrans.isNativePayment).to.eq(true);
+      expect(newTrans.sourceAddress).to.eq("12sFAbHEY3bChUrvb58V4R6KBau2QcGryg");
+      expect(newTrans.receivingAddress).to.eq("39sEzBtK23FStf7R7jqgE4z2q2cxKgTLrD");
+      expect(newTrans.spentAmount?.toNumber()).to.eq(500000000);
+      expect(newTrans.receivedAmount?.toNumber()).to.eq(185064);
+      expect(newTrans.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+      expect(newTrans.oneToOne).to.eq(false);
+      expect(newTrans.isFull).to.eq(true);
    });
 
    // A test to find some transactions on btc node that have op-return script entry and are not block mining transactions

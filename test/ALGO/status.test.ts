@@ -39,3 +39,16 @@ describe("Algo Node Status tests (LIFE: expect healthy) ", function () {
       expect(status.isSynced).to.eq(true);
    });
 });
+
+describe("Algo bottom block ", function () {
+   let MccClient: MCC.ALGO;
+
+   before(async function () {
+      MccClient = new MCC.ALGO(algoCreateConfig);
+   });
+
+   it("Should get status version ", async function () {
+      const bottom = await MccClient.getBottomBlockHeight()
+      expect(bottom).to.greaterThan(19_000_000);
+   });
+});

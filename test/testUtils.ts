@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { unPrefix0x } from "../src";
-import { IIUtxoVout } from "../src/types";
+import { AddressAmount, unPrefix0x } from "../src";
+import { IIUtxoVout, TransactionSuccessStatus } from "../src/types";
 import { addressToHex, hexToBytes } from "../src/utils/algoUtils";
 
 export const expectThrow = async (method: any, errorMessage: any) => {
@@ -66,4 +66,30 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
 export function addressToBtyeAddress(address: string) : Uint8Array {
    const algoKeyPair = addressToHex(address);
    return hexToBytes(unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum));
+}
+
+export interface transactionTestCases {
+   description: string;
+   txid: string;
+   expect: expectTransactionTestCase;
+}
+
+export interface expectTransactionTestCase {
+   txid: string;
+   stdTxid: string;
+   hash: string;
+   reference: string[];
+   stdPaymentReference: string;
+   unixTimestamp: number;
+   sourceAddresses: (string | undefined)[];
+   receivingAddresses: (string | undefined)[];
+   isFeeError: boolean;
+   fee: string; // number as a string or error string if error is expected
+   spentAmounts: AddressAmount[];
+   receivedAmounts: AddressAmount[];
+   type: string;
+   isNativePayment: boolean;
+   currencyName: string;
+   elementaryUnits: string; // number as string
+   successStatus: TransactionSuccessStatus;
 }

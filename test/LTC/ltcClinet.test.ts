@@ -10,7 +10,6 @@ describe("LTC client tests", () => {
       it("should get block height from regtest network", async function () {
          const DogeRpc = new MCC.LTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass });
          let a = await DogeRpc.getBlockHeight();
-         console.log(a);
 
          expect(a).to.greaterThan(100);
       });

@@ -39,7 +39,8 @@ describe("Block DOGE base test ", function () {
 
    it("Should get transaction ids ", async function () {
       expect(block.transactionIds.length).to.eq(26);
-      // TODO at least check some txids
+      const a = block.transactionIds.sort()
+      expect(a[0]).to.eq("0x0087fed70a569ac99c7a72373e0a62afd0a63d7675193b18fd02215562235e7e")
    });
 
    it("Should get transaction standard ids ", async function () {

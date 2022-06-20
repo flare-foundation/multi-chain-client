@@ -20,8 +20,8 @@ describe("Block Btc base test ", function () {
    });
 
    after(async function () {
-      traceManager.showTrace(true,false,true,false);
-      traceManager.showMethods();
+      // traceManager.showTrace(true,false,true,false);
+      // traceManager.showMethods();
    });
 
    it("Should get block", async function () {
