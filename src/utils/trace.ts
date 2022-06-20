@@ -1,5 +1,7 @@
 import { mccError, mccOutsideError, MCC_ERROR } from "./errors";
+import { StackTrace } from "./strackTrace";
 import { mccJsonStringify } from "./utils";
+const async_hooks = require('async_hooks')
 
 export enum TraceMethodType {
    ClassGetter,
@@ -29,11 +31,14 @@ export class TraceMethod {
 
 }
 
-export class TraceStack {
+export class TraceCall {
    method: TraceMethod;
+   async: TraceAsync;
    args: any[];
    ret: any = null;
    callIndex: number;
+   isAsync: boolean;
+   isAwait: boolean;
 
    // timing
    completed: boolean = false;
@@ -46,46 +51,35 @@ export class TraceStack {
    stack: string = "";
    level: number = 0;
 
-   constructor(method: TraceMethod, args: any[]) {
+   constructor(async: TraceAsync, method: TraceMethod, args: any[], isAsync: boolean, isAwait: boolean) {
+      this.async = async;
       this.method = method;
       this.method.calls++;
       this.callIndex = method.calls;
       this.args = args;
-
+      this.isAsync = isAsync;
+      this.isAwait = isAwait;
    }
 
    get systemTime(): number {
       return new Date().getTime();
    }
 
-   get traceTime() : number {
+   get traceTime(): number {
       return this.endTime - this.startTime;
    }
 
    start() {
       this.startTime = this.systemTime;
 
-
       // get source line
       // todo: not working properly because of Stub (trace line offset 7 is not correct - it changes)
-      this.stack = Error().stack!;
 
-      const trace = this.stack.split("\n");
-      if (trace.length > 7) {
-         const traceSourceInfo = trace[7];
+      const stack = new StackTrace();
 
-         if (traceSourceInfo.indexOf("(") > 0) {
-            const traceLine = /[^(]*\(([^)]*)\)/.exec(traceSourceInfo);
-            if (traceLine && traceLine.length > 1) {
-               this.method.source = traceLine[1];
-            }
-         }
-         else {
-            const traceLine = /[^\/]*(.*)/.exec(traceSourceInfo);
-            if (traceLine && traceLine.length > 1) {
-               this.method.source = traceLine[1];
-            }
-         }
+      if (stack.stackTrace.length > 7) {
+         const traceSourceInfo = stack.stackTrace[7];
+         this.method.source = traceSourceInfo.source;
       }
    }
 
@@ -110,71 +104,81 @@ export class TraceStack {
    stringifyObject(obj: any): string {
       let text = "";
 
-      if( typeof obj==="string") {
+      if (typeof obj === "string") {
          text = obj;
       }
       else {
          try {
-            text=mccJsonStringify( obj );
+            text = mccJsonStringify(obj);
          }
          catch {
-            text="error stringifying object";
+            text = "error stringifying object";
          }
       }
 
       return text;
    }
 
-   verbose(obj: any, verbose: boolean=true, maxlength=32): string {
-      let text = this.stringifyObject( obj );
+   verbose(obj: any, verbose: boolean = true, maxlength = 32): string {
+      let text = this.stringifyObject(obj);
 
-      if( verbose ) return text;
+      if (verbose) return text;
 
-      if( text.length <= maxlength ) return text;
+      if (text.length <= maxlength) return text;
 
       const halve = maxlength / 2 - 2;
 
-      return text.substring(0,halve) + "..." + text.substring(text.length-halve);
+      return text.substring(0, halve) + "..." + text.substring(text.length - halve);
    }
 
-   toString(showIndent = false, showSource = true, showTiming = false, showVerbose=true): string {
+   toString(showIndent = false, showSource = true, showTiming = false, showVerbose = true): string {
       // todo: show if method is in error
 
-      const args = this.verbose( this.argsToString , showVerbose );
+      const args = this.verbose(this.argsToString, showVerbose);
 
-      var status = "";
+      var status = " ";
+
+      if (this.isAsync) {
+         if (this.isAwait) {
+            status = "▼"; // await
+         }
+         else {
+            status = "▲"; // new async
+         }
+      }
+
 
       if (this.completed) {
          if (this.error) {
-            status = "‼";
+            status += "‼";
          }
          else {
-            status = "◼";
+            status += "◼";
          }
       }
       else {
-         status = "▶";
+         status += "▶";
       }
 
       const source = showSource ? `[${this.method.source}] ` : ``;
 
       const indent = "".padEnd(showIndent ? this.level * 2 : 0);
 
-      const timing = showTiming ? `${this.traceTime}ms ` : ``;
+      const timing = showTiming ? (this.completed ? `${this.traceTime}ms ` : `not completed `) : ``;
 
       if (this.ret) {
-         return `${status} ${indent}${this.method.className}.${this.method.methodName}(${args})=${this.verbose(this.ret,showVerbose)} ${source}${timing}`;
+         return `${status} ${indent}${this.method.className}.${this.method.methodName}(${args})=${this.verbose(this.ret, showVerbose)} ${source}${timing}`;
       }
       else {
          return `${status} ${indent}${this.method.className}.${this.method.methodName}(${args}) ${source}${timing}`;
       }
    }
 
-   toShortString(showVerbose=false): string {
-      const args = this.verbose( this.argsToString , showVerbose );
+   toShortString(showVerbose = false): string {
+      const args = this.verbose(this.argsToString, showVerbose);
 
       if (this.ret) {
-         return `${this.method.className}.${this.method.methodName}(${args})=${this.verbose(this.ret,showVerbose)}`;
+         return `${this.method.className}.${this.method.methodName}(${args})=${this.verbose(this.ret, showVerbose)}`;
       }
       else {
          return `${this.method.className}.${this.method.methodName}(${args})`;
@@ -182,19 +186,36 @@ export class TraceStack {
    }
 }
 
+export class TraceAsync {
+   id: number;
+   asyncId: number;
+   stack: TraceCall[] = [];
+   trace: TraceCall[] = [];
+
+   constructor(id: number, asyncId: number) {
+      this.id = id;
+      this.asyncId = asyncId;
+   }
+}
+
 export class TraceManager {
-   displayTrace = false;
+   public static enabled = true;
 
-   methods: TraceMethod[];
+   public displayRuntimeTrace = false;
+   public displayStateOnException = true;
 
-   stack: TraceStack[];
+   public onException = function(error: Error):void{};
 
-   trace: TraceStack[];
+
+   private methods: TraceMethod[];
+
+   private asyncs: TraceAsync[];
+
+   private nextAsyncId = 0;
 
    constructor() {
       this.methods = [];
-      this.stack = [];
-      this.trace = [];
+      this.asyncs = [];
    }
 
    createMethod(className: string, methodName: string, methodType: TraceMethodType): TraceMethod {
@@ -209,12 +230,35 @@ export class TraceManager {
       return method;
    }
 
-   start(className: string, methodName: string, args: any[], methodType: TraceMethodType): TraceStack {
+   createAsync(asyncId: number = -1) {
+      if (asyncId == -1) {
+         const async = new TraceAsync(this.nextAsyncId++, -1);
+         this.asyncs.push(async);
+
+         return async;
+      }
+
+      let async = this.asyncs.find(x => x.asyncId === asyncId);
+
+      if (async) return async;
+
+      async = new TraceAsync(this.nextAsyncId++, asyncId);
+      this.asyncs.push(async);
+
+      return async;
+   }
+
+   start(className: string, methodName: string, args: any[], methodType: TraceMethodType, isAsync: boolean, isAwait: boolean): TraceCall | undefined {
+      if (!TraceManager.enabled) return undefined;
+
       const method = this.createMethod(className, methodName, methodType);
-      const trace = new TraceStack(method, args);
+      const asyncId = async_hooks.executionAsyncId();
+      const async = this.createAsync(isAsync && !isAwait ? -1 : asyncId);
+
+      const trace = new TraceCall(async, method, args, isAsync, isAwait);
 
       // add methods called
-      const top = this.stack[this.stack.length - 1];
+      const top = trace.async.stack[trace.async.stack.length - 1];
       if (top) {
          if (!top.method.methodsCalled.find(x => x.className == className && x.methodName == methodName)) {
             top.method.methodsCalled.push(method);
@@ -223,39 +267,58 @@ export class TraceManager {
 
       trace.start();
 
-      trace.level = this.stack.length;
+      trace.level = trace.async.stack.length;
 
-      this.stack.push(trace);
-      this.trace.push(trace);
+      trace.async.stack.push(trace);
+      trace.async.trace.push(trace);
 
-      if (this.displayTrace) {
-         console.log(`trace| ${trace.toString(true,false,false,false)}`);
+      if (this.displayRuntimeTrace) {
+         console.log(`trace|${trace.async.id}| ${trace.toString(true, false, false, false)}`);
       }
 
       return trace;
    }
 
-   complete(ret: any) {
+   complete(trace: TraceCall | undefined, ret: any) {
+      if (!trace) return;
 
-      const last = this.stack.pop();
+      const last = trace.async.stack.pop();
 
-      if( !last ) return;
+      const async_hooks = require('async_hooks')
+      const asyncId = async_hooks.executionAsyncId();
+
+      trace.async.asyncId = asyncId;
+
+      // if (this.displayTrace) {
+      //    console.log(`trace|${trace.async.id}| completed`);
+      // }
+
+      if (!last) return;
 
       last.complete(ret);
 
       // update inner time
-      const top = this.stack[this.stack.length - 1];
+      const top = trace.async.stack[trace.async.stack.length - 1];
       if (top) {
-         top.method.innerTime+=last.traceTime;
+         top.method.innerTime += last.traceTime;
       }
 
    }
 
-   completeError(error: Error) {
-      this.stack.pop()?.completeException(error);
+   completeError(trace: TraceCall | undefined, error: Error) {
+      if (!trace) return;
+
+      trace.async.stack.pop()?.completeException(error);
    }
 
-   displayError(error: any) {
+
+   showException(error: any) {
+
+      // todo: user exception callback
+      //this.onException?(error);
+
+      if (!this.displayStateOnException) return;
+
       console.log(`EXCEPTION name='${error.name}' message='${error.message}'`);
       if (error.name === `mccError` && error.message === `OutsideError`) {
          const innerError = (error as mccError).innerError as Error;
@@ -263,27 +326,39 @@ export class TraceManager {
             console.log(`INNER EXCEPTION name='${innerError.name}' message='${innerError.message}'`);
          }
       }
-      console.log(`NODE STACK ${error.stack}`)
+
+      this.showState();
+   }
+
+   showState(stack: any = undefined) {
+      if (stack) {
+         console.log(`NODE STACK ${stack.stack}`)
+      }
+
       this.showStack();
       this.showTrace(true, false, true, false);
    }
 
    showStack() {
-      console.log("TRACE STACK");
-      for (let trace of this.stack) {
-         console.log(trace.toString());
+      for (let async of this.asyncs) {
+         console.log(`\nTRACE ASYNC STACK ${async.id} #${async.asyncId}`);
+         for (let trace of async.stack) {
+            console.log(trace.toString());
+         }
       }
    }
 
-   showTrace(indent = false, source = true, timing = false, verbose=false) {
-      console.log("TRACE");
-      for (let trace of this.trace) {
-         console.log(trace.toString(indent, source, timing, verbose));
+   showTrace(indent = false, source = true, timing = false, verbose = false) {
+      for (let async of this.asyncs) {
+         console.log(`\nTRACE ASYNC ${async.id} #${async.asyncId}`);
+         for (let trace of async.trace) {
+            console.log(trace.toString(indent, source, timing, verbose));
+         }
       }
    }
 
    showMethods(indent = false, source = true, timing = false) {
-      console.log("METHODS");
+      console.log("\nMETHODS");
       for (let method of this.methods) {
 
          const exclusiveTime = Math.max(0, method.inclusiveTime - method.innerTime);
@@ -296,67 +371,144 @@ export class TraceManager {
       }
    }
 
+
+   get main(): TraceAsync | undefined {
+      if (this.asyncs.length === 0) {
+         return undefined;
+      }
+
+      return this.asyncs[0];
+   }
+
    clearTrace() {
-      this.trace = [];
+      this.asyncs=[];
+      // for (let async of this.asyncs) {
+      //    async.trace = [];
+      // }
    }
 
    get firstTrace(): string {
-      if (this.trace.length === 0) return "";
+      if (this.main!.trace.length === 0) return "";
 
-      return this.trace[0].toShortString();
+      return this.main!.trace[0].toShortString();
    }
 
    get lastTrace(): string {
-      if (this.trace.length === 0) return "";
+      if (this.main!.trace.length === 0) return "";
 
-      return this.trace[this.trace.length - 1].toShortString();
+      return this.main!.trace[this.main!.trace.length - 1].toShortString();
    }
 
 }
 
 export const traceManager = new TraceManager();
 
+// let indent = 0;
+// let async_hook_count_before = 0;
+// let async_hook_count_after = 0;
+
+// async_hooks.createHook({
+//    init(asyncId: any, type: any, triggerAsyncId: any) {
+//       const eid = async_hooks.executionAsyncId();
+//       //const indentStr = ' '.repeat(indent);
+
+//       //console.log( `${indentStr}${type}(${asyncId}): trigger: ${triggerAsyncId} execution: ${eid}`);
+//    },
+//    before(asyncId: any) {
+//       //const indentStr = ' '.repeat(indent);
+//       //console.log(`${indentStr}before:  ${asyncId}`);
+//       //indent += 2;
+//       async_hook_count_before++;
+//    },
+//    after(asyncId: any) {
+
+//       async_hook_count_after++;
+//       //indent -= 2;
+//       //if( indent < 0 ) indent = 0;
+//       //const indentStr = ' '.repeat(indent);
+//       //console.log( `${indentStr}after:  ${asyncId}`);
+//    },
+//    destroy(asyncId: any) {
+//       //const indentStr = ' '.repeat(indent);
+//       //console.log( `${indentStr}destroy:  ${asyncId}`);
+//    },
+// }).enable();
+
+const awaitSourceMap = new Map<string, boolean>();
 
 function Stub(className: string, name: string, funct: any, cx: any, args: any[], methodType: TraceMethodType) {
-   traceManager.start(className, name!, args, methodType);
+   const isAsync = funct.constructor.name === "AsyncFunction";
+   let isAwait = false;
+
+   if (TraceManager.enabled) {
+      const stack = new StackTrace();
+
+      const stackTrace = stack.find("Stub", +2);
+
+      if (stackTrace) {
+         // check if cache exists
+         const mapKey = `${stackTrace.source}:${stackTrace.line}`;
+         // cache
+         const cached = awaitSourceMap.get(mapKey);
+
+         if (cached) {
+            isAwait = cached;
+         }
+         else {
+            // check if that source file has 'await'
+            const fs = require("fs");
+            const data = fs.readFileSync(stackTrace.source).toString();
+            const lines = data.split("\n");
+
+            if (lines && lines.length > stackTrace.line - 1) {
+               isAwait = lines[stackTrace.line - 1].indexOf(`await `) >= 0;
+            }
+
+            // cache
+            awaitSourceMap.set(mapKey, isAwait);
+         }
+      }
+   }
+
+   const trace = traceManager.start(className, name!, args, methodType, isAsync, isAwait);
 
    try {
       let res = methodType === TraceMethodType.ClassGetter ? funct.apply(cx) : funct.apply(cx, args);
 
       if (!isPromise(res)) {
-         traceManager.complete(res)
+         traceManager.complete(trace, res)
          return res;
       }
       return new Promise((resolve, reject) => {
          res.then((result: any) => {
-            traceManager.complete(result);
+            traceManager.complete(trace, result);
 
             resolve(result);
          }).catch((error: any) => {
 
             if (error?.name === MCC_ERROR) {
-               traceManager.displayError(error);
-               traceManager.completeError(error);
+               traceManager.showException(error);
+               traceManager.completeError(trace, error);
                reject(error);
             }
             else {
                const newError = new mccOutsideError(error);
-               traceManager.displayError(newError);
-               traceManager.completeError(newError);
+               traceManager.showException(newError);
+               traceManager.completeError(trace, newError);
                reject(newError);
             }
          });
       })
    } catch (error: any) {
       if (error?.name === MCC_ERROR) {
-         traceManager.displayError(error);
-         traceManager.completeError(error);
+         traceManager.showException(error);
+         traceManager.completeError(trace, error);
          throw error;
       }
       else {
          const newError = new mccOutsideError(error);
-         traceManager.displayError(newError);
-         traceManager.completeError(newError);
+         traceManager.showException(newError);
+         traceManager.completeError(trace, newError);
          throw new mccOutsideError(newError);
       }
    }
@@ -416,9 +568,7 @@ export function RegisterTraceSetter(target: any, name?: string, descriptor?: any
 
 
 export function RegisterTraceClass(targetClass: any) {
-   // decorating a class
-
-   // add tracing capability to all own methods (doesn't work for constructor)
+   // add tracing capability to all own methods, setters and getters
    Object.getOwnPropertyNames(targetClass.prototype).forEach((methodName: string) => {
 
       const desc = Object.getOwnPropertyDescriptor(targetClass.prototype, methodName);
@@ -441,9 +591,10 @@ export function RegisterTraceClass(targetClass: any) {
 
       // constructor
       if (methodName === "constructor") {
+         // todo: sort out constructor managed wrapping (next lines are commented because they ruin constructor)
+
          // RegisterTraceValue(targetClass, methodName, desc);
          // Object.defineProperty(targetClass.prototype, methodName, desc!);
-
          return;
       }
 

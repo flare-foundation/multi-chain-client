@@ -1,4 +1,4 @@
-import { traceFunction } from "../src";
+import { sleepMs, traceFunction } from "../src";
 import { mccError, mccErrorCode } from "../src/utils/errors";
 import { Managed } from "../src/utils/managed";
 
@@ -10,6 +10,16 @@ export function TestFunctionCall(a: number, s: string) {
 }
 
 export function TestFunction(a: number, s: string) {    
+}
+
+
+
+export class Test2 {
+
+    async test2() {
+        return 5;
+    }
+
 }
 
 @Managed()
@@ -73,8 +83,43 @@ export class ManagedTest {
     }
 
 
+    // async nested test
+
+    async asyncNestedMethod() {
+        for(let a=0; a<10; a++) {
+            this.asyncMethod3();
+        }
+    }
+
+    async asyncNestedMethodAwait() {
+        for(let a=0; a<10; a++) {
+            await this.asyncMethod3();
+        }
+    }
+
+    async asyncNestedMethodWaitOnEnd() {
+
+        const promises = [];
+
+        for(let a=0; a<3; a++) {
+            promises.push( this.asyncMethod3() );
+        }
+
+        await Promise.all( promises );
+    }
+
+    async asyncMethod3() {
+        for(let i=0; i<3; i++){
+            this.f0();
+            await sleepMs( 10 );
+        }
+    }
+
+    f0(){
+    }
 
 
+    // 
 
     f1(param: string) {
         this.f2( `f1(${param})->f2` );

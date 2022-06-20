@@ -1,5 +1,5 @@
 import { traceManager } from "../src/utils/trace";
-import { ManagedTest, TestFunctionCall } from "./managedTest";
+import { ManagedTest, Test2, TestFunctionCall } from "./managedTest";
 
 const chai = require('chai')
 const expect = chai.expect
@@ -10,7 +10,8 @@ describe("Managed test", () => {
    let dec: ManagedTest;
 
    before(async function () {
-      //traceManager.displayTrace=true;
+      traceManager.displayRuntimeTrace = false;
+      traceManager.displayStateOnException = false;
 
       dec = new ManagedTest();
    });
@@ -24,7 +25,6 @@ describe("Managed test", () => {
    });
 
    after(async function () {
-      traceManager.displayTrace=false;
    })
 
 
@@ -88,12 +88,10 @@ describe("Managed test", () => {
 
 
    it("Managed function", async () => {
-
-
       TestFunctionCall( 1 , "A" );
 
-      traceManager.showTrace(true,false,true);
-      traceManager.showMethods();
+      //traceManager.showTrace(true,false,true);
+      //traceManager.showMethods();
 
       expect(traceManager.firstTrace).to.eq(`.TestFunction(1,A)`);
    });
@@ -108,12 +106,54 @@ describe("Managed test", () => {
 
       dec.f1("123");
 
-      traceManager.showTrace(true,false,true);
-      traceManager.showMethods();
+      //traceManager.showTrace(true,false,true);
+      //traceManager.showMethods();
 
-      expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
+      //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
+   });
+
+
+
+   it("Managed nested async test", async () => {
+      //traceManager.displayRuntimeTrace=true;
+
+      await dec.asyncNestedMethod();
+
+      //traceManager.showTrace(true,false,true);
+      //traceManager.showMethods();
+
+      //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
+   });
+
+   it("Managed nested async await test", async () => {
+      //traceManager.displayRuntimeTrace=true;
+
+      await dec.asyncNestedMethodAwait();
+
+      //traceManager.showTrace(true,false,true);
+      //traceManager.showMethods();
+
+      //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
+   });
+
+   it("Managed nested async test wait all on end", async () => {
+      //traceManager.displayRuntimeTrace=true;
+
+      await dec.asyncNestedMethodWaitOnEnd();
+
+      //traceManager.showTrace(true,false,true);
+      //traceManager.showMethods();
+
+      //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
+   });
+
+   it( "neki" , async () => {
+      let a = new Test2();
+
+      console.log(`${a} - ${a.test2.constructor.name}`);
    });
 
 
 
 });
+
