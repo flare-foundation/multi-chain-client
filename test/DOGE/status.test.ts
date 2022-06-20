@@ -7,7 +7,7 @@ const DogeMccConnection = {
    password: process.env.DOGE_PASSWORD || "",
 } as UtxoMccCreate;
 
-describe("Block BTC base test ", function () {
+describe("Block DOGE base test ", function () {
    let MccClient: MCC.DOGE;
    let status: UtxoNodeStatus;
 

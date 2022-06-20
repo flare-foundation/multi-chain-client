@@ -81,13 +81,12 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
          ];
       }
       // for transactions of type axfer
-      // TODO
       if (this.data.aamt) {
          let amount = this.data.aamt.toString();
          return [
             {
                address: this.sourceAddresses[0],
-               amount: this.fee,
+               amount: this.fee.add(toBN(amount)),
             },
          ];
       }

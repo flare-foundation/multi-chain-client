@@ -18,7 +18,7 @@ describe("Block Xrp base test ", function () {
 
    it("Should get status version ", async function () {
       const version = status.version.split("_");
-      expect(version[0]).to.be.eq("1.9.1");
+      expect(version[0]).to.be.oneOf(["1.9.1","1.8.5"]);
    });
 
    it("Should get status state ", async function () {

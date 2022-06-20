@@ -68,6 +68,10 @@ export function addressToBtyeAddress(address: string) : Uint8Array {
    return hexToBytes(unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum));
 }
 
+export interface algoTransactionTestCases extends transactionTestCases {
+   block: number
+}
+
 export interface transactionTestCases {
    description: string;
    txid: string;
