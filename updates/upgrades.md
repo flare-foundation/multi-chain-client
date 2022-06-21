@@ -21,3 +21,5 @@ Updates:
 -  [ ] Add supported versions of underlying chains to mccClint for each chain
 -  [ ] Add eslint 
 -  [ ] make coverage work as expected
+
+- [ ] transactionIds in utxo block

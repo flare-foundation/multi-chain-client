@@ -1,4 +1,4 @@
-import { MCC, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { MCC, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
 const chai = require('chai')
@@ -15,6 +15,8 @@ describe("Transaction DOGE base test ", function () {
    let MccClient: MCC.DOGE;
 
    before(async function () {
+      traceManager.displayStateOnException=false
+
       MccClient = new MCC.DOGE(DogeMccConnection);
    });
 

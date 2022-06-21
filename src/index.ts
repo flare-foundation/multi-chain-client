@@ -37,9 +37,6 @@ export module MCC {
    }
 
    export function getChainType(chainIdOrName: number | string | ChainType) {
-      if (chainIdOrName == null) {
-         throw new Error("Chain missing");
-      }
       switch (chainIdOrName) {
          case "XRP":
          case "RIPPLE":
@@ -64,9 +61,6 @@ export module MCC {
    }
 
    export function getChainTypeName(chainIdOrName: ChainType) {
-      if (chainIdOrName == null) {
-         throw new Error("Chain missing");
-      }
       switch (chainIdOrName) {
          case ChainType.XRP:
             return "XRP";

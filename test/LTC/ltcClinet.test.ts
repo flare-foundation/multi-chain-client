@@ -1,14 +1,28 @@
-import { MCC } from "../../src/index";
+import { MCC, UtxoMccCreate } from "../../src/index";
 import { expect } from "chai";
 
-const reg_tests_url = process.env.LTC_URL_REGTEST || "";
-const reg_test_user = process.env.LTC_USERNAME_REGTEST || "";
-const reg_test_pass = process.env.LTC_PASSWORD_REGTEST || "";
+const LtcMccConnection = {
+   url: process.env.LTC_URL || "",
+   username: process.env.LTC_USERNAME || "",
+   password: process.env.LTC_PASSWORD || "",
+} as UtxoMccCreate;
 
 describe("LTC client tests", () => {
+   describe("Should initialize", function () {
+      it("Direct initialize", async function () {
+         const client = new MCC.LTC(LtcMccConnection);
+         expect(client).to.not.eq(null);
+      });
+
+      it("Client initialize", async function () {
+         const client = MCC.Client("LTC", LtcMccConnection);
+         expect(client).to.not.eq(null);
+      });
+   });
+
    describe("General functionalities", function () {
       it("should get block height from regtest network", async function () {
-         const DogeRpc = new MCC.LTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass });
+         const DogeRpc = new MCC.LTC(LtcMccConnection);
          let a = await DogeRpc.getBlockHeight();
 
          expect(a).to.greaterThan(100);

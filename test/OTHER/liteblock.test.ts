@@ -1,4 +1,4 @@
-import { MCC, UtxoMccCreate } from "../../src";
+import { MCC, traceManager, UtxoMccCreate } from "../../src";
 import { LiteBlock } from "../../src/base-objects/blocks/LiteBlock";
 
 const chai = require("chai");
@@ -18,6 +18,8 @@ describe("Lite block base test ", function () {
    let height = 0;
 
    before(async function () {
+      traceManager.displayStateOnException = false;
+
       MccClient = new MCC.BTC(BtcMccConnection);
       height = await MccClient.getBlockHeight();
       const blocs = await MccClient.getTopLiteBlocks(1);
@@ -47,6 +49,10 @@ describe("Lite block base test ", function () {
 
    it("Should get block timestamp ", async function () {
       expect(block.unixTimestamp).to.eq(0);
+   });
+
+   it.skip("Should get block stringify to equal expected ", async function () {
+      expect(block).to.eq(`Number: ${block.number}; Hash: ${block.stdBlockHash}`);
    });
 
    it("Should get transaction ids ", async function () {

@@ -61,6 +61,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get fee(): BN {
+      /* istanbul ignore if */
       if (!this.data.result.Fee) {
          return toBN(0);
       }

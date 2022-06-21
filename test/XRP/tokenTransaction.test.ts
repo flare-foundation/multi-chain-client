@@ -1,4 +1,4 @@
-import { MCC, toBN, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { MCC, toBN, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
 const chai = require('chai')
@@ -15,6 +15,8 @@ describe("Transaction Xrp tests ", function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
+      traceManager.displayStateOnException=false
+      
       MccClient = new MCC.XRP(XRPMccConnection);
    });
 

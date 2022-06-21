@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { BtcBlock, MCC, UtxoBlock, UtxoMccCreate } from "../../src";
-import { traceManager } from "../../src/utils/trace";
+import { BtcBlock, MCC, UtxoMccCreate } from "../../src";
 
 const BtcMccConnection = {
    //url: "123" ,

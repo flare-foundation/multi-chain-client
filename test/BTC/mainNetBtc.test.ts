@@ -1,4 +1,4 @@
-import { ChainType, MCC, UtxoMccCreate } from "../../src";
+import { ChainType, MCC, traceManager, UtxoMccCreate } from "../../src";
 
 const chai = require('chai')
 const expect = chai.expect
@@ -11,9 +11,24 @@ const BtcMccConnection = {
 } as UtxoMccCreate;
 
 describe("BTC mainnet client tests", () => {
+
    let MccClient: MCC.BTC;
    before(async function () {
+      this.timeout(10000) // set timeout to 10 sec from 2 sec
+      traceManager.displayStateOnException=false
       MccClient = new MCC.BTC(BtcMccConnection);
+   });
+
+   describe("Should initialize", function () {
+      it("Direct initialize", async function () {
+         const client = new MCC.BTC(BtcMccConnection);
+         expect(client).to.not.eq(null);
+      });
+
+      it("Client initialize", async function () {
+         const client = MCC.Client("BTC", BtcMccConnection);
+         expect(client).to.not.eq(null);
+      });
    });
 
    describe("Basic functionality ", function () {

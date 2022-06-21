@@ -28,7 +28,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       if (this.data.note) {
          return [bytesToHex(this.data.note)];
       }
-      return [""];
+      return [];
    }
 
    public get stdPaymentReference(): string {
@@ -37,6 +37,8 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
          // try to parse out
          paymentReference = prefix0x(web3.utils.hexToString(prefix0x(paymentReference)));
       } catch (e) {
+         /* istanbul ignore next */
+         // Should not happen
          return ZERO_BYTES_32;
       }
       if (!isValidBytes32Hex(paymentReference)) {
@@ -81,13 +83,12 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
          ];
       }
       // for transactions of type axfer
-      // TODO
       if (this.data.aamt) {
          let amount = this.data.aamt.toString();
          return [
             {
                address: this.sourceAddresses[0],
-               amount: this.fee,
+               amount: this.fee.add(toBN(amount)),
             },
          ];
       }

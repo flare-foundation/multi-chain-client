@@ -1,4 +1,4 @@
-import { MCC } from "../../src";
+import { MCC, traceManager } from "../../src";
 
 const chai = require('chai')
 const expect = chai.expect
@@ -15,6 +15,8 @@ describe("XRP testnet client tests", () => {
    let client: MCC.XRP;
 
    before(function () {
+      traceManager.displayStateOnException=false
+      
       client = new MCC.XRP(XRPMccConnection);
    });
 

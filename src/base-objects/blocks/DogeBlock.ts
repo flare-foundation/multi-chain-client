@@ -4,7 +4,7 @@ import { UtxoBlock } from "./UtxoBlock";
 
 @Managed()
 export class DogeBlock extends UtxoBlock {
-   public get transactionHashes(): string[] {
+   public get transactionIds(): string[] {
       // TODO update block type
       // @ts-ignore
       return this.data.tx!.map((tx) => prefix0x(tx));

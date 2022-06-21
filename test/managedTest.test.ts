@@ -13,7 +13,6 @@ describe("Managed test", () => {
    before(async function () {
       traceManager.displayRuntimeTrace = false;
       traceManager.displayStateOnException = false;
-
       dec = new ManagedTest();
    });
 
@@ -128,48 +127,44 @@ describe("Managed test", () => {
 
 
 
-   it("Managed nested async test", async () => {
+   // it("Managed nested async test", async () => {
+   //    //traceManager.displayRuntimeTrace=true;
 
-      //traceManager.displayRuntimeTrace=true;
+   //    await dec.asyncNestedMethod();
 
-      await dec.asyncNestedMethod();
+   //    //traceManager.showTrace(true,false,true);
+   //    //traceManager.showMethods();
 
-      //traceManager.showTrace(true,false,true);
-      //traceManager.showMethods();
+   //    //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
+   // });
 
-      //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
-   });
+   // it("Managed nested async await test", async () => {
+   //    //traceManager.displayRuntimeTrace=true;
 
-   it("Managed nested async await test", async () => {
-      //traceManager.displayRuntimeTrace=true;
+   //    await dec.asyncNestedMethodAwait();
 
-      await dec.asyncNestedMethodAwait();
+   //    //traceManager.showTrace(true,false,true);
+   //    //traceManager.showMethods();
 
-      //traceManager.showTrace(true,false,true);
-      //traceManager.showMethods();
+   //    //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
+   // });
 
-      //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
-   });
+   // it("Managed nested async test wait all on end", async () => {
+   //    //traceManager.displayRuntimeTrace=true;
 
-   it.only("Managed nested async test wait all on end", async () => {
+   //    await dec.asyncNestedMethodWaitOnEnd();
 
-      traceManager.displayRuntimeTrace=true;
+   //    //traceManager.showTrace(true,false,true);
+   //    //traceManager.showMethods();
 
-      await dec.asyncNestedMethodWaitOnEnd();
+   //    //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
+   // });
 
-      console.log( TraceManager.async_promise_map );
+   // it( "neki" , async () => {
+   //    let a = new Test2();
 
-      //traceManager.showTrace(true,false,true);
-      //traceManager.showMethods();
-
-      //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
-   });
-
-   it( "neki" , async () => {
-      let a = new Test2();
-
-      console.log(`${a} - ${a.test2.constructor.name}`);
-   });
+   //    console.log(`${a} - ${a.test2.constructor.name}`);
+   // });
 
 
 
