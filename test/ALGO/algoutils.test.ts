@@ -1,12 +1,12 @@
 import { expect } from "chai";
-import { traceManager } from "../../src";
-import { addressToHex, algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, base32ToHex, base64ToHex, base64ToText, bufAddToCBufAdd, bytesToHex, hexToAddress, hexToBase32, hexToBase64, hexToBytes, INVALIDADDRESERROR, mpDecode, mpEncode, txIdToHex, txIdToHexNo0x } from "../../src/utils/algoUtils";
+import { AlgoBlock, MCC, traceManager } from "../../src";
+import { addressToHex, algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, ApplyData, base32ToHex, base64ToHex, base64ToText, bufAddToCBufAdd, bytesToHex, concatArrays, EvalDelta, hasher, hexToAddress, hexToBase32, hexToBase64, hexToBytes, mpDecode, mpEncode, SignedTransactionWithAD, StateDelta, txIdToHex, txIdToHexNo0x } from "../../src/utils/algoUtils";
 import { mccJsonStringify } from "../../src/utils/utils";
 import { addressToBtyeAddress } from "../testUtils";
 
 describe("ALGO utils tests", () => {
    before(async function () {
-      traceManager.displayStateOnException=false
+      traceManager.displayStateOnException = false;
    })
 
    describe("ALGO address <-> hex", () => {
@@ -261,4 +261,188 @@ describe("ALGO utils tests", () => {
       });
    });
 
+   describe("ALGO Light block updates", () => {
+      let MccClient: MCC.ALGO;
+      let block: AlgoBlock;
+      const blockNumber = 21_659_776;
+      let sd = new StateDelta(); let sd2 = new StateDelta();
+      let obj1sd = {}; let obj2sd = {}; let obj3ed = {}; let obj4ad = {};
+      let ed = new EvalDelta({});
+      let ad = new ApplyData({});
+      let st: SignedTransactionWithAD;
+      let transaction: any;
+      const algoCreateConfig = {
+         algod: {
+            url: process.env.ALGO_ALGOD_URL || "",
+            token: process.env.ALGO_ALGOD_TOKEN || "",
+         },
+      };
+
+      before(async function () {
+         MccClient = new MCC.ALGO(algoCreateConfig);
+         block = await MccClient.getBlock(blockNumber);
+         transaction = block.data.block.txns[0];
+         transaction["aca"] = 1;
+         transaction["ca"] = 2;
+         //init st
+         st = new SignedTransactionWithAD(Buffer.from(""), "", transaction);
+         // init sd
+         sd.action = 1;
+         sd.bytes = new Uint8Array([
+            66,   2,   8,  64, 224, 159,   7, 166,
+            59, 253, 162, 230,  98, 221,  58, 108,
+            184,  38, 243, 153, 157, 122, 167, 241,
+            43, 113,  49, 207,  48,  79, 122,  87
+         ]);
+         sd.uint = 1;
+         sd2.action = 0;
+         sd2.bytes = new Uint8Array();
+         sd2.uint = 5;
+         obj1sd = {
+            "at": 1,
+            "bs": new Uint8Array([
+               66,   2,   8,  64, 224, 159,   7, 166,
+               59, 253, 162, 230,  98, 221,  58, 108,
+               184,  38, 243, 153, 157, 122, 167, 241,
+               43, 113,  49, 207,  48,  79, 122,  87
+            ]),
+            "ui": 1
+         };
+         obj2sd = {
+            "ui": 5,
+         };
+         //init ed
+         obj3ed = {
+            "gd": [obj1sd, obj2sd], 
+            "ld": {1: [obj1sd, obj2sd], 2: [obj1sd]},
+            "lg": ["log0", "log1", "log2"]
+         };
+         ed.global_delta = [sd, sd2];
+         ed.local_deltas = {1: [sd, sd2], 2: [sd]};
+         ed.logs = ["log0", "log1", "log2"];
+         ed.inner_txns = [];
+         //init ad
+         obj4ad = {
+            "ca" : 1,
+            "aca" : 2,
+            "rs" : 3,
+            "rr" : 4,
+            "rc" : 5,
+            "caid" : 6,
+            "apid" : 7,
+            "dt" : obj3ed
+         };
+         ad.closing_amount = 1;
+         ad.asset_closing_amount = 2;
+         ad.sender_rewards = 3;
+         ad.receiver_rewards = 4;
+         ad.close_rewards = 5;
+         ad.eval_delta = ed;
+         ad.config_asset = 6;
+         ad.application_id = 7;
+      });
+
+
+      describe("StateDelta class", () => {
+         it("state delta msgp should be equal - empty object", async function() {
+            const expected = StateDelta.fromMsgp({});
+            const res = StateDelta.fromMsgp({});
+            expect(res).to.eql(expected);
+         });
+         it("state delta msgp should be equal", async function() {
+            const res = StateDelta.fromMsgp(obj1sd);
+            expect(res).to.eql(sd);
+         });
+         it("state delta msgp should be equal 2", async function() {
+            const res = StateDelta.fromMsgp(obj2sd);
+            expect(res).to.eql(sd2);
+         });
+         it("state delta object for encoding should be equal", async function() {
+            const expected = {
+               "at": 1,
+               "bs": new Uint8Array([
+                  66,   2,   8,  64, 224, 159,   7, 166,
+                  59, 253, 162, 230,  98, 221,  58, 108,
+                  184,  38, 243, 153, 157, 122, 167, 241,
+                  43, 113,  49, 207,  48,  79, 122,  87
+               ]),
+               "ui": 1
+            }
+            const res = sd.get_obj_for_encoding();
+            expect(res).to.eql(expected);
+         });
+      });
+      describe("EvalDelta class", () => {
+         it("eval delta msgp should be equal - empty object", async function() {
+            const res = EvalDelta.fromMsgp({});
+            expect(res).to.eql(new EvalDelta({}));
+         });
+         it("eval delta msgp should be equal", async function() {
+            const res = await EvalDelta.fromMsgp(obj3ed);
+            expect(res).to.eql(ed);
+         });
+         it("eval delta object for encoding should be equal", async function() {
+            const res = ed.get_obj_for_encoding();
+            expect(res).to.eql(obj3ed);
+         });
+         it("eval delta object for encoding should be equal", async function() {
+            ed.inner_txns = [new SignedTransactionWithAD(Buffer.from(""), "", transaction)];
+            const res = ed.get_obj_for_encoding();
+            const ed_again = await EvalDelta.fromMsgp(res);
+            expect(ed).to.eql(ed_again);
+         });
+      });
+      describe("ApplyData class", () => {
+         it("apply data msgp should be equal - empty object", async function() {
+            const res = ApplyData.fromMsgp({});
+            expect(res).to.eql(new ApplyData({}));
+         });
+         it("apply data msgp should be equal", async function() {
+            ed.inner_txns = [];
+            const res = await ApplyData.fromMsgp(obj4ad);
+            expect(res).to.eql(ad);
+         });
+         it("apply data object for encoding should be equal", async function() {
+            const res = ad.get_obj_for_encoding();
+            expect(res).to.eql(obj4ad);
+         });
+      });
+      describe("SignedTransactionWithAD class", () => {
+         it("signed transaction with AD object for encoding should be equal", async function() {
+            const res = st.get_obj_for_encoding();
+            const st_again = new SignedTransactionWithAD(Buffer.from(""), "", res);
+            expect(st).to.eql(st_again);
+         });
+      });
+   });
+
+
+   describe("ALGO helper functions", () => {
+      const arr0 = [1, 2, 3, 4, 5];
+      it("concat one array", async function() {
+         const expected = new Uint8Array([1, 2, 3, 4, 5]);
+         let res = concatArrays(arr0);
+         expect(res).to.be.eql(expected);
+      });
+      it("concat multiple arrays", async function() {
+         const expected = new Uint8Array([1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5]);
+         let res = concatArrays(arr0, arr0, arr0);
+         expect(res).to.be.eql(expected);
+      });
+      it("hash an array", async function() {
+         const expected = new Uint8Array([
+            25, 181, 125,  65, 111,  93,  89, 122,
+            212,   7, 132, 243,   5,   0, 180, 208,
+            126, 217, 103, 190, 245, 236, 136,  60,
+            129,  85,  77, 233, 246, 250, 108,  61
+         ]);
+         let res = hasher(new Uint8Array(arr0));
+         expect(res).to.be.eql(expected);
+      });
+      it("msgpack", async function() {
+         let res = mpEncode(arr0);
+         let arr0_again = mpDecode(res);
+         expect(arr0).to.be.eql(arr0_again);
+      });
+   });
 });

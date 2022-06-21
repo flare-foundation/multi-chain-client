@@ -259,17 +259,19 @@ export class EvalDelta {
       if ("gd" in delta) {
          try {
             for (const idx of delta["gd"]) {
-               ed.global_delta.push(StateDelta.fromMsgp(delta["gd"]));
+               ed.global_delta.push(StateDelta.fromMsgp(idx));
             }
          } catch (e) {
             // TODO apparently not a part of txid -.-
          }
       }
-
       if ("ld" in delta) {
          try {
-            for (const k of delta["ld"]) {
-               ed.local_deltas[k].push(StateDelta.fromMsgp(delta["ld"][k]));
+            for (const k in delta["ld"]) {
+               ed.local_deltas[Number(k)] = [];
+               delta["ld"][k].map( (sd: any) => { 
+                  ed.local_deltas[Number(k)].push(StateDelta.fromMsgp(sd));
+               });
             }
          } catch (e) {
             // TODO apparently not a part of txid -.-
@@ -298,7 +300,14 @@ export class EvalDelta {
          obj["gd"] = this.global_delta.map((gd) => {
             return gd.get_obj_for_encoding();
          });
-      if (Object.keys(this.local_deltas)?.length > 0) obj["ld"] = {};
+      if (Object.keys(this.local_deltas)?.length > 0) {
+         obj["ld"] = {};
+         Object.keys(this.local_deltas).map((el) => {
+            obj["ld"][el] = this.local_deltas[Number(el)].map((sd) => {
+               return sd.get_obj_for_encoding();
+            })
+         })
+      }
       if (this.logs?.length > 0) obj["lg"] = this.logs;
       if (this.inner_txns?.length > 0)
          obj["itx"] = this.inner_txns.map((itxn) => {
@@ -405,21 +414,7 @@ export class SignedTransactionWithAD {
 
       return obj;
    }
-
-   hash(): Uint8Array {
-      const obj = mpEncode(this.get_obj_for_encoding());
-      return hasher(obj);
-   }
 }
-
-// async function verifyProofHash(
-//   block_number: number,
-//   stxn: SignedTransactionWithAD
-// ): Promise<boolean> {
-//   const proof = await client.getProof(block_number, stxn.txn.txn.txID()).do();
-//   const generated = Buffer.from(stxn.hash()).toString("base64");
-//   return proof.stibhash == generated;
-// }
 
 export function hasher(data: Uint8Array): Uint8Array {
    const tohash = concatArrays(Buffer.from("STIB"), new Uint8Array(data));
