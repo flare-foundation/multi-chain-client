@@ -289,8 +289,6 @@ export class TraceManager {
    }
 
    start(className: string, methodName: string, args: any[], methodType: TraceMethodType, isAsync: boolean, isAwait: boolean): TraceCall | undefined {
-      if (!TraceManager.enabled) return undefined;
-
       const method = this.createMethod(className, methodName, methodType);
       //const tid = triggerAsyncId();
       const eid = executionAsyncId();
@@ -482,7 +480,7 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
       }
    }
 
-   const trace = traceManager.start(className, name!, args, methodType, isAsync, isAwait);
+   const trace = TraceManager.enabled ? traceManager.start(className, name!, args, methodType, isAsync, isAwait) : undefined;
 
    try {
       let res = methodType === TraceMethodType.ClassGetter ? funct.apply(cx) : funct.apply(cx, args);
