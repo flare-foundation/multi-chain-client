@@ -87,13 +87,13 @@ export class ManagedTest {
 
     async asyncNestedMethod() {
         for(let a=0; a<10; a++) {
-            this.asyncMethod3();
+            this.asyncMethod3(a);
         }
     }
 
     async asyncNestedMethodAwait() {
         for(let a=0; a<10; a++) {
-            await this.asyncMethod3();
+            await this.asyncMethod3(a);
         }
     }
 
@@ -102,20 +102,20 @@ export class ManagedTest {
         const promises = [];
 
         for(let a=0; a<3; a++) {
-            promises.push( this.asyncMethod3() );
+            promises.push( this.asyncMethod3(a) );
         }
 
         await Promise.all( promises );
     }
 
-    async asyncMethod3() {
+    async asyncMethod3(a:number) {
         for(let i=0; i<3; i++){
-            this.f0();
+            this.f0(a,i);
             await sleepMs( 10 );
         }
     }
 
-    f0(){
+    f0(a:number,b:number){
     }
 
 

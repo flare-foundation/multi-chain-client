@@ -1,5 +1,6 @@
-import { traceManager } from "../src/utils/trace";
-import { ManagedTest,  TestFunctionCall } from "./managedTest";
+import { StackTrace } from "../src/utils/strackTrace";
+import { TraceManager, traceManager } from "../src/utils/trace";
+import { ManagedTest, Test2, TestFunctionCall } from "./managedTest";
 
 const chai = require('chai')
 const expect = chai.expect
@@ -25,6 +26,19 @@ describe("Managed test", () => {
 
    after(async function () {
    })
+
+   it("Stack trace", async () => {
+      const stack = new StackTrace();
+
+      expect( stack.stack ).to.eq(`new StackTrace\nContext.<anonymous>\ncallFn\nTest.Runnable.run\nRunner.runTest\nnext\nnext\ncbHookRun\ndone\n`);
+   });
+
+   it("Stack trace find", async () => {
+      const stack = new StackTrace();
+
+      expect( stack.find(`new StackTrace`) ).to.not.eq( null );
+   });
+
 
 
    it("Managed method sync", async () => {
@@ -101,14 +115,14 @@ describe("Managed test", () => {
 
    it("Managed nested test", async () => {
 
-      //traceManager.displayTrace=true;
+      //traceManager.displayRuntimeTrace=true;
 
       dec.f1("123");
 
       //traceManager.showTrace(true,false,true);
       //traceManager.showMethods();
 
-      //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
+      expect(traceManager.getAsync(0)!.trace.length).to.eq(10);
    });
 
 

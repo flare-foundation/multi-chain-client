@@ -1,10 +1,9 @@
-import { TraceCall } from "./trace";
 
 export class StackTraceCall {
     method: string = "";
     source: string = "";
     line: number = -1;
-    column: number=0;
+    column: number = 0;
 
     constructor(stackTrace: string) {
         if (stackTrace.indexOf("(") > 0) {
@@ -51,11 +50,23 @@ export class StackTrace {
         }
     }
 
-    find(method: string, functionOffset=0): StackTraceCall | undefined {
-        for(let i=0; i<this.stackTrace.length; i++) {
-            if( this.stackTrace[i].method===method ) {
-                if( i + functionOffset >=0 && i + functionOffset < this.stackTrace.length ) {
-                    return this.stackTrace[i+functionOffset];
+    get stack() : string {
+        let trace = "";
+
+        for(let call of this.stackTrace ) {
+            if( call.method != "" ) {
+                trace += `${call.method}\n`;
+            }
+        }
+
+        return trace;
+    }
+
+    find(method: string, functionOffset = 0): StackTraceCall | undefined {
+        for (let i = 0; i < this.stackTrace.length; i++) {
+            if (this.stackTrace[i].method === method) {
+                if (i + functionOffset >= 0 && i + functionOffset < this.stackTrace.length) {
+                    return this.stackTrace[i + functionOffset];
                 }
             }
         }

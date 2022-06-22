@@ -1,7 +1,36 @@
+import { createHook, executionAsyncId, triggerAsyncId } from "async_hooks";
 import { mccError, mccOutsideError, MCC_ERROR } from "./errors";
 import { StackTrace } from "./strackTrace";
 import { mccJsonStringify } from "./utils";
 const async_hooks = require('async_hooks')
+
+// forces PromiseHooks to be enabled.
+createHook({ init() {} }).enable();
+
+//let traceMap = new Map();
+
+
+async_hooks.createHook({
+   init(asyncId: any, type: any, triggerAsyncId: any) {
+      //TraceManager.async_promise_map.set( asyncId , `init ${type} tid=${triggerAsyncId}` );
+      TraceManager.async_promise_map.set( asyncId , triggerAsyncId );
+   },
+   before(asyncId: any) {
+      //TraceManager.async_promise_map.set( asyncId , "before" );
+   },
+   after(asyncId: any) {
+      //TraceManager.async_promise_map.set( asyncId , "after" );
+   },
+   destroy(asyncId: any) {
+      //TraceManager.async_promise_map.set( asyncId , "destroy" );
+   },
+
+}).enable();
+
+
+
+
+
 
 export enum TraceMethodType {
    ClassGetter,
@@ -188,13 +217,15 @@ export class TraceCall {
 
 export class TraceAsync {
    id: number;
-   asyncId: number;
+   eid: number;
+   tid: number;
    stack: TraceCall[] = [];
    trace: TraceCall[] = [];
 
-   constructor(id: number, asyncId: number) {
+   constructor(id: number) {
       this.id = id;
-      this.asyncId = asyncId;
+      this.eid = executionAsyncId();
+      this.tid = triggerAsyncId();
    }
 }
 
@@ -206,12 +237,13 @@ export class TraceManager {
 
    public onException = function(error: Error):void{};
 
-
    private methods: TraceMethod[];
 
    private asyncs: TraceAsync[];
 
    private nextAsyncId = 0;
+
+   static async_promise_map = new Map<number,number>();
 
    constructor() {
       this.methods = [];
@@ -230,19 +262,27 @@ export class TraceManager {
       return method;
    }
 
-   createAsync(asyncId: number = -1) {
-      if (asyncId == -1) {
-         const async = new TraceAsync(this.nextAsyncId++, -1);
+   createAsync(await: boolean) {
+      if( await ) {
+         const async = new TraceAsync(this.nextAsyncId++);
          this.asyncs.push(async);
 
          return async;
       }
 
-      let async = this.asyncs.find(x => x.asyncId === asyncId);
+      // find parent
+      const tid = triggerAsyncId();
+
+      const parents:number[]=[];
+      for(let i=tid; i; i=TraceManager.async_promise_map.get(i)!) {
+         parents.push( i );
+      }
+
+      let async = this.asyncs.reverse().find(x => parents.find(y=>y===x.tid)!=null);
 
       if (async) return async;
 
-      async = new TraceAsync(this.nextAsyncId++, asyncId);
+      async = new TraceAsync(this.nextAsyncId++);
       this.asyncs.push(async);
 
       return async;
@@ -252,8 +292,9 @@ export class TraceManager {
       if (!TraceManager.enabled) return undefined;
 
       const method = this.createMethod(className, methodName, methodType);
-      const asyncId = async_hooks.executionAsyncId();
-      const async = this.createAsync(isAsync && !isAwait ? -1 : asyncId);
+      //const tid = triggerAsyncId();
+      const eid = executionAsyncId();
+      const async = this.createAsync(isAsync && !isAwait );
 
       const trace = new TraceCall(async, method, args, isAsync, isAwait);
 
@@ -273,7 +314,7 @@ export class TraceManager {
       trace.async.trace.push(trace);
 
       if (this.displayRuntimeTrace) {
-         console.log(`trace|${trace.async.id}| ${trace.toString(true, false, false, false)}`);
+         console.log(`trace|${trace.async.id}|${eid}| ${trace.toString(true, false, false, false)}`);
       }
 
       return trace;
@@ -284,12 +325,11 @@ export class TraceManager {
 
       const last = trace.async.stack.pop();
 
-      const async_hooks = require('async_hooks')
-      const asyncId = async_hooks.executionAsyncId();
+      //const async_hooks = require('async_hooks')
+      //const asyncId = async_hooks.executionAsyncId();
+      //trace.async.asyncId = asyncId;
 
-      trace.async.asyncId = asyncId;
-
-      // if (this.displayTrace) {
+      // if (this.displayRuntimeTrace) {
       //    console.log(`trace|${trace.async.id}| completed`);
       // }
 
@@ -305,12 +345,15 @@ export class TraceManager {
 
    }
 
+   getAsync(id: number): TraceAsync | undefined {
+      return this.asyncs.find( x=>x.id===id);
+   }
+
    completeError(trace: TraceCall | undefined, error: Error) {
       if (!trace) return;
 
       trace.async.stack.pop()?.completeException(error);
    }
-
 
    showException(error: any) {
 
@@ -341,7 +384,7 @@ export class TraceManager {
 
    showStack() {
       for (let async of this.asyncs) {
-         console.log(`\nTRACE ASYNC STACK ${async.id} #${async.asyncId}`);
+         console.log(`\nTRACE ASYNC STACK ${async.id} #${async.eid}`);
          for (let trace of async.stack) {
             console.log(trace.toString());
          }
@@ -350,7 +393,7 @@ export class TraceManager {
 
    showTrace(indent = false, source = true, timing = false, verbose = false) {
       for (let async of this.asyncs) {
-         console.log(`\nTRACE ASYNC ${async.id} #${async.asyncId}`);
+         console.log(`\nTRACE ASYNC ${async.id} #${async.eid}`);
          for (let trace of async.trace) {
             console.log(trace.toString(indent, source, timing, verbose));
          }
@@ -402,37 +445,6 @@ export class TraceManager {
 }
 
 export const traceManager = new TraceManager();
-
-// let indent = 0;
-// let async_hook_count_before = 0;
-// let async_hook_count_after = 0;
-
-// async_hooks.createHook({
-//    init(asyncId: any, type: any, triggerAsyncId: any) {
-//       const eid = async_hooks.executionAsyncId();
-//       //const indentStr = ' '.repeat(indent);
-
-//       //console.log( `${indentStr}${type}(${asyncId}): trigger: ${triggerAsyncId} execution: ${eid}`);
-//    },
-//    before(asyncId: any) {
-//       //const indentStr = ' '.repeat(indent);
-//       //console.log(`${indentStr}before:  ${asyncId}`);
-//       //indent += 2;
-//       async_hook_count_before++;
-//    },
-//    after(asyncId: any) {
-
-//       async_hook_count_after++;
-//       //indent -= 2;
-//       //if( indent < 0 ) indent = 0;
-//       //const indentStr = ' '.repeat(indent);
-//       //console.log( `${indentStr}after:  ${asyncId}`);
-//    },
-//    destroy(asyncId: any) {
-//       //const indentStr = ' '.repeat(indent);
-//       //console.log( `${indentStr}destroy:  ${asyncId}`);
-//    },
-// }).enable();
 
 const awaitSourceMap = new Map<string, boolean>();
 
