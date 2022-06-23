@@ -1,6 +1,6 @@
-import { assert, expect } from "chai";
+import { expect } from "chai";
 import Web3 from "web3";
-import { camelToSnakeCase, defaultExceptionCallback, defaultLoggingCallback, defaultMccLoggingObject, defaultWarningCallback, MccError, toBN, toNumber, toSnakeCase, unPrefix0x } from "../../src";
+import { camelToSnakeCase, defaultExceptionCallback, defaultLoggingCallback, defaultMccLoggingObject, defaultWarningCallback, fillWithDefault, toBN, toNumber, toSnakeCase, unPrefix0x } from "../../src";
 const stdout = require("test-console").stdout;
 const stderr = require("test-console").stderr;
 
@@ -78,6 +78,59 @@ describe("Utils tests ", () => {
     it("should return BN", () => {
         const expected = Web3.utils.toBN(1);
         const res = toBN(expected);
+        expect(res).to.be.eql(expected);
+    });
+
+    it("should return defaultMccLoggingObject", () => {
+        const expected = {
+            mode: 'develop',
+            loggingCallback: defaultLoggingCallback,
+            warningCallback: defaultWarningCallback,
+            exceptionCallback: defaultExceptionCallback
+        }
+        const res = defaultMccLoggingObject();
+        expect(res).to.be.eql(expected);
+    });
+
+    it("should return fillWithDefault with empty object", () => {
+        const expected = {
+            mode: 'develop',
+            loggingCallback: defaultLoggingCallback,
+            warningCallback: defaultWarningCallback,
+            exceptionCallback: defaultExceptionCallback
+        }
+        const res = fillWithDefault({});
+        expect(res).to.be.eql(expected);
+    });
+
+    it("should return fillWithDefault with set mode", () => {
+        const expected = {
+            mode: 'off',
+            loggingCallback: defaultLoggingCallback,
+            warningCallback: defaultWarningCallback,
+            exceptionCallback: defaultExceptionCallback
+        }
+        const res = fillWithDefault({ mode: 'off' });
+        expect(res).to.be.eql(expected);
+    });
+
+    it("should return fillWithDefault with set callbacks", () => {
+        function justLikeDefaultLoggingCallback(message: string): void { console.log(message); }
+        function justLikeDefaultWarningCallback(message: string): void { console.log(message); }
+        function justLikeDefaultExceptionCallback(error: any, message: string): void {
+            console.log(message);
+            console.error(error);
+            if (error.stack) {
+                console.error(error.stack);
+            }
+        }
+        const expected = {
+            mode: 'off',
+            loggingCallback: justLikeDefaultLoggingCallback,
+            warningCallback: justLikeDefaultWarningCallback,
+            exceptionCallback: justLikeDefaultExceptionCallback
+        }
+        const res = fillWithDefault({ mode: 'off', loggingCallback: justLikeDefaultLoggingCallback, warningCallback: justLikeDefaultWarningCallback, exceptionCallback: justLikeDefaultExceptionCallback });
         expect(res).to.be.eql(expected);
     });
 
