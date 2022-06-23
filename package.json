@@ -39,7 +39,7 @@
          "text-summary"
       ],
       "report-dir": "coverage"
-    },
+   },
    "files": [
       "/dist",
       "/src"
@@ -79,6 +79,7 @@
       "nyc": "15.1.0",
       "prettier": "2.6.2",
       "source-map-support": "0.5.21",
+      "test-console": "^2.0.0",
       "ts-node": "10.8.1"
    }
 }

@@ -1,0 +1,112 @@
+import { assert, expect } from "chai";
+import Web3 from "web3";
+import { camelToSnakeCase, defaultExceptionCallback, defaultLoggingCallback, defaultMccLoggingObject, defaultWarningCallback, MccError, toBN, toNumber, toSnakeCase, unPrefix0x } from "../../src";
+const stdout = require("test-console").stdout;
+const stderr = require("test-console").stderr;
+
+describe("Utils tests ", () => {
+    it("should return '0x0' if no tx", () => {
+        const expected = "0x0";
+        const res = unPrefix0x("");
+        expect(res).to.be.equal(expected);
+    });
+
+    it("should return undefined", () => {
+        const expected = undefined;
+        const res = toNumber(undefined);
+        expect(res).to.be.equal(expected);
+    });
+
+    it("should return undefined", () => {
+        const expected = undefined;
+        const res = toNumber(null);
+        expect(res).to.be.equal(expected);
+    });
+
+    it("should return number", () => {
+        const expected = 1;
+        const res = toNumber(expected);
+        expect(res).to.be.equal(expected);
+    });
+
+    it("should return number", () => {
+        const expected = 1;
+        const res = toNumber(Web3.utils.toBN(1));
+        expect(res).to.be.equal(expected);
+    });
+
+    it("should return snakecase", () => {
+        const expected = "this-is-my-project";
+        const res = camelToSnakeCase("thisIsMyProject");
+        expect(res).to.be.equal(expected);
+    });
+
+    it("should return snakecase from camelcase", () => {
+        const expected = "this:is:my:project";
+        const res = camelToSnakeCase("thisIsMyProject", ":");
+        expect(res).to.be.equal(expected);
+    });
+
+    it("should return snakecase", () => {
+        const expected = { 'first:argument': "thisIsMyProject", 'second:argument': 2, 3: { 'deep:argument': "deepProject" } };
+        const obj = { firstArgument: "thisIsMyProject", secondArgument: 2, 3: { deepArgument: "deepProject" } };
+        const res = toSnakeCase(obj, ":");
+        expect(res).to.be.eql(expected);
+    });
+
+    it("should return snakecase", () => {
+        const expected = { 'first-argument': "thisIsMyProject", 'second-argument': 2, 3: { 'deep-argument': "deepProject" } };
+        const obj = { firstArgument: "thisIsMyProject", secondArgument: 2, 3: { deepArgument: "deepProject" } };
+        const res = toSnakeCase(obj);
+        expect(res).to.be.eql(expected);
+    });
+
+    it("should return error", () => {
+        const expected = Web3.utils.toBN(0);
+        const fn = () => {
+            return toBN(1.0194e+21, false);
+        };
+        expect(fn).to.throw(Error);
+    });
+
+    it("should return 0", () => {
+        const expected = Web3.utils.toBN(0);
+        const res = toBN(1.0194e+21, true);
+        expect(res).to.be.eql(expected);
+    });
+
+    it("should return BN", () => {
+        const expected = Web3.utils.toBN(1);
+        const res = toBN(expected);
+        expect(res).to.be.eql(expected);
+    });
+
+    describe("Functions with console.log()", () => {
+        it('should log', () => {
+            const output = stdout.inspectSync(() => {
+                defaultLoggingCallback("New message");
+            });
+            expect(output).to.be.eql(["New message\n"]);
+        });
+
+        it('should log', () => {
+            const output = stdout.inspectSync(() => {
+                defaultWarningCallback("New message");
+            });
+            expect(output).to.be.eql(["New message\n"]);
+        });
+
+        it('should log', () => {
+            const output = stdout.inspectSync(() => {
+                defaultExceptionCallback({}, "New message");
+            });
+            const outputErr = stderr.inspectSync(() => {
+                defaultExceptionCallback({ stack: "New stack" }, "New message");
+            });
+            expect(output).to.be.eql(["New message\n"]);
+            expect(outputErr[1]).to.be.equal("New stack\n");
+            expect(outputErr[0]).contains("New stack");
+        });
+    });
+
+});

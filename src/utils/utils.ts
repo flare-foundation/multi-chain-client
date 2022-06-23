@@ -19,23 +19,12 @@ export function getSimpleRandom(maxnum: number): number {
    return Math.floor(Math.random() * maxnum);
 }
 
-// export function ensure_nonempty(res: AxiosResponse){
-//     if(res.status === 404){
-//         return false
-//     }
-//     else {
-//         return true
-//     }
-// }
-
 export async function sleepMs(ms: number) {
    await new Promise<void>((resolve) => setTimeout(() => resolve(), ms));
 }
 
 export function unPrefix0x(tx: string) {
    if (!tx) {
-      //throw new Error( "unPrefix0x string null" );
-      // console.error( `unPrefix0x null string`)
       return "0x0";
    }
    return tx.startsWith("0x") ? tx.slice(2) : tx;
@@ -43,8 +32,6 @@ export function unPrefix0x(tx: string) {
 
 export function prefix0x(tx: string) {
    if (!tx) {
-      //throw new Error( "prefix0x string null" );
-      // console.error( `prefix0x null string`)
       return "0x0";
    }
    return tx.startsWith("0x") ? tx : "0x" + tx;
