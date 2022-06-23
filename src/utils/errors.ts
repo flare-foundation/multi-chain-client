@@ -1,4 +1,3 @@
-import { Managed } from "./managed";
 
 export const MCC_ERROR = "mccError";
 
@@ -29,6 +28,23 @@ export class mccError extends Error {
       this.errorCode = errorCode;
 
       this.innerError = innerError;
+   }
+
+   public toString() {
+      let errorText = `${this.name}:${this.message} (${mccErrorCode[this.errorCode]}=${this.errorCode})\n`;
+      if (this.innerError) {
+         errorText += `INNER ERROR: ${this.innerError.name}:${this.message}\n`;
+      }
+
+      if (this.innerError?.stack) {
+         errorText += `INNER STACK:\n${this.innerError.stack}`;
+      } else if (this.stack) {
+         errorText += `STACK\n${this.stack}`;
+      } else {
+         errorText += `LOCAL STACK:\n${new Error().stack}`;
+      }
+
+      return errorText;
    }
 }
 
