@@ -22,5 +22,7 @@ export function Managed() {
       if (trace) return trace;
 
       return RegisterTraceClass(target);
+
+      //return target;
    };
 }

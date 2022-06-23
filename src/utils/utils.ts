@@ -109,7 +109,12 @@ export function isValidBytes32Hex(address: string) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export function mccJsonStringify(toStringify: any) {
-   return safeStringify(toStringify, null, 2);
+   const options = {
+      depthLimit: 2,
+      edgesLimit: 3
+    };
+
+   return safeStringify(toStringify, null, 2, options);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

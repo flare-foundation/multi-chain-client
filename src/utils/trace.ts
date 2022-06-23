@@ -5,15 +5,14 @@ import { mccJsonStringify } from "./utils";
 const async_hooks = require('async_hooks')
 
 // forces PromiseHooks to be enabled.
-createHook({ init() {} }).enable();
-
-//let traceMap = new Map();
-
+createHook({ init() { } }).enable();
 
 async_hooks.createHook({
    init(asyncId: any, type: any, triggerAsyncId: any) {
-      //TraceManager.async_promise_map.set( asyncId , `init ${type} tid=${triggerAsyncId}` );
-      TraceManager.async_promise_map.set( asyncId , triggerAsyncId );
+
+      if (TraceManager.enabled) {
+         TraceManager.async_promise_map.set(asyncId, triggerAsyncId);
+      }
    },
    before(asyncId: any) {
       //TraceManager.async_promise_map.set( asyncId , "before" );
@@ -235,7 +234,7 @@ export class TraceManager {
    public displayRuntimeTrace = false;
    public displayStateOnException = true;
 
-   public onException = function(error: Error):void{};
+   public onException = function (error: Error): void { };
 
    private methods: TraceMethod[];
 
@@ -243,7 +242,7 @@ export class TraceManager {
 
    private nextAsyncId = 0;
 
-   static async_promise_map = new Map<number,number>();
+   static async_promise_map = new Map<number, number>();
 
    constructor() {
       this.methods = [];
@@ -263,7 +262,7 @@ export class TraceManager {
    }
 
    createAsync(await: boolean) {
-      if( await ) {
+      if (await) {
          const async = new TraceAsync(this.nextAsyncId++);
          this.asyncs.push(async);
 
@@ -273,12 +272,12 @@ export class TraceManager {
       // find parent
       const tid = triggerAsyncId();
 
-      const parents:number[]=[];
-      for(let i=tid; i; i=TraceManager.async_promise_map.get(i)!) {
-         parents.push( i );
+      const parents: number[] = [];
+      for (let i = tid; i; i = TraceManager.async_promise_map.get(i)!) {
+         parents.push(i);
       }
 
-      let async = this.asyncs.reverse().find(x => parents.find(y=>y===x.tid)!=null);
+      let async = this.asyncs.reverse().find(x => parents.find(y => y === x.tid) != null);
 
       if (async) return async;
 
@@ -289,12 +288,10 @@ export class TraceManager {
    }
 
    start(className: string, methodName: string, args: any[], methodType: TraceMethodType, isAsync: boolean, isAwait: boolean): TraceCall | undefined {
-      if (!TraceManager.enabled) return undefined;
-
       const method = this.createMethod(className, methodName, methodType);
       //const tid = triggerAsyncId();
       const eid = executionAsyncId();
-      const async = this.createAsync(isAsync && !isAwait );
+      const async = this.createAsync(isAsync && !isAwait);
 
       const trace = new TraceCall(async, method, args, isAsync, isAwait);
 
@@ -346,7 +343,7 @@ export class TraceManager {
    }
 
    getAsync(id: number): TraceAsync | undefined {
-      return this.asyncs.find( x=>x.id===id);
+      return this.asyncs.find(x => x.id === id);
    }
 
    completeError(trace: TraceCall | undefined, error: Error) {
@@ -424,7 +421,7 @@ export class TraceManager {
    }
 
    clearTrace() {
-      this.asyncs=[];
+      this.asyncs = [];
       // for (let async of this.asyncs) {
       //    async.trace = [];
       // }
@@ -482,7 +479,7 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
       }
    }
 
-   const trace = traceManager.start(className, name!, args, methodType, isAsync, isAwait);
+   const trace = TraceManager.enabled ? traceManager.start(className, name!, args, methodType, isAsync, isAwait) : undefined;
 
    try {
       let res = methodType === TraceMethodType.ClassGetter ? funct.apply(cx) : funct.apply(cx, args);
