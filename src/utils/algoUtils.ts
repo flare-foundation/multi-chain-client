@@ -149,7 +149,6 @@ export function hexToAddress(algoKeyPair: IAlgoHexAddress): string {
 // https://emn178.github.io/online-tools/sha512_256.html hash SHA512/256
 // https://github.com/algorand/go-algorand-sdk/blob/develop/types/address.go
 
-export function b32AddressTob32CAddress(address: string) {}
 
 /**
  * buffer address to buffer address with checksum
@@ -239,7 +238,7 @@ export class StateDelta {
    get_obj_for_encoding() {
       const obj: any = {};
       if (this.action !== 0) obj["at"] = this.action;
-      if (this.bytes?.length > 0) obj["bs"] = this.bytes;
+      if (this.bytes.length > 0) obj["bs"] = this.bytes;
       if (this.uint !== undefined) obj["ui"] = this.uint;
       return obj;
    }
@@ -308,8 +307,8 @@ export class EvalDelta {
             })
          })
       }
-      if (this.logs?.length > 0) obj["lg"] = this.logs;
-      if (this.inner_txns?.length > 0)
+      if (this.logs.length > 0) obj["lg"] = this.logs;
+      if (this.inner_txns.length > 0)
          obj["itx"] = this.inner_txns.map((itxn) => {
             return itxn.get_obj_for_encoding();
          });

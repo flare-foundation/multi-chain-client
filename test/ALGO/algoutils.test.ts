@@ -267,7 +267,7 @@ describe("ALGO utils tests", () => {
       const blockNumber = 21_659_776;
       let sd = new StateDelta(); let sd2 = new StateDelta();
       let obj1sd = {}; let obj2sd = {}; let obj3ed = {}; let obj4ad = {};
-      let ed = new EvalDelta({});
+      let ed = new EvalDelta({}); let ed2 = new EvalDelta({});
       let ad = new ApplyData({});
       let st: SignedTransactionWithAD;
       let transaction: any;
@@ -297,7 +297,7 @@ describe("ALGO utils tests", () => {
          sd.uint = 1;
          sd2.action = 0;
          sd2.bytes = new Uint8Array();
-         sd2.uint = 5;
+         // sd2.uint = 5;
          obj1sd = {
             "at": 1,
             "bs": new Uint8Array([
@@ -309,7 +309,7 @@ describe("ALGO utils tests", () => {
             "ui": 1
          };
          obj2sd = {
-            "ui": 5,
+            // "ui": 5,
          };
          //init ed
          obj3ed = {
@@ -373,10 +373,6 @@ describe("ALGO utils tests", () => {
          });
       });
       describe("EvalDelta class", () => {
-         it("eval delta msgp should be equal - empty object", async function() {
-            const res = EvalDelta.fromMsgp({});
-            expect(res).to.eql(new EvalDelta({}));
-         });
          it("eval delta msgp should be equal", async function() {
             const res = await EvalDelta.fromMsgp(obj3ed);
             expect(res).to.eql(ed);
@@ -385,12 +381,18 @@ describe("ALGO utils tests", () => {
             const res = ed.get_obj_for_encoding();
             expect(res).to.eql(obj3ed);
          });
+         it("eval delta object for encoding should be equal 2", async function() {
+            const res = ed2.get_obj_for_encoding();
+            expect(res).to.eql({});
+         });
          it("eval delta object for encoding should be equal", async function() {
             ed.inner_txns = [new SignedTransactionWithAD(Buffer.from(""), "", transaction)];
             const res = ed.get_obj_for_encoding();
             const ed_again = await EvalDelta.fromMsgp(res);
             expect(ed).to.eql(ed_again);
          });
+
+
       });
       describe("ApplyData class", () => {
          it("apply data msgp should be equal - empty object", async function() {
@@ -403,6 +405,11 @@ describe("ALGO utils tests", () => {
             expect(res).to.eql(ad);
          });
          it("apply data object for encoding should be equal", async function() {
+            const ad2 = new ApplyData({});
+            const res = ad2.get_obj_for_encoding();
+            expect(res).to.eql({});
+         });
+         it("apply data object for encoding should be equal 2", async function() {
             const res = ad.get_obj_for_encoding();
             expect(res).to.eql(obj4ad);
          });
@@ -413,6 +420,16 @@ describe("ALGO utils tests", () => {
             const st_again = new SignedTransactionWithAD(Buffer.from(""), "", res);
             expect(st).to.eql(st_again);
          });
+         it("signed transaction with AD object for encoding should be equal 2", async function() {
+            transaction["msig"] = "msig";
+            transaction["sgnr"] = "sgnr";
+            const st2 = new SignedTransactionWithAD(Buffer.from("stib"), "stib", transaction);
+            const res = st2.get_obj_for_encoding();
+            const st_again = new SignedTransactionWithAD(Buffer.from("stib"), "stib", res);
+            expect(st2).to.eql(st_again);
+         });
+
+         
       });
    });
 
