@@ -49,4 +49,9 @@ describe("Block Xrp base test ", function () {
    it("Should get transaction count ", async function () {
       expect(block.transactionCount).to.eq(42);
    });
+
+   it("Should get block", async function () {
+      const block2 = await MccClient.getBlock(blockNumber.toString());
+      expect(block2).to.not.eq(undefined);
+   });
 });

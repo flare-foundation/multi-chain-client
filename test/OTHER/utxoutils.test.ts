@@ -2,7 +2,6 @@ import { expect } from "chai";
 import { LiteBlock, recursive_block_hash, recursive_block_tip, utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../../src";
 
 
-
 describe("UTXO utils tests ", function () {
     it("should return empty array if hash is empty", async () => {
         const res = await recursive_block_hash("", "", 1);
@@ -39,6 +38,11 @@ describe("UTXO utils tests ", function () {
         expect(res).to.be.false;
     });
 
+    it("should return false if no data", () => {
+        const res = utxo_check_expect_block_out_of_range(null);
+        expect(res).to.be.false;
+    });
+
     it("should return true if error code is -8", () => {
         const res = utxo_check_expect_block_out_of_range({ error: { code: -8 } });
         expect(res).to.be.true;
@@ -64,5 +68,9 @@ describe("UTXO utils tests ", function () {
             return utxo_ensure_data({ error: {} });
          };
          expect(fn).to.throw(Error);
+    });
+
+    it("should silently run", () => {
+        utxo_ensure_data(null);
     });
 });

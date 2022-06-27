@@ -3,6 +3,8 @@ import { MCC, SpecialAddresses } from "../../src";
 import { mccSettings } from "../../src/global-settings/globalSettings";
 import { processFlags } from "../../src/utils/xrpUtils";
 const XrpAddress = require("ripple-address-codec");
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -15,8 +17,8 @@ describe("Xrpl account test mainnet ", function () {
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
-      mccSettings.setLoggingCallback = () => {return }
-      
+      mccSettings.setLoggingCallback = () => { return }
+
    });
 
    describe("account info", async () => {
@@ -45,6 +47,26 @@ describe("Xrpl account test mainnet ", function () {
 
          expect(trans.isAccountCreate).to.eq(true)
       });
+
+      it(`Should not get account info - invalid upper bound`, async () => {
+         const acc = "rMv1dFonUTJo4qeQDmmCuz3cXPsxy9AiHz";
+         await expect(MccClient.getAccountInfo(acc, "28_014_733")).to.eventually.be.rejected;
+      });
+
+      it(`Should get account info 3 `, async () => {
+         const acc = "rMv1dFonUTJo4qeQDmmCuz3cXPsxy9AiHz";
+         const info = await MccClient.getAccountInfo(acc);
+
+         // Get the flags
+         const flags = processFlags(info.result.account_data.Flags);
+         expect(flags.length).to.eq(0)
+
+         // get account founding transaction (account create)
+         const fTx = "5439BB6872644CE74A09F4654CECFC5F443E9687AD5EF6D119E729898F41A8C5";
+         const trans = await MccClient.getTransaction(fTx, { binary: true, min_block: 1, max_block: 2 });
+
+         expect(trans.isAccountCreate).to.eq(false)
+      });      
    });
 
    describe("account transactions", async () => {
