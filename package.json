@@ -50,7 +50,6 @@
       "build": "tsc --allowJs",
       "test": "mocha -r ts-node/register -r dotenv/config --require source-map-support/register -t 0",
       "test_all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/**/*.ts ",
-      "test_with_coverage": "env bash scripts/coverage.sh",
       "test:coverage": "yarn nyc yarn test_all"
    },
    "dependencies": {
