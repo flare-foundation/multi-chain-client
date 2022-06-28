@@ -12,7 +12,7 @@ describe("UTXO utils tests ", function () {
         const res = await recursive_block_tip("", new LiteBlock({ hash: "", number: 0 }), 1);
         expect(res.length).to.be.equal(0);
     });
-    
+
     it("should return false if no data", () => {
         const res = utxo_check_expect_empty({});
         expect(res).to.be.false;
@@ -66,8 +66,8 @@ describe("UTXO utils tests ", function () {
     it("should return error if 'error' exists", () => {
         const fn = () => {
             return utxo_ensure_data({ error: {} });
-         };
-         expect(fn).to.throw(Error);
+        };
+        expect(fn).to.throw(Error);
     });
 
     it("should silently run", () => {

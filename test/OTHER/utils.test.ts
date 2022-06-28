@@ -1,8 +1,10 @@
 import { expect } from "chai";
 import Web3 from "web3";
-import { camelToSnakeCase, defaultExceptionCallback, defaultLoggingCallback, defaultMccLoggingObject, defaultWarningCallback, fillWithDefault, toBN, toNumber, toSnakeCase, unPrefix0x } from "../../src";
+import { camelToSnakeCase, defaultExceptionCallback, defaultLoggingCallback, defaultMccLoggingObject, defaultWarningCallback, fillWithDefault, getSimpleRandom, sleepMs, toBN, toNumber, toSnakeCase, unPrefix0x } from "../../src";
 const stdout = require("test-console").stdout;
 const stderr = require("test-console").stderr;
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
 
 describe("Utils tests ", () => {
     it("should return '0x0' if no tx", () => {
@@ -134,6 +136,16 @@ describe("Utils tests ", () => {
         expect(res).to.be.eql(expected);
     });
 
+    it("should eventually return ", async () => {
+        await expect(sleepMs(1000)).to.eventually.be.fulfilled;
+    });
+
+    it("should return ", async () => {
+        const n = 123;
+        const res = getSimpleRandom(n);
+        expect(res).not.to.equal(n);
+    });
+
     describe("Functions with console.log()", () => {
         it('should log', () => {
             const output = stdout.inspectSync(() => {
@@ -163,3 +175,4 @@ describe("Utils tests ", () => {
     });
 
 });
+

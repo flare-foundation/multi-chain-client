@@ -421,6 +421,8 @@ describe("ALGO utils tests", () => {
             expect(st).to.eql(st_again);
          });
          it("signed transaction with AD object for encoding should be equal 2", async function() {
+            delete(transaction["sig"]);
+            transaction["lsig"] = "lsig";
             transaction["msig"] = "msig";
             transaction["sgnr"] = "sgnr";
             const st2 = new SignedTransactionWithAD(Buffer.from("stib"), "stib", transaction);
