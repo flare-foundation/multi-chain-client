@@ -144,8 +144,8 @@ export class ALGOImplementation implements ReadRpcInterface {
       return new AlgoBlock(decoded as IAlgoBlockMsgPack);
    }
 
-   async getBlockHeight(): Promise<number> {
-      const blockData = await this.getBlockHeader();
+   async getBlockHeight(round?: number): Promise<number> {
+      const blockData = await this.getBlockHeader(round);
       return blockData.block.rnd;
    }
 

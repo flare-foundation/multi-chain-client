@@ -1,6 +1,8 @@
-import { expect } from "chai";
 import { AlgoBlock, AlgoTransaction, MCC, toBN, TransactionSuccessStatus } from "../../src";
 import { algoTransactionTestCases } from "../testUtils";
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
    algod: {
@@ -293,3 +295,15 @@ for (let transData of TransactionsToTest) {
       });
    });
 }
+
+
+it("Should get invalid method call ", async function () {
+   let MccClient = new MCC.ALGO(algoCreateConfig);
+   await expect(MccClient.getTransaction("")).to.be.rejectedWith("InvalidMethodCall");
+});
+
+it("Should not list transactions ", async function () {
+   let MccClient = new MCC.ALGO(algoCreateConfig);
+   let res = await MccClient.listTransactions();
+   expect(res).to.be.null;
+});

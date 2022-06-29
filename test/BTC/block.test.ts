@@ -21,11 +21,6 @@ describe("Block Btc base test ", function () {
       block = await MccClient.getBlock(blockNumber);
    });
 
-   after(async function () {
-      // traceManager.showTrace(true,false,true,false);
-      // traceManager.showMethods();
-   });
-
    it("Should get block", async function () {
       expect(block).to.not.eq(undefined);
    });

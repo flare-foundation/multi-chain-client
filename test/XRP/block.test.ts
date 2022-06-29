@@ -39,7 +39,8 @@ describe("Block Xrp base test ", function () {
 
    it("Should get transaction ids ", async function () {
       expect(block.transactionIds.length).to.eq(42);
-      // TODO at least check some txids
+      expect(block.stdTransactionIds).contains("B84F30266D6297E9E4EFB7B0600E486ECD653587FFE001B05CAE5533CEF1C5BE");
+      expect(block.stdTransactionIds).contains("DB91A3AECACC060EFA45B1922E278DEB5B7F5B4FC4FED5829072B66A1DFF31E1");
    });
 
    it("Should get transaction standard ids ", async function () {

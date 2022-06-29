@@ -4,6 +4,10 @@ export function disableManaged() {
    TraceManager.enabled = false;
 }
 
+export function enableManaged() {
+   TraceManager.enabled = true;
+}
+
 export function Managed() {
 
 
