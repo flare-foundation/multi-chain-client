@@ -123,7 +123,7 @@ describe("Xrpl account test testnet ", function () {
       it(`Should get account info at the begging`, async () => {
          const info = await MccClient.getAccountInfo(acc, 28_014_551);
          const flags = processFlags(info.result.account_data.Flags);
-
+     
          expect(flags.length).to.eq(0);
          expect(info.result.account_data.RegularKey).to.not.eq(SpecialAddresses.ACCOUNT_ONE);
       });

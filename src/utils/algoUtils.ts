@@ -33,10 +33,10 @@ export function hexToBytes(hex: string): Uint8Array {
 }
 
 // Convert a byte array to a hex string
-export function bytesToHex(bytes: Buffer | Uint8Array) {
-   // should be buffer
+export function bytesToHex(bytes: Buffer | Uint8Array): string {
+   // should be: buffer and uint are unsigned
    for (var hex = [], i = 0; i < bytes.length; i++) {
-      var current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+      var current = bytes[i];
       hex.push((current >>> 4).toString(16));
       hex.push((current & 0xf).toString(16));
    }
@@ -59,7 +59,7 @@ export function base32ToHex(data: string): string {
    return out.toString("hex");
 }
 
-export function hexToBase32(hex: string | Uint8Array) {
+export function hexToBase32(hex: string | Uint8Array): string {
    // old base 32 encoding
    const encoder = new base32.Encoder({ type: "rfc4648" });
    if (typeof hex === "string") {
@@ -82,7 +82,7 @@ export function hexToBase32(hex: string | Uint8Array) {
  * @param rawdata
  * @returns
  */
-export function base64ToHex(rawdata: string) {
+export function base64ToHex(rawdata: string): string {
    let data = Buffer.from(rawdata, "base64").toString("binary");
    let hexData = "";
    for (let i = 0; i < data.length; i++) {
@@ -92,7 +92,7 @@ export function base64ToHex(rawdata: string) {
    return hexData;
 }
 
-export function hexToBase64(hex: string | Uint8Array) {
+export function hexToBase64(hex: string | Uint8Array): string {
    if (typeof hex === "string") {
       return Buffer.from(hex, "hex").toString("base64");
    } else {
@@ -110,7 +110,7 @@ export function hexToBase64(hex: string | Uint8Array) {
  * @param rawdata
  * @returns
  */
-export function base64ToText(rawdata: string) {
+export function base64ToText(rawdata: string): string {
    let buff = Buffer.from(rawdata, "base64");
    return buff.toString("ascii");
 }
@@ -299,7 +299,7 @@ export class EvalDelta {
          obj["gd"] = this.global_delta.map((gd) => {
             return gd.get_obj_for_encoding();
          });
-      if (Object.keys(this.local_deltas)?.length > 0) {
+      if (Object.keys(this.local_deltas).length > 0) {
          obj["ld"] = {};
          Object.keys(this.local_deltas).map((el) => {
             obj["ld"][el] = this.local_deltas[Number(el)].map((sd) => {
@@ -420,14 +420,14 @@ export function hasher(data: Uint8Array): Uint8Array {
    return new Uint8Array(sha512_256.array(tohash));
 }
 
-export function concatArrays(...arrs: ArrayLike<number>[]) {
+export function concatArrays(...arrs: ArrayLike<number>[]): Uint8Array {
    const size = arrs.reduce((sum, arr) => sum + arr.length, 0);
    const c = new Uint8Array(size);
 
    let offset = 0;
-   for (let i = 0; i < arrs?.length; i++) {
+   for (let i = 0; i < arrs.length; i++) {
       c.set(arrs[i], offset);
-      offset += arrs[i]?.length;
+      offset += arrs[i].length;
    }
 
    return c;

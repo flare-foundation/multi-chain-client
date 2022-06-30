@@ -37,12 +37,12 @@ export function prefix0x(tx: string) {
    return tx.startsWith("0x") ? tx : "0x" + tx;
 }
 
-export function toHex(x: string | number | BN) {
+export function toHex(x: string | number | BN) : string {
    return Web3.utils.toHex(x);
 }
 
 export function toBN(x: string | number | BN, toZeroIfFails = false) {
-   if (x && x.constructor?.name === "BN") return x as BN;
+   if (x && x.constructor && x.constructor.name === "BN") return x as BN;
    try {
       return Web3.utils.toBN(x as any);
    } catch (e) {
@@ -55,7 +55,7 @@ export function toBN(x: string | number | BN, toZeroIfFails = false) {
 
 export function toNumber(x: number | BN | undefined | null) {
    if (x === undefined || x === null) return undefined;
-   if (x && x.constructor?.name === "BN") return (x as BN).toNumber();
+   if (x && x.constructor && x.constructor.name === "BN") return (x as BN).toNumber();
    return x as number;
 }
 

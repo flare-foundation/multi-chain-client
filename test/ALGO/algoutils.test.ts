@@ -426,12 +426,12 @@ describe("ALGO utils tests", () => {
             transaction["msig"] = "msig";
             transaction["sgnr"] = "sgnr";
             const st2 = new SignedTransactionWithAD(Buffer.from("stib"), "stib", transaction);
+            delete st2.apply_data;
             const res = st2.get_obj_for_encoding();
             const st_again = new SignedTransactionWithAD(Buffer.from("stib"), "stib", res);
+            delete st_again.apply_data;
             expect(st2).to.eql(st_again);
-         });
-
-         
+         });     
       });
    });
 
@@ -444,8 +444,8 @@ describe("ALGO utils tests", () => {
          expect(res).to.be.eql(expected);
       });
       it("concat multiple arrays", async function() {
-         const expected = new Uint8Array([1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5]);
-         let res = concatArrays(arr0, arr0, arr0);
+         const expected = new Uint8Array([1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 10, 11, 12, 0, 0]);
+         let res = concatArrays(arr0, arr0,  {0: 10, 1: 11, 2: 12, length: 5});
          expect(res).to.be.eql(expected);
       });
       it("hash an array", async function() {

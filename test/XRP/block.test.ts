@@ -1,5 +1,7 @@
 import { expect } from "chai";
 import { MCC, XrpBlock } from "../../src";
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -51,8 +53,17 @@ describe("Block Xrp base test ", function () {
       expect(block.transactionCount).to.eq(42);
    });
 
+   it("Should get transaction count 2", async function () {
+      delete block.data.result.ledger.transactions;
+      expect(block.transactionCount).to.eq(0);
+   });
+
    it("Should get block", async function () {
       const block2 = await MccClient.getBlock(blockNumber.toString());
       expect(block2).to.not.eq(undefined);
+   });
+
+   it("Should not get block", async function () {
+      await expect(MccClient.getBlock("0x2492B09472F24DB37B124A2F9D1D0FA6883EF0FE51494938A54E6CD93295C086")).to.eventually.be.rejected; 
    });
 });

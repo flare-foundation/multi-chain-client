@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import Web3 from "web3";
-import { camelToSnakeCase, defaultExceptionCallback, defaultLoggingCallback, defaultMccLoggingObject, defaultWarningCallback, fillWithDefault, getSimpleRandom, sleepMs, toBN, toNumber, toSnakeCase, unPrefix0x } from "../../src";
+import { camelToSnakeCase, defaultExceptionCallback, defaultLoggingCallback, defaultMccLoggingObject, defaultWarningCallback, fillWithDefault, getSimpleRandom, sleepMs, toBN, toHex, toNumber, toSnakeCase, unPrefix0x } from "../../src";
 const stdout = require("test-console").stdout;
 const stderr = require("test-console").stderr;
 const chai = require('chai');
@@ -64,7 +64,6 @@ describe("Utils tests ", () => {
     });
 
     it("should return error", () => {
-        const expected = Web3.utils.toBN(0);
         const fn = () => {
             return toBN(1.0194e+21, false);
         };
@@ -81,6 +80,19 @@ describe("Utils tests ", () => {
         const expected = Web3.utils.toBN(1);
         const res = toBN(expected);
         expect(res).to.be.eql(expected);
+    });
+
+    it("should return hex", () => {
+        expect(toHex("2022")).to.be.eq("0x7e6");
+    });
+
+    it("should return hex 2", () => {
+        expect(toHex(2022)).to.be.eq("0x7e6");
+    });
+
+    it("should return hex 3", () => {
+        const bn = Web3.utils.toBN(toHex(2022));
+        expect(toHex(bn)).to.be.eq("0x7e6");
     });
 
     it("should return defaultMccLoggingObject", () => {

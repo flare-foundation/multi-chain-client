@@ -147,10 +147,8 @@ export class XRPImplementation implements ReadRpcInterface {
          transaction: txId,
          binary: binary,
       };
-      if (min_block !== null && min_block !== null) {
-         params.min_ledger = min_block;
-         params.max_ledger = max_block;
-      }
+      if (min_block ) params.min_ledger = min_block;
+      if (max_block ) params.max_ledger = max_block;
       try {
          let res = await this.client.post("", {
             method: "tx",

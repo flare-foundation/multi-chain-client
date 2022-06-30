@@ -69,3 +69,16 @@ describe("Algo block height", function () {
       expect(h).to.greaterThan(21_908_076);
    });
 });
+
+describe("Algo block proof", function () {
+   let MccClient: MCC.ALGO;
+
+   before(async function () {
+      MccClient = new MCC.ALGO(algoCreateConfig);
+   });
+
+   it("Should get height ", async function () {
+      const c = await MccClient.getBlockProof(21_908_076);
+      expect(c.rnd).to.eq(21_908_076);
+   })
+});

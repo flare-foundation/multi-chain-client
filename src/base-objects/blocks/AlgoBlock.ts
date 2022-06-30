@@ -16,7 +16,7 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    }
 
    public get number(): number {
-      return this.data?.block?.rnd;
+      return this.data.block.rnd;
    }
 
    public get blockHash(): string {
@@ -36,11 +36,11 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    }
 
    public get stdBlockHash(): string {
-      return bytesToHex(this.data?.cert?.prop?.dig);
+      return bytesToHex(this.data.cert.prop.dig);
    }
 
    public get unixTimestamp(): number {
-      return this.data?.block?.ts;
+      return this.data.block.ts;
    }
 
    public get transactionIds(): string[] {
@@ -60,7 +60,7 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    }
 
    public get transactionCount(): number {
-      return this.data?.block?.txns?.length;
+      return this.data.block.txns.length;
    }
 
    ////////////////////////////////////////

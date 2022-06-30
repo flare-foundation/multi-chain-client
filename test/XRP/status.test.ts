@@ -5,6 +5,9 @@ const XRPMccConnection = {
    url: process.env.XRP_URL || "",
    username: process.env.XRP_USERNAME || "",
    password: process.env.XRP_PASSWORD || "",
+   rateLimitOptions: {
+      timeoutMs: 15000
+   }
 };
 
 describe("Block Xrp base test ", function () {

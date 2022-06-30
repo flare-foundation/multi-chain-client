@@ -39,6 +39,12 @@ describe("Managed test", () => {
       expect( stack.find(`nekaj`) ).to.eq( undefined );
    });
 
+   it("Stack trace find - undefined", async () => {
+      const stack = new StackTrace();
+
+      expect( stack.find(`new StackTrace`, 20) ).to.eq( undefined );
+   });
+
    it("Managed method sync", async () => {
       dec.method(5, 6);
 +
