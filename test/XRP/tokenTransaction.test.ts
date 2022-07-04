@@ -243,14 +243,9 @@ describe("Transaction Xrp tests ", function () {
             expect(transaction.successStatus).to.eq(transData.expect.successStatus);
          });
 
-
-         it.skip("Should get payment summary ", async function () {
+         it("Should get payment summary ", async function () {
             const summary = await transaction.paymentSummary(MccClient);
-            console.log(summary);
-            if (summary.tokenElementaryUnits) console.log("tokenElementaryUnits: ", summary.tokenElementaryUnits.toString(10));
-            if (summary.receivedTokenAmount) console.log("receivedTokenAmount: ", summary.receivedTokenAmount.toString(10));
-            if (summary.spentAmount) console.log("spentAmount: ", summary.spentAmount.toString(10));
-            if (summary.receivedAmount) console.log("receivedAmount: ", summary.receivedAmount.toString(10));
+            expect(summary.isNativePayment).to.eq(false);
          });
 
       });

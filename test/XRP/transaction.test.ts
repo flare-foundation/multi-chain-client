@@ -92,13 +92,9 @@ describe("Transaction Xrp tests ", function () {
          expect(transaction.successStatus).to.eq(0);
       });
 
-      it.skip("Should get payment summary ", async function () {
+      it("Should get payment summary ", async function () {
          const summary = await transaction.paymentSummary(MccClient);
-         console.log(summary);
-         if (summary.tokenElementaryUnits) console.log("tokenElementaryUnits: ", summary.tokenElementaryUnits.toString(10));
-         if (summary.receivedTokenAmount) console.log("receivedTokenAmount: ", summary.receivedTokenAmount.toString(10));
-         if (summary.spentAmount) console.log("spentAmount: ", summary.spentAmount.toString(10));
-         if (summary.receivedAmount) console.log("receivedAmount: ", summary.receivedAmount.toString(10));
+         expect(summary).to.eql({"isNativePayment": false});
       });
    });
 
@@ -292,16 +288,6 @@ describe("Transaction Xrp tests ", function () {
          expect(summary.oneToOne).to.eq(true);
          expect(summary.isFull).to.eq(true);
       });
-
-      it.skip("Should get payment summary ", async function () {
-         const summary = await transaction.paymentSummary(MccClient);
-         console.log(summary);
-         if (summary.tokenElementaryUnits) console.log("tokenElementaryUnits: ", summary.tokenElementaryUnits.toString(10));
-         if (summary.receivedTokenAmount) console.log("receivedTokenAmount: ", summary.receivedTokenAmount.toString(10));
-         if (summary.spentAmount) console.log("spentAmount: ", summary.spentAmount.toString(10));
-         if (summary.receivedAmount) console.log("receivedAmount: ", summary.receivedAmount.toString(10));
-      });
-
    });
 
    describe("Transaction with no reference token transfer ", function () {

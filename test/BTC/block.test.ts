@@ -1,5 +1,8 @@
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
 import { expect } from "chai";
 import { BtcBlock, MCC, UtxoMccCreate } from "../../src";
+
 
 const BtcMccConnection = {
    //url: "123" ,
@@ -12,15 +15,10 @@ describe("Block Btc base test ", function () {
    let MccClient: MCC.BTC;
    let block: BtcBlock;
    const blockNumber = 729_409
- 
+
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
       block = await MccClient.getBlock(blockNumber);
-   });
-
-   after(async function () {
-      // traceManager.showTrace(true,false,true,false);
-      // traceManager.showMethods();
    });
 
    it("Should get block", async function () {
@@ -55,4 +53,9 @@ describe("Block Btc base test ", function () {
    it("Should get transaction count ", async function () {
       expect(block.transactionCount).to.eq(565);
    });
+
+   it("Should not get block if invalid input", async () => {
+      await expect(MccClient.getBlock(blockNumber.toString())).to.eventually.be.rejected; 
+   });
+
 });

@@ -59,7 +59,8 @@ describe(`Algo block processing`, async () => {
 
       it("Should get transaction ids ", async function () {
          expect(block.transactionIds.length).to.eq(69);
-         // TODO at least check some txids
+         expect(block.transactionIds).contains("FMOP2YDOU4GIDNV2GLAY3653IDUQAWJ7UTHO52FFYEPW74W3AD2Q");
+         expect(block.transactionIds).contains("MGXTHGNBCVFLUNN4PIH37WYYZMLJ6DK7NMWHQEE472RI4MCK7WKA");
       });
 
       it("Should get transaction standard ids ", async function () {

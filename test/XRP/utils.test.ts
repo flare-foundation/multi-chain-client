@@ -1,13 +1,14 @@
-import { bytesToRippleAddress, MCC, rippleAddressToBytes, XrpNodeStatus } from "../../src";
+import { bytesToRippleAddress, rippleAddressToBytes, rippleTimeToUnixEpoch, unixEpochToRippleTime } from "../../src";
 import { expect } from "chai";
 
-const XRPMccConnection = {
-   url: process.env.XRP_URL || "",
-   username: process.env.XRP_USERNAME || "",
-   password: process.env.XRP_PASSWORD || "",
-};
-
 describe("Test utils ", function () {
+   it("should convert empty address to bytes ", async function () {
+      const acc = "";
+      const byts = rippleAddressToBytes("");
+
+      expect(byts.length).to.eq(1);
+   });
+
    it("should convert classic account to bytes ", async function () {
       const acc = "r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd";
       const byts = rippleAddressToBytes(acc);
@@ -42,7 +43,17 @@ describe("Test utils ", function () {
       expect(classicAcc).to.eq(decode);
    });
 
-   it("should decode from x-account to bytes and back to its classsic account ", async function () {
+   it("should not convert from bytes to ripple address", async function () {
+      const byts = Buffer.from("0x00");
+      const fn = () => {
+         return bytesToRippleAddress(byts);
+      };
+      const er = `Not a valid ripple address`;
+      expect(fn).to.throw(Error);
+      expect(fn).to.throw(er);
+   });
+
+   it("should not decode from x-account to bytes ", async function () {
       const acc = "XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi";
       const classicAcc = "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf";
       const byts = rippleAddressToBytes(acc);
@@ -50,5 +61,23 @@ describe("Test utils ", function () {
 
       expect(byts.length).to.eq(20);
       expect(classicAcc).to.eq(decode);
+   });
+
+   it("should convert from ripple time to unix epoch", async function () {
+      //1.1.2022 in ripple time = 694310400
+      //1.1.2022 in unix epoch = 1640995200
+      const rt2022 = 694310400;
+      const expected = 1640995200;
+      const res = rippleTimeToUnixEpoch(rt2022);
+      expect(res).to.equal(expected);
+   });
+
+   it("should convert from unix epoch to ripple time", async function () {
+      //1.1.2022 in ripple time = 694310400
+      //1.1.2022 in unix epoch = 1640995200
+      const ux2022 = 1640995200;
+      const expected = 694310400;
+      const res = unixEpochToRippleTime(ux2022);
+      expect(res).to.equal(expected);
    });
 });
