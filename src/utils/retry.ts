@@ -20,6 +20,7 @@ export async function retry<T>(
 
       if (result) return result as T;
 
+      // timeout section
       if (numRetries > 0) {
          warningCallback(`retry ^R${label}^^ ${numRetries}`);
 
@@ -45,6 +46,7 @@ export async function retry<T>(
          throw MccError(`retry ^R${label}^^ failed`);
       }
    } catch (error) {
+      // exception section
       if (numRetries > 0) {
          exceptionCallback(error, `retry ^R${label}^^ exception (retry ${numRetries})`);
 

@@ -357,7 +357,10 @@ export class TraceManager {
       // todo: user exception callback
       //this.onException?(error);
 
-      if (!this.displayStateOnException) return;
+      if (!this.displayStateOnException) {
+         console.error(error);
+         return;
+      }
 
       console.log(`EXCEPTION name='${error.name}' message='${error.message}'`);
       if (error.name === `mccError` && error.message === `OutsideError`) {
