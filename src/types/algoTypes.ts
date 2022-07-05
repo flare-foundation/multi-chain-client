@@ -74,8 +74,22 @@ interface IAlgoCertProp {
    encdig: Buffer;
    oprop: Buffer;
 }
+
+interface IAlgoIndexerCertProp {
+   dig: string;
+   encdig: string;
+   oprop: string;
+}
+
 export interface IAlgoCert {
    prop: IAlgoCertProp;
+   rnd: number;
+   step: number;
+   vote: any[];
+}
+
+export interface IAlgoIndexerCert {
+   prop: IAlgoIndexerCertProp;
    rnd: number;
    step: number;
    vote: any[];
@@ -84,6 +98,10 @@ export interface IAlgoCert {
 export interface IAlgoGetBlockRes extends IAlgoBlockData, IIGetBlockRes {
    cert: IAlgoCert;
    type: "IAlgoGetBlockRes";
+}
+
+export interface IAlgoGetIndexerBlockRes extends IAlgoBlockData, IIGetBlockRes {
+   cert: IAlgoIndexerCert;
 }
 
 export interface IAlgoGetBlockHeaderRes {
@@ -210,7 +228,7 @@ interface IALgoApar {
 export type IAlgoTransactionMsgPack = EncodedTransaction & {
    txid: string; // Base32 txid as string (calculated in block processing)
    timestamp: number; // unix timestamp from block (transactions get timestamp from block they are in)
-   hgi: boolean;
+   hgi: boolean; // 
    sig?: Buffer; // signature
    lsig?: Buffer; // l signature
    msig?: Buffer; // multi signature
