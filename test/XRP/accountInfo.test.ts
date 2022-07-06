@@ -75,7 +75,17 @@ describe("Xrpl account test mainnet ", function () {
 
          // get account transactions
          const tr = await MccClient.getAccountTransactions(acc, 71_859_000, 71_867_500);
+         
          expect(tr.result.transactions.length).to.eq(73)
+      });
+      it(`Should get account transactions`, async () => {
+         const acc = "r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd";
+
+         // get account transactions
+         const tr = await MccClient.getAccountTransactions(acc);
+
+         expect(tr.result.transactions[0].tx?.hash).to.eq("ECA0585D0715C19C05D90FC797BD0CA02C63C4C48D84A3F3A52E3C084FA7799E")
+         expect(tr.result.transactions[1].tx?.hash).to.eq("C3FBD7B3389627489AA4C67B6330D8AA1C76901AEA121AAD4629C53B1ACF4F99")
       });
    });
 });

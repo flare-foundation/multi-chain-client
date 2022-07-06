@@ -107,10 +107,10 @@ export class XRPImplementation implements ReadRpcInterface {
          xrp_ensure_data(res.data);
          return new XrpBlock(res.data);
       } catch (e: any) {
-         if (e?.result?.error === "lgrNotFound") {
+         if (e.result?.error === "lgrNotFound") {
             throw new mccError(mccErrorCode.InvalidBlock);
          }
-         if (e?.response?.status === 400) {
+         if (e.response?.status === 400) {
             throw new mccError(mccErrorCode.InvalidBlock);
          }
          throw e;
