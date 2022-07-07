@@ -35,30 +35,19 @@ describe(`Algo block from algod and indexer compare`, async () => {
          });
 
          it("Should compare block number ", async function () {
-            //  console.log(block.number);
-            //  console.log(IBlock.number);
             expect(block.number).to.eq(IBlock.number);
          });
 
          it("Should compare block hash ", async function () {
-            //  console.log(block.blockHash);
-            //  console.log(IBlock.blockHash);
-            //  console.log(block.blockHash === IBlock.blockHash);
             expect(block.blockHash).to.eq(IBlock.blockHash);
          });
 
          it("Should compare block standard hash ", async function () {
-            //  console.log(block.stdBlockHash);
-            //  console.log(IBlock.stdBlockHash);
-            //  console.log(block.stdBlockHash === IBlock.stdBlockHash);
-            expect(block.blockHash).to.eq(IBlock.blockHash);
+            expect(block.stdBlockHash).to.eq(IBlock.stdBlockHash);
          });
 
          it("Should compare block timestamp ", async function () {
-            //  console.log(block.unixTimestamp);
-            //  console.log(IBlock.unixTimestamp);
-            //  console.log(block.unixTimestamp === IBlock.unixTimestamp);
-            expect(block.blockHash).to.eq(IBlock.blockHash);
+            expect(block.unixTimestamp).to.eq(IBlock.unixTimestamp);
          });
 
          it("Should compare transaction ids ", async function () {

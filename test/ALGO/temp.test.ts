@@ -8,7 +8,7 @@ const algoCreateConfig = {
    },
 };
 
-describe(`Algo block processing`, async () => {
+describe.skip(`Algo block processing`, async () => {
    describe("Top block", function () {
       it("Should get block", async function () {
          traceManager.displayStateOnException = false;
