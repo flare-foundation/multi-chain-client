@@ -1,5 +1,5 @@
 import { IAlgoTransaction } from "../types";
-import { IAlgoHexAddress } from "../types/algoTypes";
+import { IAlgoCert, IAlgoHexAddress, IAlgoIndexerCert } from "../types/algoTypes";
 import { MccError, prefix0x, unPrefix0x } from "./utils";
 const base32 = require("base32.js");
 const sha512_256 = require("js-sha512").sha512_256;
@@ -63,11 +63,11 @@ export function hexToBase32(hex: string | Uint8Array): string {
    // old base 32 encoding
    const encoder = new base32.Encoder({ type: "rfc4648" });
    if (typeof hex === "string") {
-      let bufHex = Buffer.from(hex, 'hex');
+      let bufHex = Buffer.from(hex, "hex");
       let base32Out = encoder.write(bufHex).finalize();
       return base32Out;
    } else {
-      let bufHex = Buffer.from(bytesToHex(hex), 'hex');
+      let bufHex = Buffer.from(bytesToHex(hex), "hex");
       let base32Out = encoder.write(bufHex).finalize();
       return base32Out;
    }
@@ -177,6 +177,19 @@ export function txIdToHexNo0x(txid: string) {
    return base32ToHex(txid);
 }
 
+//////////////////////////
+// Algo cert id <-> Hex //
+//////////////////////////
+
+export function certToInCert(cert: IAlgoCert): IAlgoIndexerCert {
+   const { prop, ...rest } = cert;
+   const newCert: IAlgoIndexerCert = { prop: { dig: "", encdig: "", oprop: "" }, ...rest } as IAlgoIndexerCert;
+   newCert.prop.dig = bytesToHex(cert.prop.dig);
+   newCert.prop.encdig = bytesToHex(cert.prop.encdig);
+   newCert.prop.oprop = bytesToHex(cert.prop.oprop);
+   return newCert;
+}
+
 ////////////////////////////
 //// MCC Error handling ////
 ////////////////////////////
@@ -222,197 +235,34 @@ export function mpDecode(buffer: ArrayLike<number>) {
 //// Light (Non-Archival) block updates ////
 ////////////////////////////////////////////
 
-export class StateDelta {
-   action: number = 0;
-   bytes: Uint8Array = new Uint8Array();
-   uint: number | undefined = undefined;
-
-   static fromMsgp(state_delta: any): StateDelta {
-      const sd = new StateDelta();
-      if ("at" in state_delta) sd.action = state_delta["at"];
-      if ("bs" in state_delta) sd.bytes = state_delta["bs"];
-      if ("ui" in state_delta) sd.uint = state_delta["ui"];
-      return sd;
-   }
-
-   get_obj_for_encoding() {
-      const obj: any = {};
-      if (this.action !== 0) obj["at"] = this.action;
-      if (this.bytes.length > 0) obj["bs"] = this.bytes;
-      if (this.uint !== undefined) obj["ui"] = this.uint;
-      return obj;
-   }
-}
-
-export class EvalDelta {
-   global_delta: StateDelta[] = [];
-   local_deltas: { [key: number]: StateDelta[] } = {};
-   logs: string[] = [];
-   inner_txns: SignedTransactionWithAD[] = [];
-
-   constructor(o: { global_delta?: StateDelta[]; local_deltas?: { [key: number]: StateDelta[] }; logs?: string[]; inner_txns?: SignedTransactionWithAD[] }) {}
-
-   static fromMsgp(delta: any): EvalDelta {
-      const ed = new EvalDelta({});
-
-      if ("gd" in delta) {
-         try {
-            for (const idx of delta["gd"]) {
-               ed.global_delta.push(StateDelta.fromMsgp(idx));
-            }
-         } catch (e) {
-            // TODO apparently not a part of txid -.-
-         }
-      }
-      if ("ld" in delta) {
-         try {
-            for (const k in delta["ld"]) {
-               ed.local_deltas[Number(k)] = [];
-               delta["ld"][k].map( (sd: any) => { 
-                  ed.local_deltas[Number(k)].push(StateDelta.fromMsgp(sd));
-               });
-            }
-         } catch (e) {
-            // TODO apparently not a part of txid -.-
-         }
-      }
-
-      if ("itx" in delta) {
-         try {
-            for (const itxn of delta["itx"]) {
-               ed.inner_txns.push(new SignedTransactionWithAD(Buffer.from(""), "", itxn));
-            }
-         } catch (e) {
-            // TODO apparently not a part of txid -.-
-         }
-      }
-
-      if ("lg" in delta) ed.logs = delta["lg"];
-
-      return ed;
-   }
-
-   get_obj_for_encoding() {
-      const obj: any = {};
-
-      if (this.global_delta.length > 0)
-         obj["gd"] = this.global_delta.map((gd) => {
-            return gd.get_obj_for_encoding();
-         });
-      if (Object.keys(this.local_deltas).length > 0) {
-         obj["ld"] = {};
-         Object.keys(this.local_deltas).map((el) => {
-            obj["ld"][el] = this.local_deltas[Number(el)].map((sd) => {
-               return sd.get_obj_for_encoding();
-            })
-         })
-      }
-      if (this.logs.length > 0) obj["lg"] = this.logs;
-      if (this.inner_txns.length > 0)
-         obj["itx"] = this.inner_txns.map((itxn) => {
-            return itxn.get_obj_for_encoding();
-         });
-
-      return obj;
-   }
-}
-
-export class ApplyData {
-   closing_amount: number = 0;
-   asset_closing_amount: number = 0;
-   sender_rewards: number = 0;
-   receiver_rewards: number = 0;
-   close_rewards: number = 0;
-   eval_delta: EvalDelta | undefined = undefined;
-   config_asset: number = 0;
-   application_id: number = 0;
-
-   constructor(o: {
-      closing_amount?: 0;
-      asset_closing_amount?: 0;
-      sender_rewards?: 0;
-      receiver_rewards?: 0;
-      close_rewards?: 0;
-      eval_delta?: undefined;
-      config_asset?: 0;
-      application_id?: 0;
-   }) {}
-
-   static fromMsgp(apply_data: any): ApplyData {
-      const ad = new ApplyData({});
-
-      if ("ca" in apply_data) ad.closing_amount = apply_data["ca"];
-      if ("aca" in apply_data) ad.asset_closing_amount = apply_data["aca"];
-      if ("rs" in apply_data) ad.sender_rewards = apply_data["rs"];
-      if ("rr" in apply_data) ad.receiver_rewards = apply_data["rr"];
-      if ("rc" in apply_data) ad.close_rewards = apply_data["rc"];
-      if ("caid" in apply_data) ad.config_asset = apply_data["caid"];
-      if ("apid" in apply_data) ad.application_id = apply_data["apid"];
-      if ("dt" in apply_data) ad.eval_delta = EvalDelta.fromMsgp(apply_data["dt"]);
-
-      return ad;
-   }
-
-   get_obj_for_encoding() {
-      const obj: any = {};
-
-      if (this.closing_amount !== 0) obj["ca"] = this.closing_amount;
-      if (this.asset_closing_amount !== 0) obj["aca"] = this.asset_closing_amount;
-      if (this.sender_rewards !== 0) obj["rs"] = this.sender_rewards;
-      if (this.receiver_rewards !== 0) obj["rr"] = this.receiver_rewards;
-      if (this.close_rewards !== 0) obj["rc"] = this.close_rewards;
-      if (this.config_asset !== 0) obj["caid"] = this.config_asset;
-      if (this.application_id !== 0) obj["apid"] = this.application_id;
-      if (this.eval_delta !== undefined) obj["dt"] = this.eval_delta.get_obj_for_encoding();
-
-      return obj;
-   }
-}
-
-export class SignedTransactionWithAD {
-   txn: algosdk.SignedTransaction;
-   apply_data: ApplyData | undefined = undefined;
-
-   constructor(gh: Buffer, gen: string, stib: any) {
-      const t = stib.txn as algosdk.EncodedTransaction;
-      // Manually add gh/gen to construct a correct transaction object
+// Reduce code
+export function calculateAlgoTxid(gh: Buffer, gen: string, stib: any) {
+   const t = stib.txn as algosdk.EncodedTransaction;
+   // Manually add gh/gen to construct a correct transaction object
+   if(stib.hgi){
       t.gh = gh;
       t.gen = gen;
-
-      const stxn = {
-         txn: algosdk.Transaction.from_obj_for_encoding(t),
-      } as algosdk.SignedTransaction;
-
-      if ("sig" in stib) stxn.sig = stib.sig;
-      if ("lsig" in stib) stxn.lsig = stib.lsig;
-      if ("msig" in stib) stxn.msig = stib.msig;
-      if ("sgnr" in stib) stxn.sgnr = stib.sgnr;
-
-      this.txn = stxn;
-
-      this.apply_data = ApplyData.fromMsgp(stib);
+   } else {
+      t.gh = gh
+      t.gen = '';
    }
 
-   get_obj_for_encoding() {
-      const txn: any = this.txn.txn.get_obj_for_encoding();
-      if (txn.gen !== "") {
-         delete txn.gen;
-         delete txn.gh;
-      }
+   // Modify the fields as needed
+   // we have to ensure all addresses are buffers with checksum
+   if (t.rcv) t.rcv = bufAddToCBufAdd(t.rcv);
+   if (t.snd) t.snd = bufAddToCBufAdd(t.snd);
+   if (t.arcv) t.arcv = bufAddToCBufAdd(t.arcv);
 
-      const obj: any = {
-         txn: txn,
-         ...this.apply_data?.get_obj_for_encoding(),
-      };
+   const stxn = {
+      txn: algosdk.Transaction.from_obj_for_encoding(t),
+   } as algosdk.SignedTransaction;
 
-      if (this.txn.sig) obj["sig"] = this.txn.sig;
-      if (this.txn.lsig) obj["lsig"] = this.txn.lsig;
-      if (this.txn.msig) obj["msig"] = this.txn.msig;
-      if (this.txn.sgnr) obj["sgnr"] = this.txn.sgnr;
-      if (this.txn.txn.genesisID !== "") obj["hgi"] = true;
+   if ("sig" in stib) stxn.sig = stib.sig;
+   if ("lsig" in stib) stxn.lsig = stib.lsig;
+   if ("msig" in stib) stxn.msig = stib.msig;
+   if ("sgnr" in stib) stxn.sgnr = stib.sgnr;
 
-      return obj;
-   }
+   return stxn.txn.txID();
 }
 
 export function hasher(data: Uint8Array): Uint8Array {

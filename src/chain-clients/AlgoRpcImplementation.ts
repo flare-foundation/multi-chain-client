@@ -1,9 +1,11 @@
 import * as msgpack from "algo-msgpack-with-bigint";
 import axios from "axios";
-import { AlgoBlock, ReadRpcInterface } from "..";
+import { AlgoBlock, PREFIXED_STD_TXID_REGEX, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
+import { AlgoIndexerBlock } from "../base-objects/blocks/AlgoIndexerBlock";
 import { AlgoNodeStatus } from "../base-objects/StatusBase";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
+import { AlgoIndexerTransaction } from "../base-objects/transactions/AlgoIndexerTransaction";
 import {
    AlgoMccCreate,
    ChainType,
@@ -14,11 +16,11 @@ import {
    IAlgoTransaction,
    RateLimitOptions
 } from "../types";
-import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetStatus, IAlgoStatusObject } from "../types/algoTypes";
-import { algo_check_expect_block_out_of_range, algo_ensure_data, mpDecode } from "../utils/algoUtils";
+import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetBlockRes, IAlgoGetIndexerBlockRes, IAlgoGetStatus, IAlgoGetTransactionRes, IAlgoStatusObject } from "../types/algoTypes";
+import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, certToInCert, hexToBase32, mpDecode } from "../utils/algoUtils";
 import { mccError, mccErrorCode } from "../utils/errors";
 import { Managed } from "../utils/managed";
-import { toCamelCase, toSnakeCase } from "../utils/utils";
+import { toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
@@ -45,6 +47,7 @@ export class ALGOImplementation implements ReadRpcInterface {
          headers: {
             "Content-Type": "application/json",
             "X-Algo-API-Token": createConfig.algod.token,
+            "x-api-key": createConfig.algod.token,
          },
          validateStatus: algoResponseValidator,
       });
@@ -60,6 +63,7 @@ export class ALGOImplementation implements ReadRpcInterface {
             headers: {
                "Content-Type": "application/json",
                "X-Algo-API-Token": createConfig.indexer.token,
+               "x-api-key": createConfig.indexer.token,
             },
             validateStatus: algoResponseValidator,
          });
@@ -68,6 +72,7 @@ export class ALGOImplementation implements ReadRpcInterface {
             ...createConfig.rateLimitOptions,
          });
       }
+
       if (!createConfig.inRegTest) {
          this.inRegTest = false;
       } else {
@@ -195,7 +200,7 @@ export class ALGOImplementation implements ReadRpcInterface {
    ///////////////////////////////////////////////////////////////////////////////////////
 
    private async getStatus(): Promise<IAlgoStatusRes> {
-      let res = await this.algodClient.get("v2/status");
+      let res = await this.algodClient.get("/v2/status");
       algo_ensure_data(res);
       return toCamelCase(res.data) as IAlgoStatusRes;
    }
@@ -220,5 +225,51 @@ export class ALGOImplementation implements ReadRpcInterface {
       let responseData = toCamelCase(resorig.data) as IAlgoGetBlockHeaderRes;
       responseData.type = "IAlgoGetBlockHeaderRes";
       return responseData;
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Indexer specific methods  //////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+
+   /**
+    * Get trasnaction from node by its id
+    * @param txid base32 encoded txid || standardized txid (prefixed or unprefixed)
+    * @returns
+    */
+    async getIndexerTransaction(txid: string): Promise<AlgoIndexerTransaction> {
+      if (PREFIXED_STD_TXID_REGEX.test(txid)) {
+         txid = hexToBase32(unPrefix0x(txid));
+      }
+      let res = await this.indexerClient.get(`/v2/transactions/${txid}`);
+      if (algo_check_expect_empty(res)) {
+         throw new mccError(mccErrorCode.InvalidBlock);
+      }
+      algo_ensure_data(res);
+      return new AlgoIndexerTransaction(toCamelCase(res.data) as IAlgoGetTransactionRes) as AlgoIndexerTransaction;
+   }
+
+   async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock> {
+      if(!this.createConfig.indexer){
+         // No indexer 
+         throw new mccError(mccErrorCode.InvalidMethodCall);
+      }
+      if (round === undefined) {
+         const status = await this.getStatus();
+         round = status.lastRound - 1;
+      }
+      let res = await this.indexerClient.get(`/v2/blocks/${round}`);
+      if (algo_check_expect_block_out_of_range(res)) {
+         throw new mccError(mccErrorCode.InvalidBlock);
+      }
+      algo_ensure_data(res);
+      const cert = await this.getBlockHeaderCert(round);
+      let camelBlockRes = toCamelCase(res.data) as IAlgoGetIndexerBlockRes;
+      camelBlockRes.transactions = [];
+      for (let key of Object.keys(res.data.transactions)) {
+         camelBlockRes.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
+      }
+      camelBlockRes.cert = certToInCert(cert);
+      return new AlgoIndexerBlock(camelBlockRes);
    }
 }

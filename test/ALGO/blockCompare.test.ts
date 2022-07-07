@@ -1,0 +1,127 @@
+import { assert, expect } from "chai";
+import { AlgoBlock, MCC } from "../../src";
+import { AlgoIndexerBlock } from "../../src/base-objects/blocks/AlgoIndexerBlock";
+
+const algoCreateConfig = {
+   algod: {
+      url: process.env.ALGO_ALGOD_URL || "",
+      token: process.env.ALGO_ALGOD_TOKEN || "",
+   },
+   indexer: {
+      url: process.env.ALGO_INDEXER_URL || "",
+      token: process.env.ALGO_INDEXER_TOKEN || "",
+   },
+};
+
+// const hei = 21_374_440;
+// // const hei = 21_797_543;
+
+describe(`Algo block from algod and indexer compare`, async () => {
+   const checkBlocks = [21_374_440, 21_400_000, 21_500_000, 21_600_000, 21_700_000, 21_797_543, 21_800_000, 21_900_000, 21_931_716];
+   let MccClient: MCC.ALGO;
+   before(async function () {
+      // console.log(algoCreateConfig);
+      MccClient = new MCC.ALGO(algoCreateConfig);
+   });
+
+   for (let hei of checkBlocks) {
+      describe(`Compare block from indexer and algod ${hei}`, function () {
+         let block: AlgoBlock;
+         let IBlock: AlgoIndexerBlock;
+
+         before(async function () {
+            IBlock = await MccClient.getIndexerBlock(hei);
+            block = await MccClient.getBlock(hei);
+         });
+
+         it("Should compare block number ", async function () {
+            //  console.log(block.number);
+            //  console.log(IBlock.number);
+            expect(block.number).to.eq(IBlock.number);
+         });
+
+         it("Should compare block hash ", async function () {
+            //  console.log(block.blockHash);
+            //  console.log(IBlock.blockHash);
+            //  console.log(block.blockHash === IBlock.blockHash);
+            expect(block.blockHash).to.eq(IBlock.blockHash);
+         });
+
+         it("Should compare block standard hash ", async function () {
+            //  console.log(block.stdBlockHash);
+            //  console.log(IBlock.stdBlockHash);
+            //  console.log(block.stdBlockHash === IBlock.stdBlockHash);
+            expect(block.blockHash).to.eq(IBlock.blockHash);
+         });
+
+         it("Should compare block timestamp ", async function () {
+            //  console.log(block.unixTimestamp);
+            //  console.log(IBlock.unixTimestamp);
+            //  console.log(block.unixTimestamp === IBlock.unixTimestamp);
+            expect(block.blockHash).to.eq(IBlock.blockHash);
+         });
+
+         it("Should compare transaction ids ", async function () {
+            let diffs = 0;
+            let trans1 = block.transactionIds;
+            const trans2 = IBlock.transactionIds;
+            //  console.log(trans1.length === trans2.length);
+            expect(trans1.length).to.eq(trans2.length);
+            let allSame = true;
+            for (let i = 0; i < trans2.length; i++) {
+               const found = trans1.find((elem) => trans2[i] === elem);
+               if (found) {
+                  trans1 = trans1.filter((elem) => !(found === elem));
+               } else {
+                  // transaction was not found
+                  diffs += 1;
+                  console.log(trans2[i]);
+                  // console.log(trans1[i], trans2[i]);
+
+                  const indexTr = await MccClient.getIndexerTransaction(trans2[i]);
+
+                  console.log(indexTr.data);
+
+                  allSame = false;
+               }
+            }
+            if (!allSame) {
+               console.log("diffs: ", diffs);
+            }
+            expect(allSame).to.eq(true);
+         });
+
+         it("Should compare transaction standard ids ", async function () {
+            let diffs = 0;
+            const trans1 = block.stdTransactionIds;
+            const trans2 = IBlock.stdTransactionIds;
+            //  console.log(trans1.length === trans2.length);
+            expect(trans1.length).to.eq(trans2.length);
+            let allSame = true;
+            for (let i = 0; i < trans2.length; i++) {
+               // expect(trans1[i]).to.eq(trans2[i]);
+               // find all transaction ids in indexer block, and if not print them out
+               const found = trans1.find((elem) => trans2[i] === elem);
+               //  console.log('found',found);
+
+               if (found) {
+               } else {
+                  // transaction was not found
+                  diffs += 1;
+                  // console.log(trans2[i]);
+                  // console.log(trans1[i], trans2[i]);
+                  allSame = false;
+               }
+            }
+            if (!allSame) {
+               console.log("diffs: ", diffs);
+            }
+            expect(allSame).to.eq(true);
+         });
+
+         it("Should compare transaction count ", async function () {
+            expect(block.transactionCount).to.eq(IBlock.transactionCount);
+         });
+      });
+   }
+});

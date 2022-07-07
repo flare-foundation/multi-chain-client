@@ -78,6 +78,22 @@
          "name": "Test block DOGE",
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/DOGE/block.test.ts"]
-      }
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Find Algo",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/ALGO/find.test.ts"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Compare algo blocks",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/ALGO/blockCompare.test.ts"]
+      },
    ]
 }

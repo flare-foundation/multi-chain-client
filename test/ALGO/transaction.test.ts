@@ -81,70 +81,104 @@ const TransactionsToTest: algoTransactionTestCases[] = [
       },
    },
    {
-    description: "Axfer trasnaction ",
-    txid: "TTHNP33PA6H54XVOVIT6YVRDFDIWFPX7XONUROZIGWVYO2QWYCLQ",
-    block: 21_731_318,
-    expect: {
-       txid: "TTHNP33PA6H54XVOVIT6YVRDFDIWFPX7XONUROZIGWVYO2QWYCLQ",
-       stdTxid: "9cced7ef6f078fde5eaeaa27ec562328d162beffbb9b48bb2835ab876a16c097",
-       hash: "TTHNP33PA6H54XVOVIT6YVRDFDIWFPX7XONUROZIGWVYO2QWYCLQ",
-       reference: ["7b2269223a223137343063313935306631353037383333346365393638333337643362336332222c2277223a223030656131623137633962303232333133356234646330636262656138383136222c227772223a313539302c227764223a31382c2262223a223966636561353139636530353036623730376163613730636238333739386235222c226272223a313536332c226264223a2d352c2266223a22323032322d30322d30335430373a33333a30375a227d"],
-       stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-       unixTimestamp: 1655724084,
-       sourceAddresses: ["C7RYOGEWDT7HZM3HKPSMU7QGWTRWR3EPOQTJ2OHXGYLARD3X62DNWELS34"],
-       receivingAddresses: ["C7RYOGEWDT7HZM3HKPSMU7QGWTRWR3EPOQTJ2OHXGYLARD3X62DNWELS34"],
-       isFeeError: false,
-       fee: "1000", // number as a string
-       spentAmounts: [
-          {
-             address: "C7RYOGEWDT7HZM3HKPSMU7QGWTRWR3EPOQTJ2OHXGYLARD3X62DNWELS34",
-             amount: toBN(1001),
-          },
-       ],
-       receivedAmounts: [
-          {
-             address: "C7RYOGEWDT7HZM3HKPSMU7QGWTRWR3EPOQTJ2OHXGYLARD3X62DNWELS34",
-             amount: toBN(1),
-          },
-       ],
-       type: "axfer",
-       isNativePayment: false,
-       currencyName: "127745593",
-       elementaryUnits: "1000000", // number as string
-       successStatus: TransactionSuccessStatus.SUCCESS,
-    },
- },
- {
-  description: "Config call trasnaction ",
-  txid: "76G2UTQWVG4FMWV4ZQCIUNJX2XRKLJMIDRB444LYQPDGNE3KZVUA",
-  block: 21_731_318,
-  expect: {
-     txid: "76G2UTQWVG4FMWV4ZQCIUNJX2XRKLJMIDRB444LYQPDGNE3KZVUA",
-     stdTxid: "ff8daa4e16a9b8565abccc048a3537d5e2a5a5881c43ce717883c666936acd68",
-     hash: "76G2UTQWVG4FMWV4ZQCIUNJX2XRKLJMIDRB444LYQPDGNE3KZVUA",
-     reference: [],
-     stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-     unixTimestamp: 1655724084,
-     sourceAddresses: ["54LSG3HXFK2IK3WYBCNSSAXWDVOSSDNJ2J3NJC3YOGYKOTPXVDOSQHDAJI"],
-     receivingAddresses: [],
-     isFeeError: false,
-     fee: "1000", // number as a string
-     spentAmounts: [
-        {
-           address: "54LSG3HXFK2IK3WYBCNSSAXWDVOSSDNJ2J3NJC3YOGYKOTPXVDOSQHDAJI",
-           amount: toBN(1000),
-        },
-     ],
-     receivedAmounts: [],
-     type: "acfg",
-     isNativePayment: false,
-     currencyName: "",
-     elementaryUnits: "1000000", // number as string
-     successStatus: TransactionSuccessStatus.SUCCESS,
-  },
-},
-
- 
+      description: "Axfer trasnaction ",
+      txid: "TTHNP33PA6H54XVOVIT6YVRDFDIWFPX7XONUROZIGWVYO2QWYCLQ",
+      block: 21_731_318,
+      expect: {
+         txid: "TTHNP33PA6H54XVOVIT6YVRDFDIWFPX7XONUROZIGWVYO2QWYCLQ",
+         stdTxid: "9cced7ef6f078fde5eaeaa27ec562328d162beffbb9b48bb2835ab876a16c097",
+         hash: "TTHNP33PA6H54XVOVIT6YVRDFDIWFPX7XONUROZIGWVYO2QWYCLQ",
+         reference: [
+            "7b2269223a223137343063313935306631353037383333346365393638333337643362336332222c2277223a223030656131623137633962303232333133356234646330636262656138383136222c227772223a313539302c227764223a31382c2262223a223966636561353139636530353036623730376163613730636238333739386235222c226272223a313536332c226264223a2d352c2266223a22323032322d30322d30335430373a33333a30375a227d",
+         ],
+         stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+         unixTimestamp: 1655724084,
+         sourceAddresses: ["C7RYOGEWDT7HZM3HKPSMU7QGWTRWR3EPOQTJ2OHXGYLARD3X62DNWELS34"],
+         receivingAddresses: ["C7RYOGEWDT7HZM3HKPSMU7QGWTRWR3EPOQTJ2OHXGYLARD3X62DNWELS34"],
+         isFeeError: false,
+         fee: "1000", // number as a string
+         spentAmounts: [
+            {
+               address: "C7RYOGEWDT7HZM3HKPSMU7QGWTRWR3EPOQTJ2OHXGYLARD3X62DNWELS34",
+               amount: toBN(1001),
+            },
+         ],
+         receivedAmounts: [
+            {
+               address: "C7RYOGEWDT7HZM3HKPSMU7QGWTRWR3EPOQTJ2OHXGYLARD3X62DNWELS34",
+               amount: toBN(1),
+            },
+         ],
+         type: "axfer",
+         isNativePayment: false,
+         currencyName: "127745593",
+         elementaryUnits: "1000000", // number as string
+         successStatus: TransactionSuccessStatus.SUCCESS,
+      },
+   },
+   {
+      description: "Config call trasnaction ",
+      txid: "76G2UTQWVG4FMWV4ZQCIUNJX2XRKLJMIDRB444LYQPDGNE3KZVUA",
+      block: 21_731_318,
+      expect: {
+         txid: "76G2UTQWVG4FMWV4ZQCIUNJX2XRKLJMIDRB444LYQPDGNE3KZVUA",
+         stdTxid: "ff8daa4e16a9b8565abccc048a3537d5e2a5a5881c43ce717883c666936acd68",
+         hash: "76G2UTQWVG4FMWV4ZQCIUNJX2XRKLJMIDRB444LYQPDGNE3KZVUA",
+         reference: [],
+         stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+         unixTimestamp: 1655724084,
+         sourceAddresses: ["54LSG3HXFK2IK3WYBCNSSAXWDVOSSDNJ2J3NJC3YOGYKOTPXVDOSQHDAJI"],
+         receivingAddresses: [],
+         isFeeError: false,
+         fee: "1000", // number as a string
+         spentAmounts: [
+            {
+               address: "54LSG3HXFK2IK3WYBCNSSAXWDVOSSDNJ2J3NJC3YOGYKOTPXVDOSQHDAJI",
+               amount: toBN(1000),
+            },
+         ],
+         receivedAmounts: [],
+         type: "acfg",
+         isNativePayment: false,
+         currencyName: "",
+         elementaryUnits: "1000000", // number as string
+         successStatus: TransactionSuccessStatus.SUCCESS,
+      },
+   },
+   {
+      description: "Transaction with clawback  ",
+      txid: "O4PGGEM3ZCA27SQHCJH4VBTB3FYM7FJNRF2ROOGFQRI4BSYWPKLQ",
+      block: 21_891_197,
+      expect: {
+         txid: "O4PGGEM3ZCA27SQHCJH4VBTB3FYM7FJNRF2ROOGFQRI4BSYWPKLQ",
+         stdTxid: "771e63119bc881afca07124fca8661d970cf952d89751738c58451c0cb167a97",
+         hash: "O4PGGEM3ZCA27SQHCJH4VBTB3FYM7FJNRF2ROOGFQRI4BSYWPKLQ",
+         reference: [],
+         stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+         unixTimestamp: 1656417894,
+         sourceAddresses: ["7NAM7FMTE2KUMWVDSS5AYXISMPKERQRXHNPICP257R6VKZVO4GOA"],
+         receivingAddresses: ["FO2CF7U7GXHUFDUUWNOQ2RWLZGRVNMC6GA4IPEBKB6DM4PGOEDR7BMHP3U"],
+         isFeeError: false,
+         fee: "1000", // number as a string
+         spentAmounts: [
+            {
+               address: "7NAM7FMTE2KUMWVDSS5AYXISMPKERQRXHNPICP257R6VKZVO4GOA",
+               amount: toBN(1001),
+            },
+         ],
+         receivedAmounts: [
+            {
+               address: "FO2CF7U7GXHUFDUUWNOQ2RWLZGRVNMC6GA4IPEBKB6DM4PGOEDR7BMHP3U",
+               amount: toBN(1),
+            },
+         ],
+         type: "axfer",
+         isNativePayment: false,
+         currencyName: "791265863",
+         elementaryUnits: "1000000", // number as string
+         successStatus: TransactionSuccessStatus.SUCCESS,
+      },
+   },
 ];
 
 for (let transData of TransactionsToTest) {
@@ -278,18 +312,17 @@ for (let transData of TransactionsToTest) {
          it("Should get payment summary", async function () {
             const summary = await transaction.paymentSummary(MccClient);
 
-            if(transData.expect.isNativePayment){
-              expect(summary.isNativePayment).to.eq(transData.expect.isNativePayment);
-              expect(summary.sourceAddress).to.eq(transData.expect.sourceAddresses[0]);
-              expect(summary.receivingAddress).to.eq(transData.expect.receivingAddresses[0]);
-              expect(summary.spentAmount?.toString()).to.eq(transData.expect.spentAmounts[0].amount.toString());
-              expect(summary.receivedAmount?.toString()).to.eq(transData.expect.receivedAmounts[0].amount.toString());
-              expect(summary.paymentReference).to.eq(transData.expect.stdPaymentReference);
-              expect(summary.oneToOne).to.eq(true);
-              expect(summary.isFull).to.eq(true);
-            }
-            else {
-              expect(summary.isNativePayment).to.eq(transData.expect.isNativePayment);
+            if (transData.expect.isNativePayment) {
+               expect(summary.isNativePayment).to.eq(transData.expect.isNativePayment);
+               expect(summary.sourceAddress).to.eq(transData.expect.sourceAddresses[0]);
+               expect(summary.receivingAddress).to.eq(transData.expect.receivingAddresses[0]);
+               expect(summary.spentAmount?.toString()).to.eq(transData.expect.spentAmounts[0].amount.toString());
+               expect(summary.receivedAmount?.toString()).to.eq(transData.expect.receivedAmounts[0].amount.toString());
+               expect(summary.paymentReference).to.eq(transData.expect.stdPaymentReference);
+               expect(summary.oneToOne).to.eq(true);
+               expect(summary.isFull).to.eq(true);
+            } else {
+               expect(summary.isNativePayment).to.eq(transData.expect.isNativePayment);
             }
          });
       });

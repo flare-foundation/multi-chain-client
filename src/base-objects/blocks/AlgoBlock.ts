@@ -1,6 +1,6 @@
 import { mccSettings } from "../../global-settings/globalSettings";
 import { IAlgoBlockMsgPack, IAlgoTransactionMsgPack } from "../../types";
-import { bufAddToCBufAdd, bytesToHex, hexToBase32, hexToBase64, SignedTransactionWithAD } from "../../utils/algoUtils";
+import { bytesToHex, calculateAlgoTxid, hexToBase32, hexToBase64 } from "../../utils/algoUtils";
 import { Managed } from "../../utils/managed";
 import { mccJsonStringify } from "../../utils/utils";
 import { BlockBase } from "../BlockBase";
@@ -71,13 +71,9 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
       this.transactionObjects = [];
       for (let transactionBase of this.data.block.txns) {
          try {
-            // we have to ensure all addresses are buffers with checksum
-            if (transactionBase.txn.rcv) transactionBase.txn.rcv = bufAddToCBufAdd(transactionBase.txn.rcv);
-            if (transactionBase.txn.snd) transactionBase.txn.snd = bufAddToCBufAdd(transactionBase.txn.snd);
-            if (transactionBase.txn.arcv) transactionBase.txn.arcv = bufAddToCBufAdd(transactionBase.txn.arcv);
-            const st = new SignedTransactionWithAD(this.data.block.gh, this.data.block.gen, transactionBase);
+            // const st = new SignedTransactionWithAD(this.data.block.gh, this.data.block.gen, transactionBase);
             const data = {
-               txid: st.txn.txn.txID(),
+               txid: calculateAlgoTxid(this.data.block.gh, this.data.block.gen, transactionBase),
                timestamp: this.unixTimestamp,
                hgi: transactionBase.hgi,
                ...transactionBase.txn,

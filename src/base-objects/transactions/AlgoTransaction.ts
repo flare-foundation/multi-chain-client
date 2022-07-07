@@ -52,6 +52,12 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
    }
 
    public get sourceAddresses(): (string | undefined)[] {
+      if(this.type === 'axfer'){
+         // for token transfers send by clawback transaction (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-clawback-transaction) and asset transfer transactions (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-transfer-transaction)
+         if(this.data.asnd){
+            return [hexToBase32(this.data.asnd)]
+         }
+      }
       return [hexToBase32(this.data.snd)];
    }
 
@@ -62,7 +68,11 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       }
       // for transactions of type axfer
       else if (this.data.arcv) {
-         return [hexToBase32(this.data.arcv)];
+         if(this.data.aclose){
+            return [hexToBase32(this.data.arcv), hexToBase32(this.data.aclose)];
+         } else {
+            return [hexToBase32(this.data.arcv)];
+         }
       }
       return [];
    }
@@ -114,6 +124,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       // for transactions of type axfer
       if (this.data.aamt) {
          let amount = this.data.aamt.toString();
+         // TODO add asset close amount to this response
          return [
             {
                address: this.receivingAddresses[0],
