@@ -5,7 +5,6 @@ import { BtcBlock, MCC, UtxoMccCreate } from "../../src";
 
 
 const BtcMccConnection = {
-   //url: "123" ,
    url: process.env.BTC_URL || "",
    username: process.env.BTC_USERNAME || "",
    password: process.env.BTC_PASSWORD || "",
@@ -43,7 +42,8 @@ describe("Block Btc base test ", function () {
 
    it("Should get transaction ids ", async function () {
       expect(block.transactionIds.length).to.eq(565);
-      // TODO at least check some txids
+      expect(block.transactionIds).contain('0x77f4598116882ddc5dab96967bead585a2a4b992e663bdb6cd0311a31967696c');
+      expect(block.transactionIds).contain('0x3f16a95126783d04c4494211c442a5982ae8ab08733df68d26ceed9514ddb147');
    });
 
    it("Should get transaction standard ids ", async function () {

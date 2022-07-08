@@ -1,4 +1,4 @@
-import { assert, expect } from "chai";
+import { expect } from "chai";
 import { AlgoBlock, MCC } from "../../src";
 import { AlgoIndexerBlock } from "../../src/base-objects/blocks/AlgoIndexerBlock";
 
@@ -13,14 +13,10 @@ const algoCreateConfig = {
    },
 };
 
-// const hei = 21_374_440;
-// // const hei = 21_797_543;
-
 describe(`Algo block from algod and indexer compare`, async () => {
    const checkBlocks = [21_374_440, 21_400_000, 21_500_000, 21_600_000, 21_700_000, 21_797_543, 21_800_000, 21_900_000, 21_931_716];
    let MccClient: MCC.ALGO;
    before(async function () {
-      // console.log(algoCreateConfig);
       MccClient = new MCC.ALGO(algoCreateConfig);
    });
 
@@ -54,7 +50,7 @@ describe(`Algo block from algod and indexer compare`, async () => {
             let diffs = 0;
             let trans1 = block.transactionIds;
             const trans2 = IBlock.transactionIds;
-            //  console.log(trans1.length === trans2.length);
+
             expect(trans1.length).to.eq(trans2.length);
             let allSame = true;
             for (let i = 0; i < trans2.length; i++) {
@@ -64,13 +60,7 @@ describe(`Algo block from algod and indexer compare`, async () => {
                } else {
                   // transaction was not found
                   diffs += 1;
-                  console.log(trans2[i]);
-                  // console.log(trans1[i], trans2[i]);
-
                   const indexTr = await MccClient.getIndexerTransaction(trans2[i]);
-
-                  console.log(indexTr.data);
-
                   allSame = false;
                }
             }
@@ -84,21 +74,16 @@ describe(`Algo block from algod and indexer compare`, async () => {
             let diffs = 0;
             const trans1 = block.stdTransactionIds;
             const trans2 = IBlock.stdTransactionIds;
-            //  console.log(trans1.length === trans2.length);
+
             expect(trans1.length).to.eq(trans2.length);
             let allSame = true;
             for (let i = 0; i < trans2.length; i++) {
-               // expect(trans1[i]).to.eq(trans2[i]);
                // find all transaction ids in indexer block, and if not print them out
                const found = trans1.find((elem) => trans2[i] === elem);
-               //  console.log('found',found);
-
                if (found) {
                } else {
                   // transaction was not found
                   diffs += 1;
-                  // console.log(trans2[i]);
-                  // console.log(trans1[i], trans2[i]);
                   allSame = false;
                }
             }

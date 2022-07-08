@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, UtxoMccCreate, UtxoNodeStatus, XrpNodeStatus } from "../../src";
+import { MCC, UtxoMccCreate, UtxoNodeStatus } from "../../src";
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",

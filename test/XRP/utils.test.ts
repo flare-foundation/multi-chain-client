@@ -3,7 +3,6 @@ import { expect } from "chai";
 
 describe("Test utils ", function () {
    it("should convert empty address to bytes ", async function () {
-      const acc = "";
       const byts = rippleAddressToBytes("");
 
       expect(byts.length).to.eq(1);

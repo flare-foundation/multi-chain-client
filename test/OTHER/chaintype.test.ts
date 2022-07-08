@@ -1,5 +1,4 @@
-import { ChainType, MCC, traceManager, UtxoMccCreate } from "../../src";
-import { LiteBlock } from "../../src/base-objects/blocks/LiteBlock";
+import { ChainType, MCC, traceManager } from "../../src";
 
 const chai = require("chai");
 const expect = chai.expect;

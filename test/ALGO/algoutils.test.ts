@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AlgoBlock, MCC, traceManager } from "../../src";
+import { traceManager } from "../../src";
 import { addressToHex, algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, base32ToHex, base64ToHex, base64ToText, bufAddToCBufAdd, bytesToHex, concatArrays, hasher, hexToAddress, hexToBase32, hexToBase64, hexToBytes, mpDecode, mpEncode, txIdToHex, txIdToHexNo0x } from "../../src/utils/algoUtils";
 import { mccJsonStringify } from "../../src/utils/utils";
 import { addressToBtyeAddress } from "../testUtils";

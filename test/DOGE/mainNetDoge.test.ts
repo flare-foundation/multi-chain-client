@@ -36,7 +36,6 @@ describe("DOGE mainnet client tests", () => {
          if (trans) {
             expect(trans.hash).to.eq(txid);
          }
-         // console.log(trans);
       });
 
       it("should return null if transaction does not exist ", async function () {
@@ -90,7 +89,6 @@ describe("DOGE mainnet client tests", () => {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const txid = "2d906dbce50eb47567d1decae6a0ce5267eaabe56838ea9fd700a732bbcdcb3b";
          let trans = await RPC.getTransaction(txid);
-         // console.log(trans);
          if (trans) {
             expect(trans.hash).to.eq(txid);
          }

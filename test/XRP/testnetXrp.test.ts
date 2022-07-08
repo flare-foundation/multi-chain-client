@@ -34,7 +34,6 @@ describe("XRP testnet client tests", () => {
          if (block) {
             expect(block.number).to.equal(n);
          }
-         // assert(block.result.ledger_index === n);
       });
 
       it("Should return InvalidBlock if block does not exist", async () => {

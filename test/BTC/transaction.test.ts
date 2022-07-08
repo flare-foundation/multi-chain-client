@@ -1,5 +1,4 @@
 import { BtcTransaction, MCC, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
-import { IUtxoVinVoutsMapper } from "../../src/types/utxoTypes";
 import { transactionTestCases } from "../testUtils";
 
 const chai = require("chai");
@@ -38,7 +37,6 @@ describe("Transaction Btc base test ", function () {
          if (fullTrans) {
             transaction = new BtcTransaction(fullTrans.data);
             await transaction.makeFullPayment(MccClient);
-            // console.log(mccJsonStringify(transaction.additionalData));
          }
       });
 

@@ -67,14 +67,6 @@ describe("Transaction DOGE base test ", function () {
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
       },
-      // {
-      //    description: "Transaction with multiple vins",
-      //    txid: "16920c5619b4c43fd5c9c0fc594153f2bf1a80c930238a8ee870aece0bc7cc59",
-      // },
-      // {
-      //    description: "Transaction with two reference",
-      //    txid: "fbf351cd9f1a561be21e3977282e931c5209ed6b90472e225b4a674dbc643511",
-      // },
       {
          description: "Coinbase Transaction",
          txid: "9d863418ef3761eb45fd38eea5074965efa1266694a8b2826d5ce148aa564095",
