@@ -2,8 +2,6 @@ import { IGetLiteBlockRes } from "../../types/genericMccTypes";
 import { Managed } from "../../utils/managed";
 import { BlockBase } from "../BlockBase";
 
-const util = require("util");
-
 @Managed()
 export class LiteBlock extends BlockBase<IGetLiteBlockRes> {
    public get number(): number {
@@ -23,18 +21,14 @@ export class LiteBlock extends BlockBase<IGetLiteBlockRes> {
    }
 
    public get transactionIds(): string[] {
-      throw new Error("Method not implemented.");
+      return [];
    }
 
    public get stdTransactionIds(): string[] {
-      throw new Error("Method not implemented.");
+      return [];
    }
 
    public get transactionCount(): number {
-      throw new Error("Method not implemented.");
-   }
-
-   [util.inspect.custom]() {
-      return `Number: ${this.number}; Hash: ${this.stdBlockHash}`;
+      return 0;
    }
 }

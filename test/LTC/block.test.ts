@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
+import { LtcBlock, MCC, UtxoMccCreate } from "../../src";
 
 const LtcMccConnection = {
    url: process.env.LTC_URL || "",
@@ -9,7 +9,7 @@ const LtcMccConnection = {
 
 describe("Block LTC base test ", function () {
    let MccClient: MCC.LTC;
-   let block: UtxoBlock;
+   let block: LtcBlock;
    const blockNumber = 2_220_000
    
    before(async function () {

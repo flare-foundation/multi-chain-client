@@ -29,10 +29,10 @@ export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
          if (!tx) {
             return "0x0";
          }
+         /* istanbul ignore else */ 
          if (tx.txid) {
             return prefix0x(tx.txid);
          } else {
-            /* istanbul ignore next */
             if (typeof tx === "string") {
                return prefix0x(tx as any as string);
             } else {
