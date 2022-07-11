@@ -26,7 +26,10 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
    }
 
    public get reference(): string[] {
-      return [base64ToHex(this.data.transaction.note || "")];
+      if(this.data.transaction.note) {
+         return [base64ToHex(this.data.transaction.note)];
+      }
+      return [];
    }
 
    public get stdPaymentReference(): string {
