@@ -356,3 +356,8 @@ it("Should get receiving fee (no fee) ", async function () {
    delete tr.data.fee;
    expect(tr.fee.toNumber()).to.eq(0);
 });
+
+it("Should not list transactions ", async function () {
+   let MccClient = new MCC.ALGO(algoCreateConfig);
+   await expect(MccClient.getIndexerBlock()).to.be.rejectedWith("InvalidMethodCall");
+});

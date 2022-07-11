@@ -1,6 +1,8 @@
 import { MCC } from "../../src";
 import { AlgoIndexerBlock } from "../../src/base-objects/blocks/AlgoIndexerBlock";
-import { expect } from "chai";
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
     algod: {
@@ -40,4 +42,12 @@ describe(`Algo block processing`, async () => {
         expect(block.transactionCount).to.eq(0);
      });
 
+     it("Should get indexer block - no input", async function () {
+        let tblock = await MccClient.getIndexerBlock();
+        expect(tblock).is.not.null;
+     });
+
+     it("Should not get indexer block - invalid", async function () {
+        await expect(MccClient.getIndexerBlock(Number.MAX_SAFE_INTEGER)).to.be.rejectedWith("InvalidBlock");
+     });
 });

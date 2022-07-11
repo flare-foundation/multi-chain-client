@@ -16,7 +16,6 @@ const algoCreateConfig = {
 };
 
 describe(`Algo block processing`, async () => {
-    const checkBlocks = [21_700_000, 21_797_543];
     let MccClient: MCC.ALGO;
     let block1: AlgoBlock;
     let BTrans1: AlgoTransaction;
@@ -108,6 +107,22 @@ describe(`Algo block processing`, async () => {
     it("Should get transaction receivingAddresses ", async function () {
         expect(ITrans1.receivingAddresses.length).to.eq(0);
     });
+
+    it("Should list transactions ", async function () {
+        let res = await MccClient.listTransactions();
+        expect(res).to.not.be.null;
+     });
+    it("Should list transactions with options ", async function () {
+        let res = await MccClient.listTransactions({ sigType: "sig" });
+        expect(res).to.not.be.null;
+     });
+     it("Should get transaction ", async function () {
+        let res = await MccClient.getIndexerTransaction("0xULHDCNM665O7M4E44PGEJ7XB3Z7YIF7QYUWY5ZBTPO434M47SZ3Q");
+     });
+     it("Should not get transaction ", async function () {
+        await expect(MccClient.getIndexerTransaction("0xUL")).to.be.rejectedWith("InvalidBlock");
+     });
+
 });
 
 

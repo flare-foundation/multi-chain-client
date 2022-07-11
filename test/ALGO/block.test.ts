@@ -1,5 +1,7 @@
-import { expect } from "chai";
 import { AlgoBlock, MCC, traceManager } from "../../src";
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
    algod: {

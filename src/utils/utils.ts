@@ -37,6 +37,13 @@ export function prefix0x(tx: string) {
    return tx.startsWith("0x") ? tx : "0x" + tx;
 }
 
+export function isPrefixed0x(tx: string) {
+   if (!tx) {
+      return false;
+   }
+   return tx.startsWith("0x") ? true : false;
+}
+
 export function toHex(x: string | number | BN) : string {
    return Web3.utils.toHex(x);
 }
