@@ -28,7 +28,7 @@ describe(`Algo transaction from algod block VS from indexer compare`, async () =
       }
    });
 
-   it(`Compare transactions in block ${hei}`, async function () {
+   describe(`Compare transactions in block ${hei}`, async function () {
       for (let tra of block.transactions) {
          let BTrans: AlgoTransaction;
          let ITrans: AlgoIndexerTransaction;

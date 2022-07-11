@@ -87,9 +87,9 @@ describe(`Algo block processing`, async () => {
         delete ITrans1.data.transaction.roundTime;
         expect(ITrans1.unixTimestamp).to.eq(0);
     });
-    it("Should get transaction roundTime ", async function () {
+    it("Should get transaction note ", async function () {
         delete ITrans1.data.transaction.note;
-        expect(ITrans1.reference).to.eql(['']);
+        expect(ITrans1.reference).to.eql([]);
     });
     it("Should get transaction receivedAmounts ", async function () {
         delete ITrans1.data.transaction.assetTransferTransaction;

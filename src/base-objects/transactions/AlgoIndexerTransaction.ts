@@ -79,6 +79,13 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
                amount: this.fee.add(toBN(this.data.transaction.paymentTransaction.amount)),
             },
          ];
+      } else if (this.data.transaction.txType === "axfer" && this.data.transaction.assetTransferTransaction) {
+         return [
+            {
+               address: this.sourceAddresses[0],
+               amount: this.fee.add(toBN(this.data.transaction.assetTransferTransaction.amount)),
+            },
+         ];
       } else {
          return [
             {
