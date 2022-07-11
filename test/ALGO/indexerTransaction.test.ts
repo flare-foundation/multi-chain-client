@@ -79,6 +79,10 @@ describe(`Algo block processing`, async () => {
         expect(ITrans1.receivedAmounts.length).to.eq(1);
         expect(ITrans2.receivedAmounts.length).to.eq(1);
     });
+    it("Should get transaction spentAmounts", async function () {
+        expect(ITrans1.spentAmounts[0].amount.toNumber()).to.eq(1000);
+        expect(ITrans2.spentAmounts[0].amount.toNumber()).to.eq(1000);
+    });
     it("Should get transaction id ", async function () {
         delete ITrans1.data.transaction.id;
         expect(ITrans1.hash).to.eq("");
@@ -94,6 +98,9 @@ describe(`Algo block processing`, async () => {
     it("Should get transaction receivedAmounts ", async function () {
         delete ITrans1.data.transaction.assetTransferTransaction;
         expect(ITrans1.receivedAmounts.length).to.eq(0);
+    });
+    it("Should get transaction spentAmounts ", async function () {
+        expect(ITrans1.spentAmounts[0].amount.toNumber()).to.eq(ITrans1.fee.toNumber());
     });
     it("Should get transaction currencyName ", async function () {
         expect(ITrans1.currencyName).to.eq("");
