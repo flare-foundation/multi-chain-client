@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import Web3 from "web3";
-import { camelToSnakeCase, defaultExceptionCallback, defaultLoggingCallback, defaultMccLoggingObject, defaultWarningCallback, fillWithDefault, getSimpleRandom, sleepMs, toBN, toHex, toNumber, toSnakeCase, unPrefix0x } from "../../src";
+import { camelToSnakeCase, defaultExceptionCallback, defaultLoggingCallback, defaultMccLoggingObject, defaultWarningCallback, fillWithDefault, getSimpleRandom, isPrefixed0x, sleepMs, toBN, toHex, toNumber, toSnakeCase, unPrefix0x } from "../../src";
 const stdout = require("test-console").stdout;
 const stderr = require("test-console").stderr;
 const chai = require('chai');
@@ -11,6 +11,11 @@ describe("Utils tests ", () => {
         const expected = "0x0";
         const res = unPrefix0x("");
         expect(res).to.be.equal(expected);
+    });
+
+    it("should return false if no tx", () => {
+        const res = isPrefixed0x("");
+        expect(res).to.be.false;
     });
 
     it("should return undefined", () => {

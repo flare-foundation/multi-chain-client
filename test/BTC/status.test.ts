@@ -5,6 +5,9 @@ const BtcMccConnection = {
    url: process.env.BTC_URL || "",
    username: process.env.BTC_USERNAME || "",
    password: process.env.BTC_PASSWORD || "",
+   rateLimitOptions: {
+      timeoutMs: 15000
+   }
 } as UtxoMccCreate;
 
 describe("Block BTC base test ", function () {
@@ -21,7 +24,7 @@ describe("Block BTC base test ", function () {
 
    it("Should get status version ", async function () {
       const version = status.version.split("_");
-      expect(version[0]).to.be.eq("210200");
+      expect(version[0]).to.be.eq("230000");
    });
 
    it("Should get status state ", async function () {

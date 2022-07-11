@@ -71,7 +71,6 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
       this.transactionObjects = [];
       for (let transactionBase of this.data.block.txns) {
          try {
-            // const st = new SignedTransactionWithAD(this.data.block.gh, this.data.block.gen, transactionBase);
             const data = {
                txid: calculateAlgoTxid(this.data.block.gh, this.data.block.gen, transactionBase),
                timestamp: this.unixTimestamp,

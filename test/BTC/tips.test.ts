@@ -15,7 +15,7 @@ describe("Chain tips test ", function () {
 
    it("Should get only latest tips ", async function () {
       const tips = await MccClient.getBlockTips(730_698);
-      expect(tips.length).to.greaterThanOrEqual(4);
+      expect(tips.length).to.greaterThanOrEqual(2);
    });
 
    it("Should get tips and all blocks to certain height ", async function () {

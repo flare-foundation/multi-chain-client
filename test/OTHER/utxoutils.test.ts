@@ -24,7 +24,7 @@ describe("UTXO utils tests ", function () {
     });
 
     it("should return false if error code is not -5", () => {
-        const res = utxo_check_expect_empty({ error: { code: 0 } });
+        const res = utxo_check_expect_empty({ error: { code: -4 } });
         expect(res).to.be.false;
     });
 
@@ -54,7 +54,7 @@ describe("UTXO utils tests ", function () {
     });
 
     it("should return false if error code is not -8 or -1", () => {
-        const res = utxo_check_expect_block_out_of_range({ error: { code: 0 } });
+        const res = utxo_check_expect_block_out_of_range({ error: { code: -2 } });
         expect(res).to.be.false;
     });
 

@@ -42,6 +42,12 @@ describe("BTC mainnet client tests", () => {
          expect(header!.hash).to.eq(blockhash);
       });
 
+      it("Should get block header 2 ", async function () {
+         const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c5368";
+         let header = await MccClient.getBlockHeader("0x"+blockhash);
+         expect(header!.hash).to.eq(blockhash);
+      });
+
       it("Should get null for wrong header ", async function () {
          const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c53ff";
          await expect(MccClient.getBlockHeader(blockhash)).to.be.rejectedWith("InvalidData");
@@ -99,25 +105,25 @@ describe("BTC mainnet client tests", () => {
       it("basic chaintips ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const chaintips = await BtcRpc.getTopBlocks();
-         expect(chaintips.length).to.greaterThanOrEqual(14);
+         expect(chaintips.length).to.greaterThanOrEqual(3);
       });
 
       it("full chaintips ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ all_blocks: true });
-         expect(chaintips.length).to.greaterThanOrEqual(14);
+         expect(chaintips.length).to.greaterThanOrEqual(3);
       });
 
       it("chaintips after ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ height_gte: 706_000 });
-         expect(chaintips.length).to.greaterThanOrEqual(12);
+         expect(chaintips.length).to.greaterThanOrEqual(2);
       });
 
       it("chaintips after ", async function () {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const chaintips = await BtcRpc.getTopBlocks({ height_gte: 706_000, all_blocks: true });
-         expect(chaintips.length).to.greaterThanOrEqual(12);
+         expect(chaintips.length).to.greaterThanOrEqual(2);
       });
 
       it("All Block tips ", async function () {

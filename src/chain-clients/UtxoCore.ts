@@ -64,13 +64,7 @@ export class UtxoCore implements ReadRpcInterface {
     */
 
    async getNodeStatus(): Promise<UtxoNodeStatus> {
-      let res = await this.client.post(``, {
-         jsonrpc: "1.0",
-         id: "rpc",
-         method: "getnetworkinfo",
-         params: [],
-      });
-      utxo_ensure_data(res.data);
+      let res = await this.getNetworkInfo();
 
       let bres = await this.client.post(``, {
          jsonrpc: "1.0",
@@ -80,7 +74,7 @@ export class UtxoCore implements ReadRpcInterface {
       });
       utxo_ensure_data(bres.data);
 
-      return new UtxoNodeStatus({ ...bres.data.result, ...res.data.result } as IUtxoNodeStatus);
+      return new UtxoNodeStatus({ ...bres.data.result, ...res.result } as IUtxoNodeStatus);
    }
 
    /**
@@ -110,7 +104,8 @@ export class UtxoCore implements ReadRpcInterface {
       let blockHash: string | null = null;
       if (typeof blockHashOrHeight === "string") {
          blockHash = blockHashOrHeight as string;
-      } else if (typeof blockHashOrHeight === "number") {
+      }
+      if (typeof blockHashOrHeight === "number") {
          try {
             blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
          }
@@ -202,7 +197,8 @@ export class UtxoCore implements ReadRpcInterface {
             blockHash = unPrefix0x(blockHash);
          }
          // TODO match with some regex
-      } else if (typeof blockHashOrHeight === "number") {
+      }
+      if (typeof blockHashOrHeight === "number") {
          blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
       }
       let res = await this.client.post("", {
@@ -342,13 +338,13 @@ export class UtxoCore implements ReadRpcInterface {
       const unique = new Set()
       return reducedTips.filter((elem: LiteBlock) => {
          const key = `${elem.number}_${elem.blockHash}`
-         if(unique.has(key)){
+         if (unique.has(key)) {
             return false
          } else {
             unique.add(key)
             return true
          }
-         
+
       })
    }
 
