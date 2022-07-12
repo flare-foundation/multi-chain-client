@@ -247,7 +247,6 @@ describe("Transaction Xrp tests ", function () {
             const summary = await transaction.paymentSummary(MccClient);
             expect(summary.isNativePayment).to.eq(false);
          });
-
       });
    }
 });

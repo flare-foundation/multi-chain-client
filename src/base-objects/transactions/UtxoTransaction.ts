@@ -49,7 +49,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    }
 
    public get stdPaymentReference(): string {
-      let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0] || "") : "";
+      let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
       if (!isValidBytes32Hex(paymentReference)) {
          paymentReference = ZERO_BYTES_32;
       }
@@ -71,7 +71,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    public get receivingAddresses(): (string | undefined)[] {
       /* istanbul ignore if */
       // Transaction should always have vout array
-      if (!this.data?.vout) {
+      if (!this.data.vout) {
          return [];
       }
       return this.data.vout.map((vout: IUtxoVoutTransaction) => vout.scriptPubKey.address);
@@ -153,8 +153,8 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       return true;
    }
 
+   /* istanbul ignore next */
    public get currencyName(): string {
-      /* istanbul ignore next */
       // This must be shadowed
       throw new Error("Method must be implemented in different sub class");
    }
@@ -282,7 +282,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          if (this.additionalData.vinouts?.length !== this.data.vin.length) {
             throw new Error("Bad format, Additional data vinvouts and data vin length mismatch");
          }
-         this.additionalData?.vinouts.forEach((vinvout, ind) => {
+         this.additionalData.vinouts.forEach((vinvout, ind) => {
             if (vinvout && vinvout.index !== ind) {
                throw new Error("Additional data corrupted: indices mismatch");
             }

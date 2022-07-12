@@ -1,4 +1,4 @@
-import { AlgoBlock, AlgoTransaction, MCC } from "../../src";
+import { AlgoBlock, AlgoTransaction, MCC, ZERO_BYTES_32 } from "../../src";
 import { AlgoIndexerTransaction } from "../../src/base-objects/transactions/AlgoIndexerTransaction";
 const chai = require("chai");
 const expect = chai.expect;
@@ -94,6 +94,9 @@ describe(`Algo block processing`, async () => {
         delete ITrans1.data.transaction.note;
         expect(ITrans1.reference).to.eql([]);
     });
+    it("Should get standard payment reference ", async function () {
+        expect(ITrans1.stdPaymentReference).to.eq(ZERO_BYTES_32);
+    });
     it("Should get transaction receivedAmounts ", async function () {
         delete ITrans1.data.transaction.assetTransferTransaction;
         expect(ITrans1.receivedAmounts.length).to.eq(0);
@@ -107,22 +110,25 @@ describe(`Algo block processing`, async () => {
     it("Should get transaction receivingAddresses ", async function () {
         expect(ITrans1.receivingAddresses.length).to.eq(0);
     });
-
     it("Should list transactions ", async function () {
         let res = await MccClient.listTransactions();
         expect(res).to.not.be.null;
-     });
+    });
     it("Should list transactions with options ", async function () {
         let res = await MccClient.listTransactions({ sigType: "sig" });
         expect(res).to.not.be.null;
-     });
-     it("Should get transaction ", async function () {
+    });
+    it("Should get transaction ", async function () {
         let res = await MccClient.getIndexerTransaction("0xULHDCNM665O7M4E44PGEJ7XB3Z7YIF7QYUWY5ZBTPO434M47SZ3Q");
-     });
-     it("Should not get transaction ", async function () {
+        expect(res).to.not.be.null;
+    });
+    it("Should not get transaction ", async function () {
         await expect(MccClient.getIndexerTransaction("0xUL")).to.be.rejectedWith("InvalidBlock");
-     });
-
+    });
+    it("Should get standard payment reference 2", async function () {
+        let ti = await MccClient.getIndexerTransaction("2DWIMCX2EUXG2A5PJ55DRNENT5HRHMW7CHBAMY5IWXAA7QWPDHLA");
+        expect(ti.stdPaymentReference).to.eq("0x44d5b4718d6bb8daa193c0f3ad272604dd0352ae0e6273aa93d6b2622395313b")
+    });
 });
 
 

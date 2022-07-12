@@ -211,12 +211,12 @@ describe("Transaction Btc base test ", function () {
             isNativePayment: true,
             sourceAddress: 'bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly',
             receivingAddress: 'bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc',
-            spentAmount: toBN(3533), 
+            spentAmount: toBN(3533),
             receivedAmount: toBN(-4405),
             paymentReference: '0x0000000000000000000000000000000000000000000000000000000000000000',
             oneToOne: false,
             isFull: true
-          }
+         }
       },
       {
          description: "Coinbase transaction with more reference",
@@ -270,7 +270,7 @@ describe("Transaction Btc base test ", function () {
             paymentReference: '0x0000000000000000000000000000000000000000000000000000000000000000',
             oneToOne: false,
             isFull: false
-          }
+         }
       },
    ];
 
@@ -401,9 +401,63 @@ describe("Transaction Btc base test ", function () {
                expect(summary.isNativePayment).to.eq(transData.summary?.isNativePayment);
             }
          });
+
+         it("Should get payment summary 2", async function () {
+            const summary = await transaction.paymentSummary(MccClient);
+            expect(summary.isNativePayment).to.be.true;
+            expect(summary.sourceAddress).to.be.undefined;
+            expect(summary.receivingAddress).to.be.undefined;
+            expect(summary.spentAmount?.toNumber()).to.eq(0);
+            expect(summary.receivedAmount?.toNumber()).to.eq(0);
+         });
       });
    }
+
+   describe("Transactions vin and vout indexes ", async function () {
+      const txid = "141479db9d6da30fafaf47e71ae6323cac57c391ea2f7f84754e0a70fea8e36a";
+      let transaction: BtcTransaction;
+      before(async () => {
+         transaction = await MccClient.getTransaction(txid);
+      });
+      it("Should get vin index invalid ", async function () {
+         const fn = () => {
+            return transaction.assertValidVinIndex(-2);
+         };
+         expect(fn).to.throw(Error);
+      });
+      it("Should get vout index invalid ", async function () {
+         const fn = () => {
+            return transaction.assertValidVoutIndex(-2);
+         };
+         expect(fn).to.throw(Error);
+      });
+
+      it("Should get synced vin index", async function () {
+         expect(transaction.isSyncedVinIndex(0)).to.be.false;
+      })
+
+      it("Should get the vout corresponding to vin", async function () {
+         await expect(transaction.vinVoutAt(0)).to.be.rejected;       
+      })
+
+      it("Should assert additional data ", async function () {
+         transaction.data.vin.splice(-1);
+         const fn1 = () => {
+            return transaction.assertAdditionalData();
+         };
+         expect(fn1).to.throw(Error);
+         delete transaction.additionalData?.vinouts;
+         const fn2 = () => {
+            return transaction.assertAdditionalData();
+         };
+         expect(fn2).to.throw(Error);
+         delete transaction.additionalData;
+         expect(transaction.assertAdditionalData()).to.be.undefined;
+      });
+   });
+
 });
+
 
 // TODO special transactions
 

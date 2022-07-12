@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { TransactionMetadata } from "xrpl";
 import { MCC, XrpTransaction } from "../../src";
 
 const XRPMccConnection = {
@@ -384,4 +385,39 @@ describe("Transaction Xrp tests ", function () {
          expect(summary.isFull).to.eq(true);
       });
    });
+
+   describe("Account create tests ", function () {
+      let transaction1: XrpTransaction;
+      let transaction2: XrpTransaction;
+      const txid1 = "84464F5001B9E7FD79C448B9C5F01085ACE56E94A1F6E2A737FDE9A993086F16";
+      const txid2 = "5439BB6872644CE74A09F4654CECFC5F443E9687AD5EF6D119E729898F41A8C5";
+      before(async function () {
+         transaction1 = await MccClient.getTransaction(txid1);
+         transaction2 = await MccClient.getTransaction(txid2);
+      });
+
+      it("Should get account create ", async function () {
+         transaction1.data.result.meta = "metaData";
+         expect(transaction1.isAccountCreate).to.be.false;
+         delete transaction1.data.result.meta;
+         expect(transaction1.isAccountCreate).to.be.false;
+      });
+
+      it("Should get account create 2 ", async function () {
+         const Meta = transaction2.data.result.meta as TransactionMetadata;
+         for (let elem of Meta.AffectedNodes) {
+            if ("CreatedNode" in elem) {
+               elem.CreatedNode.NewFields.Account = "rDKsbvy9uaNpPtvVFraJyNGfjvTw8xivgK";
+            }
+         }
+         expect(transaction2.isAccountCreate).to.be.false;
+         for (let elem of Meta.AffectedNodes) {
+            if ("CreatedNode" in elem) {
+               delete elem.CreatedNode.NewFields.Account;
+            }
+         }
+         expect(transaction2.isAccountCreate).to.be.false;
+      });
+
+   });   
 });

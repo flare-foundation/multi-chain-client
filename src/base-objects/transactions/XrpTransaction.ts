@@ -231,7 +231,6 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             }
             return false;
          }
-
          return false;
       }
       return false;
