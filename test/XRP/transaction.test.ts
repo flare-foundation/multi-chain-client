@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { TransactionMetadata } from "xrpl";
-import { MCC, XrpTransaction } from "../../src";
+import { MCC, TransactionSuccessStatus, XrpTransaction } from "../../src";
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -419,5 +419,32 @@ describe("Transaction Xrp tests ", function () {
          expect(transaction2.isAccountCreate).to.be.false;
       });
 
-   });   
+   });
+
+   describe("Transaction status tests ", function () {
+      let transaction1: XrpTransaction;
+      let transaction2: XrpTransaction;
+      let transaction3: XrpTransaction;
+      let transaction4: XrpTransaction;
+      const txid1 = "529C16436FFF89C1989A8D7B5182278BC6D8E5C93F4D0D052F9E39E27A222BB1";
+      const txid2 = "F262BA3BD2575BCAC804E9320FEA90EFEA59BCA6723F431D9A4B80EBF9CC1058";
+      const txid3 = "93D194C45CC60B2C17B8747BA50F1C028B637CFD9C5813918DBA73D2C21C2F27";
+      const txid4 = "E304807B29D864FAF0914D61C295D5071AF2F9F62A7D4455F8DB2815CDF23DD3";
+      before(async function () {
+         transaction1 = await MccClient.getTransaction(txid1);
+         transaction2 = await MccClient.getTransaction(txid2);
+         transaction3 = await MccClient.getTransaction(txid3);
+         transaction4 = await MccClient.getTransaction(txid4);
+      });
+
+      it("Should get transaction status ", async function () {
+         expect(transaction1.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
+         expect(transaction2.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
+         expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
+         expect(transaction4.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
+      });
+
+
+
+   });    
 });
