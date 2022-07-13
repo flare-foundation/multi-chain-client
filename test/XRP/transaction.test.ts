@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { TransactionMetadata } from "xrpl";
-import { MCC, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { MCC, toBN, TransactionSuccessStatus, XrpTransaction } from "../../src";
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -97,6 +97,7 @@ describe("Transaction Xrp tests ", function () {
          expect(transaction.spentAmounts[0].address).to.eq("rETx8GBiH6fxhTcfHM9fGeyShqxozyD3xe");
          expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(20);
       });
+
    });
 
    describe("Token Transfer transaction ", function () {
@@ -426,7 +427,7 @@ describe("Transaction Xrp tests ", function () {
 
    });
 
-   describe("Transaction status tests ", function () {
+   describe("Transaction status and payment summary tests ", function () {
       let transaction1: XrpTransaction;
       let transaction2: XrpTransaction;
       let transaction3: XrpTransaction;
@@ -457,6 +458,17 @@ describe("Transaction Xrp tests ", function () {
          expect(fn).to.throw(Error);
       })
 
+      it("Should get payment summary ", async function () {
+         const summary1 = await transaction1.paymentSummary(MccClient);
+         const summary2 = await transaction2.paymentSummary(MccClient);
+         const summary3 = await transaction3.paymentSummary(MccClient);
+         const summary4 = await transaction4.paymentSummary(MccClient);
+         expect(summary1.isNativePayment).to.be.false;
+         expect(summary2.isNativePayment).to.be.false;
+         expect(summary3.isNativePayment).to.be.true;
+         expect(summary3.receivedAmount?.toNumber()).to.eq(0);
+         expect(summary4.isNativePayment).to.be.false;
+      });
 
    });    
 });
