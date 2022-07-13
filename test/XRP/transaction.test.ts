@@ -63,12 +63,6 @@ describe("Transaction Xrp tests ", function () {
          expect(transaction.fee.toNumber()).to.eq(20);
       });
 
-      it("Should spend amount ", async function () {
-         expect(transaction.spentAmounts.length).to.eq(1);
-         expect(transaction.spentAmounts[0].address).to.eq("rETx8GBiH6fxhTcfHM9fGeyShqxozyD3xe");
-         expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(20);
-      });
-
       it("Should received amount ", async function () {
          expect(transaction.receivedAmounts.length).to.eq(0);
       });
@@ -96,6 +90,12 @@ describe("Transaction Xrp tests ", function () {
       it("Should get payment summary ", async function () {
          const summary = await transaction.paymentSummary(MccClient);
          expect(summary).to.eql({"isNativePayment": false});
+      });
+
+      it("Should spend amount ", async function () {
+         expect(transaction.spentAmounts.length).to.eq(1);
+         expect(transaction.spentAmounts[0].address).to.eq("rETx8GBiH6fxhTcfHM9fGeyShqxozyD3xe");
+         expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(20);
       });
    });
 
@@ -384,6 +384,11 @@ describe("Transaction Xrp tests ", function () {
          expect(summary.oneToOne).to.eq(true);
          expect(summary.isFull).to.eq(true);
       });
+
+      it("Should received amount 2 ", async function () {
+         delete transaction.data.result.meta
+         expect(transaction.receivedAmounts.length).to.eq(0);
+      });
    });
 
    describe("Account create tests ", function () {
@@ -444,6 +449,13 @@ describe("Transaction Xrp tests ", function () {
          expect(transaction4.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
       });
 
+      it("Should not get transaction status ", async function () {
+         delete transaction2.data.result.meta
+         const fn = () => {
+            return transaction2.successStatus;
+         };
+         expect(fn).to.throw(Error);
+      })
 
 
    });    

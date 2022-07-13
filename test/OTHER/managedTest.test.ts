@@ -111,7 +111,7 @@ describe("Managed test", () => {
    it("Managed nested test", async () => {
       dec.f1("123");
 
-      expect(traceManager.getAsync(0)!.trace.length).to.eq(10);
+      expect(traceManager.getAsync(0)!.trace.length).to.eq(20);
    });
 
 });
