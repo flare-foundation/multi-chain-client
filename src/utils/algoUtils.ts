@@ -249,8 +249,8 @@ export function calculateAlgoTxid(gh: Buffer, gen: string, stib: any) {
 
    // Modify the fields as needed
    // we have to ensure all addresses are buffers with checksum
+   t.snd = bufAddToCBufAdd(t.snd);
    if (t.rcv) t.rcv = bufAddToCBufAdd(t.rcv);
-   if (t.snd) t.snd = bufAddToCBufAdd(t.snd);
    if (t.arcv) t.arcv = bufAddToCBufAdd(t.arcv);
 
    const stxn = {

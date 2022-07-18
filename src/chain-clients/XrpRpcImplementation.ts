@@ -154,6 +154,7 @@ export class XRPImplementation implements ReadRpcInterface {
             method: "tx",
             params: [params],
          });
+         
          xrp_ensure_data(res.data);
          return new XrpTransaction(res.data);
       } catch (e: any) {
@@ -182,13 +183,12 @@ export class XRPImplementation implements ReadRpcInterface {
       } as IAccountInfoRequest;
       if (typeof upperBound === "number") {
          params.ledger_index = upperBound;
-      } else if (upperBound === "current") {
+      }
+      if (upperBound === "current") {
          params.ledger_index = upperBound;
       } else if (typeof upperBound === "string") {
          params.ledger_hash = upperBound;
-      } else {
-         mccSettings.errorCallback(upperBound, "Invalid upperBound parameter");
-      }
+      } 
       // AccountInfoRequest
       mccSettings.loggingCallback("Call Params");
       mccSettings.loggingCallback(mccJsonStringify(params));

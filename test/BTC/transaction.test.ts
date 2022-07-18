@@ -436,24 +436,35 @@ describe("Transaction Btc base test ", function () {
          expect(transaction.isSyncedVinIndex(0)).to.be.false;
       })
 
-      it("Should get the vout corresponding to vin", async function () {
-         await expect(transaction.vinVoutAt(0)).to.be.rejected;       
-      })
+      it("Should not assert additional data and synchronize additional data ", async function () {
+         transaction.additionalData!.vinouts = [{index: -1, vinvout: undefined}, {index: -1, vinvout: undefined}, {index: -1, vinvout: undefined}];
 
-      it("Should assert additional data ", async function () {
+         const fn0 = () => { return transaction.assertAdditionalData(); };
+         expect(fn0).to.throw(Error);
+         const fn00 = () => { return transaction.synchronizeAdditionalData(); };
+         expect(fn00).to.throw(Error);
+
+         transaction.additionalData!.vinouts = [undefined, {index: Number.MAX_SAFE_INTEGER, vinvout: undefined}, {index: -1, vinvout: undefined}];
+         const fn01 = () => { return transaction.synchronizeAdditionalData(); };
+         expect(fn01).to.throw(Error);
+
+         transaction.additionalData!.vinouts = [{index: 0, vinvout: undefined}];
+         transaction.synchronizeAdditionalData();
+         expect(transaction.additionalData!.vinouts[0]?.index).to.eq(0);
+
          transaction.data.vin.splice(-1);
-         const fn1 = () => {
-            return transaction.assertAdditionalData();
-         };
+         const fn1 = () => { return transaction.assertAdditionalData(); };
          expect(fn1).to.throw(Error);
          delete transaction.additionalData?.vinouts;
-         const fn2 = () => {
-            return transaction.assertAdditionalData();
-         };
+         const fn2 = () => { return transaction.assertAdditionalData();};
          expect(fn2).to.throw(Error);
          delete transaction.additionalData;
          expect(transaction.assertAdditionalData()).to.be.undefined;
       });
+
+      it("Should get the vout corresponding to vin", async function () {
+         await expect(transaction.vinVoutAt(0)).to.be.rejected;       
+      })
    });
 
 });

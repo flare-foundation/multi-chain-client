@@ -1,6 +1,8 @@
-import { expect } from "chai";
 import { TransactionMetadata } from "xrpl";
-import { MCC, toBN, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { MCC, TransactionSuccessStatus, XrpTransaction } from "../../src";
+const chai = require('chai')
+const expect = chai.expect
+chai.use(require('chai-as-promised'))
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -89,7 +91,7 @@ describe("Transaction Xrp tests ", function () {
 
       it("Should get payment summary ", async function () {
          const summary = await transaction.paymentSummary(MccClient);
-         expect(summary).to.eql({"isNativePayment": false});
+         expect(summary).to.eql({ "isNativePayment": false });
       });
 
       it("Should spend amount ", async function () {
@@ -192,7 +194,7 @@ describe("Transaction Xrp tests ", function () {
          expect(summary.oneToOne).to.eq(true);
          expect(summary.isFull).to.eq(true);
       });
-   
+
    });
 
    describe("Transaction with native currency ", function () {
@@ -431,23 +433,26 @@ describe("Transaction Xrp tests ", function () {
       let transaction1: XrpTransaction;
       let transaction2: XrpTransaction;
       let transaction3: XrpTransaction;
-      let transaction4: XrpTransaction;
       const txid1 = "529C16436FFF89C1989A8D7B5182278BC6D8E5C93F4D0D052F9E39E27A222BB1";
       const txid2 = "F262BA3BD2575BCAC804E9320FEA90EFEA59BCA6723F431D9A4B80EBF9CC1058";
       const txid3 = "93D194C45CC60B2C17B8747BA50F1C028B637CFD9C5813918DBA73D2C21C2F27";
-      const txid4 = "E304807B29D864FAF0914D61C295D5071AF2F9F62A7D4455F8DB2815CDF23DD3";
       before(async function () {
          transaction1 = await MccClient.getTransaction(txid1);
          transaction2 = await MccClient.getTransaction(txid2);
          transaction3 = await MccClient.getTransaction(txid3);
-         transaction4 = await MccClient.getTransaction(txid4);
       });
 
       it("Should get transaction status ", async function () {
          expect(transaction1.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
          expect(transaction2.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
          expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
-         expect(transaction4.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
+         let metaData: TransactionMetadata = transaction3.data.result.meta || (transaction3.data.result as any).metaData;
+         metaData.TransactionResult = "tecDST_TAG_NEEDED";
+         expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
+         metaData.TransactionResult = "tecNO_DST";
+         expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
+         metaData.TransactionResult = "tefALREADY";
+         expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
       });
 
       it("Should not get transaction status ", async function () {
@@ -462,13 +467,18 @@ describe("Transaction Xrp tests ", function () {
          const summary1 = await transaction1.paymentSummary(MccClient);
          const summary2 = await transaction2.paymentSummary(MccClient);
          const summary3 = await transaction3.paymentSummary(MccClient);
-         const summary4 = await transaction4.paymentSummary(MccClient);
          expect(summary1.isNativePayment).to.be.false;
          expect(summary2.isNativePayment).to.be.false;
          expect(summary3.isNativePayment).to.be.true;
          expect(summary3.receivedAmount?.toNumber()).to.eq(0);
-         expect(summary4.isNativePayment).to.be.false;
       });
 
-   });    
+   });
+
+   describe.skip("Transaction not found ", function () {
+      it("Should not found", async () => {
+         await expect( MccClient.getTransaction("93D194C45CC60B2C17B8747BA50F1C028B637CFD9C5813918DBA73D2C21C2F20") ).to.be.rejected;
+      })
+   });
+
 });
