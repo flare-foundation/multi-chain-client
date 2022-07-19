@@ -107,9 +107,6 @@ export class XRPImplementation implements ReadRpcInterface {
          xrp_ensure_data(res.data);
          return new XrpBlock(res.data);
       } catch (e: any) {
-         if (e.result?.error === "lgrNotFound") {
-            throw new mccError(mccErrorCode.InvalidBlock);
-         }
          if (e.response?.status === 400) {
             throw new mccError(mccErrorCode.InvalidBlock);
          }
@@ -147,22 +144,15 @@ export class XRPImplementation implements ReadRpcInterface {
          transaction: txId,
          binary: binary,
       };
-      if (min_block ) params.min_ledger = min_block;
-      if (max_block ) params.max_ledger = max_block;
-      try {
-         let res = await this.client.post("", {
-            method: "tx",
-            params: [params],
-         });
-         
-         xrp_ensure_data(res.data);
-         return new XrpTransaction(res.data);
-      } catch (e: any) {
-         if (e.error === "txnNotFound") {
-            throw new mccError(mccErrorCode.InvalidTransaction);
-         }
-         throw e;
-      }
+      if (min_block) params.min_ledger = min_block;
+      if (max_block) params.max_ledger = max_block;
+      let res = await this.client.post("", {
+         method: "tx",
+         params: [params],
+      });
+
+      xrp_ensure_data(res.data);
+      return new XrpTransaction(res.data);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +178,7 @@ export class XRPImplementation implements ReadRpcInterface {
          params.ledger_index = upperBound;
       } else if (typeof upperBound === "string") {
          params.ledger_hash = upperBound;
-      } 
+      }
       // AccountInfoRequest
       mccSettings.loggingCallback("Call Params");
       mccSettings.loggingCallback(mccJsonStringify(params));

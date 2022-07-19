@@ -39,7 +39,7 @@ describe("XRP testnet client tests", () => {
       it("Should return InvalidBlock if block does not exist", async () => {
          let n = 694537820;
          let block = client.getBlock(n);
-         await expect( block ).to.be.rejectedWith("OutsideError");
+         await expect( block ).to.be.rejectedWith("InvalidBlock");
          n *= 100;
          block = client.getBlock(n);
          await expect( block ).to.be.rejectedWith("InvalidBlock");
@@ -52,7 +52,7 @@ describe("XRP testnet client tests", () => {
 
       it("Should return null if transaction does not exist", async () => {
          let txResponse = client.getTransaction("0669969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2");
-         await expect(txResponse).to.be.rejectedWith("OutsideError");
+         await expect(txResponse).to.be.rejectedWith("InvalidTransaction");
       });
    });
 });

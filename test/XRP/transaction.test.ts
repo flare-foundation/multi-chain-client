@@ -475,7 +475,21 @@ describe("Transaction Xrp tests ", function () {
 
    });
 
-   describe.skip("Transaction not found ", function () {
+   describe("Reference tests ", function () {
+      let transaction: XrpTransaction;
+      const txid = "C32ACF8CCF4F48B7AE097873AA2B7672DC66E05D4F1B3133DA90D1F476B1EAC6";
+      before(async function () {
+         transaction = await MccClient.getTransaction(txid);
+      });
+      it("References ", async () => {
+         transaction.data.result.Memos![0] = { Memo: { MemoType: "string" } };
+         expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+         transaction.data.result.Memos![0] = { Memo: { MemoData: txid } };
+         expect(transaction.stdPaymentReference).to.eq(txid);
+      })
+   });
+
+   describe("Transaction not found ", function () {
       it("Should not found", async () => {
          await expect( MccClient.getTransaction("93D194C45CC60B2C17B8747BA50F1C028B637CFD9C5813918DBA73D2C21C2F20") ).to.be.rejected;
       })
