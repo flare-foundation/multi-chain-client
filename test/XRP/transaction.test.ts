@@ -485,7 +485,7 @@ describe("Transaction Xrp tests ", function () {
          transaction.data.result.Memos![0] = { Memo: { MemoType: "string" } };
          expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
          transaction.data.result.Memos![0] = { Memo: { MemoData: txid } };
-         expect(transaction.stdPaymentReference).to.eq(txid);
+         expect(transaction.stdPaymentReference).to.eq("0x"+txid);
       })
    });
 

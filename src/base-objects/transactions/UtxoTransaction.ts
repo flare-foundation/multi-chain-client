@@ -82,11 +82,9 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          prev.add(toBN(Math.round((vout?.vinvout?.value || 0) * BTC_MDU).toFixed(0)));
       const reducerFunctionVouts = (prev: BN, vout: IUtxoVoutTransaction) => prev.add(toBN(Math.round(vout.value * BTC_MDU).toFixed(0)));
       if (this.type === "full_payment") {
-         if (this.additionalData && this.additionalData.vinouts) {
-            let inSum = this.additionalData.vinouts.reduce(reducerFunctionVinOuts, toBN(0));
-            let outSum = this.data.vout.reduce(reducerFunctionVouts, toBN(0));
-            return inSum.sub(outSum);
-         }
+         let inSum = this.additionalData!.vinouts!.reduce(reducerFunctionVinOuts, toBN(0));
+         let outSum = this.data.vout.reduce(reducerFunctionVouts, toBN(0));
+         return inSum.sub(outSum);
       }
       if (this.type === "coinbase") {
          // Coinbase transactions mint coins

@@ -17,7 +17,7 @@ export async function recursive_block_hash(clinet: any, hash: string, processHei
       return [hash];
    } else {
       const Cblock = await clinet.getBlockHeader(hash);
-      const hs = Cblock?.previousblockhash || "";
+      const hs = Cblock.previousblockhash;
       return (await recursive_block_hash(clinet, hs, processHeight - 1)).concat([hash]);
    }
 }
@@ -31,8 +31,8 @@ export async function recursive_block_tip(clinet: any, tip: LiteBlock, processHe
       return [tempTip];
    } else {
       const CurrBlock = await clinet.getBlockHeader(tip.stdBlockHash);
-      const previousHash = CurrBlock?.previousblockhash || "";
-      const previousHeight = CurrBlock?.height - 1 || 0;
+      const previousHash = CurrBlock.previousblockhash;
+      const previousHeight = CurrBlock.height - 1;
       return (await recursive_block_tip(clinet, new LiteBlock({ hash: previousHash, number: previousHeight }), processHeight - 1)).concat([tempTip]);
    }
 }
