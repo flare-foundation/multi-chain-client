@@ -54,7 +54,6 @@ export function utxo_check_expect_empty(data: any): boolean {
       return true;
    } else {
       return false;
-      // throw MccError(data);
    }
 }
 
@@ -66,7 +65,6 @@ export function utxo_check_expect_block_out_of_range(data: any): boolean {
       if (data.error.code === -1) {
          return true;
       } else {
-         // throw MccError(data);
          return false;
       }
    } else {

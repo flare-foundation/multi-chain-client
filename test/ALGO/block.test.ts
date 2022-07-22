@@ -27,6 +27,11 @@ describe(`Algo block processing`, async () => {
       expect(aBlock).to.not.eq(undefined);
    });
 
+   it("Should not get  block - invalid", async function () {
+      const MccClient = new MCC.ALGO(algoCreateConfig);
+      await expect(MccClient.getBlock(Number.MAX_SAFE_INTEGER)).to.be.rejected;
+   });
+
    describe("Classic block test ", function () {
       let MccClient: MCC.ALGO;
       let block: AlgoBlock;

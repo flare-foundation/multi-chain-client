@@ -432,13 +432,22 @@ describe("Transaction Btc base test ", function () {
          expect(fn).to.throw(Error);
       });
 
-      it("Should get synced vin index", async function () {
+      it("Should get synced vin index ", async function () {
          expect(transaction.isSyncedVinIndex(0)).to.be.false;
       })
 
-      it("Should not assert additional data and synchronize additional data ", async function () {
-         transaction.additionalData!.vinouts = [{index: -1, vinvout: undefined}, {index: -1, vinvout: undefined}, {index: -1, vinvout: undefined}];
+      it("Should get partial_payment type ", async function () {
+         transaction.additionalData!.vinouts = [{index: -1, vinvout: {value: 1, n: 300, scriptPubKey: {asm: "", hex: "", type: ""}}}, {index: -1, vinvout: undefined}, undefined];
+         expect(transaction.type).to.eq("partial_payment");
+      })
 
+      it("Should not extract vout ", async function () {
+         transaction.data.vout[0].n = 10;
+         const fn0 = () => { return transaction.extractVoutAt(0); };
+         expect(fn0).to.throw(Error);
+      })
+
+      it("Should not assert additional data and synchronize additional data ", async function () {
          const fn0 = () => { return transaction.assertAdditionalData(); };
          expect(fn0).to.throw(Error);
          const fn00 = () => { return transaction.synchronizeAdditionalData(); };
