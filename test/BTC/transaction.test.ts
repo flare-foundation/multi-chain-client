@@ -474,8 +474,13 @@ describe("Transaction Btc base test ", function () {
       it("Should get the vout corresponding to vin", async function () {
          await expect(transaction.vinVoutAt(0)).to.be.rejected;       
       })
-   });
 
+      it("Should not extract vout ", async function () {
+         delete transaction.additionalData?.vinouts;
+         const fn0 = () => { return transaction.extractVoutAt(0); };
+         expect(fn0).to.throw(Error);
+      })
+   });
 });
 
 
