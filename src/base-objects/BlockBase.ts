@@ -40,6 +40,14 @@ export abstract class BlockBase<B> {
     * Number of transactions in block
     */
    public abstract get transactionCount(): number;
+
+   /**
+    * Return if block is valid
+    * Mainly for XRP
+    */
+    public get isValid(): boolean {
+      return true;
+    }
 }
 
 export { AlgoBlock } from "./blocks/AlgoBlock";

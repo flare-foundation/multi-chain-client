@@ -1,5 +1,4 @@
 import { AccountInfoRequest, AccountTxRequest, LedgerResponse, TxResponse } from "xrpl";
-import { LedgerIndex } from "xrpl/dist/npm/models/common";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
 import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions } from "./genericMccTypes";
