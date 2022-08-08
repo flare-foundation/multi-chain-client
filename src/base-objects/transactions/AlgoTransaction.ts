@@ -1,6 +1,6 @@
 import BN from "bn.js";
 import { MccClient, TransactionSuccessStatus } from "../../types";
-import { IAlgoTransactionMsgPack } from "../../types/algoTypes";
+import { AlgoTransactionTypeOptions, IAlgoTransactionMsgPack } from "../../types/algoTypes";
 import { base32ToHex, bytesToHex, hexToBase32 } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
@@ -52,10 +52,10 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
    }
 
    public get sourceAddresses(): (string | undefined)[] {
-      if(this.type === 'axfer'){
+      if (this.type === "axfer") {
          // for token transfers send by clawback transaction (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-clawback-transaction) and asset transfer transactions (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-transfer-transaction)
-         if(this.data.asnd){
-            return [hexToBase32(this.data.asnd)]
+         if (this.data.asnd) {
+            return [hexToBase32(this.data.asnd)];
          }
       }
       return [hexToBase32(this.data.snd)];
@@ -63,16 +63,26 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
 
    public get receivingAddresses(): (string | undefined)[] {
       // for transactions of type pay
-      if (this.data.rcv) {
-         return [hexToBase32(this.data.rcv)];
+      const recAddresses = [];
+      if (this.type === "pay") {
+         if (this.data.rcv) {
+            recAddresses.push(hexToBase32(this.data.rcv));
+         }
+         // If address is closed all remaining founds will be transferred to this address
+         if (this.data.close) {
+            recAddresses.push(hexToBase32(this.data.close));
+         }
+         return recAddresses;
       }
       // for transactions of type axfer
-      else if (this.data.arcv) {
-         if(this.data.aclose){
-            return [hexToBase32(this.data.arcv), hexToBase32(this.data.aclose)];
-         } else {
-            return [hexToBase32(this.data.arcv)];
+      else if (this.type === "axfer") {
+         if (this.data.arcv) {
+            recAddresses.push(hexToBase32(this.data.arcv));
          }
+         if (this.data.aclose) {
+            recAddresses.push(hexToBase32(this.data.aclose));
+         }
+         return recAddresses;
       }
       return [];
    }
@@ -135,8 +145,8 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       return [];
    }
 
-   public get type(): string {
-      return this.data.type;
+   public get type(): AlgoTransactionTypeOptions {
+      return this.data.type as AlgoTransactionTypeOptions;
    }
 
    public get isNativePayment(): boolean {
