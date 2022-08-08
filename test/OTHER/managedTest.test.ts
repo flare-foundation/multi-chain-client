@@ -1,10 +1,10 @@
-import { StackTrace } from "../src/utils/strackTrace";
-import { TraceManager, traceManager } from "../src/utils/trace";
-import { ManagedTest, Test2, TestFunctionCall } from "./managedTest";
+import { StackTrace } from "../../src/utils/strackTrace";
+import { traceManager } from "../../src/utils/trace";
+import { ManagedTest, TestFunctionCall } from "../managedTest";
 
-const chai = require('chai')
-const expect = chai.expect
-chai.use(require('chai-as-promised'))
+const chai = require('chai');
+const expect = chai.expect;
+chai.use(require('chai-as-promised'));
 
 
 describe("Managed test", () => {
@@ -20,12 +20,6 @@ describe("Managed test", () => {
       traceManager.clearTrace();
    });
 
-   afterEach(async function () {
-      //traceManager.showTrace();
-   });
-
-   after(async function () {
-   })
 
    it("Stack trace", async () => {
       const stack = new StackTrace();
@@ -39,11 +33,21 @@ describe("Managed test", () => {
       expect( stack.find(`new StackTrace`) ).to.not.eq( null );
    });
 
+   it("Stack trace find - undefined", async () => {
+      const stack = new StackTrace();
 
+      expect( stack.find(`nekaj`) ).to.eq( undefined );
+   });
+
+   it("Stack trace find - undefined", async () => {
+      const stack = new StackTrace();
+
+      expect( stack.find(`new StackTrace`, 20) ).to.eq( undefined );
+   });
 
    it("Managed method sync", async () => {
       dec.method(5, 6);
-
++
       expect(traceManager.firstTrace).to.eq(`ManagedTest.method(5,6)=36`);
    });
 
@@ -64,8 +68,6 @@ describe("Managed test", () => {
 
       expect(traceManager.firstTrace).to.eq(`ManagedTest.setter(15)`);
    });
-
-
 
    it("Managed throw sync", async () => {
       expect(function () { dec.methodThrow(5, 0); }).to.throw("OutsideError");
@@ -103,70 +105,14 @@ describe("Managed test", () => {
    it("Managed function", async () => {
       TestFunctionCall( 1 , "A" );
 
-      //traceManager.showTrace(true,false,true);
-      //traceManager.showMethods();
-
       expect(traceManager.firstTrace).to.eq(`.TestFunction(1,A)`);
    });
 
-
-
-
-
    it("Managed nested test", async () => {
-
-      //traceManager.displayRuntimeTrace=true;
-
       dec.f1("123");
 
-      //traceManager.showTrace(true,false,true);
-      //traceManager.showMethods();
-
-      expect(traceManager.getAsync(0)!.trace.length).to.eq(10);
+      expect(traceManager.getAsync(0)!.trace.length).to.eq(20);
    });
-
-
-
-   // it("Managed nested async test", async () => {
-   //    //traceManager.displayRuntimeTrace=true;
-
-   //    await dec.asyncNestedMethod();
-
-   //    //traceManager.showTrace(true,false,true);
-   //    //traceManager.showMethods();
-
-   //    //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
-   // });
-
-   // it("Managed nested async await test", async () => {
-   //    //traceManager.displayRuntimeTrace=true;
-
-   //    await dec.asyncNestedMethodAwait();
-
-   //    //traceManager.showTrace(true,false,true);
-   //    //traceManager.showMethods();
-
-   //    //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
-   // });
-
-   // it("Managed nested async test wait all on end", async () => {
-   //    //traceManager.displayRuntimeTrace=true;
-
-   //    await dec.asyncNestedMethodWaitOnEnd();
-
-   //    //traceManager.showTrace(true,false,true);
-   //    //traceManager.showMethods();
-
-   //    //expect(traceManager.firstTrace).to.eq(`ManagedTest.f1(123)`);
-   // });
-
-   // it( "neki" , async () => {
-   //    let a = new Test2();
-
-   //    console.log(`${a} - ${a.test2.constructor.name}`);
-   // });
-
-
 
 });
 

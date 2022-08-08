@@ -1,5 +1,6 @@
 import { AccountRootFlags, allHexFlags, HexToFlag, PosToFlag } from "../types";
 import { XRP_UTD } from "./constants";
+import { mccError, mccErrorCode } from "./errors";
 import { MccError } from "./utils";
 const XrpAddress = require("ripple-address-codec");
 
@@ -9,6 +10,12 @@ const XrpAddress = require("ripple-address-codec");
 
 export function xrp_ensure_data(data: any) {
    if (data.result.status === "error") {
+      if(data.result.error === "txnNotFound") {
+         throw new mccError(mccErrorCode.InvalidTransaction);
+      }
+      if(data.result.error === "lgrNotFound") {
+         throw new mccError(mccErrorCode.InvalidBlock);
+      }
       throw MccError(data);
    }
 }

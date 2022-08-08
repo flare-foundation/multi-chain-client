@@ -33,10 +33,10 @@ export function hexToBytes(hex: string): Uint8Array {
 }
 
 // Convert a byte array to a hex string
-export function bytesToHex(bytes: Buffer | Uint8Array) {
-   // should be buffer
+export function bytesToHex(bytes: Buffer | Uint8Array): string {
+   // should be: buffer and uint are unsigned
    for (var hex = [], i = 0; i < bytes.length; i++) {
-      var current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+      var current = bytes[i];
       hex.push((current >>> 4).toString(16));
       hex.push((current & 0xf).toString(16));
    }
@@ -59,7 +59,7 @@ export function base32ToHex(data: string): string {
    return out.toString("hex");
 }
 
-export function hexToBase32(hex: string | Uint8Array) {
+export function hexToBase32(hex: string | Uint8Array): string {
    // old base 32 encoding
    const encoder = new base32.Encoder({ type: "rfc4648" });
    if (typeof hex === "string") {
@@ -82,7 +82,7 @@ export function hexToBase32(hex: string | Uint8Array) {
  * @param rawdata
  * @returns
  */
-export function base64ToHex(rawdata: string) {
+export function base64ToHex(rawdata: string): string {
    let data = Buffer.from(rawdata, "base64").toString("binary");
    let hexData = "";
    for (let i = 0; i < data.length; i++) {
@@ -92,7 +92,7 @@ export function base64ToHex(rawdata: string) {
    return hexData;
 }
 
-export function hexToBase64(hex: string | Uint8Array) {
+export function hexToBase64(hex: string | Uint8Array): string {
    if (typeof hex === "string") {
       return Buffer.from(hex, "hex").toString("base64");
    } else {
@@ -110,7 +110,7 @@ export function hexToBase64(hex: string | Uint8Array) {
  * @param rawdata
  * @returns
  */
-export function base64ToText(rawdata: string) {
+export function base64ToText(rawdata: string): string {
    let buff = Buffer.from(rawdata, "base64");
    return buff.toString("ascii");
 }
@@ -149,7 +149,6 @@ export function hexToAddress(algoKeyPair: IAlgoHexAddress): string {
 // https://emn178.github.io/online-tools/sha512_256.html hash SHA512/256
 // https://github.com/algorand/go-algorand-sdk/blob/develop/types/address.go
 
-export function b32AddressTob32CAddress(address: string) {}
 
 /**
  * buffer address to buffer address with checksum
@@ -250,8 +249,8 @@ export function calculateAlgoTxid(gh: Buffer, gen: string, stib: any) {
 
    // Modify the fields as needed
    // we have to ensure all addresses are buffers with checksum
+   t.snd = bufAddToCBufAdd(t.snd);
    if (t.rcv) t.rcv = bufAddToCBufAdd(t.rcv);
-   if (t.snd) t.snd = bufAddToCBufAdd(t.snd);
    if (t.arcv) t.arcv = bufAddToCBufAdd(t.arcv);
 
    const stxn = {
@@ -271,14 +270,14 @@ export function hasher(data: Uint8Array): Uint8Array {
    return new Uint8Array(sha512_256.array(tohash));
 }
 
-export function concatArrays(...arrs: ArrayLike<number>[]) {
+export function concatArrays(...arrs: ArrayLike<number>[]): Uint8Array {
    const size = arrs.reduce((sum, arr) => sum + arr.length, 0);
    const c = new Uint8Array(size);
 
    let offset = 0;
-   for (let i = 0; i < arrs?.length; i++) {
+   for (let i = 0; i < arrs.length; i++) {
       c.set(arrs[i], offset);
-      offset += arrs[i]?.length;
+      offset += arrs[i].length;
    }
 
    return c;

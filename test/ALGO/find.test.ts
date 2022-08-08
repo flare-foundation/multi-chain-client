@@ -1,4 +1,3 @@
-import { transcode } from "buffer";
 import { MCC } from "../../src";
 
 const algoCreateConfig = {
@@ -28,36 +27,26 @@ describe(`Find some transaction`, async () => {
 
          for (let tran of block.transactions) {
             if (tran.data.asnd) {
-               console.log(tran.txid);
-               console.log(startBlock);
                found = true;
             }
          }
-
          if (found) {
             break;
          }
-
          startBlock += 1;
       }
    });
 
-   it.skip(`Find first transaction thaat has assetCloseTo `, async () => {
+   it.skip(`Find first transaction that has assetCloseTo `, async () => {
       let found = false;
 
       while (true) {
          const block = await MccClient.getBlock(startBlock);
-
-         console.log(startBlock);
-
          for (let tran of block.transactions) {
             if (tran.data.aclose) {
-               console.log(tran.txid);
-               console.log(startBlock);
                found = true;
             }
          }
-
          if (found) {
             break;
          }

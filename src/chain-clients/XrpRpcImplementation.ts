@@ -107,10 +107,7 @@ export class XRPImplementation implements ReadRpcInterface {
          xrp_ensure_data(res.data);
          return new XrpBlock(res.data);
       } catch (e: any) {
-         if (e?.result?.error === "lgrNotFound") {
-            throw new mccError(mccErrorCode.InvalidBlock);
-         }
-         if (e?.response?.status === 400) {
+         if (e.response?.status === 400) {
             throw new mccError(mccErrorCode.InvalidBlock);
          }
          throw e;
@@ -147,23 +144,15 @@ export class XRPImplementation implements ReadRpcInterface {
          transaction: txId,
          binary: binary,
       };
-      if (min_block !== null && min_block !== null) {
-         params.min_ledger = min_block;
-         params.max_ledger = max_block;
-      }
-      try {
-         let res = await this.client.post("", {
-            method: "tx",
-            params: [params],
-         });
-         xrp_ensure_data(res.data);
-         return new XrpTransaction(res.data);
-      } catch (e: any) {
-         if (e.error === "txnNotFound") {
-            throw new mccError(mccErrorCode.InvalidTransaction);
-         }
-         throw e;
-      }
+      if (min_block) params.min_ledger = min_block;
+      if (max_block) params.max_ledger = max_block;
+      let res = await this.client.post("", {
+         method: "tx",
+         params: [params],
+      });
+
+      xrp_ensure_data(res.data);
+      return new XrpTransaction(res.data);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -184,12 +173,11 @@ export class XRPImplementation implements ReadRpcInterface {
       } as IAccountInfoRequest;
       if (typeof upperBound === "number") {
          params.ledger_index = upperBound;
-      } else if (upperBound === "current") {
+      }
+      if (upperBound === "current") {
          params.ledger_index = upperBound;
       } else if (typeof upperBound === "string") {
          params.ledger_hash = upperBound;
-      } else {
-         mccSettings.errorCallback(upperBound, "Invalid upperBound parameter");
       }
       // AccountInfoRequest
       mccSettings.loggingCallback("Call Params");

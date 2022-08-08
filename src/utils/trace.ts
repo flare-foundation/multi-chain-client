@@ -425,9 +425,7 @@ export class TraceManager {
 
    clearTrace() {
       this.asyncs = [];
-      // for (let async of this.asyncs) {
-      //    async.trace = [];
-      // }
+      this.nextAsyncId = 0;
    }
 
    get firstTrace(): string {

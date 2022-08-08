@@ -149,6 +149,5 @@ describe(`Algo transaction from algod block VS from indexer compare`, async () =
          }
       });
 
-      it("Should compare transaction data ", async function () {});
    });
 });

@@ -1,5 +1,7 @@
-import { expect } from "chai";
 import { AlgoBlock, MCC, traceManager } from "../../src";
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
    algod: {
@@ -9,14 +11,25 @@ const algoCreateConfig = {
 };
 
 describe(`Algo block processing`, async () => {
-   describe("Top block", function () {
-      it("Should get block", async function () {
-         traceManager.displayStateOnException=false
-         const MccClient = new MCC.ALGO(algoCreateConfig);
-         const block = await MccClient.getBlock();
+   it("Should get top block", async function () {
+      traceManager.displayStateOnException = false
+      const MccClient = new MCC.ALGO(algoCreateConfig);
+      const block = await MccClient.getBlock();
 
-         expect(block).to.not.eq(undefined);
-      });
+      expect(block).to.not.eq(undefined);
+   });
+
+   it("Should create block with msig", async function () {
+      const MccClient = new MCC.ALGO(algoCreateConfig);
+      const block = await MccClient.getBlock(21_659_776);
+      block.data.block.txns[0].msig  = Buffer.from([0xad, 0x35, 0x08, 0xb8, 0xfa, 0x7e, 0x9c, 0x1d, 0x38, 0x43, 0x97, 0xb0, 0x70, 0x8a, 0xa1, 0x56, 0x7a, 0x74, 0xe7, 0x9e, 0xc9, 0xe3, 0x7c, 0xbd, 0x37, 0x0c, 0xe2, 0x27, 0x6b, 0xd8, 0x95, 0x98]);
+      let aBlock = new AlgoBlock({ block: block.data.block, cert: block.data.cert });
+      expect(aBlock).to.not.eq(undefined);
+   });
+
+   it("Should not get  block - invalid", async function () {
+      const MccClient = new MCC.ALGO(algoCreateConfig);
+      await expect(MccClient.getBlock(Number.MAX_SAFE_INTEGER)).to.be.rejected;
    });
 
    describe("Classic block test ", function () {
@@ -59,7 +72,8 @@ describe(`Algo block processing`, async () => {
 
       it("Should get transaction ids ", async function () {
          expect(block.transactionIds.length).to.eq(69);
-         // TODO at least check some txids
+         expect(block.transactionIds).contains("FMOP2YDOU4GIDNV2GLAY3653IDUQAWJ7UTHO52FFYEPW74W3AD2Q");
+         expect(block.transactionIds).contains("MGXTHGNBCVFLUNN4PIH37WYYZMLJ6DK7NMWHQEE472RI4MCK7WKA");
       });
 
       it("Should get transaction standard ids ", async function () {

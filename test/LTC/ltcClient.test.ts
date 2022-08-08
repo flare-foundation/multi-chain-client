@@ -27,12 +27,5 @@ describe("LTC client tests", () => {
 
          expect(a).to.greaterThan(100);
       });
-
-      // it('should get block height from regtest network', async function () {
-      //   const DogeRpc = new MCC.LTC(reg_tests_url, reg_test_user, reg_test_pass);
-      //   let a = await DogeRpc.getBlockHeight();
-
-      //   expect(a).toBeGreaterThan(100);
-      // });
    });
 });
