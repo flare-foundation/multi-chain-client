@@ -1,5 +1,7 @@
 import { expect } from "chai";
 import { MCC, XrpBlock } from "../../src";
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -39,7 +41,8 @@ describe("Block Xrp base test ", function () {
 
    it("Should get transaction ids ", async function () {
       expect(block.transactionIds.length).to.eq(42);
-      // TODO at least check some txids
+      expect(block.stdTransactionIds).contains("B84F30266D6297E9E4EFB7B0600E486ECD653587FFE001B05CAE5533CEF1C5BE");
+      expect(block.stdTransactionIds).contains("DB91A3AECACC060EFA45B1922E278DEB5B7F5B4FC4FED5829072B66A1DFF31E1");
    });
 
    it("Should get transaction standard ids ", async function () {
@@ -48,5 +51,19 @@ describe("Block Xrp base test ", function () {
 
    it("Should get transaction count ", async function () {
       expect(block.transactionCount).to.eq(42);
+   });
+
+   it("Should get transaction count 2", async function () {
+      delete block.data.result.ledger.transactions;
+      expect(block.transactionCount).to.eq(0);
+   });
+
+   it("Should get block", async function () {
+      const block2 = await MccClient.getBlock(blockNumber.toString());
+      expect(block2).to.not.eq(undefined);
+   });
+
+   it("Should not get block", async function () {
+      await expect(MccClient.getBlock("0x2492B09472F24DB37B124A2F9D1D0FA6883EF0FE51494938A54E6CD93295C086")).to.eventually.be.rejected; 
    });
 });

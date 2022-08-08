@@ -20,6 +20,6 @@ export class AlgoNodeStatus extends NodeStatusBase<IAlgoStatusObject> {
 
    public get isSynced(): boolean {
       // TODO make sure that this means it is synced
-      return this.data?.status?.catchupTime === 0;
+      return this.data.status.catchupTime === 0;
    }
 }

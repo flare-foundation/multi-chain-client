@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, UtxoMccCreate, UtxoNodeStatus, XrpNodeStatus } from "../../src";
+import { MCC, UtxoMccCreate, UtxoNodeStatus } from "../../src";
 
 const DogeMccConnection = {
    url: process.env.DOGE_URL || "",
@@ -26,12 +26,10 @@ describe("Block DOGE base test ", function () {
    });
 
    it("Should get status isHealthy ", async function () {
-      // console.log(status.isHealthy);
       expect(status.isHealthy).to.eq(true);
    });
 
    it("Should get status isSynced ", async function () {
-      // console.log(status.isSynced);
       expect(status.isSynced).to.eq(true);
    });
 });

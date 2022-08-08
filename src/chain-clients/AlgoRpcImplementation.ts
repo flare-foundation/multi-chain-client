@@ -20,7 +20,7 @@ import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetBlockRes, IAlgoGetIndexerBlockRes
 import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, certToInCert, hexToBase32, mpDecode } from "../utils/algoUtils";
 import { mccError, mccErrorCode } from "../utils/errors";
 import { Managed } from "../utils/managed";
-import { toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
+import { isPrefixed0x, toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
@@ -149,9 +149,13 @@ export class ALGOImplementation implements ReadRpcInterface {
       return new AlgoBlock(decoded as IAlgoBlockMsgPack);
    }
 
-   async getBlockHeight(): Promise<number> {
-      const blockData = await this.getBlockHeader();
+   async getBlockHeight(round?: number): Promise<number> {
+      const blockData = await this.getBlockHeader(round);
       return blockData.block.rnd;
+   }
+
+   async getBlockProof(round: number) {
+      return await this.getBlockHeaderCert(round);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -234,8 +238,8 @@ export class ALGOImplementation implements ReadRpcInterface {
     * @returns
     */
     async getIndexerTransaction(txid: string): Promise<AlgoIndexerTransaction> {
-      if (PREFIXED_STD_TXID_REGEX.test(txid)) {
-         txid = hexToBase32(unPrefix0x(txid));
+      if (isPrefixed0x(txid)) {
+         txid = unPrefix0x(txid);
       }
       let res = await this.indexerClient.get(`/v2/transactions/${txid}`);
       if (algo_check_expect_empty(res)) {

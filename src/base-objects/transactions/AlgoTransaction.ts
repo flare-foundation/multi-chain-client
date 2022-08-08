@@ -32,7 +32,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
    }
 
    public get stdPaymentReference(): string {
-      let paymentReference = this.reference?.length === 1 ? prefix0x(this.reference[0]) : "";
+      let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
       try {
          // try to parse out
          paymentReference = prefix0x(web3.utils.hexToString(prefix0x(paymentReference)));

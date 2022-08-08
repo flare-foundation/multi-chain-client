@@ -1,6 +1,8 @@
-import { expect } from "chai";
 import { AlgoBlock, AlgoTransaction, MCC, toBN, TransactionSuccessStatus } from "../../src";
 import { algoTransactionTestCases } from "../testUtils";
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
    algod: {
@@ -79,7 +81,7 @@ const TransactionsToTest: algoTransactionTestCases[] = [
       },
    },
    {
-      description: "Axfer trasnaction ",
+      description: "Axfer transaction ",
       txid: "TTHNP33PA6H54XVOVIT6YVRDFDIWFPX7XONUROZIGWVYO2QWYCLQ",
       block: 21_731_318,
       expect: {
@@ -326,3 +328,36 @@ for (let transData of TransactionsToTest) {
       });
    });
 }
+
+
+it("Should get invalid method call ", async function () {
+   let MccClient = new MCC.ALGO(algoCreateConfig);
+   await expect(MccClient.getTransaction("")).to.be.rejectedWith("InvalidMethodCall");
+});
+
+it("Should not list transactions ", async function () {
+   let MccClient = new MCC.ALGO(algoCreateConfig);
+   let res = await MccClient.listTransactions();
+   expect(res).to.be.null;
+});
+
+it("Should get receiving address with aclose ", async function () {
+   let MccClient = new MCC.ALGO(algoCreateConfig);
+   let res = await MccClient.getBlock(21_374_440);
+   let tr = res.transactions[0];
+   tr.data.aclose = tr.data.arcv;
+   expect(tr.receivingAddresses.length).to.eq(2);
+});
+
+it("Should get receiving fee (no fee) ", async function () {
+   let MccClient = new MCC.ALGO(algoCreateConfig);
+   let res = await MccClient.getBlock(21_374_440);
+   let tr = res.transactions[0];
+   delete tr.data.fee;
+   expect(tr.fee.toNumber()).to.eq(0);
+});
+
+it("Should not list transactions ", async function () {
+   let MccClient = new MCC.ALGO(algoCreateConfig);
+   await expect(MccClient.getIndexerBlock()).to.be.rejectedWith("InvalidMethodCall");
+});

@@ -3,10 +3,10 @@
 ///////////////
 
 export const STD_TXID_REGEX = /^[a-fA-F0-9]{64}$/;
-export const PREFIXED_STD_TXID_REGEX = /^(0x)?[a-fA-F0-9]{64}$/;
+export const PREFIXED_STD_TXID_REGEX = /^(0x)[a-fA-F0-9]{64}$/;
 
 export const STD_BLOCK_HASH_REGEX = /^[a-fA-F0-9]{64}$/;
-export const PREFIXED_STD_BLOCK_HASH_REGEX = /^(0x)?[a-fA-F0-9]{64}$/;
+export const PREFIXED_STD_BLOCK_HASH_REGEX = /^(0x)[a-fA-F0-9]{64}$/;
 
 /////////////////////////////
 // Minimal divisible units //

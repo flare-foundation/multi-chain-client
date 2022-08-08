@@ -17,7 +17,7 @@ export async function recursive_block_hash(clinet: any, hash: string, processHei
       return [hash];
    } else {
       const Cblock = await clinet.getBlockHeader(hash);
-      const hs = Cblock?.previousblockhash || "";
+      const hs = Cblock.previousblockhash;
       return (await recursive_block_hash(clinet, hs, processHeight - 1)).concat([hash]);
    }
 }
@@ -31,8 +31,8 @@ export async function recursive_block_tip(clinet: any, tip: LiteBlock, processHe
       return [tempTip];
    } else {
       const CurrBlock = await clinet.getBlockHeader(tip.stdBlockHash);
-      const previousHash = CurrBlock?.previousblockhash || "";
-      const previousHeight = CurrBlock?.height - 1 || 0;
+      const previousHash = CurrBlock.previousblockhash;
+      const previousHeight = CurrBlock.height - 1;
       return (await recursive_block_tip(clinet, new LiteBlock({ hash: previousHash, number: previousHeight }), processHeight - 1)).concat([tempTip]);
    }
 }
@@ -54,19 +54,17 @@ export function utxo_check_expect_empty(data: any): boolean {
       return true;
    } else {
       return false;
-      // throw MccError(data);
    }
 }
 
 export function utxo_check_expect_block_out_of_range(data: any): boolean {
-   if (data.error && data.error.code) {
+   if (data && data.error && data.error.code) {
       if (data.error.code === -8) {
          return true;
       }
       if (data.error.code === -1) {
          return true;
       } else {
-         // throw MccError(data);
          return false;
       }
    } else {
@@ -75,7 +73,7 @@ export function utxo_check_expect_block_out_of_range(data: any): boolean {
 }
 
 export function utxo_ensure_data(data: any) {
-   if (data.error !== null) {
+   if (data?.error) {
       throw MccError(data);
    }
 }

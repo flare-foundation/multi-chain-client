@@ -31,25 +31,38 @@ describe("Algo Node Status tests (LIFE: expect healthy) ", function () {
    });
 
    it("Should get status isHealthy ", async function () {
-      // console.log(status.isHealthy);
       expect(status.isHealthy).to.eq(true);
    });
 
    it("Should get status isSynced ", async function () {
-      // console.log(status.isSynced);
       expect(status.isSynced).to.eq(true);
    });
 });
 
-describe("Algo bottom block ", function () {
+describe("Algo block height", function () {
    let MccClient: MCC.ALGO;
 
    before(async function () {
       MccClient = new MCC.ALGO(algoCreateConfig);
    });
 
-   it("Should get status version ", async function () {
+   it("Should get bottom block height ", async function () {
       const bottom = await MccClient.getBottomBlockHeight()
       expect(bottom).to.greaterThan(19_000_000);
    });
+
+   it("Should get block height ", async function () {
+      const h = await MccClient.getBlockHeight(21_908_076);
+      expect(h).to.eq(21_908_076);
+   });
+
+   it("Should get block height 2 ", async function () {
+      const h = await MccClient.getBlockHeight();
+      expect(h).to.greaterThan(21_908_076);
+   });
+
+   it("Should get block proof ", async function () {
+      const c = await MccClient.getBlockProof(21_908_076);
+      expect(c.rnd).to.eq(21_908_076);
+   })
 });
