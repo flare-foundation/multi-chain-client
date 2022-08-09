@@ -343,15 +343,35 @@ it("Should not list transactions ", async function () {
 
 it("Should get receiving address with aclose ", async function () {
    let MccClient = new MCC.ALGO(algoCreateConfig);
-   let res = await MccClient.getBlock(21_374_440);
+   let res = await MccClient.getBlock();
    let tr = res.transactions[0];
+   // TODO the assumption that every block has a axfer transaction may be a bit much
+   for(let tra of res.transactions){
+      if (tra.type === "axfer"){
+         tr = tra
+      }
+   }
    tr.data.aclose = tr.data.arcv;
+   expect(tr.receivingAddresses.length).to.eq(2);
+});
+
+it("Should get receiving address with close ", async function () {
+   let MccClient = new MCC.ALGO(algoCreateConfig);
+   let res = await MccClient.getBlock();
+   let tr = res.transactions[0];
+   // TODO the assumption that every block has a pay transaction may be a bit much
+   for(let tra of res.transactions){
+      if (tra.type === "pay"){
+         tr = tra
+      }
+   }
+   tr.data.close = tr.data.rcv;
    expect(tr.receivingAddresses.length).to.eq(2);
 });
 
 it("Should get receiving fee (no fee) ", async function () {
    let MccClient = new MCC.ALGO(algoCreateConfig);
-   let res = await MccClient.getBlock(21_374_440);
+   let res = await MccClient.getBlock();
    let tr = res.transactions[0];
    delete tr.data.fee;
    expect(tr.fee.toNumber()).to.eq(0);

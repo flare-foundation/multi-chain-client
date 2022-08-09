@@ -175,6 +175,11 @@ export class UtxoCore implements ReadRpcInterface {
       if (utxo_check_expect_empty(res.data)) {
          throw new mccError(mccErrorCode.InvalidTransaction);
       }
+      if (res.data.confirmations) {
+         console.log("Number of confirmations : ", res.data.confirmations);
+         
+         // throw new mccError(mccErrorCode.InvalidTransaction);
+      }
       utxo_ensure_data(res.data);
       return new this.transactionConstructor(res.data.result);
    }

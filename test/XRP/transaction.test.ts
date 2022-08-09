@@ -1,5 +1,5 @@
 import { TransactionMetadata } from "xrpl";
-import { MCC, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { MCC, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
 const chai = require('chai')
 const expect = chai.expect
 chai.use(require('chai-as-promised'))
@@ -14,6 +14,8 @@ describe("Transaction Xrp tests ", function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
+      traceManager.displayRuntimeTrace = false;
+      traceManager.displayStateOnException = false;
       MccClient = new MCC.XRP(XRPMccConnection);
    });
 
@@ -460,7 +462,8 @@ describe("Transaction Xrp tests ", function () {
          const fn = () => {
             return transaction2.successStatus;
          };
-         expect(fn).to.throw(Error);
+         expect(fn).to.throw("OutsideError");
+         // await expect( fn ).to.be.rejectedWith("OutsideError");
       })
 
       it("Should get payment summary ", async function () {

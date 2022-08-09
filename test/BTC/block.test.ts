@@ -1,8 +1,8 @@
-const chai = require('chai');
-chai.use(require('chai-as-promised'));
 import { expect } from "chai";
 import { BtcBlock, MCC, UtxoMccCreate } from "../../src";
 
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",
