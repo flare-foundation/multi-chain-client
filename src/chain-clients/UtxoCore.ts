@@ -66,15 +66,15 @@ export class UtxoCore implements ReadRpcInterface {
    async getNodeStatus(): Promise<UtxoNodeStatus> {
       let res = await this.getNetworkInfo();
 
-      let bres = await this.client.post(``, {
+      let infoRes = await this.client.post(``, {
          jsonrpc: "1.0",
          id: "rpc",
          method: "getblockchaininfo",
          params: [],
       });
-      utxo_ensure_data(bres.data);
+      utxo_ensure_data(infoRes.data);
 
-      return new UtxoNodeStatus({ ...bres.data.result, ...res.result } as IUtxoNodeStatus);
+      return new UtxoNodeStatus({ ...infoRes.data.result, ...res.result } as IUtxoNodeStatus);
    }
 
    /**
@@ -278,7 +278,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns network info details
     */
 
-   private async getNetworkInfo(retry = 0): Promise<any> {
+   private async getNetworkInfo(): Promise<any> {
       let res = await this.client.post("", {
          jsonrpc: "1.0",
          id: "rpc",
