@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { traceManager } from "../../src";
-import { addressToHex, algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, base32ToHex, base64ToHex, base64ToText, bufAddToCBufAdd, bytesToHex, hexToAddress, hexToBase32, hexToBase64, hexToBytes, INVALIDADDRESERROR, mpDecode, mpEncode, txIdToHex, txIdToHexNo0x } from "../../src/utils/algoUtils";
+import { addressToHex, algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, base32ToHex, base64ToHex, base64ToText, bufAddToCBufAdd, bytesToHex, concatArrays, hasher, hexToAddress, hexToBase32, hexToBase64, hexToBytes, mpDecode, mpEncode, txIdToHex, txIdToHexNo0x } from "../../src/utils/algoUtils";
 import { mccJsonStringify } from "../../src/utils/utils";
 import { addressToBtyeAddress } from "../testUtils";
 
 describe("ALGO utils tests", () => {
    before(async function () {
-      traceManager.displayStateOnException=false
+      traceManager.displayStateOnException = false;
    })
 
    describe("ALGO address <-> hex", () => {
@@ -261,4 +261,32 @@ describe("ALGO utils tests", () => {
       });
    });
 
+   describe("ALGO helper functions", () => {
+      const arr0 = [1, 2, 3, 4, 5];
+      it("concat one array", async function() {
+         const expected = new Uint8Array([1, 2, 3, 4, 5]);
+         let res = concatArrays(arr0);
+         expect(res).to.be.eql(expected);
+      });
+      it("concat multiple arrays", async function() {
+         const expected = new Uint8Array([1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 10, 11, 12, 0, 0]);
+         let res = concatArrays(arr0, arr0,  {0: 10, 1: 11, 2: 12, length: 5});
+         expect(res).to.be.eql(expected);
+      });
+      it("hash an array", async function() {
+         const expected = new Uint8Array([
+            25, 181, 125,  65, 111,  93,  89, 122,
+            212,   7, 132, 243,   5,   0, 180, 208,
+            126, 217, 103, 190, 245, 236, 136,  60,
+            129,  85,  77, 233, 246, 250, 108,  61
+         ]);
+         let res = hasher(new Uint8Array(arr0));
+         expect(res).to.be.eql(expected);
+      });
+      it("msgpack", async function() {
+         let res = mpEncode(arr0);
+         let arr0_again = mpDecode(res);
+         expect(arr0).to.be.eql(arr0_again);
+      });
+   });
 });

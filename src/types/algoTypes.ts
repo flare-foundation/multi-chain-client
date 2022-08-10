@@ -235,13 +235,15 @@ export type IAlgoTransactionMsgPack = EncodedTransaction & {
    sgnr?: Buffer; // s signature
 };
 
-export type AlgoTransactionTypeOptions = "pay" | "keyreg" | "acfg" | "axfer" | "afrz" | "appl";
-// * pay    -  payment-transaction
-// * keyreg - keyreg-transaction
-// * acfg   - asset-config-transaction
-// * axfer  - asset-transfer-transaction
-// * afrz   - asset-freeze-transaction
-// * appl   - application-transaction
+export type AlgoTransactionTypeOptions = "pay" | "keyreg" | "acfg" | "axfer" | "afrz" | "appl" | "pay_close" | "axfer_close";
+// * pay         - payment-transaction
+// * keyreg      - keyreg-transaction
+// * acfg        - asset-config-transaction
+// * axfer       - asset-transfer-transaction
+// * afrz        - asset-freeze-transaction
+// * appl        - application-transaction
+// * pay_close   - custom made type for transactions that close accounts
+// * axfer_close - custom type of asset transfer transaction that closes asset account 
 export interface IAlgoLitsTransaction {
    address?: string; // Only include transactions with this address in one of the transaction fields.
    addressRole?: "sender" | "receiver" | "freeze-target"; // Combine with the address parameter to define what type of address to search for.

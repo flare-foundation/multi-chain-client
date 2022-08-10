@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
+import { LtcBlock, MCC, UtxoMccCreate } from "../../src";
 
 const LtcMccConnection = {
    url: process.env.LTC_URL || "",
@@ -9,7 +9,7 @@ const LtcMccConnection = {
 
 describe("Block LTC base test ", function () {
    let MccClient: MCC.LTC;
-   let block: UtxoBlock;
+   let block: LtcBlock;
    const blockNumber = 2_220_000
    
    before(async function () {
@@ -39,7 +39,8 @@ describe("Block LTC base test ", function () {
 
    it("Should get transaction ids ", async function () {
       expect(block.transactionIds.length).to.eq(61);
-      // TODO at least check some txids
+      expect(block.transactionIds).contain('0xe109b57a5489370e9e076565fc17d3cc760d794dacda8f574b29b58b089b8a0d');
+      expect(block.transactionIds).contain('0xa1823dccdf2721c0cbb01402cf33b35fe290736bfb396d41b42bf30d475b1465');
    });
 
    it("Should get transaction standard ids ", async function () {

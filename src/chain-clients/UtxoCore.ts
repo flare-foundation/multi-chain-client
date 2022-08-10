@@ -64,23 +64,17 @@ export class UtxoCore implements ReadRpcInterface {
     */
 
    async getNodeStatus(): Promise<UtxoNodeStatus> {
-      let res = await this.client.post(``, {
-         jsonrpc: "1.0",
-         id: "rpc",
-         method: "getnetworkinfo",
-         params: [],
-      });
-      utxo_ensure_data(res.data);
+      let res = await this.getNetworkInfo();
 
-      let bres = await this.client.post(``, {
+      let infoRes = await this.client.post(``, {
          jsonrpc: "1.0",
          id: "rpc",
          method: "getblockchaininfo",
          params: [],
       });
-      utxo_ensure_data(bres.data);
+      utxo_ensure_data(infoRes.data);
 
-      return new UtxoNodeStatus({ ...bres.data.result, ...res.data.result } as IUtxoNodeStatus);
+      return new UtxoNodeStatus({ ...infoRes.data.result, ...res.result } as IUtxoNodeStatus);
    }
 
    /**
@@ -110,7 +104,8 @@ export class UtxoCore implements ReadRpcInterface {
       let blockHash: string | null = null;
       if (typeof blockHashOrHeight === "string") {
          blockHash = blockHashOrHeight as string;
-      } else if (typeof blockHashOrHeight === "number") {
+      }
+      if (typeof blockHashOrHeight === "number") {
          try {
             blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
          }
@@ -180,6 +175,10 @@ export class UtxoCore implements ReadRpcInterface {
       if (utxo_check_expect_empty(res.data)) {
          throw new mccError(mccErrorCode.InvalidTransaction);
       }
+      // It transaction number of confirmations is not at least 1, we got a transaction from mempool, we don't consider this transaction as valid
+      if (res.data.result.confirmations < 1) {
+         throw new mccError(mccErrorCode.InvalidTransaction);
+      }
       utxo_ensure_data(res.data);
       return new this.transactionConstructor(res.data.result);
    }
@@ -202,7 +201,8 @@ export class UtxoCore implements ReadRpcInterface {
             blockHash = unPrefix0x(blockHash);
          }
          // TODO match with some regex
-      } else if (typeof blockHashOrHeight === "number") {
+      }
+      if (typeof blockHashOrHeight === "number") {
          blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
       }
       let res = await this.client.post("", {
@@ -278,7 +278,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns network info details
     */
 
-   private async getNetworkInfo(retry = 0): Promise<any> {
+   private async getNetworkInfo(): Promise<any> {
       let res = await this.client.post("", {
          jsonrpc: "1.0",
          id: "rpc",
@@ -330,10 +330,9 @@ export class UtxoCore implements ReadRpcInterface {
       }
       const allTips = tips.map((UtxoTip: IUtxoChainTip) => {
          const tempTips = [];
-         if (UtxoTip.all_block_hashes) {
-            for (let hashIndex = 0; hashIndex < UtxoTip.all_block_hashes.length; hashIndex++) {
-               tempTips.push(new LiteBlock({ hash: UtxoTip.all_block_hashes[hashIndex], number: UtxoTip.height - hashIndex }));
-            }
+         // all_block_hashes exist due to all_blocks: true in getTopBlocks call
+         for (let hashIndex = 0; hashIndex < UtxoTip!.all_block_hashes!.length; hashIndex++) {
+            tempTips.push(new LiteBlock({ hash: UtxoTip!.all_block_hashes![hashIndex], number: UtxoTip.height - hashIndex }));
          }
          return tempTips;
       });
@@ -342,13 +341,13 @@ export class UtxoCore implements ReadRpcInterface {
       const unique = new Set()
       return reducedTips.filter((elem: LiteBlock) => {
          const key = `${elem.number}_${elem.blockHash}`
-         if(unique.has(key)){
+         if (unique.has(key)) {
             return false
          } else {
             unique.add(key)
             return true
          }
-         
+
       })
    }
 
@@ -363,7 +362,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param walletLabel label of your wallet used as a reference for future use
     * @returns name of the created wallet and possible warnings
     */
-
+   /* istanbul ignore next */
    async createWallet(walletLabel: string): Promise<IUtxoWalletRes> {
       let res = await this.client.post("", {
          jsonrpc: "1.0",
@@ -381,7 +380,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param walletLabel wallet label to load
     * @returns
     */
-
+   /* istanbul ignore next */
    async loadWallet(walletLabel: string): Promise<IUtxoWalletRes> {
       let res = await this.client.post("", {
          jsonrpc: "1.0",
@@ -400,7 +399,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param address_type type of address (default to "legacy") options = ["legacy", "p2sh-segwit", "bech32"]
     * @returns
     */
-
+   /* istanbul ignore next */
    async createAddress(walletLabel: string, addressLabel: string = "", address_type: string = "legacy") {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -416,7 +415,7 @@ export class UtxoCore implements ReadRpcInterface {
     * List all wallets on node
     * @returns
     */
-
+   /* istanbul ignore next */
    async listAllWallets(): Promise<string[]> {
       let res = await this.client.post(``, {
          jsonrpc: "1.0",
@@ -434,7 +433,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param addressLabel label of the addresses we want to list
     * @returns
     */
-
+   /* istanbul ignore next */
    async listAllAddressesByLabel(walletLabel: string, addressLabel: string = ""): Promise<getAddressByLabelResponse[]> {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -460,7 +459,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param max max block offset
     * @returns
     */
-
+   /* istanbul ignore next */
    async listUnspentTransactions(walletLabel: string, min: number = 0, max: number = 1e6): Promise<IUtxoTransactionListRes[]> {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -471,7 +470,7 @@ export class UtxoCore implements ReadRpcInterface {
       utxo_ensure_data(res.data);
       return res.data.result;
    }
-
+   /* istanbul ignore next */
    async createRawTransaction(walletLabel: string, vin: IIUtxoVin[], out: IIUtxoVout[]) {
       let voutArr = "[";
       let first = true;
@@ -495,7 +494,7 @@ export class UtxoCore implements ReadRpcInterface {
       utxo_ensure_data(res.data);
       return res.data.result;
    }
-
+   /* istanbul ignore next */
    async signRawTransaction(walletLabel: string, rawTx: string, keysList: string[]) {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -513,7 +512,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param signedRawTx hash of signed transaction
     * @returns transaction sending status
     */
-
+   /* istanbul ignore next */
    async sendRawTransaction(walletLabel: string, signedRawTx: string) {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -531,7 +530,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param signedRawTx hash of signed transaction
     * @returns transaction sending status
     */
-
+   /* istanbul ignore next */
    async sendRawTransactionInBlock(walletLabel: string, signedRawTx: string) {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -555,7 +554,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param address
     * @returns private key
     */
-
+   /* istanbul ignore next */
    async getPrivateKey(walletLabel: string, address: string) {
       let res = await this.client.post(`wallet/${walletLabel}`, {
          jsonrpc: "1.0",
@@ -579,7 +578,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param amount
     * @returns
     */
-
+   /* istanbul ignore next */
    async fundAddress(address: string, amount: number) {
       if (!this.inRegTest) {
          throw Error("You have to run client in regression test mode to use this ");

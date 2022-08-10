@@ -78,7 +78,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             },
          ];
       }
-      if(this.type === "Payment"){
+      if (this.type === "Payment") {
          // Token transfer
          return [
             {
@@ -89,16 +89,9 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       }
       // TODO Check for other non-native payment types
       // TODO: Check whether in some other non-payment cases spent amount is different
-      if(this.sourceAddresses.length > 0){
-         return [
-            {
-               address: this.sourceAddresses[0],
-               amount: toBN(this.fee),
-            },
-         ];
-      }
       return [
          {
+            address: this.sourceAddresses[0],
             amount: toBN(this.fee),
          },
       ];
@@ -220,18 +213,15 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             const Meta = this.data.result.meta as TransactionMetadata;
             for (let elem of Meta.AffectedNodes) {
                if ("CreatedNode" in elem) {
-                  if ("NewFields" in elem.CreatedNode) {
-                     if ("Account" in elem.CreatedNode.NewFields) {
-                        if (elem.CreatedNode.NewFields.Account === this.receivingAddresses[0]) {
-                           return true;
-                        }
+                  if ("Account" in elem.CreatedNode.NewFields) {
+                     if (elem.CreatedNode.NewFields.Account === this.receivingAddresses[0]) {
+                        return true;
                      }
                   }
                }
             }
             return false;
          }
-
          return false;
       }
       return false;

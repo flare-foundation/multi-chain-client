@@ -17,6 +17,6 @@ export class UtxoNodeStatus extends NodeStatusBase<IUtxoNodeStatus> {
    }
 
    public get isSynced(): boolean {
-      return this.data.networkactive;
+      return !this.data.initialblockdownload;
    }
 }

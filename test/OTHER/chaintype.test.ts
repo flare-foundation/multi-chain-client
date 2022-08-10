@@ -1,5 +1,4 @@
-import { ChainType, MCC, traceManager, UtxoMccCreate } from "../../src";
-import { LiteBlock } from "../../src/base-objects/blocks/LiteBlock";
+import { ChainType, MCC, traceManager } from "../../src";
 
 const chai = require("chai");
 const expect = chai.expect;
@@ -106,6 +105,16 @@ describe("Lite block base test ", function () {
       it("Should get ChainTypeName : LTC", async function () {
          const en = MCC.getChainTypeName(ChainType.LTC);
          expect(en).to.eq("LTC");
+      });
+   });
+
+   describe("Client", function () {
+      it("Should not initialize", async function () {
+         const fn = () => {
+            return MCC.Client("invalid", {url: "", password: ""});
+         };
+         expect(fn).to.throw(Error);
+         expect(fn).to.throw("Not implemented");
       });
    });
 });

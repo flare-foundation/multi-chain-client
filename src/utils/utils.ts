@@ -19,23 +19,12 @@ export function getSimpleRandom(maxnum: number): number {
    return Math.floor(Math.random() * maxnum);
 }
 
-// export function ensure_nonempty(res: AxiosResponse){
-//     if(res.status === 404){
-//         return false
-//     }
-//     else {
-//         return true
-//     }
-// }
-
 export async function sleepMs(ms: number) {
    await new Promise<void>((resolve) => setTimeout(() => resolve(), ms));
 }
 
 export function unPrefix0x(tx: string) {
    if (!tx) {
-      //throw new Error( "unPrefix0x string null" );
-      // console.error( `unPrefix0x null string`)
       return "0x0";
    }
    return tx.startsWith("0x") ? tx.slice(2) : tx;
@@ -43,19 +32,24 @@ export function unPrefix0x(tx: string) {
 
 export function prefix0x(tx: string) {
    if (!tx) {
-      //throw new Error( "prefix0x string null" );
-      // console.error( `prefix0x null string`)
       return "0x0";
    }
    return tx.startsWith("0x") ? tx : "0x" + tx;
 }
 
-export function toHex(x: string | number | BN) {
+export function isPrefixed0x(tx: string) {
+   if (!tx) {
+      return false;
+   }
+   return tx.startsWith("0x") ? true : false;
+}
+
+export function toHex(x: string | number | BN) : string {
    return Web3.utils.toHex(x);
 }
 
 export function toBN(x: string | number | BN, toZeroIfFails = false) {
-   if (x && x.constructor?.name === "BN") return x as BN;
+   if (x && x.constructor && x.constructor.name === "BN") return x as BN;
    try {
       return Web3.utils.toBN(x as any);
    } catch (e) {
@@ -68,7 +62,7 @@ export function toBN(x: string | number | BN, toZeroIfFails = false) {
 
 export function toNumber(x: number | BN | undefined | null) {
    if (x === undefined || x === null) return undefined;
-   if (x && x.constructor?.name === "BN") return (x as BN).toNumber();
+   if (x && x.constructor && x.constructor.name === "BN") return (x as BN).toNumber();
    return x as number;
 }
 

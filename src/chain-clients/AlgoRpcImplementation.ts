@@ -1,6 +1,6 @@
 import * as msgpack from "algo-msgpack-with-bigint";
 import axios from "axios";
-import { AlgoBlock, PREFIXED_STD_TXID_REGEX, ReadRpcInterface } from "..";
+import { AlgoBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { AlgoIndexerBlock } from "../base-objects/blocks/AlgoIndexerBlock";
 import { AlgoNodeStatus } from "../base-objects/StatusBase";
@@ -16,11 +16,17 @@ import {
    IAlgoTransaction,
    RateLimitOptions
 } from "../types";
-import { IAlgoBlockMsgPack, IAlgoCert, IAlgoGetBlockRes, IAlgoGetIndexerBlockRes, IAlgoGetStatus, IAlgoGetTransactionRes, IAlgoStatusObject } from "../types/algoTypes";
-import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, certToInCert, hexToBase32, mpDecode } from "../utils/algoUtils";
+import {
+   IAlgoBlockMsgPack,
+   IAlgoCert, IAlgoGetIndexerBlockRes,
+   IAlgoGetStatus,
+   IAlgoGetTransactionRes,
+   IAlgoStatusObject
+} from "../types/algoTypes";
+import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, certToInCert, mpDecode } from "../utils/algoUtils";
 import { mccError, mccErrorCode } from "../utils/errors";
 import { Managed } from "../utils/managed";
-import { toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
+import { isPrefixed0x, toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
@@ -139,7 +145,7 @@ export class ALGOImplementation implements ReadRpcInterface {
       }
       let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
          responseType: "arraybuffer",
-         headres: { "Content-Type": "application/msgpack" },
+         // , headres: { "Content-Type": "application/msgpack" },
       });
       if (algo_check_expect_block_out_of_range(res)) {
          throw new mccError(mccErrorCode.InvalidBlock);
@@ -149,9 +155,13 @@ export class ALGOImplementation implements ReadRpcInterface {
       return new AlgoBlock(decoded as IAlgoBlockMsgPack);
    }
 
-   async getBlockHeight(): Promise<number> {
-      const blockData = await this.getBlockHeader();
+   async getBlockHeight(round?: number): Promise<number> {
+      const blockData = await this.getBlockHeader(round);
       return blockData.block.rnd;
+   }
+
+   async getBlockProof(round: number) {
+      return await this.getBlockHeaderCert(round);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +233,6 @@ export class ALGOImplementation implements ReadRpcInterface {
       return responseData;
    }
 
-
    ///////////////////////////////////////////////////////////////////////////////////////
    // Indexer specific methods  //////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -233,9 +242,9 @@ export class ALGOImplementation implements ReadRpcInterface {
     * @param txid base32 encoded txid || standardized txid (prefixed or unprefixed)
     * @returns
     */
-    async getIndexerTransaction(txid: string): Promise<AlgoIndexerTransaction> {
-      if (PREFIXED_STD_TXID_REGEX.test(txid)) {
-         txid = hexToBase32(unPrefix0x(txid));
+   async getIndexerTransaction(txid: string): Promise<AlgoIndexerTransaction> {
+      if (isPrefixed0x(txid)) {
+         txid = unPrefix0x(txid);
       }
       let res = await this.indexerClient.get(`/v2/transactions/${txid}`);
       if (algo_check_expect_empty(res)) {
@@ -246,8 +255,8 @@ export class ALGOImplementation implements ReadRpcInterface {
    }
 
    async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock> {
-      if(!this.createConfig.indexer){
-         // No indexer 
+      if (!this.createConfig.indexer) {
+         // No indexer
          throw new mccError(mccErrorCode.InvalidMethodCall);
       }
       if (round === undefined) {

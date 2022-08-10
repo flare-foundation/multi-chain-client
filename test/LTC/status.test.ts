@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, UtxoMccCreate, UtxoNodeStatus, XrpNodeStatus } from "../../src";
+import { MCC, UtxoMccCreate, UtxoNodeStatus } from "../../src";
 
 const LtcMccConnection = {
    url: process.env.LTC_URL || "",
@@ -7,7 +7,7 @@ const LtcMccConnection = {
    password: process.env.LTC_PASSWORD || "",
 } as UtxoMccCreate;
 
-describe("Block BTC base test ", function () {
+describe("Block LTC base test ", function () {
    let MccClient: MCC.LTC;
    let status: UtxoNodeStatus;
 

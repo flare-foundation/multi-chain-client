@@ -26,7 +26,10 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
    }
 
    public get reference(): string[] {
-      return [base64ToHex(this.data.transaction.note || "")];
+      if(this.data.transaction.note) {
+         return [base64ToHex(this.data.transaction.note)];
+      }
+      return [];
    }
 
    public get stdPaymentReference(): string {
@@ -74,6 +77,13 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
             {
                address: this.sourceAddresses[0],
                amount: this.fee.add(toBN(this.data.transaction.paymentTransaction.amount)),
+            },
+         ];
+      } else if (this.data.transaction.txType === "axfer" && this.data.transaction.assetTransferTransaction) {
+         return [
+            {
+               address: this.sourceAddresses[0],
+               amount: this.fee.add(toBN(this.data.transaction.assetTransferTransaction.amount)),
             },
          ];
       } else {

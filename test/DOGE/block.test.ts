@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BlockBase, IBlock, IUtxoGetBlockRes, MCC, UtxoBlock, UtxoMccCreate } from "../../src";
+import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
 
 const DogeMccConnection = {
    url: process.env.DOGE_URL || "",

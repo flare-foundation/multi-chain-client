@@ -4,6 +4,10 @@ export function disableManaged() {
    TraceManager.enabled = false;
 }
 
+export function enableManaged() {
+   TraceManager.enabled = true;
+}
+
 export function Managed() {
 
 
@@ -12,9 +16,6 @@ export function Managed() {
 
       let trace = null;
 
-      //let trace = RegisterTraceValue(target, name, descriptor);
-      //if (trace) return trace;
-
       trace = RegisterTraceGetter(target, name, descriptor);
       if (trace) return trace;
 
@@ -22,7 +23,5 @@ export function Managed() {
       if (trace) return trace;
 
       return RegisterTraceClass(target);
-
-      //return target;
    };
 }

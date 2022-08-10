@@ -6,7 +6,7 @@ import { NodeStatusBase } from "../StatusBase";
 @Managed()
 export class XrpNodeStatus extends NodeStatusBase<ServerStateResponse> {
    public get version(): string {
-      return this.data?.result?.state?.build_version;
+      return this.data.result.state.build_version;
    }
 
    /**
@@ -14,7 +14,7 @@ export class XrpNodeStatus extends NodeStatusBase<ServerStateResponse> {
     */
 
    public get state(): ServerState {
-      return this.data?.result?.state?.server_state;
+      return this.data.result.state.server_state;
    }
 
    public get isHealthy(): boolean {
