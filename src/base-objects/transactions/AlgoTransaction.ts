@@ -53,7 +53,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
    }
 
    public get sourceAddresses(): (string | undefined)[] {
-      if (this.type === "axfer") {
+      if (this.type === "axfer" || this.type === "axfer_close") {
          // for token transfers send by clawback transaction (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-clawback-transaction) and asset transfer transactions (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-transfer-transaction)
          if (this.data.asnd) {
             return [hexToBase32(this.data.asnd)];
