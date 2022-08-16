@@ -69,12 +69,25 @@ export abstract class TransactionBase<T, AT> {
    public abstract get unixTimestamp(): number;
 
    /**
-    * Returns a list of all source addresses. In account-based chains only one address is present.
-    * In UTXO chains addresses indicate the addresses on relevant inputs.
-    * Some may be undefined, either due to non-existence on specific inputs or
-    * due to not being fetched from the outputs of the corresponding input transactions.
+    Returns a array of all source addresses that are a source of native tokens.
+
+    One or more of so returned addresses pay the fee
+
+    * In account-based chains only one address is present.
+    * In UTXO chains addresses indicate the addresses on relevant inputs.  
+   
+    Some addresses may be undefined, either due to non-existence on specific inputs or due to not being fetched from the outputs of the corresponding input transactions.
     */
    public abstract get sourceAddresses(): (string | undefined)[];
+
+   /**
+    Returns a array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP). 
+    * In account-based chains only one address is present.
+    * In UTXO chains this feature is not supported
+
+    WIP / TODO
+    */
+   public abstract get assetSourceAddresses(): (string | undefined)[];
 
    /**
     * Array of a receiving addresses. In account-based chains only one address in present.
@@ -82,6 +95,19 @@ export abstract class TransactionBase<T, AT> {
     * Some may be undefined since outputs may not have addresses defined.
     */
    public abstract get receivingAddresses(): (string | undefined)[];
+
+   /*
+    Array of a receiving addresses that receive build in assets tokens.
+
+    * In account-based chains only one address in present
+      * Algo transactions that close to certain address list both receiving address and close address.
+    * In UTXO chains this feature is not supported
+    
+    WIP / TODO
+
+    Some addresses may be undefined since outputs may not have addresses defined.
+    */
+   public abstract get assetReceivingAddresses(): (string | undefined)[];
 
    /**
     * Gets transaction fee. In some cases it can revert, since fee is not possible to calculate.

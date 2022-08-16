@@ -6,6 +6,7 @@ import { BTC_MDU } from "../../utils/constants";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 import { Managed } from "../../utils/managed";
+import { mccError, mccErrorCode } from "../../utils/errors";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
 // Transaction types and their description
@@ -68,6 +69,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       return this.additionalData!.vinouts!.map((mapper: IUtxoVinVoutsMapper | undefined) => mapper?.vinvout?.scriptPubKey.address);
    }
 
+   public get assetSourceAddresses(): (string | undefined)[] {
+      throw new mccError(mccErrorCode.InvalidResponse, Error(`There are no build-in assets on ${this.currencyName} chain`));
+   }
+
    public get receivingAddresses(): (string | undefined)[] {
       /* istanbul ignore if */
       // Transaction should always have vout array
@@ -75,6 +80,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          return [];
       }
       return this.data.vout.map((vout: IUtxoVoutTransaction) => vout.scriptPubKey.address);
+   }
+
+   public get assetReceivingAddresses(): (string | undefined)[] {
+      throw new mccError(mccErrorCode.InvalidResponse, Error(`There are no build-in assets on ${this.currencyName} chain`));
    }
 
    public get fee(): BN {

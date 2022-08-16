@@ -94,26 +94,60 @@ mcc : unix timestamp (seconds since 1.1.1970)
 
 ## `sourceAddresses`
 
-Returns a list of all source addresses. In account-based chains only one address is present.
-In UTXO chains addresses indicate the addresses on relevant inputs.
+Returns a array of all source addresses that are a source of native tokens. 
+* In account-based chains only one address is present.
+* In UTXO chains addresses indicate the addresses on relevant inputs.
+
 Some addresses may be undefined, either due to non-existence on specific inputs or
 due to not being fetched from the outputs of the corresponding input transactions.
 
 ```text
 js  : (string | undefined)[]
-mcc : /
+mcc : address[]
+```
+
+## `assetSourceAddresses`
+
+Returns a array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP). 
+* In account-based chains only one address is present.
+* In UTXO chains this feature is not supported
+
+WIP / TODO
+
+```text
+js  : (string | undefined)[]
+mcc : address[]
 ```
 
 ## `receivingAddresses`
 
-Array of a receiving addresses. In account-based chains only one address in present.
-In UTXO chains the list indicates the addresses on the corresponding transaction outputs.
+Array of a receiving addresses that receive native tokens. 
+* In account-based chains only one address in present, with some exceptions:
+   * Algo transactions that close to certain address list both receiving address and close address.
+* In UTXO chains the list indicates the addresses on the corresponding transaction outputs.
 Some addresses may be undefined since outputs may not have addresses defined.
 
-```text
+```javascript
 js  : (string | undefined)[]
-mcc : /
+mcc : address[]
 ```
+
+## `assetReceivingAddresses`
+
+Array of a receiving addresses that receive build in assets tokens. 
+* In account-based chains only one address in present
+   * Algo transactions that close to certain address list both receiving address and close address.
+* In UTXO chains this feature is not supported
+
+WIP / TODO
+
+Some addresses may be undefined since outputs may not have addresses defined.
+
+```javascript
+js  : (string | undefined)[]
+mcc : address[]
+```
+
 
 ## `fee`
 
@@ -126,14 +160,17 @@ mcc : /
 
 ## `spentAmounts`
 
-A list of spent amounts on transaction inputs.
-In account-based chains only one amount is present, and includes total spent amount, including fees.
-In UTXO chains the spent amounts on the corresponding inputs are given in the list.
+A list of spent amounts in native tokens on transaction inputs.
+* In account-based chains only one amount is present, and includes total spent amount, including fees. There are some exceptions
+   * on ALGO for transactions that [closeRemainderTo](https://developer.algorand.org/docs/get-details/transactions/transactions/#payment-transaction) an address, the total spend amount is not 
+   presented (since it can't be extracted from transactions data in blocks on algod client). An error is thrown
+* In UTXO chains the spent amounts on the corresponding inputs are given in the list.
+
 If the corresponding addresses are undefined and not fetched (in `sourceAddresses`), the
 corresponding spent amounts are 0.
 The amounts are in basic units (e.g. satoshi, microalgo, ...)
 
-```text
+```javascript
 AddressAmount {
    address?: string;
    amount: BN;
@@ -142,14 +179,22 @@ AddressAmount {
 js  : AddressAmount[]
 mcc : /
 ```
+
+## `assetSpentAmounts`
+
+A list of spent amounts in build-in assets tokens on transaction inputs.
+
+WIP / TODO
 
 ## `receivedAmounts`
 
-A list of received amounts on transaction outputs.
-In account -based chains only one input and output exist.
-In UTXO chains the received amounts correspond to the amounts on outputs.
+A list of received amounts in native tokens on transaction outputs.
+* In account-based chains only one input and output exist. There are some exceptions
+   * the ALGO  for transactions that [closeRemainderTo](https://developer.algorand.org/docs/get-details/transactions/transactions/#payment-transaction) an address,
+   there are two receiving addresses, and we can only calculate amount for one of them, therefore an error is thrown
+* In UTXO chains the received amounts correspond to the amounts on outputs.
 
-```text
+```javascript
 AddressAmount {
    address?: string;
    amount: BN;
@@ -158,6 +203,12 @@ AddressAmount {
 js  : AddressAmount[]
 mcc : /
 ```
+
+## `assetReceivedAmounts`
+
+A list of received amounts in build-in tokens on transaction outputs.
+
+WIP / TODO
 
 ## `type`
 
@@ -165,7 +216,10 @@ Returns transaction type as a string identifier. A set of types depends on a spe
 
 ```text
 js  : string
-mcc : "coinbase" | "payment" | "partial_payment" | "full_payment"
+mcc : 
+   * on UTXO ("BTC" | "LTC" | "DOGE"): "coinbase" | "payment" | "partial_payment" | "full_payment"
+   * on ALGO: "pay" | "keyreg" | "acfg" | "axfer" | "afrz" | "appl" | "pay_close" | "axfer_close"
+   * on [XRP](https://xrpl.org/transaction-types.html): 
 ```
 
 ## `isNativePayment`

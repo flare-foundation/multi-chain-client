@@ -53,18 +53,27 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
    }
 
    public get sourceAddresses(): (string | undefined)[] {
-      if (this.type === "axfer") {
-         // for token transfers send by clawback transaction (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-clawback-transaction) and asset transfer transactions (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-transfer-transaction)
-         if (this.data.asnd) {
-            return [hexToBase32(this.data.asnd)];
-         }
-      }
+      // for now mcc will only interpret the sender as the address that pays the fee (signs the transaction)
       return [hexToBase32(this.data.snd)];
    }
 
+   public get assetSourceAddresses(): (string | undefined)[] {
+      if (this.type === "axfer" || this.type === "axfer_close") {
+         // for token transfers send by clawback transaction (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-clawback-transaction)
+         // and asset transfer transactions (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-transfer-transaction)
+         if (this.data.asnd) {
+            return [hexToBase32(this.data.asnd)];
+         }
+         // Other kinds of asset transactions (axfer and axfer_close ) use snd field as sender
+         return [hexToBase32(this.data.snd)];
+      }
+      // Other kinds of transactions have nothing to do with assets
+      return []
+   }
+
    public get receivingAddresses(): (string | undefined)[] {
-      // for transactions of type pay
       const recAddresses = [];
+      // for transactions of type pay
       if (this.type === "pay" || this.type === "pay_close") {
          if (this.data.rcv) {
             recAddresses.push(hexToBase32(this.data.rcv));
@@ -75,8 +84,13 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
          }
          return recAddresses;
       }
-      // for transactions of type axfer
-      else if (this.type === "axfer" || this.type === "axfer_close") {
+      return [];
+   }
+
+   public get assetReceivingAddresses(): (string | undefined)[] {
+      const recAddresses = [];
+      // for token interaction transactions
+      if (this.type === "axfer" || this.type === "axfer_close") {
          if (this.data.arcv) {
             recAddresses.push(hexToBase32(this.data.arcv));
          }
@@ -122,7 +136,8 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
       // }
       return [
          {
-            address: this.sourceAddresses[0],
+            // sender always pays the fee
+            address: hexToBase32(this.data.snd),
             amount: this.fee,
          },
       ];
@@ -164,9 +179,9 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
             return "pay_close";
          }
       }
-      if(this.data.type === "axfer"){
-         if(this.data.aclose){
-            return "axfer_close"
+      if (this.data.type === "axfer") {
+         if (this.data.aclose) {
+            return "axfer_close";
          }
       }
       return this.data.type as AlgoTransactionTypeOptions;
