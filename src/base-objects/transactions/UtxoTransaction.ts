@@ -99,7 +99,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          // Coinbase transactions mint coins
          return toBN(0);
       }
-      throw MccError("fee can't be calculated for `payment` and `partial_payment` transaction types");
+      throw new mccError(mccErrorCode.InvalidResponse, Error("fee can't be calculated for `payment` and `partial_payment` transaction types"));
    }
 
    public get spentAmounts(): AddressAmount[] {
@@ -121,6 +121,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       });
    }
 
+   public get assetSpentAmounts(): AddressAmount[] {
+      throw new mccError(mccErrorCode.InvalidResponse, Error(`There are no build-in assets on ${this.currencyName} chain`));
+   }
+
    public get receivedAmounts(): AddressAmount[] {
       return this.data.vout.map((vout: IUtxoVoutTransaction) => {
          return {
@@ -129,6 +133,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
             utxo: vout.n,
          } as AddressAmount;
       });
+   }
+
+   public get assetReceivedAmounts(): AddressAmount[] {
+      throw new mccError(mccErrorCode.InvalidResponse, Error(`There are no build-in assets on ${this.currencyName} chain`));
    }
 
    public get type(): UtxoTransactionTypeOptions {

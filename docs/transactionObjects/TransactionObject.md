@@ -12,11 +12,15 @@ The transaction abstract object implements the following methods:
 | `reference: string[]`                                                                                                    | Array of all references found in transactions                                                                                                                  |
 | `stdPaymentReference: string`                                                                                            | MCC standardized payment reference for Flare                                                                                                                   |
 | `unixTimestamp: number`                                                                                                  | Transaction timestamp (usually the same as block timestamp that this transaction is a part of)                                                                 |
-| `sourceAddresses: string[]`                                                                                              | Array of all source addresses                                                                                                                                  |
-| `receivingAddresses: string[]`                                                                                           | Array of receiving addresses                                                                                                                                   |
+| `sourceAddresses: string[]`                                                                                              | Array of all native token source addresses                                                                                                                     |
+| `assetSourceAddresses: string[]`                                                                                              | Array of all build in assets source addresses                                                                                                                  |
+| `receivingAddresses: string[]`                                                                                           | Array of native token receiving addresses                                                                                                                      |
+| `assetReceivingAddresses: string[]`                                                                                           | Array of build-in assets receiving addresses                                                                                                                   |
 | `fee: BN`                                                                                                                | Transaction fee (usually in native token) in elementary unit (MicroAlgos, ...)                                                                                 |
 | `spentAmounts: AddressAmount[]`                                                                                          | Full amount spend by transaction (usually in native token) in elementary unit (MicroAlgos, Satoshis ...)                                                       |
+| `assetSpentAmounts: AddressAmount[]`                                                                                     |                                                                                                                                                                |
 | `receivedAmounts: AddressAmount[]`                                                                                       | Full amount received by `receivingAddress` in transaction (usually in native token) in elementary unit (MicroAlgos, Satoshis ...)                              |
+| `assetReceivedAmounts: AddressAmount[]`                                                                                  |                                                                                                                                                                |
 | `type: string`                                                                                                           | This is usually transaction type from underlying chain with some other added status responses added by the MCC client                                          |
 | `isNativePayment: boolean`                                                                                               | Indicator whether this transaction is native payment transaction or not (many chains support other types of transactions, usually calls to smart contracts...) |
 | `currencyName: string`                                                                                                   | This can either be native token (such as BTC, XRP... or any other on chain token transfer or empty for non transfer transactions)                              |
@@ -30,6 +34,7 @@ The transaction abstract object implements the following methods:
 interface AddressAmount {
    address?: string;
    amount: BN;
+   elementaryUnits?: BN;
    utxo?: number;
 }
 ```
@@ -94,9 +99,10 @@ mcc : unix timestamp (seconds since 1.1.1970)
 
 ## `sourceAddresses`
 
-Returns a array of all source addresses that are a source of native tokens. 
-* In account-based chains only one address is present.
-* In UTXO chains addresses indicate the addresses on relevant inputs.
+Returns a array of all source addresses that are a source of native tokens.
+
+-  In account-based chains only one address is present.
+-  In UTXO chains addresses indicate the addresses on relevant inputs.
 
 Some addresses may be undefined, either due to non-existence on specific inputs or
 due to not being fetched from the outputs of the corresponding input transactions.
@@ -108,9 +114,10 @@ mcc : address[]
 
 ## `assetSourceAddresses`
 
-Returns a array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP). 
-* In account-based chains only one address is present.
-* In UTXO chains this feature is not supported
+Returns a array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP).
+
+-  In account-based chains only one address is present.
+-  In UTXO chains this feature is not supported
 
 WIP / TODO
 
@@ -121,11 +128,12 @@ mcc : address[]
 
 ## `receivingAddresses`
 
-Array of a receiving addresses that receive native tokens. 
-* In account-based chains only one address in present, with some exceptions:
-   * Algo transactions that close to certain address list both receiving address and close address.
-* In UTXO chains the list indicates the addresses on the corresponding transaction outputs.
-Some addresses may be undefined since outputs may not have addresses defined.
+Array of a receiving addresses that receive native tokens.
+
+-  In account-based chains only one address in present, with some exceptions:
+   -  Algo transactions that close to certain address list both receiving address and close address.
+-  In UTXO chains the list indicates the addresses on the corresponding transaction outputs.
+   Some addresses may be undefined since outputs may not have addresses defined.
 
 ```javascript
 js  : (string | undefined)[]
@@ -134,10 +142,11 @@ mcc : address[]
 
 ## `assetReceivingAddresses`
 
-Array of a receiving addresses that receive build in assets tokens. 
-* In account-based chains only one address in present
-   * Algo transactions that close to certain address list both receiving address and close address.
-* In UTXO chains this feature is not supported
+Array of a receiving addresses that receive build in assets tokens.
+
+-  In account-based chains only one address in present
+   -  Algo transactions that close to certain address list both receiving address and close address.
+-  In UTXO chains this feature is not supported
 
 WIP / TODO
 
@@ -147,7 +156,6 @@ Some addresses may be undefined since outputs may not have addresses defined.
 js  : (string | undefined)[]
 mcc : address[]
 ```
-
 
 ## `fee`
 
@@ -161,10 +169,11 @@ mcc : /
 ## `spentAmounts`
 
 A list of spent amounts in native tokens on transaction inputs.
-* In account-based chains only one amount is present, and includes total spent amount, including fees. There are some exceptions
-   * on ALGO for transactions that [closeRemainderTo](https://developer.algorand.org/docs/get-details/transactions/transactions/#payment-transaction) an address, the total spend amount is not 
-   presented (since it can't be extracted from transactions data in blocks on algod client). An error is thrown
-* In UTXO chains the spent amounts on the corresponding inputs are given in the list.
+
+-  In account-based chains only one amount is present, and includes total spent amount, including fees. There are some exceptions
+   -  on ALGO for transactions that [closeRemainderTo](https://developer.algorand.org/docs/get-details/transactions/transactions/#payment-transaction) an address, the total spend amount is not
+      presented (since it can't be extracted from transactions data in blocks on algod client). An error is thrown
+-  In UTXO chains the spent amounts on the corresponding inputs are given in the list.
 
 If the corresponding addresses are undefined and not fetched (in `sourceAddresses`), the
 corresponding spent amounts are 0.
@@ -189,10 +198,11 @@ WIP / TODO
 ## `receivedAmounts`
 
 A list of received amounts in native tokens on transaction outputs.
-* In account-based chains only one input and output exist. There are some exceptions
-   * the ALGO  for transactions that [closeRemainderTo](https://developer.algorand.org/docs/get-details/transactions/transactions/#payment-transaction) an address,
-   there are two receiving addresses, and we can only calculate amount for one of them, therefore an error is thrown
-* In UTXO chains the received amounts correspond to the amounts on outputs.
+
+-  In account-based chains only one input and output exist. There are some exceptions
+   -  the ALGO for transactions that [closeRemainderTo](https://developer.algorand.org/docs/get-details/transactions/transactions/#payment-transaction) an address,
+      there are two receiving addresses, and we can only calculate amount for one of them, therefore an error is thrown
+-  In UTXO chains the received amounts correspond to the amounts on outputs.
 
 ```javascript
 AddressAmount {
@@ -216,10 +226,10 @@ Returns transaction type as a string identifier. A set of types depends on a spe
 
 ```text
 js  : string
-mcc : 
+mcc :
    * on UTXO ("BTC" | "LTC" | "DOGE"): "coinbase" | "payment" | "partial_payment" | "full_payment"
    * on ALGO: "pay" | "keyreg" | "acfg" | "axfer" | "afrz" | "appl" | "pay_close" | "axfer_close"
-   * on [XRP](https://xrpl.org/transaction-types.html): 
+   * on [XRP](https://xrpl.org/transaction-types.html):
 ```
 
 ## `isNativePayment`

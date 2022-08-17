@@ -6,6 +6,7 @@ export type ITransaction = TransactionBase<any, any>;
 export interface AddressAmount {
    address?: string;
    amount: BN;
+   elementaryUnits?: BN; // if undefined the transaction elementaryUnits getter is the elementary unit
    utxo?: number;
 }
 
@@ -115,7 +116,7 @@ export abstract class TransactionBase<T, AT> {
    public abstract get fee(): BN;
 
    /**
-    * A list of spent amounts on transaction inputs.
+    * An array of spent amounts on transaction inputs.
     * In account-based chains only one amount is present, and includes total spent amount, including fees.
     * In UTXO chains the spent amounts on the corresponding inputs are given in the list.
     * If the corresponding addresses are undefined and not fetched (in `sourceAddresses`), the
@@ -125,11 +126,21 @@ export abstract class TransactionBase<T, AT> {
    public abstract get spentAmounts(): AddressAmount[];
 
    /**
-    * A list of received amounts on transaction outputs.
+    * An array of spent amounts in build-in assets tokens on transaction inputs.
+    */
+    public abstract get assetSpentAmounts(): AddressAmount[];
+
+   /**
+    * An array of received amounts on transaction outputs.
     * In account based chains only one input and output exist.
     * In UTXO chains the received amounts correspond to the amounts on outputs.
     */
    public abstract get receivedAmounts(): AddressAmount[];
+
+   /**
+    * An array of received amounts in build-in tokens on transaction outputs.
+    */
+    public abstract get assetReceivedAmounts(): AddressAmount[];
 
    /**
     * Returns transaction type as a string identifier. A set of types depends on a specific underlying chain.

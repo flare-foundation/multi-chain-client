@@ -105,6 +105,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       ];
    }
 
+   public get assetSpentAmounts(): AddressAmount[] {
+      throw new Error("Method not implemented.");
+   }
+
    public get receivedAmounts(): AddressAmount[] {
       let metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
       if (this.isNativePayment) {
@@ -116,6 +120,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          ];
       }
       return [];
+   }
+
+   public get assetReceivedAmounts(): AddressAmount[] {
+      throw new Error("Method not implemented.");
    }
 
    public get type(): string {
