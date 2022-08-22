@@ -35,6 +35,8 @@ export abstract class TransactionBase<T, AT> {
       this.additionalData = additionalData;
    }
 
+   // Getters //
+
    /**
     * Transaction hash and TxId (for utxo hash and txid differ since segWit)
     */
@@ -128,7 +130,7 @@ export abstract class TransactionBase<T, AT> {
    /**
     * An array of spent amounts in build-in assets tokens on transaction inputs.
     */
-    public abstract get assetSpentAmounts(): AddressAmount[];
+   public abstract get assetSpentAmounts(): AddressAmount[];
 
    /**
     * An array of received amounts on transaction outputs.
@@ -140,7 +142,7 @@ export abstract class TransactionBase<T, AT> {
    /**
     * An array of received amounts in build-in tokens on transaction outputs.
     */
-    public abstract get assetReceivedAmounts(): AddressAmount[];
+   public abstract get assetReceivedAmounts(): AddressAmount[];
 
    /**
     * Returns transaction type as a string identifier. A set of types depends on a specific underlying chain.
@@ -166,6 +168,15 @@ export abstract class TransactionBase<T, AT> {
     * Returns transaction success status.
     */
    public abstract get successStatus(): TransactionSuccessStatus;
+
+   // methods //
+
+   /**
+    * Ensures that the transaction object has all the required information retrievable from current client
+    * Make 
+    * @param client 
+    */
+   public abstract makeFull(client: MccClient): Promise<void>;
 
    public abstract paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary>;
 }

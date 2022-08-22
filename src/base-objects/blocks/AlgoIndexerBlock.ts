@@ -27,6 +27,14 @@ export class AlgoIndexerBlock extends BlockBase<IAlgoGetIndexerBlockRes> {
       return this.data.cert.prop.dig;
    }
 
+   public get previousBlockHash(): string {
+      throw new Error("Method not implemented.");
+   }
+   
+   public get stdPreviousBlockHash(): string {
+      throw new Error("Method not implemented.");
+   }
+
    public get unixTimestamp(): number {
       return this.data.timestamp;
    }

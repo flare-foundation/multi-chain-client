@@ -259,6 +259,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       };
    }
 
+   public async makeFull(client: MccClient): Promise<void> {
+      await this.makeFullPayment(client as MccUtxoClient)
+   }
+
    ///////////////////////////////
    //// Utxo specific methods ////
    ///////////////////////////////

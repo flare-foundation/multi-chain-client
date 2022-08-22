@@ -216,6 +216,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       };
    }
 
+   public async makeFull(client: MccClient): Promise<void> {
+      return
+   }
+
    //////////////////////////////
    //// Xrp specific methods ////
    //////////////////////////////

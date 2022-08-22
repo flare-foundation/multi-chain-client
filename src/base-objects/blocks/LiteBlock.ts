@@ -16,6 +16,14 @@ export class LiteBlock extends BlockBase<IGetLiteBlockRes> {
       return this.data.hash;
    }
 
+   public get previousBlockHash(): string {
+      throw new Error("Method not implemented.");
+   }
+   
+   public get stdPreviousBlockHash(): string {
+      throw new Error("Method not implemented.");
+   }
+
    public get unixTimestamp(): number {
       return 0;
    }

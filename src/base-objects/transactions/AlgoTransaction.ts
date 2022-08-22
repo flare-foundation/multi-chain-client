@@ -277,6 +277,10 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IA
       };
    }
 
+   public async makeFull(client: MccClient): Promise<void> {
+      await this.getTransactionAssetParams(client);
+   }
+
    //////////////////////////////////////////
    //// Algo transaction private methods ////
    //////////////////////////////////////////

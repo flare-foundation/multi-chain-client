@@ -17,6 +17,14 @@ export class XrpBlock extends BlockBase<IXrpGetBlockRes> {
       return this.blockHash;
    }
 
+   public get previousBlockHash(): string {
+      return this.data.result.ledger.parent_hash;
+   }
+
+   public get stdPreviousBlockHash(): string {
+      return this.previousBlockHash;
+   }
+
    public get unixTimestamp(): number {
       return XRP_UTD + this.data.result.ledger.close_time;
    }

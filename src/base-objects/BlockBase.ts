@@ -17,9 +17,19 @@ export abstract class BlockBase<B> {
    public abstract get blockHash(): string;
 
    /**
+    * Previous block hash directly from underlying node
+    */
+   public abstract get previousBlockHash(): string;
+
+   /**
     * Flare standardized block hash (hex encoded string of length 64 (32 bytes) without 0x prefix)
     */
    public abstract get stdBlockHash(): string;
+
+   /**
+    * Flare standardized previous block hash (hex encoded string of length 64 (32 bytes) without 0x prefix)
+    */
+   public abstract get stdPreviousBlockHash(): string;
 
    /**
     * block timestamp as unix time (elapsed seconds since 1.1.1970)
@@ -45,9 +55,9 @@ export abstract class BlockBase<B> {
     * Return if block is valid
     * Mainly for XRP
     */
-    public get isValid(): boolean {
+   public get isValid(): boolean {
       return true;
-    }
+   }
 }
 
 export { AlgoBlock } from "./blocks/AlgoBlock";
@@ -56,4 +66,4 @@ export { DogeBlock } from "./blocks/DogeBlock";
 export { LtcBlock } from "./blocks/LtcBlock";
 export { UtxoBlock } from "./blocks/UtxoBlock";
 export { XrpBlock } from "./blocks/XrpBlock";
-export { LiteBlock } from  "./blocks/LiteBlock";
+export { LiteBlock } from "./blocks/LiteBlock";
