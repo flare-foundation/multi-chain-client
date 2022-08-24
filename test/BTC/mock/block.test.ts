@@ -1,23 +1,62 @@
+/* This is a mock tests, that requires no underlying chain connectivity */
 import { expect } from "chai";
-import { BtcBlock, MCC, UtxoMccCreate } from "../../src";
+import { BtcBlock, MCC, traceManager, UtxoMccCreate } from "../../../src";
 
-const chai = require('chai');
-chai.use(require('chai-as-promised'));
+import MockAdapter from "axios-mock-adapter";
+import { getBlockHashRes, getBlockRes } from "./data.blockTest";
+
+const chai = require("chai");
+chai.use(require("chai-as-promised"));
 
 const BtcMccConnection = {
-   url: process.env.BTC_URL || "",
-   username: process.env.BTC_USERNAME || "",
-   password: process.env.BTC_PASSWORD || "",
+   url: "",
+   username: "",
+   password: "",
 } as UtxoMccCreate;
 
 describe("Block Btc base test ", function () {
    let MccClient: MCC.BTC;
    let block: BtcBlock;
-   const blockNumber = 729_409
+   let mock: MockAdapter;
+   const blockNumber = 729_409;
 
    before(async function () {
+      traceManager.displayStateOnException = false;
+      traceManager.displayRuntimeTrace = false;
+
       MccClient = new MCC.BTC(BtcMccConnection);
+      mock = new MockAdapter(MccClient.client);
+
+      mock
+         .onPost("", {
+            jsonrpc: "1.0",
+            id: "rpc",
+            method: "getblockhash",
+            params: [blockNumber],
+         })
+         .reply(200, getBlockHashRes);
+
+      mock
+         .onPost("", {
+            jsonrpc: "1.0",
+            id: "rpc",
+            method: "getblock",
+            params: ["00000000000000000002579f72f3f80f68b02767c44024d697826af787776b58", 2],
+         })
+         .reply(200, getBlockRes);
+
+      // Mock the block response
+
+      // const blockH = await MccClient.getBlockHeader(blockNumber);
+
+      // console.log(blockH);
+
       block = await MccClient.getBlock(blockNumber);
+
+      // console.log(block)
+
+      // Has to be done after each test case, here we only have one test case
+      mock.reset();
    });
 
    it("Should get block", async function () {
@@ -50,8 +89,8 @@ describe("Block Btc base test ", function () {
 
    it("Should get transaction ids ", async function () {
       expect(block.transactionIds.length).to.eq(565);
-      expect(block.transactionIds).contain('0x77f4598116882ddc5dab96967bead585a2a4b992e663bdb6cd0311a31967696c');
-      expect(block.transactionIds).contain('0x3f16a95126783d04c4494211c442a5982ae8ab08733df68d26ceed9514ddb147');
+      expect(block.transactionIds).contain("0x77f4598116882ddc5dab96967bead585a2a4b992e663bdb6cd0311a31967696c");
+      expect(block.transactionIds).contain("0x3f16a95126783d04c4494211c442a5982ae8ab08733df68d26ceed9514ddb147");
    });
 
    it("Should get transaction standard ids ", async function () {
@@ -63,7 +102,6 @@ describe("Block Btc base test ", function () {
    });
 
    it("Should not get block if invalid input", async () => {
-      await expect(MccClient.getBlock(blockNumber.toString())).to.eventually.be.rejected; 
+      await expect(MccClient.getBlock(blockNumber.toString())).to.eventually.be.rejected;
    });
-
 });
