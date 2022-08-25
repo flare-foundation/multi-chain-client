@@ -51,6 +51,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return [this.data.result.Account];
    }
 
+   public get assetSourceAddresses(): (string | undefined)[] {
+      throw new Error("Method not implemented.");
+   }
+
    public get receivingAddresses(): string[] {
       if (this.data.result.TransactionType == "Payment") {
          let payment = this.data.result as Payment;
@@ -58,6 +62,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       }
       // TODO: Check if in other types of payments one has something similar to Destination
       return [];
+   }
+
+   public get assetReceivingAddresses(): (string | undefined)[] {
+      throw new Error("Method not implemented.");
    }
 
    public get fee(): BN {
@@ -97,6 +105,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       ];
    }
 
+   public get assetSpentAmounts(): AddressAmount[] {
+      throw new Error("Method not implemented.");
+   }
+
    public get receivedAmounts(): AddressAmount[] {
       let metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
       if (this.isNativePayment) {
@@ -108,6 +120,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          ];
       }
       return [];
+   }
+
+   public get assetReceivedAmounts(): AddressAmount[] {
+      throw new Error("Method not implemented.");
    }
 
    public get type(): string {
@@ -198,6 +214,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          paymentReference: this.stdPaymentReference,
          isFull: true,
       };
+   }
+
+   public async makeFull(client: MccClient): Promise<void> {
+      return
    }
 
    //////////////////////////////

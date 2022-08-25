@@ -5,7 +5,6 @@ import { BlockBase } from "../BlockBase";
 
 @Managed()
 export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
-
    //
    public get number(): number {
       return this.data.height;
@@ -19,6 +18,14 @@ export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
       return this.data.hash;
    }
 
+   public get previousBlockHash(): string {
+      return this.data.previousblockhash;
+   }
+
+   public get stdPreviousBlockHash(): string {
+      return this.data.previousblockhash;
+   }
+
    public get unixTimestamp(): number {
       return this.data.time;
    }
@@ -29,7 +36,7 @@ export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
          if (!tx) {
             return "0x0";
          }
-         /* istanbul ignore else */ 
+         /* istanbul ignore else */
          if (tx.txid) {
             return prefix0x(tx.txid);
          } else {

@@ -17,6 +17,7 @@ import {
    RateLimitOptions
 } from "../types";
 import {
+   IAlgoAssets,
    IAlgoBlockMsgPack,
    IAlgoCert, IAlgoGetIndexerBlockRes,
    IAlgoGetStatus,
@@ -199,6 +200,16 @@ export class ALGOImplementation implements ReadRpcInterface {
          camelList.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
       }
       return camelList as IAlgoListTransactionRes;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Build-in Assets (ASAs) methods /////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+
+   async getAssetInfo(assetId: number): Promise<IAlgoAssets>{
+      let res = await this.algodClient.get(`/v2/assets/${assetId}`)
+      algo_ensure_data(res);
+      return res.data as IAlgoAssets
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////

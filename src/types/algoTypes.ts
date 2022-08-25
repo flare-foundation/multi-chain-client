@@ -1,4 +1,6 @@
 import { EncodedTransaction } from "algosdk";
+import { Asset } from "algosdk/dist/types/src/client/v2/algod/models/types";
+import BlockHeader from "algosdk/dist/types/src/types/blockHeader";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
@@ -112,21 +114,23 @@ export interface IAlgoGetBlockHeaderRes {
 
 export interface IAlgoBlockMsgPackBlock {
    earn: number;
-   fees: string;
+   fees: Buffer;
    frac: number;
    gen: string;
    gh: Buffer;
-   prev: string;
+   prev: Buffer;
    proto: string;
    rnd: number;
    rwcalr: number;
-   rwd: string;
-   seed: string;
+   rwd: Buffer;
+   seed: Buffer;
    tc: number;
    ts: number;
-   txn: string;
+   txn: Buffer;
    txns: any[]; // Array of transaction objects
 }
+
+type IALgoBlock = BlockHeader
 
 export interface IAlgoBlockMsgPack {
    block: IAlgoBlockMsgPackBlock;
@@ -351,4 +355,18 @@ export interface IAlgoStatusObject {
 export interface IAlgoHexAddress {
    publicKey: string; // should be of length 64
    checksum: string; // should be of length 8
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////// Algo build-in assets ASA's //////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export type IAlgoAssets = Asset
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////// Algo transaction additional data ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export interface IAlgoAdditionalData {
+   assetInfo?: IAlgoAssets
 }

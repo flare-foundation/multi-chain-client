@@ -39,6 +39,14 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
       return bytesToHex(this.data.cert.prop.dig);
    }
 
+   public get previousBlockHash(): string {
+      return hexToBase64(this.data.block.prev);
+   }
+
+   public get stdPreviousBlockHash(): string {
+      return bytesToHex(this.data.block.prev);
+   }
+
    public get unixTimestamp(): number {
       return this.data.block.ts;
    }

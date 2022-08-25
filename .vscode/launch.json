@@ -95,5 +95,14 @@
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/ALGO/blockCompare.test.ts"]
       },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "console": "integratedTerminal",
+         "name": "Mock test BTC block",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/BTC/mock/block.test.ts"]
+      },
    ]
 }

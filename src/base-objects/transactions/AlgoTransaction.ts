@@ -1,6 +1,6 @@
 import BN from "bn.js";
 import { MccClient, TransactionSuccessStatus } from "../../types";
-import { AlgoTransactionTypeOptions, IAlgoTransactionMsgPack } from "../../types/algoTypes";
+import { AlgoTransactionTypeOptions, IAlgoAdditionalData, IAlgoAssets, IAlgoTransactionMsgPack } from "../../types/algoTypes";
 import { base32ToHex, bytesToHex, hexToBase32 } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
@@ -12,7 +12,7 @@ const web3 = require("web3");
  * docs https://developer.algorand.org/docs/get-details/transactions/transactions/
  */
 @Managed()
-export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, any> {
+export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IAlgoAdditionalData> {
    public get txid(): string {
       return this.data.txid;
    }
@@ -53,18 +53,27 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
    }
 
    public get sourceAddresses(): (string | undefined)[] {
-      if (this.type === "axfer" || this.type === "axfer_close") {
-         // for token transfers send by clawback transaction (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-clawback-transaction) and asset transfer transactions (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-transfer-transaction)
-         if (this.data.asnd) {
-            return [hexToBase32(this.data.asnd)];
-         }
-      }
+      // for now mcc will only interpret the sender as the address that pays the fee (signs the transaction)
       return [hexToBase32(this.data.snd)];
    }
 
+   public get assetSourceAddresses(): (string | undefined)[] {
+      if (this.type === "axfer" || this.type === "axfer_close") {
+         // for token transfers send by clawback transaction (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-clawback-transaction)
+         // and asset transfer transactions (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-transfer-transaction)
+         if (this.data.asnd) {
+            return [hexToBase32(this.data.asnd)];
+         }
+         // Other kinds of asset transactions (axfer and axfer_close ) use snd field as sender
+         return [hexToBase32(this.data.snd)];
+      }
+      // Other kinds of transactions have nothing to do with assets
+      return [];
+   }
+
    public get receivingAddresses(): (string | undefined)[] {
-      // for transactions of type pay
       const recAddresses = [];
+      // for transactions of type pay
       if (this.type === "pay" || this.type === "pay_close") {
          if (this.data.rcv) {
             recAddresses.push(hexToBase32(this.data.rcv));
@@ -75,8 +84,13 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
          }
          return recAddresses;
       }
-      // for transactions of type axfer
-      else if (this.type === "axfer" || this.type === "axfer_close") {
+      return [];
+   }
+
+   public get assetReceivingAddresses(): (string | undefined)[] {
+      const recAddresses = [];
+      // for token interaction transactions
+      if (this.type === "axfer" || this.type === "axfer_close") {
          if (this.data.arcv) {
             recAddresses.push(hexToBase32(this.data.arcv));
          }
@@ -109,31 +123,55 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
             ];
          }
       }
-      // for transactions of type axfer
-      // For now we don't support spending / using non-native tokens
-      // if (this.data.aamt) {
-      //    let amount = this.data.aamt.toString();
-      //    return [
-      //       {
-      //          address: this.sourceAddresses[0],
-      //          amount: this.fee.add(toBN(amount)),
-      //       },
-      //    ];
-      // }
       return [
          {
-            address: this.sourceAddresses[0],
+            // sender always pays the fee
+            address: hexToBase32(this.data.snd),
             amount: this.fee,
          },
       ];
    }
 
+   public get assetSpentAmounts(): AddressAmount[] {
+      // for transactions of type axfer
+      if (this.type === "axfer") {
+         if (this.data.aamt) {
+            let amount = this.data.aamt.toString();
+            if (!(this.additionalData && this.additionalData.assetInfo)) {
+               throw new mccError(mccErrorCode.InvalidResponse, Error("call the getAllData before to make sure additional data full"));
+            }
+            let decimals = this.additionalData.assetInfo.params.decimals;
+            if (typeof decimals === "bigint") {
+               decimals = Number(decimals);
+            }
+            return [
+               {
+                  address: this.assetSourceAddresses[0],
+                  amount: toBN(amount),
+                  elementaryUnits: web3.utils.toBN(Math.pow(10, decimals)),
+               },
+            ];
+         }
+      }
+      if (this.type === "axfer_close") {
+         throw new mccError(
+            mccErrorCode.InvalidResponse,
+            Error("Asset Spent Amounts can't be extracted for axfer_close transaction from transaction object on non-archival node")
+         );
+      }
+      return [];
+      // For now we don't support spending / using non-native tokens
+   }
+
    public get receivedAmounts(): AddressAmount[] {
       // for transactions of type pay
       if (this.type === "pay_close") {
-         throw new mccError(mccErrorCode.InvalidResponse, Error("Received Amounts can't be extracted from transaction object on non-archival node"));
+         throw new mccError(
+            mccErrorCode.InvalidResponse,
+            Error("Received Amounts can't be extracted from transaction object on non-archival node for close remainder to transactions")
+         );
       }
-      if (this.data)
+      if (this.data) {
          if (this.data.amt) {
             let amount = this.data.amt.toString();
             return [
@@ -143,18 +181,37 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
                },
             ];
          }
-      // for transactions of type axfer
-      // For now we don't support spending / using non-native tokens
-      // if (this.data.aamt) {
-      //    let amount = this.data.aamt.toString();
-      //    // TODO add asset close amount to this response
-      //    return [
-      //       {
-      //          address: this.receivingAddresses[0],
-      //          amount: toBN(amount),
-      //       },
-      //    ];
-      // }
+      }
+
+      return [];
+   }
+
+   public get assetReceivedAmounts(): AddressAmount[] {
+      if (this.type === "axfer_close") {
+         throw new mccError(
+            mccErrorCode.InvalidResponse,
+            Error("Received Amounts can't be extracted from transaction object on non-archival node for axfer close transactions")
+         );
+      }
+      if (this.type === "axfer") {
+         if (this.data.aamt) {
+            let amount = this.data.aamt.toString();
+            if (!(this.additionalData && this.additionalData.assetInfo)) {
+               throw new mccError(mccErrorCode.InvalidResponse, Error("call the getAllData before to make sure additional data full"));
+            }
+            let decimals = this.additionalData.assetInfo.params.decimals;
+            if (typeof decimals === "bigint") {
+               decimals = Number(decimals);
+            }
+            return [
+               {
+                  address: this.assetReceivingAddresses[0],
+                  amount: toBN(amount),
+                  elementaryUnits: web3.utils.toBN(Math.pow(10, decimals)),
+               },
+            ];
+         }
+      }
       return [];
    }
 
@@ -164,9 +221,9 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
             return "pay_close";
          }
       }
-      if(this.data.type === "axfer"){
-         if(this.data.aclose){
-            return "axfer_close"
+      if (this.data.type === "axfer") {
+         if (this.data.aclose) {
+            return "axfer_close";
          }
       }
       return this.data.type as AlgoTransactionTypeOptions;
@@ -196,6 +253,16 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
 
    public async paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       if (!this.isNativePayment) {
+         if (this.type === "axfer") {
+            if (client && makeFullPayment) {
+               await this.getTransactionAssetParams(client);
+               // TODO payment summary for algorand token transaction
+            } else {
+               const ErrorMessage =
+                  "To get all information about token transactions makeFullPayment must be set to true and an instance of client must be provided";
+               throw new mccError(mccErrorCode.InvalidParameter, Error(ErrorMessage));
+            }
+         }
          return { isNativePayment: false };
       }
       return {
@@ -208,5 +275,25 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, an
          oneToOne: true,
          isFull: true,
       };
+   }
+
+   public async makeFull(client: MccClient): Promise<void> {
+      await this.getTransactionAssetParams(client);
+   }
+
+   //////////////////////////////////////////
+   //// Algo transaction private methods ////
+   //////////////////////////////////////////
+
+   private async getTransactionAssetParams(client: MccClient): Promise<void> {
+      if (this.data.xaid) {
+         if (!this.additionalData) {
+            this.additionalData = {};
+         }
+         if (!this.additionalData.assetInfo) {
+            // @ts-ignore
+            this.additionalData.assetInfo = await client.getAssetInfo(this.data.xaid);
+         }
+      }
    }
 }
