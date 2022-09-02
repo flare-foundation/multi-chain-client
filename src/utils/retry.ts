@@ -5,6 +5,13 @@ import { getSimpleRandom, sleepMs } from "./utils";
 let TIMEOUT_STEP_MULTIPLY = 1.2;
 let BACKOFF_TIME_STEP_MULTIPLY = 1.2;
 
+const retrySleepResult = "wVgdz8YJgsUud6CPtKYH8tw4mHdLHLbgrEGsGqdWetPDKWAW5hbZ5LMz";
+
+async function retrySleepMs(ms: number): Promise<string> {
+   await sleepMs(ms);
+   return retrySleepResult;
+}
+
 export async function retry<T>(
    label: string,
    funct: (...args: any) => T,
@@ -16,10 +23,9 @@ export async function retry<T>(
    failure: (label: string) => void = (label) => {}
 ): Promise<T> {
    try {
-      let result = await Promise.race([funct(), sleepMs(timeoutTime)]);
+      let result = await Promise.race([funct(), retrySleepMs(timeoutTime)]);
 
-      if (result) return result as T;
-
+      if (result !== retrySleepResult) return result as T;
       // timeout section
       if (numRetries > 0) {
          warningCallback(`retry ^R${label}^^ ${numRetries}`);
