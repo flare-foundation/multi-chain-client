@@ -1,4 +1,6 @@
+import { assert } from "console";
 import { AlgoBlock, AlgoTransaction, MCC, toBN, TransactionSuccessStatus } from "../../src";
+import { mccError } from "../../src/utils/errors";
 import { algoTransactionTestCases } from "../testUtils";
 const chai = require("chai");
 const expect = chai.expect;
@@ -156,13 +158,13 @@ const TransactionsToTest: algoTransactionTestCases[] = [
          reference: [],
          stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
          unixTimestamp: 1656417894,
-         sourceAddresses: ["7NAM7FMTE2KUMWVDSS5AYXISMPKERQRXHNPICP257R6VKZVO4GOA"],
+         sourceAddresses: ["7NAM7FMTE2KUMWVDSS5AYXISMPKERQRXHNPICP257R6VKZVO4GOOFM7XIQ"],
          receivingAddresses: ["FO2CF7U7GXHUFDUUWNOQ2RWLZGRVNMC6GA4IPEBKB6DM4PGOEDR7BMHP3U"],
          isFeeError: false,
          fee: "1000", // number as a string
          spentAmounts: [
             {
-               address: "7NAM7FMTE2KUMWVDSS5AYXISMPKERQRXHNPICP257R6VKZVO4GOA",
+               address: "7NAM7FMTE2KUMWVDSS5AYXISMPKERQRXHNPICP257R6VKZVO4GOOFM7XIQ",
                amount: toBN(1001),
             },
          ],
@@ -180,6 +182,91 @@ const TransactionsToTest: algoTransactionTestCases[] = [
       },
    },
 ];
+
+type testCase = {
+   txtype: "pay" | "keyreg" | "acfg" | "axfer" | "afrz" | "appl";
+   blockRound: number;
+   txId: string;
+};
+
+const testCases: testCase[] = [
+   {
+      txtype: "pay",
+      blockRound: 23209650,
+      txId: "FKYHGG743YWRFB3ADC72XPZOFHJIPOP7PR47ORPYJ24BLPO4HESQ",
+   },
+   {
+      txtype: "appl",
+      blockRound: 23209700,
+      txId: "3IKJYQY34QWWZZH6NU57PUNR4VBRAKHGZ7DBSDGNSXT3VVZW4H7Q",
+   },
+   {
+      txtype: "appl",
+      blockRound: 23209637,
+      txId: "LGSMAZNDRYQATNU5OTRQTXD2DE366EMS7RXTQFPMLQ3YLU5RBNSA",
+   },
+   {
+      txtype: "appl",
+      blockRound: 23209701,
+      txId: "652IL6KURTY4LXR3OSOUEACL3F4R2C6UO7SB23K62ERCIRD2QR3Q",
+   },
+   {
+      txtype: "axfer",
+      blockRound: 23208000,
+      txId: "UBXYTOAVX75BN4CJNB3O5KVNY4JPI6X4W7QI6ADC3KSWW42HLZOQ",
+   },
+   {
+      txtype: "afrz",
+      blockRound: 22925932,
+      txId: "T5Q5WIGJBGO2UL6PZGSBGQOSVYVKFWVSJ44NT5WFW6V36PRDLI2Q",
+   },
+   {
+      txtype: "acfg",
+      blockRound: 23329652,
+      txId: "5N5XBKJJQIA35HPVNW5MNAQTJSKYAPFNEDZEPBLS5WI4ICYE5RPA",
+   },
+];
+
+describe("Transaction id tests", function () {
+   for (let testTx of testCases) {
+      describe(`Should compute the right txid for ${testTx.txtype}`, function () {
+         let MccClient: MCC.ALGO;
+         let block: AlgoBlock;
+         let transaction: AlgoTransaction;
+         MccClient = new MCC.ALGO(algoCreateConfig);
+
+         let round = testTx.blockRound;
+         let txId = testTx.txId;
+         before(async function () {
+            let txId = testTx.txId;
+            MccClient = new MCC.ALGO(algoCreateConfig);
+            block = await MccClient.getBlock(round);
+            for (let txOb of block.transactions) {
+               if (txOb.txid === txId) {
+                  transaction = txOb;
+               }
+            }
+         });
+
+         it("Should get blocks ", async function () {
+            expect(block).to.not.eq(undefined);
+            expect(block).to.not.eq(null);
+         });
+
+         it("Should find transaction in block ", function () {
+            expect(transaction).to.not.eq(undefined);
+         });
+
+         it("Should get transaction txid ", async function () {
+            expect(transaction.txid).to.eq(txId);
+         });
+
+         it("Should get type ", async function () {
+            expect(transaction.type).to.eq(testTx.txtype);
+         });
+      });
+   }
+});
 
 for (let transData of TransactionsToTest) {
    describe(`Algo transaction in block (Expect block ${transData.block} in node) `, function () {
@@ -329,7 +416,6 @@ for (let transData of TransactionsToTest) {
    });
 }
 
-
 it("Should get invalid method call ", async function () {
    let MccClient = new MCC.ALGO(algoCreateConfig);
    await expect(MccClient.getTransaction("")).to.be.rejectedWith("InvalidMethodCall");
@@ -343,12 +429,12 @@ it("Should not list transactions ", async function () {
 
 it("Should get receiving address with aclose ", async function () {
    let MccClient = new MCC.ALGO(algoCreateConfig);
-   let res = await MccClient.getBlock();
+   let res = await MccClient.getBlock(23208015);
    let tr = res.transactions[0];
    // TODO the assumption that every block has a axfer transaction may be a bit much
-   for(let tra of res.transactions){
-      if (tra.type === "axfer"){
-         tr = tra
+   for (let tra of res.transactions) {
+      if (tra.type === "axfer") {
+         tr = tra;
       }
    }
    tr.data.aclose = tr.data.arcv;
@@ -360,9 +446,9 @@ it("Should get receiving address with close ", async function () {
    let res = await MccClient.getBlock();
    let tr = res.transactions[0];
    // TODO the assumption that every block has a pay transaction may be a bit much
-   for(let tra of res.transactions){
-      if (tra.type === "pay"){
-         tr = tra
+   for (let tra of res.transactions) {
+      if (tra.type === "pay") {
+         tr = tra;
       }
    }
    tr.data.close = tr.data.rcv;
@@ -380,4 +466,168 @@ it("Should get receiving fee (no fee) ", async function () {
 it("Should not list transactions ", async function () {
    let MccClient = new MCC.ALGO(algoCreateConfig);
    await expect(MccClient.getIndexerBlock()).to.be.rejectedWith("InvalidMethodCall");
+});
+
+const axferTestdata = {
+   blockRound: 23208001,
+   txId: "PYKAYDUNPKY6LOLQG44Q43EKJBXIVB4VT4BKCQPD3POWJFC5Q77A",
+   txtype: "axfer",
+   aamt: 906543471648,
+   sender: "5MJUVKSJO4FH6V6F2IHWXQZD2MCF4GTIMIMZDIYIZM7HIAAHMJSTBVT2UM",
+};
+
+describe("Axfer assets tests", function () {
+   let MccClient: MCC.ALGO;
+   let block: AlgoBlock;
+   let transaction: AlgoTransaction;
+   // let transaction2: AlgoTransaction;
+   MccClient = new MCC.ALGO(algoCreateConfig);
+
+   before(async function () {
+      let txId = axferTestdata.txId;
+
+      block = await MccClient.getBlock(axferTestdata.blockRound);
+      for (let txOb of block.transactions) {
+         if (txOb.txid === txId) {
+            transaction = txOb;
+         }
+      }
+   });
+
+   it("Should find transaction in block ", function () {
+      expect(transaction).to.not.eq(undefined);
+   });
+
+   it("Should throw if not full transaction", async function () {
+      console.log(transaction.additionalData);
+      await expect(() => transaction.assetSpentAmounts).to.throw("InvalidResponse");
+      await expect(() => transaction.assetReceivedAmounts).to.throw("InvalidResponse");
+      // await transaction.makeFull(MccClient);
+      // console.log(transaction);
+      // console.log(transaction.assetSpentAmounts);
+   });
+
+   it("Should get full transaction", async function () {
+      await transaction.makeFull(MccClient);
+      expect(transaction.additionalData).to.not.be.undefined;
+   });
+
+   it("Should get assetSpentAmounts", async function () {
+      await transaction.makeFull(MccClient);
+      // console.log(transaction.assetSourceAddresses);
+      expect(transaction.assetSpentAmounts).to.not.be.undefined;
+      expect(transaction.assetReceivedAmounts).to.not.be.undefined;
+      expect(transaction.assetSourceAddresses[0]).to.be.equal(axferTestdata.sender);
+   });
+});
+
+const payCloseTestdata = {
+   blockRound: 23208015,
+   txId: "W4VEWI5ZRJTNRGS4ITNLPFLCIC3HOKB3JJ7ZXB5I24X7DEBTBZNQ",
+   txtype: "pay",
+   rcvAdd: "KRZYFYXTQ3YK5ADN4VFYFHGRLA6RGUIEO3D54LZC3MV5LKI66P3LDLPVTI",
+};
+describe("Pay_close tests", function () {
+   let MccClient: MCC.ALGO;
+   let block: AlgoBlock;
+   let transaction: AlgoTransaction;
+   // let transaction2: AlgoTransaction;
+   MccClient = new MCC.ALGO(algoCreateConfig);
+
+   before(async function () {
+      let txId = payCloseTestdata.txId;
+
+      block = await MccClient.getBlock(payCloseTestdata.blockRound);
+      for (let txOb of block.transactions) {
+         if (txOb.txid === txId) {
+            transaction = txOb;
+         }
+      }
+   });
+
+   it("Should find transaction in block ", function () {
+      expect(transaction).to.not.eq(undefined);
+   });
+
+   it("Should find the type", function () {
+      expect(transaction.type).to.eq("pay_close");
+   });
+
+   it("Should get recivingAddresses", function () {
+      expect(transaction.receivingAddresses[0]).to.be.equal(payCloseTestdata.rcvAdd);
+   });
+   it("Should get not assetRecivingAddresses", function () {
+      expect(transaction.assetReceivingAddresses[0]).to.be.undefined;
+   });
+
+   it("Should get not recivedAmounts", function () {
+      expect(() => transaction.receivedAmounts).to.throw("InvalidResponse");
+   });
+
+   it("Should get not assetRecivedAmounts", function () {
+      expect(transaction.assetReceivedAmounts[0]).to.be.undefined;
+   });
+   it("Should get not assetSourceAddresses", function () {
+      expect(transaction.assetSourceAddresses[0]).to.be.undefined;
+   });
+   it("Should get not assetSpentAmounts", function () {
+      expect(transaction.assetSpentAmounts[0]).to.be.undefined;
+   });
+});
+
+const assetCloseTestdata = {
+   blockRound: 23208015,
+   txId: "TSLAKUC3THKQDGRAQVEF2I3WVMWLBYBSK2HAO5GPCMY27KRDUWNA",
+   txtype: "axfer_close",
+   rcvAdd: "KRZYFYXTQ3YK5ADN4VFYFHGRLA6RGUIEO3D54LZC3MV5LKI66P3LDLPVTI",
+};
+describe("Axfer_close tests", function () {
+   let MccClient: MCC.ALGO;
+   let block: AlgoBlock;
+   let transaction: AlgoTransaction;
+   // let transaction2: AlgoTransaction;
+   MccClient = new MCC.ALGO(algoCreateConfig);
+
+   before(async function () {
+      let txId = assetCloseTestdata.txId;
+
+      block = await MccClient.getBlock(assetCloseTestdata.blockRound);
+      for (let txOb of block.transactions) {
+         if (txOb.txid === txId) {
+            transaction = txOb;
+         }
+      }
+   });
+
+   it("Should find transaction in block ", function () {
+      expect(transaction).to.not.eq(undefined);
+   });
+
+   it("Should find the type", function () {
+      expect(transaction.type).to.eq(assetCloseTestdata.txtype);
+   });
+
+   // it("Should get recivingAddresses", function () {
+   //    expect(transaction.receivingAddresses[0]).to.be.equal(payCloseTestdata.rcvAdd);
+   // });
+   it("Should get assetRecivingAddresses", function () {
+      expect(transaction.assetReceivingAddresses.length).to.be.equal(2);
+      expect(transaction.assetReceivingAddresses[0]).to.be.equal(assetCloseTestdata.rcvAdd);
+   });
+
+   it("Should not get assetSpentAmounts", function () {
+      console.log(transaction.type === "axfer_close");
+      expect(() => transaction.assetSpentAmounts).to.throw("InvalidResponse");
+   });
+
+   it("Should not get assetReceivedAmounts", function () {
+      expect(() => transaction.assetReceivedAmounts).to.throw("InvalidResponse");
+   });
+
+   // it("Should get not assetRecivedAmounts", function () {
+   //    expect(transaction.assetReceivedAmounts[0]).to.be.undefined;
+   // });
+   // it("Should get not assetSourceAddresses", function () {
+   //    expect(transaction.assetSourceAddresses[0]).to.be.undefined;
+   // });
 });

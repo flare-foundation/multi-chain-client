@@ -1,6 +1,7 @@
-import { AlgoBlock, MCC, traceManager } from "../../src";
+import { AlgoBlock, base64ToHex, hexToBase32, MCC, traceManager } from "../../src";
 const chai = require("chai");
 const expect = chai.expect;
+const fs = require("fs");
 chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
@@ -12,7 +13,7 @@ const algoCreateConfig = {
 
 describe(`Algo block processing`, async () => {
    it("Should get top block", async function () {
-      traceManager.displayStateOnException = false
+      traceManager.displayStateOnException = false;
       const MccClient = new MCC.ALGO(algoCreateConfig);
       const block = await MccClient.getBlock();
 
@@ -22,7 +23,10 @@ describe(`Algo block processing`, async () => {
    it("Should create block with msig", async function () {
       const MccClient = new MCC.ALGO(algoCreateConfig);
       const block = await MccClient.getBlock(21_659_776);
-      block.data.block.txns[0].msig  = Buffer.from([0xad, 0x35, 0x08, 0xb8, 0xfa, 0x7e, 0x9c, 0x1d, 0x38, 0x43, 0x97, 0xb0, 0x70, 0x8a, 0xa1, 0x56, 0x7a, 0x74, 0xe7, 0x9e, 0xc9, 0xe3, 0x7c, 0xbd, 0x37, 0x0c, 0xe2, 0x27, 0x6b, 0xd8, 0x95, 0x98]);
+      block.data.block.txns[0].msig = Buffer.from([
+         0xad, 0x35, 0x08, 0xb8, 0xfa, 0x7e, 0x9c, 0x1d, 0x38, 0x43, 0x97, 0xb0, 0x70, 0x8a, 0xa1, 0x56, 0x7a, 0x74, 0xe7, 0x9e, 0xc9, 0xe3, 0x7c, 0xbd, 0x37,
+         0x0c, 0xe2, 0x27, 0x6b, 0xd8, 0x95, 0x98,
+      ]);
       let aBlock = new AlgoBlock({ block: block.data.block, cert: block.data.cert });
       expect(aBlock).to.not.eq(undefined);
    });
@@ -43,6 +47,7 @@ describe(`Algo block processing`, async () => {
       });
 
       it("Should get block", async function () {
+         console.log(typeof block);
          expect(block).to.not.eq(undefined);
       });
 
@@ -86,6 +91,16 @@ describe(`Algo block processing`, async () => {
 
       it("Should get transaction objects (ALGO SPECIFIC) ", async function () {
          expect(block.transactions.length).to.eq(69);
+      });
+
+      it("Should get previousBlockHash ", async function () {
+         let prevBlock = await MccClient.getBlock(blockNumber - 1);
+
+         expect(block.previousBlockHash).to.eq(hexToBase32(base64ToHex("JC34VKQ3P3FUOJF5DOYB4VSTQJNLDDPITLNTJKEUGVURCYF4VZKQ")));
+      });
+
+      it("Should get stdpreviousBlockHash ", async function () {
+         expect(block.stdPreviousBlockHash).to.eq();
       });
    });
 });

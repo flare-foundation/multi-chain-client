@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { MCC, XrpBlock } from "../../src";
-const chai = require('chai');
-chai.use(require('chai-as-promised'));
+const chai = require("chai");
+chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -12,7 +12,7 @@ const XRPMccConnection = {
 describe("Block Xrp base test ", function () {
    let MccClient: MCC.XRP;
    let block: XrpBlock;
-   const blockNumber = 72_387_695
+   const blockNumber = 72_387_695;
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
@@ -64,6 +64,18 @@ describe("Block Xrp base test ", function () {
    });
 
    it("Should not get block", async function () {
-      await expect(MccClient.getBlock("0x2492B09472F24DB37B124A2F9D1D0FA6883EF0FE51494938A54E6CD93295C086")).to.eventually.be.rejected; 
+      await expect(MccClient.getBlock("0x2492B09472F24DB37B124A2F9D1D0FA6883EF0FE51494938A54E6CD93295C086")).to.eventually.be.rejected;
+   });
+
+   it("Should get previousBlockHash", async function () {
+      await expect(block.previousBlockHash).to.eq("D50040A5B66578B80EB8F21D071B3118C3142837E8EBFAD03F9B0960590E2C21");
+   });
+
+   it("Should get stdPreviousBlockHash", async function () {
+      await expect(block.stdPreviousBlockHash).to.eq("D50040A5B66578B80EB8F21D071B3118C3142837E8EBFAD03F9B0960590E2C21");
+   });
+
+   it("Should check validity", async function () {
+      await expect(block.isValid).to.eq(true);
    });
 });
