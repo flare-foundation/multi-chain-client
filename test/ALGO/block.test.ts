@@ -96,11 +96,12 @@ describe(`Algo block processing`, async () => {
       it("Should get previousBlockHash ", async function () {
          let prevBlock = await MccClient.getBlock(blockNumber - 1);
 
-         expect(block.previousBlockHash).to.eq(hexToBase32(base64ToHex("JC34VKQ3P3FUOJF5DOYB4VSTQJNLDDPITLNTJKEUGVURCYF4VZKQ")));
+         expect(block.previousBlockHash).to.eq(prevBlock.blockHash);
       });
 
       it("Should get stdpreviousBlockHash ", async function () {
-         expect(block.stdPreviousBlockHash).to.eq();
+         let prevBlock = await MccClient.getBlock(blockNumber - 1);
+         expect(block.stdPreviousBlockHash).to.eq(prevBlock.stdBlockHash);
       });
    });
 });

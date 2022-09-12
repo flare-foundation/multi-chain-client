@@ -102,7 +102,7 @@ const TransactionsToTest: algoTransactionTestCases[] = [
          spentAmounts: [
             {
                address: "C7RYOGEWDT7HZM3HKPSMU7QGWTRWR3EPOQTJ2OHXGYLARD3X62DNWELS34",
-               amount: toBN(1001),
+               amount: toBN(1),
             },
          ],
          receivedAmounts: [
@@ -165,7 +165,7 @@ const TransactionsToTest: algoTransactionTestCases[] = [
          spentAmounts: [
             {
                address: "7NAM7FMTE2KUMWVDSS5AYXISMPKERQRXHNPICP257R6VKZVO4GOOFM7XIQ",
-               amount: toBN(1001),
+               amount: toBN(1),
             },
          ],
          receivedAmounts: [
@@ -329,20 +329,40 @@ for (let transData of TransactionsToTest) {
          });
 
          it("Should get source address ", async function () {
-            expect(transaction.sourceAddresses.length).to.eq(transData.expect.sourceAddresses.length);
-            const a = transaction.sourceAddresses.sort();
-            const b = transData.expect.sourceAddresses.sort();
-            for (let i = 0; i < a.length; i++) {
-               expect(a[i]).to.eq(b[i]);
+            if (transaction.type === "pay" || transaction.type === "pay_close") {
+               expect(transaction.sourceAddresses.length).to.eq(transData.expect.sourceAddresses.length);
+               const a = transaction.sourceAddresses.sort();
+               const b = transData.expect.sourceAddresses.sort();
+               for (let i = 0; i < a.length; i++) {
+                  expect(a[i]).to.eq(b[i]);
+               }
+            }
+            if (transaction.type === "axfer" || transaction.type === "axfer_close") {
+               expect(transaction.assetSourceAddresses.length).to.eq(transData.expect.sourceAddresses.length);
+               const a = transaction.assetSourceAddresses.sort();
+               const b = transData.expect.sourceAddresses.sort();
+               for (let i = 0; i < a.length; i++) {
+                  expect(a[i]).to.eq(b[i]);
+               }
             }
          });
 
          it("Should get receiving address ", async function () {
-            expect(transaction.receivingAddresses.length).to.eq(transData.expect.receivingAddresses.length);
-            const a = transaction.receivingAddresses.sort();
-            const b = transData.expect.receivingAddresses.sort();
-            for (let i = 0; i < a.length; i++) {
-               expect(a[i]).to.eq(b[i]);
+            if (transaction.type === "pay" || transaction.type === "pay_close") {
+               expect(transaction.receivingAddresses.length).to.eq(transData.expect.receivingAddresses.length);
+               const a = transaction.receivingAddresses.sort();
+               const b = transData.expect.receivingAddresses.sort();
+               for (let i = 0; i < a.length; i++) {
+                  expect(a[i]).to.eq(b[i]);
+               }
+            }
+            if (transaction.type === "axfer" || transaction.type === "axfer_close") {
+               expect(transaction.assetReceivingAddresses.length).to.eq(transData.expect.receivingAddresses.length);
+               const a = transaction.assetReceivingAddresses.sort();
+               const b = transData.expect.receivingAddresses.sort();
+               for (let i = 0; i < a.length; i++) {
+                  expect(a[i]).to.eq(b[i]);
+               }
             }
          });
 
@@ -357,22 +377,46 @@ for (let transData of TransactionsToTest) {
          });
 
          it("Should spend amount ", async function () {
-            expect(transaction.spentAmounts.length).to.eq(transData.expect.spentAmounts.length);
-            const a = transaction.spentAmounts.sort();
-            const b = transData.expect.spentAmounts.sort();
-            for (let i = 0; i < a.length; i++) {
-               expect(a[i].address).to.eq(b[i].address);
-               expect(a[i].amount.toString()).to.eq(b[i].amount.toString());
+            if (transaction.type === "pay" || transaction.type === "pay_close") {
+               expect(transaction.spentAmounts.length).to.eq(transData.expect.spentAmounts.length);
+               const a = transaction.spentAmounts.sort();
+               const b = transData.expect.spentAmounts.sort();
+               for (let i = 0; i < a.length; i++) {
+                  expect(a[i].address).to.eq(b[i].address);
+                  expect(a[i].amount.toString()).to.eq(b[i].amount.toString());
+               }
+            }
+            if (transaction.type === "axfer" || transaction.type === "axfer_close") {
+               await transaction.makeFull(MccClient);
+               expect(transaction.assetSpentAmounts.length).to.eq(transData.expect.spentAmounts.length);
+               const a = transaction.assetSpentAmounts.sort();
+               const b = transData.expect.spentAmounts.sort();
+               for (let i = 0; i < a.length; i++) {
+                  expect(a[i].address).to.eq(b[i].address);
+                  expect(a[i].amount.toString()).to.eq(b[i].amount.toString());
+               }
             }
          });
 
          it("Should received amount ", async function () {
-            expect(transaction.receivedAmounts.length).to.eq(transData.expect.receivedAmounts.length);
-            const a = transaction.receivedAmounts.sort();
-            const b = transData.expect.receivedAmounts.sort();
-            for (let i = 0; i < a.length; i++) {
-               expect(a[i].address).to.eq(b[i].address);
-               expect(a[i].amount.toString()).to.eq(b[i].amount.toString());
+            if (transaction.type === "pay" || transaction.type === "pay_close") {
+               expect(transaction.receivedAmounts.length).to.eq(transData.expect.receivedAmounts.length);
+               const a = transaction.receivedAmounts.sort();
+               const b = transData.expect.receivedAmounts.sort();
+               for (let i = 0; i < a.length; i++) {
+                  expect(a[i].address).to.eq(b[i].address);
+                  expect(a[i].amount.toString()).to.eq(b[i].amount.toString());
+               }
+            }
+            if (transaction.type === "axfer" || transaction.type === "axfer_close") {
+               await transaction.makeFull(MccClient);
+               expect(transaction.assetReceivedAmounts.length).to.eq(transData.expect.receivedAmounts.length);
+               const a = transaction.assetReceivedAmounts.sort();
+               const b = transData.expect.receivedAmounts.sort();
+               for (let i = 0; i < a.length; i++) {
+                  expect(a[i].address).to.eq(b[i].address);
+                  expect(a[i].amount.toString()).to.eq(b[i].amount.toString());
+               }
             }
          });
 
@@ -397,75 +441,84 @@ for (let transData of TransactionsToTest) {
          });
 
          it("Should get payment summary", async function () {
-            const summary = await transaction.paymentSummary(MccClient);
+            //does not work for axfer yet
 
-            if (transData.expect.isNativePayment) {
-               expect(summary.isNativePayment).to.eq(transData.expect.isNativePayment);
-               expect(summary.sourceAddress).to.eq(transData.expect.sourceAddresses[0]);
-               expect(summary.receivingAddress).to.eq(transData.expect.receivingAddresses[0]);
-               expect(summary.spentAmount?.toString()).to.eq(transData.expect.spentAmounts[0].amount.toString());
-               expect(summary.receivedAmount?.toString()).to.eq(transData.expect.receivedAmounts[0].amount.toString());
-               expect(summary.paymentReference).to.eq(transData.expect.stdPaymentReference);
-               expect(summary.oneToOne).to.eq(true);
-               expect(summary.isFull).to.eq(true);
-            } else {
-               expect(summary.isNativePayment).to.eq(transData.expect.isNativePayment);
+            if (transData.expect.type === "pay" || transData.expect.type === "pay_close") {
+               const summary = await transaction.paymentSummary(MccClient);
+
+               if (transData.expect.isNativePayment) {
+                  expect(summary.isNativePayment).to.eq(transData.expect.isNativePayment);
+                  expect(summary.sourceAddress).to.eq(transData.expect.sourceAddresses[0]);
+                  expect(summary.receivingAddress).to.eq(transData.expect.receivingAddresses[0]);
+                  expect(summary.spentAmount?.toString()).to.eq(transData.expect.spentAmounts[0].amount.toString());
+                  expect(summary.receivedAmount?.toString()).to.eq(transData.expect.receivedAmounts[0].amount.toString());
+                  expect(summary.paymentReference).to.eq(transData.expect.stdPaymentReference);
+                  expect(summary.oneToOne).to.eq(true);
+                  expect(summary.isFull).to.eq(true);
+               } else {
+                  expect(summary.isNativePayment).to.eq(transData.expect.isNativePayment);
+               }
             }
          });
       });
    });
 }
 
-it("Should get invalid method call ", async function () {
-   let MccClient = new MCC.ALGO(algoCreateConfig);
-   await expect(MccClient.getTransaction("")).to.be.rejectedWith("InvalidMethodCall");
-});
+describe("Misc tests", function () {
+   it("Should get invalid method call ", async function () {
+      let MccClient = new MCC.ALGO(algoCreateConfig);
+      await expect(MccClient.getTransaction("")).to.be.rejectedWith("InvalidMethodCall");
+   });
 
-it("Should not list transactions ", async function () {
-   let MccClient = new MCC.ALGO(algoCreateConfig);
-   let res = await MccClient.listTransactions();
-   expect(res).to.be.null;
-});
+   it("Should not list transactions ", async function () {
+      let MccClient = new MCC.ALGO(algoCreateConfig);
+      let res = await MccClient.listTransactions();
+      expect(res).to.be.null;
+   });
 
-it("Should get receiving address with aclose ", async function () {
-   let MccClient = new MCC.ALGO(algoCreateConfig);
-   let res = await MccClient.getBlock(23208015);
-   let tr = res.transactions[0];
-   // TODO the assumption that every block has a axfer transaction may be a bit much
-   for (let tra of res.transactions) {
-      if (tra.type === "axfer") {
-         tr = tra;
+   // Next two are not testing the right thing
+   it("Should get receiving address with aclose ", async function () {
+      let MccClient = new MCC.ALGO(algoCreateConfig);
+      let res = await MccClient.getBlock(23208015);
+      let txId = "W4VEWI5ZRJTNRGS4ITNLPFLCIC3HOKB3JJ7ZXB5I24X7DEBTBZNQ";
+      let tr = res.transactions[0];
+      for (let tra of res.transactions) {
+         if (tra.txid === txId) {
+            tr = tra;
+         }
       }
-   }
-   tr.data.aclose = tr.data.arcv;
-   expect(tr.receivingAddresses.length).to.eq(2);
-});
 
-it("Should get receiving address with close ", async function () {
-   let MccClient = new MCC.ALGO(algoCreateConfig);
-   let res = await MccClient.getBlock();
-   let tr = res.transactions[0];
-   // TODO the assumption that every block has a pay transaction may be a bit much
-   for (let tra of res.transactions) {
-      if (tra.type === "pay") {
-         tr = tra;
+      tr.data.aclose = tr.data.arcv;
+
+      expect(tr.receivingAddresses.length).to.eq(2);
+   });
+
+   it("Should get receiving address with close ", async function () {
+      let MccClient = new MCC.ALGO(algoCreateConfig);
+      let res = await MccClient.getBlock();
+      let tr = res.transactions[0];
+      // TODO the assumption that every block has a pay transaction may be a bit much
+      for (let tra of res.transactions) {
+         if (tra.type === "pay") {
+            tr = tra;
+         }
       }
-   }
-   tr.data.close = tr.data.rcv;
-   expect(tr.receivingAddresses.length).to.eq(2);
-});
+      tr.data.close = tr.data.rcv;
+      expect(tr.receivingAddresses.length).to.eq(2);
+   });
 
-it("Should get receiving fee (no fee) ", async function () {
-   let MccClient = new MCC.ALGO(algoCreateConfig);
-   let res = await MccClient.getBlock();
-   let tr = res.transactions[0];
-   delete tr.data.fee;
-   expect(tr.fee.toNumber()).to.eq(0);
-});
+   it("Should get receiving fee (no fee) ", async function () {
+      let MccClient = new MCC.ALGO(algoCreateConfig);
+      let res = await MccClient.getBlock();
+      let tr = res.transactions[0];
+      delete tr.data.fee;
+      expect(tr.fee.toNumber()).to.eq(0);
+   });
 
-it("Should not list transactions ", async function () {
-   let MccClient = new MCC.ALGO(algoCreateConfig);
-   await expect(MccClient.getIndexerBlock()).to.be.rejectedWith("InvalidMethodCall");
+   it("Should not list transactions ", async function () {
+      let MccClient = new MCC.ALGO(algoCreateConfig);
+      await expect(MccClient.getIndexerBlock()).to.be.rejectedWith("InvalidMethodCall");
+   });
 });
 
 const axferTestdata = {

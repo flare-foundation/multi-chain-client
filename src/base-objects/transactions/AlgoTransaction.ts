@@ -1,7 +1,7 @@
 import BN from "bn.js";
 import { MccClient, TransactionSuccessStatus } from "../../types";
 import { AlgoTransactionTypeOptions, IAlgoAdditionalData, IAlgoAssets, IAlgoTransactionMsgPack } from "../../types/algoTypes";
-import { base32ToHex, bytesToHex, hexToBase32 } from "../../utils/algoUtils";
+import { base32ToHex, bytesToHex, hexToBase32, bufAddToCBufAdd } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
 import { Managed } from "../../utils/managed";
@@ -62,7 +62,8 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IA
          // for token transfers send by clawback transaction (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-clawback-transaction)
          // and asset transfer transactions (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-transfer-transaction)
          if (this.data.asnd) {
-            return [hexToBase32(this.data.asnd)];
+            // for asset clawback tx it somehow gets addess w/out checksum
+            return [hexToBase32(bufAddToCBufAdd(this.data.asnd))];
          }
          // Other kinds of asset transactions (axfer and axfer_close ) use snd field as sender
          return [hexToBase32(this.data.snd)];

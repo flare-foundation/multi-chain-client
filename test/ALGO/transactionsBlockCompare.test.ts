@@ -1,6 +1,8 @@
 import { AlgoBlock, AlgoTransaction, MCC } from "../../src";
-import { expect } from "chai";
 import { AlgoIndexerTransaction } from "../../src/base-objects/transactions/AlgoIndexerTransaction";
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
    algod: {
@@ -15,33 +17,32 @@ const algoCreateConfig = {
 
 const hei = 21_374_440;
 
-describe(`Algo transaction from algod block VS from indexer compare`, async () => {
+describe(`Algo transaction from algod block VS from indexer compare`, function () {
+   it("Should do something", function () {
+      expect(3).to.eq(3);
+   });
    let MccClient: MCC.ALGO;
    let block: AlgoBlock;
+   MccClient = new MCC.ALGO(algoCreateConfig);
 
    before(async function () {
-      MccClient = new MCC.ALGO(algoCreateConfig);
-
-      let tblock = await MccClient.getBlock(hei);
-      if (tblock !== null) {
-         block = tblock;
-      }
+      block = await MccClient.getBlock(hei);
    });
-
-   describe(`Compare transactions in block ${hei}`, async function () {
+   describe(`Comparing transactions for ${hei}`, function () {
       for (let tra of block.transactions) {
          let BTrans: AlgoTransaction;
          let ITrans: AlgoIndexerTransaction;
+         it("Should compare transaction txid ", function () {
+            expect(1).to.eq(1);
+         });
+         BTrans = tra;
 
-         if (tra !== null) {
-            BTrans = tra;
-            let titrans = await MccClient.getIndexerTransaction(BTrans.txid);
-            if (titrans !== null) {
-               ITrans = titrans;
-            }
-         }
+         before(async function () {
+            MccClient = new MCC.ALGO(algoCreateConfig);
+            ITrans = await MccClient.getIndexerTransaction(BTrans.txid);
+         });
 
-         it("Should compare transaction txid ", async function () {
+         it("Should compare transaction txid ", function () {
             expect(BTrans.txid).to.eq(ITrans.txid);
          });
 
