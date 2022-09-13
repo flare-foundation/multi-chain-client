@@ -552,7 +552,6 @@ describe("Axfer assets tests", function () {
    });
 
    it("Should throw if not full transaction", async function () {
-      console.log(transaction.additionalData);
       await expect(() => transaction.assetSpentAmounts).to.throw("InvalidResponse");
       await expect(() => transaction.assetReceivedAmounts).to.throw("InvalidResponse");
       // await transaction.makeFull(MccClient);
@@ -565,7 +564,7 @@ describe("Axfer assets tests", function () {
       expect(transaction.additionalData).to.not.be.undefined;
    });
 
-   it("Should get assetSpentAmounts", async function () {
+   it("Should get assetSpentAmounts/assetReceivedAmounts/assetSourceAddresses", async function () {
       await transaction.makeFull(MccClient);
       // console.log(transaction.assetSourceAddresses);
       expect(transaction.assetSpentAmounts).to.not.be.undefined;
