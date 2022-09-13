@@ -146,7 +146,7 @@ export class ALGOImplementation implements ReadRpcInterface {
       }
       let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
          responseType: "arraybuffer",
-         // , headres: { "Content-Type": "application/msgpack" },
+         headres: { "Content-Type": "application/msgpack" },
       });
       if (algo_check_expect_block_out_of_range(res)) {
          throw new mccError(mccErrorCode.InvalidBlock);
