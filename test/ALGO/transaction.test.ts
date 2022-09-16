@@ -476,7 +476,7 @@ describe("Misc tests", function () {
       expect(res).to.be.null;
    });
 
-   // Next two are not testing the right thing
+   // Next is not testing the right thing NOT ACLOSE
    it("Should get receiving address with aclose ", async function () {
       let MccClient = new MCC.ALGO(algoCreateConfig);
       let res = await MccClient.getBlock(23208015);
@@ -493,7 +493,7 @@ describe("Misc tests", function () {
       expect(tr.receivingAddresses.length).to.eq(2);
    });
 
-   it("Should get receiving address with close ", async function () {
+   it("Should get receiving address  and should not get spent amounts with close ", async function () {
       let MccClient = new MCC.ALGO(algoCreateConfig);
       let res = await MccClient.getBlock();
       let tr = res.transactions[0];
@@ -505,6 +505,7 @@ describe("Misc tests", function () {
       }
       tr.data.close = tr.data.rcv;
       expect(tr.receivingAddresses.length).to.eq(2);
+      expect(() => tr.spentAmounts).to.throw("InvalidResponse");
    });
 
    it("Should get receiving fee (no fee) ", async function () {
@@ -659,16 +660,23 @@ describe("Axfer_close tests", function () {
       expect(transaction.type).to.eq(assetCloseTestdata.txtype);
    });
 
-   // it("Should get recivingAddresses", function () {
-   //    expect(transaction.receivingAddresses[0]).to.be.equal(payCloseTestdata.rcvAdd);
-   // });
+   it("Should get  empty recivingAddresses", function () {
+      expect(transaction.receivingAddresses.length).to.be.equal(0);
+   });
+   it("Should get  empty receivedAmounts", function () {
+      expect(transaction.receivedAmounts.length).to.be.equal(0);
+   });
+
+   it("Should get  spentAmounts = fee", function () {
+      expect(transaction.spentAmounts[0].amount.toNumber()).to.be.equal(transaction.fee.toNumber());
+   });
+
    it("Should get assetRecivingAddresses", function () {
       expect(transaction.assetReceivingAddresses.length).to.be.equal(2);
       expect(transaction.assetReceivingAddresses[0]).to.be.equal(assetCloseTestdata.rcvAdd);
    });
 
    it("Should not get assetSpentAmounts", function () {
-      console.log(transaction.type === "axfer_close");
       expect(() => transaction.assetSpentAmounts).to.throw("InvalidResponse");
    });
 
@@ -682,4 +690,8 @@ describe("Axfer_close tests", function () {
    // it("Should get not assetSourceAddresses", function () {
    //    expect(transaction.assetSourceAddresses[0]).to.be.undefined;
    // });
+
+   it("Should get payment summery", async function () {
+      expect((await transaction.paymentSummary()).isNativePayment).to.be.eq(false);
+   });
 });

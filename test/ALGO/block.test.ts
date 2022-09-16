@@ -103,5 +103,9 @@ describe(`Algo block processing`, async () => {
          let prevBlock = await MccClient.getBlock(blockNumber - 1);
          expect(block.stdPreviousBlockHash).to.eq(prevBlock.stdBlockHash);
       });
+
+      it("Should not get block out of range", async function () {
+         await expect(MccClient.getBlock(100000000000000000)).to.eventually.be.rejectedWith("InvalidBlock");
+      });
    });
 });

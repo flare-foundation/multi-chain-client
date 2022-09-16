@@ -231,7 +231,7 @@ describe("Transaction Btc base test ", function () {
             sourceAddresses: [undefined],
             receivingAddresses: ["1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg", undefined],
             isFeeError: true,
-            fee: "OutsideError", // number as a string
+            fee: "InvalidResponse", // number as a string
             spentAmounts: [
                {
                   address: undefined,
@@ -278,7 +278,7 @@ describe("Transaction Btc base test ", function () {
             sourceAddresses: [undefined, undefined, undefined],
             receivingAddresses: ["bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc", "14PbdXD3gRMnrrsP4CnS66fYKHSb1aawea"],
             isFeeError: true,
-            fee: "OutsideError", // number as a string
+            fee: "InvalidResponse", // number as a string
             spentAmounts: [
                {
                   address: undefined,

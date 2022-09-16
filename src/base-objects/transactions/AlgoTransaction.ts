@@ -109,7 +109,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IA
 
    public get spentAmounts(): AddressAmount[] {
       // for transactions of type pay
-      if (this.type === "pay") {
+      if (this.type === "pay" || "pay_close") {
          if (this.data.close) {
             // all assets that are not fee and received amount (amt) are transferred to close address
             throw new mccError(mccErrorCode.InvalidResponse, Error("Spend Amounts can't be extracted from transaction object on non-archival node"));
