@@ -14,15 +14,17 @@ import {
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
-   RateLimitOptions
+   RateLimitOptions,
+   IAlgoIndexerAsset,
 } from "../types";
 import {
    IAlgoAssets,
    IAlgoBlockMsgPack,
-   IAlgoCert, IAlgoGetIndexerBlockRes,
+   IAlgoCert,
+   IAlgoGetIndexerBlockRes,
    IAlgoGetStatus,
    IAlgoGetTransactionRes,
-   IAlgoStatusObject
+   IAlgoStatusObject,
 } from "../types/algoTypes";
 import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, certToInCert, mpDecode } from "../utils/algoUtils";
 import { mccError, mccErrorCode } from "../utils/errors";
@@ -206,10 +208,10 @@ export class ALGOImplementation implements ReadRpcInterface {
    // Build-in Assets (ASAs) methods /////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   async getAssetInfo(assetId: number): Promise<IAlgoAssets>{
-      let res = await this.algodClient.get(`/v2/assets/${assetId}`)
+   async getAssetInfo(assetId: number): Promise<IAlgoAssets> {
+      let res = await this.algodClient.get(`/v2/assets/${assetId}`);
       algo_ensure_data(res);
-      return res.data as IAlgoAssets
+      return res.data as IAlgoAssets;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -287,5 +289,14 @@ export class ALGOImplementation implements ReadRpcInterface {
       }
       camelBlockRes.cert = certToInCert(cert);
       return new AlgoIndexerBlock(camelBlockRes);
+   }
+
+   async getIndexerAssetInfo(assetIndex: number): Promise<IAlgoIndexerAsset> {
+      let res = await this.indexerClient.get(`/v2/assets/${assetIndex}`);
+      if (algo_check_expect_empty(res)) {
+         throw new mccError(mccErrorCode.InvalidResponse);
+      }
+      algo_ensure_data(res);
+      return res.data.asset as IAlgoIndexerAsset;
    }
 }
