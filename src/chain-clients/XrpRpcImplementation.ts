@@ -85,24 +85,32 @@ export class XRPImplementation implements ReadRpcInterface {
    ///////////////////////////////////////////////////////////////////////////////////////
 
    async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock> {
+      interface XrpBlockParams {
+         transactions: boolean;
+         expand: boolean;
+         binary: boolean;
+         ledger_hash?: string;
+         ledger_index?: number;
+      }
+      let params: XrpBlockParams = {
+         transactions: true,
+         expand: true,
+         binary: false,
+      }
       if (typeof blockNumberOrHash === "string") {
          if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockNumberOrHash)) {
             blockNumberOrHash = unPrefix0x(blockNumberOrHash);
          }
+         params.ledger_hash = blockNumberOrHash;
+      } else {
+         params.ledger_index = blockNumberOrHash;
       }
       try {
          mccSettings.loggingCallback(`block number: ${blockNumberOrHash} `);
 
          let res = await this.client.post("", {
             method: "ledger",
-            params: [
-               {
-                  ledger_index: blockNumberOrHash,
-                  transactions: true,
-                  expand: true,
-                  binary: false,
-               } as LedgerRequest,
-            ],
+            params: [params],
          });
          xrp_ensure_data(res.data);
          return new XrpBlock(res.data);

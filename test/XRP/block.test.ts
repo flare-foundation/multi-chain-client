@@ -12,11 +12,12 @@ const XRPMccConnection = {
 describe("Block Xrp base test ", function () {
    let MccClient: MCC.XRP;
    let block: XrpBlock;
-   const blockNumber = 72_387_695
+   const blockNumber = 72_387_695;
+   const blockHash = "2492B09472F24DB37B124A2F9D1D0FA6883EF0FE51494938A54E6CD93295C086";
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
-      block = await MccClient.getBlock(blockNumber);
+      block = await MccClient.getBlock(blockHash);
    });
 
    it("Should get block", async function () {
@@ -59,11 +60,11 @@ describe("Block Xrp base test ", function () {
    });
 
    it("Should get block", async function () {
-      const block2 = await MccClient.getBlock(blockNumber.toString());
+      const block2 = await MccClient.getBlock(blockHash);
       expect(block2).to.not.eq(undefined);
    });
 
    it("Should not get block", async function () {
-      await expect(MccClient.getBlock("0x2492B09472F24DB37B124A2F9D1D0FA6883EF0FE51494938A54E6CD93295C086")).to.eventually.be.rejected; 
+      await expect(MccClient.getBlock(blockNumber.toString())).to.eventually.be.rejected; 
    });
 });
