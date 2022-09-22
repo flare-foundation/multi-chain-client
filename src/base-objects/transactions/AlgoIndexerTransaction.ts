@@ -1,30 +1,28 @@
 import BN from "bn.js";
+import { MCC } from "../..";
 import { MccClient, TransactionSuccessStatus } from "../../types";
-import { AlgoTransactionTypeOptions, IAlgoGetTransactionRes } from "../../types/algoTypes";
+import { AlgoTransactionTypeOptions, IAlgoGetTransactionRes, IAlgoIndexerAdditionalData } from "../../types/algoTypes";
 import { base64ToHex, txIdToHexNo0x } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
+import { mccError, mccErrorCode } from "../../utils/errors";
 const web3 = require("web3");
 
 @Managed()
-export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionRes, any> {
-   public makeFull(client: MccClient): Promise<void> {
-      throw new Error("Method not implemented.");
+export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionRes, IAlgoIndexerAdditionalData> {
+   public async makeFull(client: MCC.ALGO): Promise<void> {
+      if (!this.additionalData) {
+         this.additionalData = {};
+      }
+      if (!this.additionalData.assetInfo) {
+         if (this.data.transaction.assetTransferTransaction) {
+            this.additionalData.assetInfo = await client.getIndexerAssetInfo(this.data.transaction.assetTransferTransaction.assetId);
+         }
+      }
    }
-   public get assetSourceAddresses(): (string | undefined)[] {
-      throw new Error("Method not implemented.");
-   }
-   public get assetReceivingAddresses(): (string | undefined)[] {
-      throw new Error("Method not implemented.");
-   }
-   public get assetSpentAmounts(): AddressAmount[] {
-      throw new Error("Method not implemented.");
-   }
-   public get assetReceivedAmounts(): AddressAmount[] {
-      throw new Error("Method not implemented.");
-   }
+
    public get txid(): string {
       return this.hash;
    }
@@ -41,7 +39,7 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
    }
 
    public get reference(): string[] {
-      if(this.data.transaction.note) {
+      if (this.data.transaction.note) {
          return [base64ToHex(this.data.transaction.note)];
       }
       return [];
@@ -72,13 +70,41 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
       return [this.data.transaction.sender];
    }
 
+   public get assetSourceAddresses(): (string | undefined)[] {
+      if (this.type === "axfer" || this.type === "axfer_close") {
+         // for token transfers send by clawback transaction (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-clawback-transaction)
+         // and asset transfer transactions (https://developer.algorand.org/docs/get-details/transactions/transactions/#asset-transfer-transaction)
+         if (this.data.transaction.assetTransferTransaction.sender) {
+            // for asset clawback tx it somehow gets addess w/out checksum
+            return [this.data.transaction.assetTransferTransaction.sender];
+         }
+         // Other kinds of asset transactions (axfer and axfer_close ) use snd field as sender
+         return [this.data.transaction.sender];
+      }
+      // Other kinds of transactions have nothing to do with assets
+      return [];
+   }
+   // TODO close address
    public get receivingAddresses(): string[] {
       if (this.type === "pay" && this.data.transaction.paymentTransaction) {
          return [this.data.transaction.paymentTransaction.receiver];
-      } else if (this.type === "axfer" && this.data.transaction.assetTransferTransaction) {
-         return [this.data.transaction.assetTransferTransaction.receiver];
       }
       // TODO check other transaction types
+      return [];
+   }
+
+   // TODO what if revicer=closeTo
+   public get assetReceivingAddresses(): (string | undefined)[] {
+      const recAddresses = [];
+      if (this.type === "axfer" || this.type === "axfer_close") {
+         if (this.data.transaction.assetTransferTransaction.receiver) {
+            recAddresses.push(this.data.transaction.assetTransferTransaction.receiver);
+         }
+         if (this.data.transaction.assetTransferTransaction.closeTo) {
+            recAddresses.push(this.data.transaction.assetTransferTransaction.closeTo);
+         }
+         return recAddresses;
+      }
       return [];
    }
 
@@ -94,13 +120,6 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
                amount: this.fee.add(toBN(this.data.transaction.paymentTransaction.amount)),
             },
          ];
-      } else if (this.data.transaction.txType === "axfer" && this.data.transaction.assetTransferTransaction) {
-         return [
-            {
-               address: this.sourceAddresses[0],
-               amount: this.fee.add(toBN(this.data.transaction.assetTransferTransaction.amount)),
-            },
-         ];
       } else {
          return [
             {
@@ -111,6 +130,37 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
       }
    }
 
+   public get assetSpentAmounts(): AddressAmount[] {
+      // for transactions of type axfer
+      if (this.type === "axfer") {
+         if (this.data.transaction.assetTransferTransaction) {
+            let preamount = this.data.transaction.assetTransferTransaction.amount;
+            if (this.data.transaction.assetTransferTransaction.closeAmount) {
+               preamount += this.data.transaction.assetTransferTransaction.closeAmount;
+            }
+            let amount = preamount.toString();
+            if (!(this.additionalData && this.additionalData.assetInfo)) {
+               throw new mccError(mccErrorCode.InvalidResponse, Error("call the makeFull before to make sure additional data full"));
+            }
+            let decimals = this.additionalData.assetInfo.params.decimals;
+            if (typeof decimals === "bigint") {
+               decimals = Number(decimals);
+            }
+            return [
+               {
+                  address: this.assetSourceAddresses[0],
+                  amount: toBN(amount),
+                  elementaryUnits: web3.utils.toBN(Math.pow(10, decimals)),
+               },
+            ];
+         }
+      }
+      return [];
+      // For now we don't support spending / using non-native tokens
+   }
+
+   // TODO close amount
+   // TODO what if receiver=closeTo
    public get receivedAmounts(): AddressAmount[] {
       if (this.type === "pay" && this.data.transaction.paymentTransaction) {
          return [
@@ -119,13 +169,37 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
                amount: toBN(this.data.transaction.paymentTransaction.amount),
             },
          ];
-      } else if (this.type === "axfer" && this.data.transaction.assetTransferTransaction) {
-         return [
-            {
-               address: this.receivingAddresses[0],
-               amount: toBN(this.data.transaction.assetTransferTransaction.amount),
-            },
-         ];
+      }
+      return [];
+   }
+   // TODO what if receiver=closeTo
+   public get assetReceivedAmounts(): AddressAmount[] {
+      let asRecAm: AddressAmount[] = [];
+      if (this.type === "axfer") {
+         if (this.data.transaction.assetTransferTransaction) {
+            let amount = this.data.transaction.assetTransferTransaction.amount.toString();
+            if (!(this.additionalData && this.additionalData.assetInfo)) {
+               throw new mccError(mccErrorCode.InvalidResponse, Error("call the makeFull before to make sure additional data is full"));
+            }
+            let decimals = this.additionalData.assetInfo.params.decimals;
+            if (typeof decimals === "bigint") {
+               decimals = Number(decimals);
+            }
+            asRecAm.push({
+               address: this.data.transaction.assetTransferTransaction.receiver,
+               amount: toBN(amount),
+               elementaryUnits: web3.utils.toBN(Math.pow(10, decimals)),
+            });
+            if (this.data.transaction.assetTransferTransaction.closeTo) {
+               let clAmount = this.data.transaction.assetTransferTransaction.closeAmount.toString();
+               asRecAm.push({
+                  address: this.data.transaction.assetTransferTransaction.closeTo,
+                  amount: toBN(clAmount),
+                  elementaryUnits: web3.utils.toBN(Math.pow(10, decimals)),
+               });
+            }
+            return asRecAm;
+         }
       }
       return [];
    }

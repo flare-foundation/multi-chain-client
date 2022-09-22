@@ -1,6 +1,7 @@
 import { EncodedTransaction } from "algosdk";
 import { Asset } from "algosdk/dist/types/src/client/v2/algod/models/types";
 import BlockHeader from "algosdk/dist/types/src/types/blockHeader";
+import internal from "stream";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
@@ -97,6 +98,31 @@ export interface IAlgoIndexerCert {
    vote: any[];
 }
 
+// documentation at https://developer.algorand.org/docs/rest-apis/indexer/#asset + camelCase
+export interface IAlgoIndexerAsset {
+   createdAtRound?: number;
+   deleted?: boolean;
+   destroyedAtRound?: number;
+   index: number;
+   params: {
+      clawback?: string;
+      creator: string;
+      decimals: number;
+      defaultFrozen?: boolean;
+      freeze?: string;
+      manager?: string;
+      metadataHash?: string;
+      name?: string;
+      nameB64?: string;
+      reserve?: string;
+      total: number;
+      unitName?: string;
+      unitNameB64?: string;
+      url?: string;
+      urlB64?: string;
+   };
+}
+
 export interface IAlgoGetBlockRes extends IAlgoBlockData, IIGetBlockRes {
    cert: IAlgoCert;
    type: "IAlgoGetBlockRes";
@@ -130,7 +156,7 @@ export interface IAlgoBlockMsgPackBlock {
    txns: any[]; // Array of transaction objects
 }
 
-type IALgoBlock = BlockHeader
+type IALgoBlock = BlockHeader;
 
 export interface IAlgoBlockMsgPack {
    block: IAlgoBlockMsgPackBlock;
@@ -186,6 +212,7 @@ export interface IAlgoTransaction {
    roundTime?: number;
    sender: string;
    senderRewards?: number;
+   stateProofTransaction?: any; //TODO
    signature?: IAlgoSignature;
    txType: AlgoTransactionTypeOptions;
    // * [pay] payment-transaction
@@ -232,7 +259,7 @@ interface IALgoApar {
 export type IAlgoTransactionMsgPack = EncodedTransaction & {
    txid: string; // Base32 txid as string (calculated in block processing)
    timestamp: number; // unix timestamp from block (transactions get timestamp from block they are in)
-   hgi: boolean; // 
+   hgi: boolean; //
    sig?: Buffer; // signature
    lsig?: Buffer; // l signature
    msig?: Buffer; // multi signature
@@ -247,7 +274,7 @@ export type AlgoTransactionTypeOptions = "pay" | "keyreg" | "acfg" | "axfer" | "
 // * afrz        - asset-freeze-transaction
 // * appl        - application-transaction
 // * pay_close   - custom made type for transactions that close accounts
-// * axfer_close - custom type of asset transfer transaction that closes asset account 
+// * axfer_close - custom type of asset transfer transaction that closes asset account
 export interface IAlgoLitsTransaction {
    address?: string; // Only include transactions with this address in one of the transaction fields.
    addressRole?: "sender" | "receiver" | "freeze-target"; // Combine with the address parameter to define what type of address to search for.
@@ -361,12 +388,16 @@ export interface IAlgoHexAddress {
 ////////////////////// Algo build-in assets ASA's //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export type IAlgoAssets = Asset
+export type IAlgoAssets = Asset;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////// Algo transaction additional data ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface IAlgoAdditionalData {
-   assetInfo?: IAlgoAssets
+   assetInfo?: IAlgoAssets;
+}
+
+export interface IAlgoIndexerAdditionalData {
+   assetInfo?: IAlgoIndexerAsset;
 }
