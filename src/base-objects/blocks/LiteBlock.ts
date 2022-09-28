@@ -39,4 +39,8 @@ export class LiteBlock extends BlockBase<IGetLiteBlockRes> {
    public get transactionCount(): number {
       return 0;
    }
+
+   public get chainTipStatus() {
+      return this.data.status
+   }
 }
