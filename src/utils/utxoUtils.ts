@@ -26,14 +26,14 @@ export async function recursive_block_tip(clinet: any, tip: LiteBlock, processHe
    if (tip.stdBlockHash === "") {
       return [];
    }
-   const tempTip = new LiteBlock({ hash: tip.stdBlockHash, number: tip.number });
+   const tempTip = new LiteBlock({ hash: tip.stdBlockHash, number: tip.number, branchlen: tip.data.branchlen, status: tip.data.status });
    if (processHeight <= 1) {
       return [tempTip];
    } else {
       const CurrBlock = await clinet.getBlockHeader(tip.stdBlockHash);
       const previousHash = CurrBlock.previousblockhash;
       const previousHeight = CurrBlock.height - 1;
-      return (await recursive_block_tip(clinet, new LiteBlock({ hash: previousHash, number: previousHeight }), processHeight - 1)).concat([tempTip]);
+      return (await recursive_block_tip(clinet, new LiteBlock({ hash: previousHash, number: previousHeight, branchlen: tip.data.branchlen, status: tip.chainTipStatus }), processHeight - 1)).concat([tempTip]);
    }
 }
 

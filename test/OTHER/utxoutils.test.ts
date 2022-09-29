@@ -9,7 +9,7 @@ describe("UTXO utils tests ", function () {
     });
 
     it("should return empty array if hash is empty 2", async () => {
-        const res = await recursive_block_tip("", new LiteBlock({ hash: "", number: 0 }), 1);
+        const res = await recursive_block_tip("", new LiteBlock({ hash: "", number: 0, branchlen: 0, status: 'active'}), 1);
         expect(res.length).to.be.equal(0);
     });
 

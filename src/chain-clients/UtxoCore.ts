@@ -324,7 +324,7 @@ export class UtxoCore implements ReadRpcInterface {
       const tips = await this.getTopBlocks({ height_gte: height_gte, all_blocks: true });
       let mainBranchHashes: LiteBlock[] = [];
       const activeTip = tips.filter((a) => a.status === "active")[0];
-      const ActiveTip = new LiteBlock({ hash: activeTip.hash, number: activeTip.height });
+      const ActiveTip = new LiteBlock({ hash: activeTip.hash, number: activeTip.height, branchlen: activeTip.branchlen, status: activeTip.status  });
       if (mainBranchProcess !== undefined) {
          mainBranchHashes = await recursive_block_tip(this, ActiveTip, mainBranchProcess);
       }
@@ -332,7 +332,7 @@ export class UtxoCore implements ReadRpcInterface {
          const tempTips = [];
          // all_block_hashes exist due to all_blocks: true in getTopBlocks call
          for (let hashIndex = 0; hashIndex < UtxoTip!.all_block_hashes!.length; hashIndex++) {
-            tempTips.push(new LiteBlock({ hash: UtxoTip!.all_block_hashes![hashIndex], number: UtxoTip.height - hashIndex }));
+            tempTips.push(new LiteBlock({ hash: UtxoTip!.all_block_hashes![hashIndex], number: UtxoTip.height - hashIndex, branchlen: 0, status: 'active'}));
          }
          return tempTips;
       });
