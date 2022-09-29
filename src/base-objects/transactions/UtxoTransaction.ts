@@ -4,7 +4,7 @@ import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types"
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
 import { WordToOpcode } from "../../utils/utxoUtils";
-import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
+import { AddressAmount, PaymentSummary, TransactionBase, TransactionBlock } from "../TransactionBase";
 import { Managed } from "../../utils/managed";
 import { mccError, mccErrorCode } from "../../utils/errors";
 
@@ -261,6 +261,12 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
 
    public async makeFull(client: MccClient): Promise<void> {
       await this.makeFullPayment(client as MccUtxoClient)
+   }
+
+   public get transactionBlock(): TransactionBlock {
+      return {
+         hash: this.data.blockhash
+      }
    }
 
    ///////////////////////////////

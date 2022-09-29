@@ -22,6 +22,7 @@ describe("Transaction Xrp tests ", function () {
    describe("Offer create transaction ", function () {
       let transaction: XrpTransaction;
       const txid = "C32ACF8CCF4F48B7AE097873AA2B7672DC66E05D4F1B3133DA90D1F476B1EAC6";
+      const txBlockId = 70080164;
       before(async function () {
          transaction = await MccClient.getTransaction(txid);
       });
@@ -100,6 +101,10 @@ describe("Transaction Xrp tests ", function () {
          expect(transaction.spentAmounts.length).to.eq(1);
          expect(transaction.spentAmounts[0].address).to.eq("rETx8GBiH6fxhTcfHM9fGeyShqxozyD3xe");
          expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(20);
+      });
+
+      it("Should get transaction block", () => {
+         expect(transaction.transactionBlock.id).to.eq(txBlockId);
       });
 
    });

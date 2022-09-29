@@ -6,7 +6,7 @@ import { base64ToHex, txIdToHexNo0x } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
-import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
+import { AddressAmount, PaymentSummary, TransactionBase, TransactionBlock } from "../TransactionBase";
 import { mccError, mccErrorCode } from "../../utils/errors";
 const web3 = require("web3");
 
@@ -244,5 +244,11 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
          oneToOne: true,
          isFull: true,
       };
+   }
+
+   public get transactionBlock(): TransactionBlock {
+      return {
+         id: this.data.transaction.confirmedRound
+      }
    }
 }

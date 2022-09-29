@@ -83,6 +83,7 @@ export interface expectTransactionTestCase {
    txid: string;
    stdTxid: string;
    hash: string;
+   blockhash?: string;
    reference: string[];
    stdPaymentReference: string;
    unixTimestamp: number;

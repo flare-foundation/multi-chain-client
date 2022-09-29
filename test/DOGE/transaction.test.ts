@@ -37,13 +37,14 @@ describe("Transaction DOGE base test ", function () {
             txid: "de07c395ab9e3d987f13f72ee71f0b3ba4217c3b4df6f9dd928fe579c014b90e",
             stdTxid: "de07c395ab9e3d987f13f72ee71f0b3ba4217c3b4df6f9dd928fe579c014b90e",
             hash: "de07c395ab9e3d987f13f72ee71f0b3ba4217c3b4df6f9dd928fe579c014b90e",
+            blockhash: "0e7984b6f8ae176f0a0d2810449f8848ef7b21c7617cb6df47af96f8882171f1",
             reference: [],
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1647899747,
             sourceAddresses: [undefined],
             receivingAddresses: ["DPcBYzf5vGemYGtWK6BZbvHqvCSAzwpscv", "9theYDTPbCniM4Rdnza3RdeCw4d1H68sDz"],
             isFeeError: true,
-            fee: "OutsideError", // number as a string
+            fee: "InvalidResponse", // number as a string
             spentAmounts: [
                {
                   address: undefined,
@@ -74,6 +75,7 @@ describe("Transaction DOGE base test ", function () {
             txid: "9d863418ef3761eb45fd38eea5074965efa1266694a8b2826d5ce148aa564095",
             stdTxid: "9d863418ef3761eb45fd38eea5074965efa1266694a8b2826d5ce148aa564095",
             hash: "9d863418ef3761eb45fd38eea5074965efa1266694a8b2826d5ce148aa564095",
+            blockhash: "0e7984b6f8ae176f0a0d2810449f8848ef7b21c7617cb6df47af96f8882171f1",
             reference: [],
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1647899747,
@@ -208,6 +210,10 @@ describe("Transaction DOGE base test ", function () {
 
          it("Should get success status ", async function () {
             expect(transaction.successStatus).to.eq(transData.expect.successStatus);
+         });
+
+         it("Should get transaction block", () => {
+            expect(transaction.transactionBlock.hash).to.eq(transData.expect.blockhash);
          });
       });
    }

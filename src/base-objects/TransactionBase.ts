@@ -25,6 +25,11 @@ export interface PaymentSummary {
    isFull?: boolean;
 }
 
+export interface TransactionBlock {
+   hash?: string,
+   id?: number
+}
+
 export abstract class TransactionBase<T, AT> {
    data: T;
    // we can add additional data about transaction to this object

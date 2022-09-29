@@ -6,7 +6,7 @@ import { IXrpGetTransactionRes } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
-import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
+import { AddressAmount, PaymentSummary, TransactionBase, TransactionBlock } from "../TransactionBase";
 
 @Managed()
 export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> {
@@ -218,6 +218,12 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public async makeFull(client: MccClient): Promise<void> {
       return
+   }
+
+   public get transactionBlock(): TransactionBlock {
+      return {
+         id: this.data.result.ledger_index
+      }
    }
 
    //////////////////////////////

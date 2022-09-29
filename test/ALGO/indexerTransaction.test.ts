@@ -142,6 +142,12 @@ describe(`Algo block processing`, async () => {
    //    it("Should get transaction currencyName ", async function () {
    //       expect(ITrans1.currencyName).to.eq("");
    //    });
+   
+   it("Should get transaction block", () => {
+      expect(ITrans1.transactionBlock.id).to.eq(21700000);
+      expect(ITrans2.transactionBlock.id).to.eq(21797543);
+      expect(ITrans3.transactionBlock.id).to.eq(21891197);
+   });
 
    it("Should get transaction asserReceivingAddresses ", async function () {
       expect(ITrans1.assetReceivingAddresses[0]).to.eq("3EDVPMS2OHEV3FBHVOCANZYVKE5H4RHOFJNXUYMWCCH4DGY4FXG75MWVZY");
