@@ -332,7 +332,7 @@ export class UtxoCore implements ReadRpcInterface {
          const tempTips = [];
          // all_block_hashes exist due to all_blocks: true in getTopBlocks call
          for (let hashIndex = 0; hashIndex < UtxoTip!.all_block_hashes!.length; hashIndex++) {
-            tempTips.push(new LiteBlock({ hash: UtxoTip!.all_block_hashes![hashIndex], number: UtxoTip.height - hashIndex, branchlen: 0, status: 'active'}));
+            tempTips.push(new LiteBlock({ hash: UtxoTip!.all_block_hashes![hashIndex], number: UtxoTip.height - hashIndex, branchlen: UtxoTip.branchlen, status: UtxoTip.status}));
          }
          return tempTips;
       });
