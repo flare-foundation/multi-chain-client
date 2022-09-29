@@ -118,9 +118,19 @@ export class MccLoggingOptionsFull {
 ////////////////////// Lite blocks /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Possible values for status:
+ *  1.  "invalid"               This branch contains at least one invalid block
+ *  2.  "headers-only"          Not all blocks for this branch are available, but the headers are valid
+ *  3.  "valid-headers"         All blocks are available for this branch, but they were never fully validated
+ *  4.  "valid-fork"            This branch is not part of the active chain, but is fully validated
+ *  5.  "active"                This is the tip of the active main chain, which is certainly valid
+ */
 export interface IGetLiteBlockRes {
    hash: string;
    number: number;
+   branchlen: number
+   status: 'invalid' | 'headers-only' | 'valid-headers' | 'valid-fork' | 'active'
 }
 
 export interface IEmptyObject {}

@@ -1,4 +1,5 @@
 import { IGetLiteBlockRes } from "../../types/genericMccTypes";
+import { mccError, mccErrorCode } from "../../utils/errors";
 import { Managed } from "../../utils/managed";
 import { BlockBase } from "../BlockBase";
 
@@ -17,11 +18,17 @@ export class LiteBlock extends BlockBase<IGetLiteBlockRes> {
    }
 
    public get previousBlockHash(): string {
-      throw new Error("Method not implemented.");
+      throw new mccError(
+         mccErrorCode.InvalidMethodCall,
+         Error("Method not implemented.")
+      );
    }
    
    public get stdPreviousBlockHash(): string {
-      throw new Error("Method not implemented.");
+      throw new mccError(
+         mccErrorCode.InvalidMethodCall,
+         Error("Method not implemented.")
+      );
    }
 
    public get unixTimestamp(): number {
@@ -38,5 +45,9 @@ export class LiteBlock extends BlockBase<IGetLiteBlockRes> {
 
    public get transactionCount(): number {
       return 0;
+   }
+
+   public get chainTipStatus() {
+      return this.data.status
    }
 }
