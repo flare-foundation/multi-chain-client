@@ -104,5 +104,13 @@
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/BTC/mock/block.test.ts"]
       },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Mock DOGE tips",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/DOGE/mock/mock.tips.test.ts"]
+      },
    ]
 }

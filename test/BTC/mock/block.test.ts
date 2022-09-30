@@ -25,7 +25,7 @@ describe("Block Btc base test ", function () {
       traceManager.displayRuntimeTrace = false;
 
       MccClient = new MCC.BTC(BtcMccConnection);
-      mock = new MockAdapter(MccClient.client);
+      mock = new MockAdapter(MccClient.client, { onNoMatch: "passthrough" });
 
       mock
          .onPost("", {

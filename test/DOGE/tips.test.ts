@@ -30,7 +30,7 @@ describe("Chain tips test ", function () {
           }
         }
       }
-      // console.log(latest)
+      console.log(latest)
       expect(latest?.number).to.greaterThanOrEqual(4406287);
    });
 
