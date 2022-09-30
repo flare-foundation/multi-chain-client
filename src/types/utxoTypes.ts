@@ -67,6 +67,9 @@ export interface IUtxoTransactionListRes {
    safe: boolean;
 }
 
+/**
+ * Block header interface
+ */
 export interface IUtxoGetBlockHeaderRes {
    hash: string;
    confirmations: number;
@@ -80,6 +83,7 @@ export interface IUtxoGetBlockHeaderRes {
    bits: string;
    difficulty: number;
    chainwork: string;
+   nTx : number,
    previousblockhash: string;
    nextblockhash: string;
 }
@@ -151,11 +155,20 @@ export interface IUtxoGetAlternativeBlocksOptions {
 
 export type IUtxoGetAlternativeBlocksRes = IUtxoChainTip[];
 
+/**
+ * Possible values for status:
+ *  1.  "invalid"               This branch contains at least one invalid block
+ *  2.  "headers-only"          Not all blocks for this branch are available, but the headers are valid
+ *  3.  "valid-headers"         All blocks are available for this branch, but they were never fully validated
+ *  4.  "valid-fork"            This branch is not part of the active chain, but is fully validated
+ *  5.  "active"                This is the tip of the active main chain, which is certainly valid
+ */
+export type IUtxoChainTipStatuses = "active" | "valid-fork" | "valid-headers" | "headers-only" | "invalid";
 export interface IUtxoChainTip {
    height: number; // height of the chain tip
    hash: string; // block hash of the tip
    branchlen: number; // zero for main chain
-   status: "active" | "valid-fork" | "valid-headers" | "headers-only" | "invalid";
+   status: IUtxoChainTipStatuses
    // Possible status options
    // 1.  "invalid"               This branch contains at least one invalid block
    // 2.  "headers-only"          Not all blocks for this branch are available, but the headers are valid
@@ -267,7 +280,7 @@ export type IUtxoNodeStatus = IUtxoGetBlockchainInfoRes & IUtxoGetNetworkInfoRes
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface UtxoRpcInterface extends RPCInterface {
-   getBlockHeader(blockHash: string): any;
+   getBlockHeaderBase(blockHash: string): any;
 
    createWallet(walletLabel: string): any;
 

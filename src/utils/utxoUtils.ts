@@ -1,4 +1,5 @@
 import { LiteBlock } from "../base-objects/blocks/LiteBlock";
+import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
 import { MccError } from "./utils";
 
 /**
@@ -22,18 +23,18 @@ export async function recursive_block_hash(clinet: any, hash: string, processHei
    }
 }
 
-export async function recursive_block_tip(clinet: any, tip: LiteBlock, processHeight: number): Promise<LiteBlock[]> {
+export async function recursive_block_tip(clinet: any, tip: UtxoBlockTip, processHeight: number): Promise<UtxoBlockTip[]> {
    if (tip.stdBlockHash === "") {
       return [];
    }
-   const tempTip = new LiteBlock({ hash: tip.stdBlockHash, number: tip.number, branchlen: tip.data.branchlen, status: tip.data.status });
+   const tempTip = new UtxoBlockTip({ hash: tip.stdBlockHash, height: tip.number, branchlen: tip.data.branchlen, status: tip.data.status });
    if (processHeight <= 1) {
       return [tempTip];
    } else {
       const CurrBlock = await clinet.getBlockHeader(tip.stdBlockHash);
       const previousHash = CurrBlock.previousblockhash;
       const previousHeight = CurrBlock.height - 1;
-      return (await recursive_block_tip(clinet, new LiteBlock({ hash: previousHash, number: previousHeight, branchlen: tip.data.branchlen, status: tip.chainTipStatus }), processHeight - 1)).concat([tempTip]);
+      return (await recursive_block_tip(clinet, new UtxoBlockTip({ hash: previousHash, height: previousHeight, branchlen: tip.data.branchlen, status: tip.chainTipStatus }), processHeight - 1)).concat([tempTip]);
    }
 }
 

@@ -38,19 +38,19 @@ describe("BTC mainnet client tests", () => {
 
       it("Should get block header ", async function () {
          const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c5368";
-         let header = await MccClient.getBlockHeader(blockhash);
+         let header = await MccClient.getBlockHeaderBase(blockhash);
          expect(header!.hash).to.eq(blockhash);
       });
 
       it("Should get block header 2 ", async function () {
          const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c5368";
-         let header = await MccClient.getBlockHeader("0x"+blockhash);
+         let header = await MccClient.getBlockHeaderBase("0x"+blockhash);
          expect(header!.hash).to.eq(blockhash);
       });
 
       it("Should get null for wrong header ", async function () {
          const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c53ff";
-         await expect(MccClient.getBlockHeader(blockhash)).to.be.rejectedWith("InvalidData");
+         await expect(MccClient.getBlockHeaderBase(blockhash)).to.be.rejectedWith("InvalidData");
       });
 
       it("Should get null from get block fow invalid data ", async function () {

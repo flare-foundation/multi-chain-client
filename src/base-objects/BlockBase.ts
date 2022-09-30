@@ -1,5 +1,5 @@
-export type IBlock = BlockBase<any>;
-export abstract class BlockBase<B> {
+import { mccError, mccErrorCode } from "../utils/errors";
+export abstract class BlockTipBase<B> {
    data: B;
 
    constructor(data: B) {
@@ -17,14 +17,23 @@ export abstract class BlockBase<B> {
    public abstract get blockHash(): string;
 
    /**
-    * Previous block hash directly from underlying node
-    */
-   public abstract get previousBlockHash(): string;
-
-   /**
     * Flare standardized block hash (hex encoded string of length 64 (32 bytes) without 0x prefix)
     */
    public abstract get stdBlockHash(): string;
+
+   /**
+    * Only return something on Tips
+    */
+   public get chainTipStatus(): string | null {
+      throw new mccError(mccErrorCode.InvalidMethodCall, Error("ChainTipStatus is not implemented on this object"));
+   }
+}
+
+export abstract class BlockHeaderBase<B> extends BlockTipBase<B> {
+   /**
+    * Previous block hash directly from underlying node
+    */
+   public abstract get previousBlockHash(): string;
 
    /**
     * Flare standardized previous block hash (hex encoded string of length 64 (32 bytes) without 0x prefix)
@@ -35,7 +44,13 @@ export abstract class BlockBase<B> {
     * block timestamp as unix time (elapsed seconds since 1.1.1970)
     */
    public abstract get unixTimestamp(): number;
+   /**
+    * Number of transactions in block
+    */
+   public abstract get transactionCount(): number;
+}
 
+export abstract class BlockBase<B> extends BlockHeaderBase<B> {
    /**
     * Array of transaction ids of all transactions in block
     */
@@ -47,11 +62,6 @@ export abstract class BlockBase<B> {
    public abstract get stdTransactionIds(): string[];
 
    /**
-    * Number of transactions in block
-    */
-   public abstract get transactionCount(): number;
-
-   /**
     * Return if block is valid
     * Mainly for XRP
     */
@@ -60,6 +70,24 @@ export abstract class BlockBase<B> {
    }
 }
 
+export type IBlockTip = BlockTipBase<any>;
+export type IBlockHeader = BlockHeaderBase<any>;
+export type IBlock = BlockBase<any>;
+
+// Block Tips
+export { BtcBlockTip } from "./blockTips/BtcBlockTip";
+export { DogeBlockTip } from "./blockTips/DogeBlockTip";
+export { LtcBlockTip } from "./blockTips/LtcBlockTip";
+
+/**
+ * Algo and Ripple (XRP) have no specific block header endpoint (liter block with limited data)
+ */
+// Block headers
+export { BtcBlockHeader } from "./blockHeaders/BtcBlockHeader";
+export { DogeBlockHeader } from "./blockHeaders/DogeBlockHeader";
+export { LtcBlockHeader } from "./blockHeaders/LtcBlockHeader";
+
+// Blocks
 export { AlgoBlock } from "./blocks/AlgoBlock";
 export { BtcBlock } from "./blocks/BtcBlock";
 export { DogeBlock } from "./blocks/DogeBlock";
@@ -67,3 +95,5 @@ export { LtcBlock } from "./blocks/LtcBlock";
 export { UtxoBlock } from "./blocks/UtxoBlock";
 export { XrpBlock } from "./blocks/XrpBlock";
 export { LiteBlock } from "./blocks/LiteBlock";
+
+
