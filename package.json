@@ -46,7 +46,7 @@
    ],
    "scripts": {
       "----------BUILD----------":"----------BUILD----------",
-      "prebuild": "sudo rm -rf dist",
+      "prebuild": "rm -r dist",
       "build": "tsc --allowJs",
 
       "----------PUBLISH----------":"----------PUBLISH----------",

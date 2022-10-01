@@ -1,5 +1,5 @@
-import { LiteBlock } from "../base-objects/blocks/LiteBlock";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
+import { UtxoCore } from "../chain-clients/UtxoCore";
 import { MccError } from "./utils";
 
 /**
@@ -10,7 +10,7 @@ export enum WordToOpcode {
    OP_RETURN = 106,
 }
 
-export async function recursive_block_hash(clinet: any, hash: string, processHeight: number): Promise<string[]> {
+export async function recursive_block_hash(clinet: UtxoCore, hash: string, processHeight: number): Promise<string[]> {
    if (hash === "") {
       return [];
    }
@@ -18,12 +18,12 @@ export async function recursive_block_hash(clinet: any, hash: string, processHei
       return [hash];
    } else {
       const Cblock = await clinet.getBlockHeader(hash);
-      const hs = Cblock.previousblockhash;
+      const hs = Cblock.previousBlockHash;
       return (await recursive_block_hash(clinet, hs, processHeight - 1)).concat([hash]);
    }
 }
 
-export async function recursive_block_tip(clinet: any, tip: UtxoBlockTip, processHeight: number): Promise<UtxoBlockTip[]> {
+export async function recursive_block_tip(clinet: UtxoCore, tip: UtxoBlockTip, processHeight: number): Promise<UtxoBlockTip[]> {
    if (tip.stdBlockHash === "") {
       return [];
    }
@@ -32,8 +32,8 @@ export async function recursive_block_tip(clinet: any, tip: UtxoBlockTip, proces
       return [tempTip];
    } else {
       const CurrBlock = await clinet.getBlockHeader(tip.stdBlockHash);
-      const previousHash = CurrBlock.previousblockhash;
-      const previousHeight = CurrBlock.height - 1;
+      const previousHash = CurrBlock.previousBlockHash;
+      const previousHeight = CurrBlock.number - 1;
       return (await recursive_block_tip(clinet, new UtxoBlockTip({ hash: previousHash, height: previousHeight, branchlen: tip.data.branchlen, status: tip.chainTipStatus }), processHeight - 1)).concat([tempTip]);
    }
 }

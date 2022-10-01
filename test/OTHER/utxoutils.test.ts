@@ -1,76 +1,102 @@
 import { expect } from "chai";
-import { LiteBlock, recursive_block_hash, recursive_block_tip, utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../../src";
-
+import {
+   MCC,
+   recursive_block_hash,
+   recursive_block_tip,
+   UtxoMccCreate,
+   utxo_check_expect_block_out_of_range,
+   utxo_check_expect_empty,
+   utxo_ensure_data,
+} from "../../src";
+import { UtxoBlockTip } from "../../src/base-objects/blockTips/UtxoBlockTip";
 
 describe("UTXO utils tests ", function () {
-    it("should return empty array if hash is empty", async () => {
-        const res = await recursive_block_hash("", "", 1);
-        expect(res.length).to.be.equal(0);
-    });
+   let mccClient: MCC.BTC;
 
-    it("should return empty array if hash is empty 2", async () => {
-        const res = await recursive_block_tip("", new LiteBlock({ hash: "", number: 0, branchlen: 0, status: 'active'}), 1);
-        expect(res.length).to.be.equal(0);
-    });
+   //    const BtcMccConnection = {
+   //       url: process.env.BTC_URL || "",
+   //       username: process.env.BTC_USERNAME || "",
+   //       password: process.env.BTC_PASSWORD || "",
+   //    } as UtxoMccCreate;
 
-    it("should return false if no data", () => {
-        const res = utxo_check_expect_empty({});
-        expect(res).to.be.false;
-    });
+   const BtcMccConnection = {
+      url: "",
+      username: "",
+      password: "",
+   } as UtxoMccCreate;
 
-    it("should return true if error code is -5", () => {
-        const res = utxo_check_expect_empty({ error: { code: -5 } });
-        expect(res).to.be.true;
-    });
+   before(async function () {
+      mccClient = new MCC.BTC(BtcMccConnection);
+   });
 
-    it("should return false if error code is not -5", () => {
-        const res = utxo_check_expect_empty({ error: { code: -4 } });
-        expect(res).to.be.false;
-    });
+   it("should return empty array if hash is empty", async () => {
+      const res = await recursive_block_hash(mccClient, "", 1);
+      expect(res.length).to.be.equal(0);
+   });
 
-    it("should return false if error does not contain 'code'", () => {
-        const res = utxo_check_expect_empty({ error: { message: "no data" } });
-        expect(res).to.be.false;
-    });
+   it("should return empty array if hash is empty 2", async () => {
+      const res = await recursive_block_tip(mccClient, new UtxoBlockTip({ hash: "", height: 0, branchlen: 0, status: "active" }), 1);
+      expect(res.length).to.be.equal(0);
+   });
 
-    it("should return false if no data", () => {
-        const res = utxo_check_expect_block_out_of_range({});
-        expect(res).to.be.false;
-    });
+   it("should return false if no data", () => {
+      const res = utxo_check_expect_empty({});
+      expect(res).to.be.false;
+   });
 
-    it("should return false if no data", () => {
-        const res = utxo_check_expect_block_out_of_range(null);
-        expect(res).to.be.false;
-    });
+   it("should return true if error code is -5", () => {
+      const res = utxo_check_expect_empty({ error: { code: -5 } });
+      expect(res).to.be.true;
+   });
 
-    it("should return true if error code is -8", () => {
-        const res = utxo_check_expect_block_out_of_range({ error: { code: -8 } });
-        expect(res).to.be.true;
-    });
+   it("should return false if error code is not -5", () => {
+      const res = utxo_check_expect_empty({ error: { code: -4 } });
+      expect(res).to.be.false;
+   });
 
-    it("should return true if error code is -1", () => {
-        const res = utxo_check_expect_block_out_of_range({ error: { code: -1 } });
-        expect(res).to.be.true;
-    });
+   it("should return false if error does not contain 'code'", () => {
+      const res = utxo_check_expect_empty({ error: { message: "no data" } });
+      expect(res).to.be.false;
+   });
 
-    it("should return false if error code is not -8 or -1", () => {
-        const res = utxo_check_expect_block_out_of_range({ error: { code: -2 } });
-        expect(res).to.be.false;
-    });
+   it("should return false if no data", () => {
+      const res = utxo_check_expect_block_out_of_range({});
+      expect(res).to.be.false;
+   });
 
-    it("should return false if error does not contain 'code'", () => {
-        const res = utxo_check_expect_block_out_of_range({ error: { message: "no data" } });
-        expect(res).to.be.false;
-    });
+   it("should return false if no data", () => {
+      const res = utxo_check_expect_block_out_of_range(null);
+      expect(res).to.be.false;
+   });
 
-    it("should return error if 'error' exists", () => {
-        const fn = () => {
-            return utxo_ensure_data({ error: {} });
-        };
-        expect(fn).to.throw(Error);
-    });
+   it("should return true if error code is -8", () => {
+      const res = utxo_check_expect_block_out_of_range({ error: { code: -8 } });
+      expect(res).to.be.true;
+   });
 
-    it("should silently run", () => {
-        utxo_ensure_data(null);
-    });
+   it("should return true if error code is -1", () => {
+      const res = utxo_check_expect_block_out_of_range({ error: { code: -1 } });
+      expect(res).to.be.true;
+   });
+
+   it("should return false if error code is not -8 or -1", () => {
+      const res = utxo_check_expect_block_out_of_range({ error: { code: -2 } });
+      expect(res).to.be.false;
+   });
+
+   it("should return false if error does not contain 'code'", () => {
+      const res = utxo_check_expect_block_out_of_range({ error: { message: "no data" } });
+      expect(res).to.be.false;
+   });
+
+   it("should return error if 'error' exists", () => {
+      const fn = () => {
+         return utxo_ensure_data({ error: {} });
+      };
+      expect(fn).to.throw(Error);
+   });
+
+   it("should silently run", () => {
+      utxo_ensure_data(null);
+   });
 });

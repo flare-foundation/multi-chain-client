@@ -74,10 +74,13 @@ export type IBlockTip = BlockTipBase<any>;
 export type IBlockHeader = BlockHeaderBase<any>;
 export type IBlock = BlockBase<any>;
 
+
+
 // Block Tips
 export { BtcBlockTip } from "./blockTips/BtcBlockTip";
 export { DogeBlockTip } from "./blockTips/DogeBlockTip";
 export { LtcBlockTip } from "./blockTips/LtcBlockTip";
+export { UtxoBlockTip } from "./blockTips/UtxoBlockTip";
 
 /**
  * Algo and Ripple (XRP) have no specific block header endpoint (liter block with limited data)
@@ -86,6 +89,7 @@ export { LtcBlockTip } from "./blockTips/LtcBlockTip";
 export { BtcBlockHeader } from "./blockHeaders/BtcBlockHeader";
 export { DogeBlockHeader } from "./blockHeaders/DogeBlockHeader";
 export { LtcBlockHeader } from "./blockHeaders/LtcBlockHeader";
+export { UtxoBlockHeader } from "./blockHeaders/UtxoBlockHeader";
 
 // Blocks
 export { AlgoBlock } from "./blocks/AlgoBlock";
@@ -94,6 +98,5 @@ export { DogeBlock } from "./blocks/DogeBlock";
 export { LtcBlock } from "./blocks/LtcBlock";
 export { UtxoBlock } from "./blocks/UtxoBlock";
 export { XrpBlock } from "./blocks/XrpBlock";
-export { LiteBlock } from "./blocks/LiteBlock";
 
 

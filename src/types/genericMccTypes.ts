@@ -1,5 +1,4 @@
 import { IBlock, IBlockHeader, IBlockTip } from "../base-objects/BlockBase";
-import { LiteBlock } from "../base-objects/blocks/LiteBlock";
 import { INodeStatus } from "../base-objects/StatusBase";
 import { ITransaction } from "../base-objects/TransactionBase";
 

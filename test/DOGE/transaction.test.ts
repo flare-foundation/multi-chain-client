@@ -43,7 +43,7 @@ describe("Transaction DOGE base test ", function () {
             sourceAddresses: [undefined],
             receivingAddresses: ["DPcBYzf5vGemYGtWK6BZbvHqvCSAzwpscv", "9theYDTPbCniM4Rdnza3RdeCw4d1H68sDz"],
             isFeeError: true,
-            fee: "OutsideError", // number as a string
+            fee: "InvalidResponse", // number as a string
             spentAmounts: [
                {
                   address: undefined,

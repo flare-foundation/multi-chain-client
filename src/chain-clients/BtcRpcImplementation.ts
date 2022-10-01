@@ -1,4 +1,4 @@
-import { BtcBlock } from "../base-objects/BlockBase";
+import { BtcBlock, BtcBlockHeader, BtcBlockTip } from "../base-objects/BlockBase";
 import { BtcTransaction } from "../base-objects/transactions/BtcTransaction";
 import { ChainType, UtxoMccCreate, UtxoRpcInterface } from "../types";
 import { Managed } from "../utils/managed";
@@ -11,5 +11,7 @@ export class BTCImplementation extends UtxoCore implements UtxoRpcInterface {
       this.chainType = ChainType.BTC;
       this.transactionConstructor = BtcTransaction;
       this.blockConstructor = BtcBlock;
+      this.blockHeaderConstructor = BtcBlockHeader;
+      this.blockTipConstructor = BtcBlockTip;
    }
 }
