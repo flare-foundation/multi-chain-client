@@ -1,4 +1,4 @@
-import { LtcBlock } from "../base-objects/BlockBase";
+import { LtcBlock, LtcBlockHeader, LtcBlockTip } from "../base-objects/BlockBase";
 import { LtcTransaction } from "../base-objects/TransactionBase";
 import { ChainType, UtxoMccCreate, UtxoRpcInterface } from "../types";
 import { Managed } from "../utils/managed";
@@ -11,5 +11,7 @@ export class LTCImplementation extends UtxoCore implements UtxoRpcInterface {
       this.chainType = ChainType.LTC;
       this.transactionConstructor = LtcTransaction;
       this.blockConstructor = LtcBlock;
+      this.blockHeaderConstructor = LtcBlockHeader;
+      this.blockTipConstructor = LtcBlockTip;
    }
 }

@@ -13,6 +13,8 @@ export enum mccErrorCode {
 
    InvalidMethodCall,
 
+   NotImplemented,
+
    OutsideError,
 }
 

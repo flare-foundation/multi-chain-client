@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { AccountInfoResponse, AccountTxResponse, LedgerRequest, ServerStateResponse } from "xrpl";
 import { XrpBlock, XrpTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
+import { IBlockHeader, IBlockTip } from "../base-objects/BlockBase";
 import { XrpNodeStatus } from "../base-objects/StatusBase";
 import { mccSettings } from "../global-settings/globalSettings";
 import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxRequest, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
@@ -45,6 +46,18 @@ export class XRPImplementation implements ReadRpcInterface {
       });
       this.inRegTest = createConfig.inRegTest || false;
       this.chainType = ChainType.XRP;
+   }
+
+   getBlockTips?(height_gte: number): Promise<IBlockTip[]> {
+      throw new mccError(mccErrorCode.NotImplemented);
+   }
+
+   getTopLiteBlocks?(branch_len: number): Promise<IBlockTip[]> {
+      throw new mccError(mccErrorCode.NotImplemented);
+   }
+
+   listTransactions?(options?: any) {
+      throw new mccError(mccErrorCode.NotImplemented);
    }
 
    /**
@@ -121,6 +134,10 @@ export class XRPImplementation implements ReadRpcInterface {
          throw e;
       }
    }
+
+   getBlockHeader(blockNumberOrHash: number | string): Promise<XrpBlock> {
+      return this.getBlock(blockNumberOrHash)
+  }
 
    async getBlockHeight(): Promise<number> {
       let res = await this.client.post("", {

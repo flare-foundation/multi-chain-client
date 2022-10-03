@@ -2,6 +2,7 @@ import * as msgpack from "algo-msgpack-with-bigint";
 import axios from "axios";
 import { AlgoBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
+import { IBlockHeader, IBlockTip } from "../base-objects/BlockBase";
 import { AlgoIndexerBlock } from "../base-objects/blocks/AlgoIndexerBlock";
 import { AlgoNodeStatus } from "../base-objects/StatusBase";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
@@ -90,6 +91,14 @@ export class ALGOImplementation implements ReadRpcInterface {
       this.chainType = ChainType.ALGO;
    }
 
+   getBlockTips?(height_gte: number): Promise<IBlockTip[]> {
+      throw new mccError(mccErrorCode.NotImplemented);
+   }
+   
+   getTopLiteBlocks?(branch_len: number): Promise<IBlockTip[]> {
+      throw new mccError(mccErrorCode.NotImplemented);
+   }
+
    /**
     * Return node status object for Algo node
     */
@@ -158,8 +167,12 @@ export class ALGOImplementation implements ReadRpcInterface {
       return new AlgoBlock(decoded as IAlgoBlockMsgPack);
    }
 
+   getBlockHeader(blockNumberOrHash?: number): Promise<AlgoBlock> {
+      return this.getBlock(blockNumberOrHash);
+   }
+
    async getBlockHeight(round?: number): Promise<number> {
-      const blockData = await this.getBlockHeader(round);
+      const blockData = await this.getBlockHeaderBase(round);
       return blockData.block.rnd;
    }
 
@@ -234,7 +247,7 @@ export class ALGOImplementation implements ReadRpcInterface {
       return decoded.cert;
    }
 
-   private async getBlockHeader(round?: number): Promise<IAlgoGetBlockHeaderRes> {
+   private async getBlockHeaderBase(round?: number): Promise<IAlgoGetBlockHeaderRes> {
       if (round === undefined) {
          const status = await this.getStatus();
          round = status.lastRound;

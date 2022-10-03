@@ -1,4 +1,4 @@
-import { DogeBlock } from "../base-objects/BlockBase";
+import { DogeBlock, DogeBlockHeader, DogeBlockTip } from "../base-objects/BlockBase";
 import { DogeTransaction } from "../base-objects/TransactionBase";
 import { ChainType, DogeRpcInterface, UtxoMccCreate } from "../types";
 import { Managed } from "../utils/managed";
@@ -11,5 +11,7 @@ export class DOGEImplementation extends UtxoCore implements DogeRpcInterface {
       this.chainType = ChainType.DOGE;
       this.transactionConstructor = DogeTransaction;
       this.blockConstructor = DogeBlock;
+      this.blockHeaderConstructor = DogeBlockHeader;
+      this.blockTipConstructor = DogeBlockTip;
    }
 }

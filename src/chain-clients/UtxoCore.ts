@@ -1,8 +1,11 @@
 import axios from "axios";
-import { UtxoBlock, UtxoTransaction } from "..";
+
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { LiteBlock } from "../base-objects/blocks/LiteBlock";
+import { UtxoBlock } from "../base-objects/BlockBase";
+import { UtxoBlockHeader } from "../base-objects/blockHeaders/UtxoBlockHeader";
+import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
 import { UtxoNodeStatus } from "../base-objects/StatusBase";
+import { UtxoTransaction } from "../base-objects/TransactionBase";
 import {
    getAddressByLabelResponse,
    getTransactionOptions,
@@ -11,7 +14,7 @@ import {
    IUtxoTransactionListRes,
    IUtxoWalletRes,
    RateLimitOptions,
-   UtxoMccCreate
+   UtxoMccCreate,
 } from "../types";
 import { ChainType, ReadRpcInterface } from "../types/genericMccTypes";
 import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes, IUtxoNodeStatus } from "../types/utxoTypes";
@@ -32,6 +35,8 @@ export class UtxoCore implements ReadRpcInterface {
    inRegTest: boolean;
    transactionConstructor: any;
    blockConstructor: any;
+   blockHeaderConstructor: any;
+   blockTipConstructor: any;
    chainType: ChainType;
 
    constructor(createConfig: UtxoMccCreate) {
@@ -56,6 +61,8 @@ export class UtxoCore implements ReadRpcInterface {
       // This has to be shadowed
       this.transactionConstructor = UtxoTransaction;
       this.blockConstructor = UtxoBlock;
+      this.blockHeaderConstructor = UtxoBlockHeader;
+      this.blockTipConstructor = UtxoBlockTip;
       this.chainType = ChainType.BTC;
    }
 
@@ -108,8 +115,7 @@ export class UtxoCore implements ReadRpcInterface {
       if (typeof blockHashOrHeight === "number") {
          try {
             blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
-         }
-         catch (e) {
+         } catch (e) {
             throw new mccError(mccErrorCode.InvalidParameter);
          }
       }
@@ -128,6 +134,11 @@ export class UtxoCore implements ReadRpcInterface {
       }
       utxo_ensure_data(res.data);
       return new this.blockConstructor(res.data.result);
+   }
+
+   async getBlockHeader(blockNumberOrHash: number | string | any): Promise<UtxoBlockHeader> {
+      const header = await this.getBlockHeaderBase(blockNumberOrHash);
+      return new this.blockHeaderConstructor(header);
    }
 
    /**
@@ -193,7 +204,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns
     */
 
-   async getBlockHeader(blockHashOrHeight: string | number): Promise<IUtxoGetBlockHeaderRes> {
+   async getBlockHeaderBase(blockHashOrHeight: string | number): Promise<IUtxoGetBlockHeaderRes> {
       let blockHash: string | null = null;
       if (typeof blockHashOrHeight === "string") {
          blockHash = blockHashOrHeight as string;
@@ -224,7 +235,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns
     */
 
-   async getBlockTips(height_gte: number): Promise<LiteBlock[]> {
+   async getBlockTips(height_gte: number): Promise<UtxoBlockTip[]> {
       return this.getBlockTipsHelper(height_gte);
    }
 
@@ -234,7 +245,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns Array of LiteBlocks
     */
 
-   async getTopLiteBlocks(branch_len: number): Promise<LiteBlock[]> {
+   async getTopLiteBlocks(branch_len: number): Promise<UtxoBlockTip[]> {
       const height = await this.getBlockHeight();
       return this.getBlockTipsHelper(height - branch_len, branch_len);
    }
@@ -320,11 +331,11 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns
     */
 
-   private async getBlockTipsHelper(height_gte: number, mainBranchProcess?: number) {
+   private async getBlockTipsHelper(height_gte: number, mainBranchProcess?: number): Promise<UtxoBlockTip[]> {
       const tips = await this.getTopBlocks({ height_gte: height_gte, all_blocks: true });
-      let mainBranchHashes: LiteBlock[] = [];
+      let mainBranchHashes: UtxoBlockTip[] = [];
       const activeTip = tips.filter((a) => a.status === "active")[0];
-      const ActiveTip = new LiteBlock({ hash: activeTip.hash, number: activeTip.height, branchlen: activeTip.branchlen, status: activeTip.status  });
+      const ActiveTip = new UtxoBlockTip({ hash: activeTip.hash, height: activeTip.height, branchlen: activeTip.branchlen, status: activeTip.status });
       if (mainBranchProcess !== undefined) {
          mainBranchHashes = await recursive_block_tip(this, ActiveTip, mainBranchProcess);
       }
@@ -332,23 +343,29 @@ export class UtxoCore implements ReadRpcInterface {
          const tempTips = [];
          // all_block_hashes exist due to all_blocks: true in getTopBlocks call
          for (let hashIndex = 0; hashIndex < UtxoTip!.all_block_hashes!.length; hashIndex++) {
-            tempTips.push(new LiteBlock({ hash: UtxoTip!.all_block_hashes![hashIndex], number: UtxoTip.height - hashIndex, branchlen: UtxoTip.branchlen, status: UtxoTip.status}));
+            tempTips.push(
+               new UtxoBlockTip({
+                  hash: UtxoTip!.all_block_hashes![hashIndex],
+                  height: UtxoTip.height - hashIndex,
+                  branchlen: UtxoTip.branchlen,
+                  status: UtxoTip.status,
+               })
+            );
          }
          return tempTips;
       });
       // filter out duplicates
-      const reducedTips = allTips.reduce((acc: LiteBlock[], nev: LiteBlock[]) => acc.concat(nev), []).concat(mainBranchHashes);
-      const unique = new Set()
-      return reducedTips.filter((elem: LiteBlock) => {
-         const key = `${elem.number}_${elem.blockHash}`
+      const reducedTips = allTips.reduce((acc: UtxoBlockTip[], nev: UtxoBlockTip[]) => acc.concat(nev), []).concat(mainBranchHashes);
+      const unique = new Set();
+      return reducedTips.filter((elem: UtxoBlockTip) => {
+         const key = `${elem.number}_${elem.blockHash}`;
          if (unique.has(key)) {
-            return false
+            return false;
          } else {
-            unique.add(key)
-            return true
+            unique.add(key);
+            return true;
          }
-
-      })
+      });
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////

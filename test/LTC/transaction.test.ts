@@ -157,7 +157,7 @@ describe("Transaction Ltc base test ", function () {
             sourceAddresses: [undefined],
             receivingAddresses: ["ltc1qetweexqmrszez23s8l6tlc0qvfgyneyg08q06m", "ML3CdKXQYiBBY8RWcXapuV2ZHpWbMo7DP1"],
             isFeeError: true,
-            fee: "OutsideError", // number as a string
+            fee: "InvalidResponse", // number as a string
             spentAmounts: [
                {
                   address: undefined,

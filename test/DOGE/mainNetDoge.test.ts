@@ -60,14 +60,14 @@ describe("DOGE mainnet client tests", () => {
       it("should be able to get block header from height ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const height = 4103881;
-         let blockHeader = await RPC.getBlockHeader(height);
+         let blockHeader = await RPC.getBlockHeaderBase(height);
          expect(blockHeader).to.not.eq(null);
       });
 
       it("should be able to get block header from hash ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const hash = "8ea32399901c056e32c0fef84208bc257824f6718a6d4906ab00833b8d87ea89";
-         let blockHeader = await RPC.getBlockHeader(hash);
+         let blockHeader = await RPC.getBlockHeaderBase(hash);
          expect(blockHeader).to.not.eq(null);
       });
 

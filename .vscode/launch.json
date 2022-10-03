@@ -17,6 +17,14 @@
       {
          "type": "node",
          "request": "launch",
+         "name": "---BTC---",
+         "runtimeExecutable": "echo",
+         "runtimeArgs": ["BTC tests separator"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
          "name": "Test mainNetBTC",
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/BTC/mainNetBtc.test.ts"]
@@ -25,9 +33,10 @@
       {
          "type": "node",
          "request": "launch",
-         "name": "Test OTHER",
+         "console": "integratedTerminal",
+         "name": "Mock test BTC block",
          "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/OTHER/liteblock.test.ts"]
+         "runtimeArgs": ["test", "test/BTC/mock/block.test.ts"]
       },
 
       {
@@ -42,23 +51,6 @@
       {
          "type": "node",
          "request": "launch",
-         "console": "integratedTerminal",
-         "name": "Test Managed",
-         "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/managedTest.test.ts"]
-      },
-
-      {
-         "type": "node",
-         "request": "launch",
-         "name": "Test transaction ALGO",
-         "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/ALGO/transaction.test.ts"]
-      },
-
-      {
-         "type": "node",
-         "request": "launch",
          "name": "Test transaction BTC",
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/BTC/transaction.test.ts"]
@@ -67,9 +59,18 @@
       {
          "type": "node",
          "request": "launch",
-         "name": "Test transaction XRP",
+         "console": "integratedTerminal",
+         "name": "Mock test BTC block",
          "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/XRP/transaction.test.ts"]
+         "runtimeArgs": ["test", "test/BTC/mock/block.test.ts"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "---DOGE---",
+         "runtimeExecutable": "echo",
+         "runtimeArgs": ["DOGE tests separator"]
       },
 
       {
@@ -78,6 +79,30 @@
          "name": "Test block DOGE",
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/DOGE/block.test.ts"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Mock DOGE tips",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/DOGE/mock/mock.tips.test.ts"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "---ALGO---",
+         "runtimeExecutable": "echo",
+         "runtimeArgs": ["ALGO tests separator"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Test transaction ALGO",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/ALGO/transaction.test.ts"]
       },
 
       {
@@ -99,18 +124,42 @@
       {
          "type": "node",
          "request": "launch",
-         "console": "integratedTerminal",
-         "name": "Mock test BTC block",
-         "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/BTC/mock/block.test.ts"]
+         "name": "---OTHER---",
+         "runtimeExecutable": "echo",
+         "runtimeArgs": ["OTHER tests separator"]
       },
 
       {
          "type": "node",
          "request": "launch",
-         "name": "Mock DOGE tips",
-         "runtimeExecutable": "yarn",
-         "runtimeArgs": ["test", "test/DOGE/mock/mock.tips.test.ts"]
+         "name": "---XRP---",
+         "runtimeExecutable": "echo",
+         "runtimeArgs": ["XRP tests separator"]
       },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Test transaction XRP",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/XRP/transaction.test.ts"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Test OTHER",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/OTHER/liteblock.test.ts"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "console": "integratedTerminal",
+         "name": "Test Managed",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/managedTest.test.ts"]
+      },  
    ]
 }
