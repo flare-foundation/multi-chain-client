@@ -24,8 +24,8 @@ export abstract class BlockTipBase<B> {
    /**
     * Only return something on Tips
     */
-   public get chainTipStatus(): string | null {
-      throw new mccError(mccErrorCode.InvalidMethodCall, Error("ChainTipStatus is not implemented on this object"));
+   public get chainTipStatus(): string {
+      return "active";
    }
 }
 
@@ -74,8 +74,6 @@ export type IBlockTip = BlockTipBase<any>;
 export type IBlockHeader = BlockHeaderBase<any>;
 export type IBlock = BlockBase<any>;
 
-
-
 // Block Tips
 export { BtcBlockTip } from "./blockTips/BtcBlockTip";
 export { DogeBlockTip } from "./blockTips/DogeBlockTip";
@@ -98,5 +96,3 @@ export { DogeBlock } from "./blocks/DogeBlock";
 export { LtcBlock } from "./blocks/LtcBlock";
 export { UtxoBlock } from "./blocks/UtxoBlock";
 export { XrpBlock } from "./blocks/XrpBlock";
-
-
