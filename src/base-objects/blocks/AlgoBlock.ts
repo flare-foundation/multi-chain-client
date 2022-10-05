@@ -68,7 +68,10 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
    }
 
    public get transactionCount(): number {
-      return this.data.block.txns.length;
+      if(this.data.block.txns){
+         return this.data.block.txns.length
+      }
+      return 0
    }
 
    ////////////////////////////////////////
@@ -77,6 +80,9 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
 
    processTransactions() {
       this.transactionObjects = [];
+      if(!this.data.block.txns){
+         return
+      }
       for (let transactionBase of this.data.block.txns) {
          try {
             const data = {

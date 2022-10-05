@@ -153,7 +153,7 @@ export interface IAlgoBlockMsgPackBlock {
    tc: number;
    ts: number;
    txn: Buffer;
-   txns: any[]; // Array of transaction objects
+   txns?: any[]; // Array of transaction objects
 }
 
 type IALgoBlock = BlockHeader;
