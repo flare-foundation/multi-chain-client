@@ -23,10 +23,20 @@ describe(`Algo block processing`, async () => {
    it("Should create block with msig", async function () {
       const MccClient = new MCC.ALGO(algoCreateConfig);
       const block = await MccClient.getBlock(21_659_776);
-      block.data.block.txns[0].msig = Buffer.from([
+      const msigNew = Buffer.from([
          0xad, 0x35, 0x08, 0xb8, 0xfa, 0x7e, 0x9c, 0x1d, 0x38, 0x43, 0x97, 0xb0, 0x70, 0x8a, 0xa1, 0x56, 0x7a, 0x74, 0xe7, 0x9e, 0xc9, 0xe3, 0x7c, 0xbd, 0x37,
          0x0c, 0xe2, 0x27, 0x6b, 0xd8, 0x95, 0x98,
       ]);
+      if (block.data.block.txns) {
+         block.data.block.txns[0].msig = msigNew;
+      } else {
+         block.data.block.txns = [
+            {
+               msig: msigNew,
+            },
+         ];
+      }
+
       let aBlock = new AlgoBlock({ block: block.data.block, cert: block.data.cert });
       expect(aBlock).to.not.eq(undefined);
    });
@@ -107,7 +117,7 @@ describe(`Algo block processing`, async () => {
       // TODO check why this response is 500 and not expected 404 (missing block on algo rpc ) https://developer.algorand.org/docs/rest-apis/algod/v2/#get-v2blocksround
       it.skip("Should not get block out of range", async function () {
          const nonExistingBlockCall = MccClient.getBlock(100_000_000_000_000_000);
-         await expect(nonExistingBlockCall).to.eventually.be.rejectedWith("InvalidBlock")
+         await expect(nonExistingBlockCall).to.eventually.be.rejectedWith("InvalidBlock");
       });
    });
 });
