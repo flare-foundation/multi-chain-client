@@ -21,7 +21,7 @@ export interface ReadRpcInterface extends BaseRpcInterface {
 
    // To be used with chain tip indexer processing
    getBlockTips?(height_gte: number): Promise<IBlockTip[]>;
-   getTopLiteBlocks?(branch_len: number): Promise<IBlockTip[]>;
+   getTopLiteBlocks(branch_len: number, read_main?: boolean): Promise<IBlockTip[]>;
 
    // Transaction data
    getTransaction(txId: string, metaData?: getTransactionOptions): Promise<ITransaction>;
