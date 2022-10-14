@@ -52,7 +52,7 @@ export class XRPImplementation implements ReadRpcInterface {
       throw new mccError(mccErrorCode.NotImplemented);
    }
 
-   getTopLiteBlocks?(branch_len: number): Promise<IBlockTip[]> {
+   getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<IBlockTip[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
 
