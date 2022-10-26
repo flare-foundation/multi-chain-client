@@ -1,5 +1,5 @@
 import { IAlgoGetIndexerBlockRes, IAlgoTransaction } from "../../types";
-import { base64ToHex, hexToBase64, txIdToHexNo0x } from "../../utils/algoUtils";
+import { hexToBase64, txIdToHexNo0x } from "../../utils/algoUtils";
 import { Managed } from "../../utils/managed";
 import { BlockBase } from "../BlockBase";
 

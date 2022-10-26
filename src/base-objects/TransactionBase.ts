@@ -1,6 +1,7 @@
 import BN from "bn.js";
 import { MccClient, TransactionSuccessStatus } from "../types";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ITransaction = TransactionBase<any, any>;
 
 export interface AddressAmount {

@@ -1,12 +1,12 @@
 import BN from "bn.js";
-import { isValidBytes32Hex, IUtxoGetTransactionRes, MccError, prefix0x, toBN, toHex, unPrefix0x, ZERO_BYTES_32 } from "../..";
+import { isValidBytes32Hex, IUtxoGetTransactionRes, prefix0x, toBN, toHex, unPrefix0x, ZERO_BYTES_32 } from "../..";
 import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types";
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
+import { mccError, mccErrorCode } from "../../utils/errors";
+import { Managed } from "../../utils/managed";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
-import { Managed } from "../../utils/managed";
-import { mccError, mccErrorCode } from "../../utils/errors";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
 // Transaction types and their description
@@ -39,10 +39,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    }
 
    public get reference(): string[] {
-      let references = [];
-      for (let vo of this.data.vout) {
+      const references = [];
+      for (const vo of this.data.vout) {
          if (vo.scriptPubKey.hex.substring(0, 2) == unPrefix0x(toHex(WordToOpcode.OP_RETURN))) {
-            let dataSplit = vo.scriptPubKey.asm.split(" ");
+            const dataSplit = vo.scriptPubKey.asm.split(" ");
             references.push(dataSplit[1]);
          }
       }
@@ -66,7 +66,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          // Coinbase transactions mint coins
          return [undefined];
       }
-      return this.additionalData!.vinouts!.map((mapper: IUtxoVinVoutsMapper | undefined) => mapper?.vinvout?.scriptPubKey.address);
+      if (!this.additionalData || !this.additionalData.vinouts) {
+         return [undefined];
+      }
+      return this.additionalData.vinouts.map((mapper: IUtxoVinVoutsMapper | undefined) => mapper?.vinvout?.scriptPubKey.address);
    }
 
    public get assetSourceAddresses(): (string | undefined)[] {
@@ -91,8 +94,11 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          prev.add(toBN(Math.round((vout?.vinvout?.value || 0) * BTC_MDU).toFixed(0)));
       const reducerFunctionVouts = (prev: BN, vout: IUtxoVoutTransaction) => prev.add(toBN(Math.round(vout.value * BTC_MDU).toFixed(0)));
       if (this.type === "full_payment") {
-         let inSum = this.additionalData!.vinouts!.reduce(reducerFunctionVinOuts, toBN(0));
-         let outSum = this.data.vout.reduce(reducerFunctionVouts, toBN(0));
+         if (!this.additionalData || !this.additionalData.vinouts) {
+            throw new mccError(mccErrorCode.InvalidTransaction, Error(`Transaction was not made full`));
+         }
+         const inSum = this.additionalData.vinouts.reduce(reducerFunctionVinOuts, toBN(0));
+         const outSum = this.data.vout.reduce(reducerFunctionVouts, toBN(0));
          return inSum.sub(outSum);
       }
       if (this.type === "coinbase") {
@@ -112,7 +118,15 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          ];
       }
 
-      return this.additionalData!.vinouts!.map((mapper: IUtxoVinVoutsMapper | undefined) => {
+      if (!this.additionalData || !this.additionalData.vinouts) {
+         return [
+            {
+               amount: toBN(0),
+            } as AddressAmount,
+         ];
+      }
+
+      return this.additionalData.vinouts.map((mapper: IUtxoVinVoutsMapper | undefined) => {
          return {
             address: mapper?.vinvout?.scriptPubKey?.address,
             amount: toBN(Math.round((mapper?.vinvout?.value || 0) * BTC_MDU).toFixed(0)),
@@ -145,8 +159,11 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       }
       let hasUndefined = false;
       let hasDefined = false;
-      for (let i = 0; i < this.additionalData!.vinouts!.length; i++) {
-         let vinOut = this.additionalData!.vinouts![i];
+      if (!this.additionalData || !this.additionalData.vinouts) {
+         return "payment";
+      }
+      for (let i = 0; i < this.additionalData.vinouts.length; i++) {
+         const vinOut = this.additionalData.vinouts[i];
          if (vinOut === undefined) {
             hasUndefined = true;
          } else {
@@ -171,7 +188,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    /* istanbul ignore next */
    public get currencyName(): string {
       // This must be shadowed
-      throw new Error("Method must be implemented in different sub class");
+      throw new mccError(mccErrorCode.NotImplemented, Error(`Method must be implemented in different sub class`));
    }
 
    public get elementaryUnits(): BN {
@@ -196,10 +213,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          }
       }
 
-      let sourceAddress = vinIndex != null ? this.sourceAddresses[vinIndex!] : undefined;
-      let receivingAddress = voutIndex != null ? this.receivingAddresses[voutIndex] : undefined;
+      const sourceAddress = vinIndex != null ? this.sourceAddresses[vinIndex] : undefined;
+      const receivingAddress = voutIndex != null ? this.receivingAddresses[voutIndex] : undefined;
       let oneToOne: boolean = !!sourceAddress && !!receivingAddress;
-      let isFull = this.type === "full_payment";
+      const isFull = this.type === "full_payment";
 
       if (isFull) {
          let inFunds = toBN(0);
@@ -207,7 +224,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          let outFunds = toBN(0);
          let inFundsOfReceivingAddress = toBN(0);
 
-         for (let vinAmount of this.spentAmounts) {
+         for (const vinAmount of this.spentAmounts) {
             if (sourceAddress && vinAmount.address === sourceAddress) {
                inFunds = inFunds.add(vinAmount.amount);
             }
@@ -218,7 +235,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
                oneToOne = false;
             }
          }
-         for (let voutAmount of this.receivedAmounts) {
+         for (const voutAmount of this.receivedAmounts) {
             if (sourceAddress && voutAmount.address === sourceAddress) {
                returnFunds = returnFunds.add(voutAmount.amount);
             }
@@ -244,8 +261,8 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
             isFull,
          };
       }
-      let spentAmount = sourceAddress ? this.spentAmounts[vinIndex!].amount : toBN(0);
-      let receivedAmount = receivingAddress ? this.receivedAmounts[voutIndex!].amount : toBN(0);
+      const spentAmount = sourceAddress && vinIndex != null ? this.spentAmounts[vinIndex].amount : toBN(0);
+      const receivedAmount = receivingAddress && voutIndex != null ? this.receivedAmounts[voutIndex].amount : toBN(0);
       oneToOne = false;
       return {
          isNativePayment: true,
@@ -276,7 +293,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          return;
       }
       if (vinIndex == null || vinIndex < 0 || vinIndex >= this.sourceAddresses.length) {
-         throw new Error("Invalid vin index");
+         throw new mccError(mccErrorCode.InvalidParameter, Error("Invalid vin index"));
       }
    }
 
@@ -289,7 +306,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          return;
       }
       if (voutIndex == null || voutIndex < 0 || voutIndex >= this.receivingAddresses.length) {
-         throw new Error("Invalid vout index");
+         throw new mccError(mccErrorCode.InvalidParameter, Error("Invalid vout index"));
       }
    }
 
@@ -299,29 +316,29 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    assertAdditionalData() {
       if (this.additionalData) {
          if (this.additionalData.vinouts?.length !== this.data.vin.length) {
-            throw new Error("Bad format, Additional data vinvouts and data vin length mismatch");
+            throw new mccError(mccErrorCode.InvalidParameter, Error("Bad format, Additional data vinvouts and data vin length mismatch"));
          }
          this.additionalData.vinouts.forEach((vinvout, ind) => {
             if (vinvout && vinvout.index !== ind) {
-               throw new Error("Additional data corrupted: indices mismatch");
+               throw new mccError(mccErrorCode.InvalidParameter, Error("Additional data corrupted: indices mismatch"));
             }
          });
       }
    }
 
    synchronizeAdditionalData() {
-      let tempAdditionalData = this.additionalData;
+      const tempAdditionalData = this.additionalData;
 
       this.additionalData = {
          vinouts: new Array(this.data.vin.length).fill(undefined),
       };
       if (tempAdditionalData?.vinouts) {
-         for (let vinvout of tempAdditionalData.vinouts) {
+         for (const vinvout of tempAdditionalData.vinouts) {
             if (vinvout) {
-               if (vinvout.index < 0 || vinvout.index >= this.data.vin.length) {
-                  throw new Error("vinvout wrong index out of range");
+               if (vinvout.index < 0 || vinvout.index >= this.data.vin.length || !this.additionalData || !this.additionalData.vinouts) {
+                  throw new mccError(mccErrorCode.InvalidParameter, new Error("vinvout wrong index out of range"));
                }
-               this.additionalData!.vinouts![vinvout.index] = vinvout;
+               this.additionalData.vinouts[vinvout.index] = vinvout;
                this.processOutput(vinvout.vinvout);
             }
          }
@@ -337,7 +354,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       this.assertValidVoutIndex(voutIndex);
       const toReturn = this.data.vout[voutIndex];
       if (toReturn.n !== voutIndex) {
-         throw MccError(`Vin and vout transaction miss match; requested index ${voutIndex}, found index ${toReturn.n}`);
+         throw new mccError(
+            mccErrorCode.InvalidParameter,
+            new Error(`Vin and vout transaction miss match; requested index ${voutIndex}, found index ${toReturn.n}`)
+         );
       }
       return toReturn;
    }
@@ -376,7 +396,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       }
       return {
          index: vinIndex,
-         vinvout: connectedTrans.extractVoutAt(vinObject.vout!),
+         vinvout: connectedTrans.extractVoutAt(vinObject.vout || 0),
       };
    }
 
@@ -394,7 +414,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
             vinouts: new Array(this.data.vin.length).fill(undefined),
          };
       }
-      let vinVout = this.additionalData!.vinouts![vinIndex];
+      if (!this.additionalData || !this.additionalData.vinouts) {
+         throw new mccError(mccErrorCode.NotImplemented, new Error(`Can not happen`));
+      }
+      let vinVout = this.additionalData.vinouts[vinIndex];
       if (vinVout) {
          return vinVout;
       }
@@ -402,7 +425,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          throw new Error("MCC Client required.");
       }
       vinVout = await this.extractVinVoutAt(vinIndex, client);
-      this.additionalData!.vinouts![vinIndex] = vinVout;
+      this.additionalData.vinouts[vinIndex] = vinVout;
       return vinVout;
    }
 
@@ -413,6 +436,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
     */
    public isSyncedVinIndex(vinIndex: number): boolean {
       this.assertValidVinIndex(vinIndex);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return !!this.additionalData!.vinouts![vinIndex];
    }
 
@@ -421,7 +445,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
     * @param client mcc client to use for fetching input data
     */
    public async makeFullPayment(client: MccUtxoClient) {
-      let promises = [];
+      const promises = [];
       this.synchronizeAdditionalData();
       for (let i = 0; i < this.data.vin.length; i++) {
          promises.push(this.vinVoutAt(i, client as MccUtxoClient));

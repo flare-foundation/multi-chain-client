@@ -1,4 +1,3 @@
-import { mccError, mccErrorCode } from "../utils/errors";
 export abstract class BlockTipBase<B> {
    data: B;
 
@@ -70,16 +69,14 @@ export abstract class BlockBase<B> extends BlockHeaderBase<B> {
    }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type IBlockTip = BlockTipBase<any>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type IBlockHeader = BlockHeaderBase<any>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type IBlock = BlockBase<any>;
 
 // Block Tips
-export { BtcBlockTip } from "./blockTips/BtcBlockTip";
-export { DogeBlockTip } from "./blockTips/DogeBlockTip";
-export { LtcBlockTip } from "./blockTips/LtcBlockTip";
-export { UtxoBlockTip } from "./blockTips/UtxoBlockTip";
-
 /**
  * Algo and Ripple (XRP) have no specific block header endpoint (liter block with limited data)
  */
@@ -88,7 +85,6 @@ export { BtcBlockHeader } from "./blockHeaders/BtcBlockHeader";
 export { DogeBlockHeader } from "./blockHeaders/DogeBlockHeader";
 export { LtcBlockHeader } from "./blockHeaders/LtcBlockHeader";
 export { UtxoBlockHeader } from "./blockHeaders/UtxoBlockHeader";
-
 // Blocks
 export { AlgoBlock } from "./blocks/AlgoBlock";
 export { BtcBlock } from "./blocks/BtcBlock";
@@ -96,3 +92,7 @@ export { DogeBlock } from "./blocks/DogeBlock";
 export { LtcBlock } from "./blocks/LtcBlock";
 export { UtxoBlock } from "./blocks/UtxoBlock";
 export { XrpBlock } from "./blocks/XrpBlock";
+export { BtcBlockTip } from "./blockTips/BtcBlockTip";
+export { DogeBlockTip } from "./blockTips/DogeBlockTip";
+export { LtcBlockTip } from "./blockTips/LtcBlockTip";
+export { UtxoBlockTip } from "./blockTips/UtxoBlockTip";

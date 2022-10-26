@@ -9,6 +9,7 @@ import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/ut
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 
 @Managed()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> {
    public get txid(): string {
       return this.hash;
@@ -42,6 +43,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    public get unixTimestamp(): number {
       return (
          XRP_UTD +
+         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
          // @ts-ignore
          this.data.result.date
       );
@@ -57,7 +59,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public get receivingAddresses(): string[] {
       if (this.data.result.TransactionType == "Payment") {
-         let payment = this.data.result as Payment;
+         const payment = this.data.result as Payment;
          return [payment.Destination];
       }
       // TODO: Check if in other types of payments one has something similar to Destination
@@ -78,10 +80,11 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public get spentAmounts(): AddressAmount[] {
       if (this.isNativePayment) {
-         let payment = this.data.result as Payment;
+         const payment = this.data.result as Payment;
          return [
             {
                address: this.sourceAddresses[0],
+               // eslint-disable-next-line @typescript-eslint/no-explicit-any
                amount: toBN(payment.Amount as any).add(this.fee),
             },
          ];
@@ -110,7 +113,8 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get receivedAmounts(): AddressAmount[] {
-      let metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
       if (this.isNativePayment) {
          return [
             {
@@ -154,8 +158,9 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public get successStatus(): TransactionSuccessStatus {
       // https://xrpl.org/transaction-results.html
-      let metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
-      let result = metaData.TransactionResult;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
+      const result = metaData.TransactionResult;
       if (result === "tesSUCCESS") {
          // https://xrpl.org/tes-success.html
          return TransactionSuccessStatus.SUCCESS;
@@ -176,6 +181,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return TransactionSuccessStatus.SENDER_FAILURE;
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    public async paymentSummary(client: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       if (!this.isNativePayment) {
          if (this.type === "Payment") {
@@ -216,6 +222,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       };
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    public async makeFull(client: MccClient): Promise<void> {
       return;
    }
@@ -231,7 +238,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                return false;
             }
             const Meta = this.data.result.meta as TransactionMetadata;
-            for (let elem of Meta.AffectedNodes) {
+            for (const elem of Meta.AffectedNodes) {
                if ("CreatedNode" in elem) {
                   if ("Account" in elem.CreatedNode.NewFields) {
                      if (elem.CreatedNode.NewFields.Account === this.receivingAddresses[0]) {

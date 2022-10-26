@@ -83,7 +83,7 @@ export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
       if (!this.data.block.txns) {
          return;
       }
-      for (let transactionBase of this.data.block.txns) {
+      for (const transactionBase of this.data.block.txns) {
          try {
             const data = {
                txid: calculateAlgoTxid(this.data.block.gh, this.data.block.gen, transactionBase),

@@ -1,12 +1,13 @@
 import BN from "bn.js";
 import { MccClient, TransactionSuccessStatus } from "../../types";
-import { AlgoTransactionTypeOptions, IAlgoAdditionalData, IAlgoAssets, IAlgoTransactionMsgPack } from "../../types/algoTypes";
-import { base32ToHex, bytesToHex, hexToBase32, bufAddToCBufAdd } from "../../utils/algoUtils";
+import { AlgoTransactionTypeOptions, IAlgoAdditionalData, IAlgoTransactionMsgPack } from "../../types/algoTypes";
+import { base32ToHex, bufAddToCBufAdd, bytesToHex, hexToBase32 } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
 import { Managed } from "../../utils/managed";
-import { isValidBytes32Hex, MccError, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
+import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const web3 = require("web3");
 /**
  * docs https://developer.algorand.org/docs/get-details/transactions/transactions/
@@ -109,13 +110,13 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IA
 
    public get spentAmounts(): AddressAmount[] {
       // for transactions of type pay
-      if (this.type === "pay" || "pay_close") {
+      if (this.type === "pay" || this.type === "pay_close") {
          if (this.data.close) {
             // all assets that are not fee and received amount (amt) are transferred to close address
             throw new mccError(mccErrorCode.InvalidResponse, Error("Spend Amounts can't be extracted from transaction object on non-archival node"));
          }
          if (this.data.amt) {
-            let amount = this.data.amt.toString();
+            const amount = this.data.amt.toString();
             return [
                {
                   address: hexToBase32(this.data.snd),
@@ -137,7 +138,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IA
       // for transactions of type axfer
       if (this.type === "axfer") {
          if (this.data.aamt) {
-            let amount = this.data.aamt.toString();
+            const amount = this.data.aamt.toString();
             if (!(this.additionalData && this.additionalData.assetInfo)) {
                throw new mccError(mccErrorCode.InvalidResponse, Error("call the getAllData before to make sure additional data full"));
             }
@@ -174,7 +175,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IA
       }
       if (this.data) {
          if (this.data.amt) {
-            let amount = this.data.amt.toString();
+            const amount = this.data.amt.toString();
             return [
                {
                   address: this.receivingAddresses[0],
@@ -196,7 +197,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IA
       }
       if (this.type === "axfer") {
          if (this.data.aamt) {
-            let amount = this.data.aamt.toString();
+            const amount = this.data.aamt.toString();
             if (!(this.additionalData && this.additionalData.assetInfo)) {
                throw new mccError(mccErrorCode.InvalidResponse, Error("call the getAllData before to make sure additional data full"));
             }
@@ -292,6 +293,7 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IA
             this.additionalData = {};
          }
          if (!this.additionalData.assetInfo) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             this.additionalData.assetInfo = await client.getAssetInfo(this.data.xaid);
          }

@@ -1,4 +1,5 @@
 // Adopted from: https://github.com/aishek/axios-rate-limit
+// eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
 const axiosRetry = require("axios-retry");
 
 function AxiosRateLimit(axios) {
@@ -211,4 +212,5 @@ function axiosRateLimit(axios, options) {
    return axios;
 }
 
+// eslint-disable-next-line no-undef
 module.exports = axiosRateLimit;

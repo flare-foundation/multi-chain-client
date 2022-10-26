@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type INodeStatus = NodeStatusBase<any>;
 
 export abstract class NodeStatusBase<S> {

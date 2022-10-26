@@ -30,6 +30,7 @@ export class XrpBlock extends BlockBase<IXrpGetBlockRes> {
    }
 
    public get transactionIds(): string[] {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
       return (this.data.result.ledger.transactions! as any).map((tx: any) => (tx as any).hash);
    }
 
@@ -42,6 +43,6 @@ export class XrpBlock extends BlockBase<IXrpGetBlockRes> {
    }
    // problematic ???invalid in BlockBase ???
    public get isValid(): boolean {
-      return this.data.result.validated!;
+      return this.data.result.validated === true ? true : false;
    }
 }

@@ -196,10 +196,10 @@ export class ALGOImplementation implements ReadRpcInterface {
       throw new mccError(mccErrorCode.InvalidMethodCall);
    }
 
-   async listTransactions(options?: IAlgoLitsTransaction): Promise<IAlgoListTransactionRes | null> {
+   async listTransactions(options?: IAlgoLitsTransaction): Promise<IAlgoListTransactionRes | undefined> {
       if (!this.indexerClient) {
          // No indexer
-         return null;
+         return undefined;
       }
       let snakeObject = {};
       if (options !== undefined) {
@@ -271,9 +271,9 @@ export class ALGOImplementation implements ReadRpcInterface {
     * @param txid base32 encoded txid || standardized txid (prefixed or unprefixed)
     * @returns
     */
-   async getIndexerTransaction(txid: string): Promise<AlgoIndexerTransaction | null> {
+   async getIndexerTransaction(txid: string): Promise<AlgoIndexerTransaction | undefined> {
       if (!this.indexerClient) {
-         return null;
+         return undefined;
       }
       if (isPrefixed0x(txid)) {
          txid = unPrefix0x(txid);
@@ -286,9 +286,9 @@ export class ALGOImplementation implements ReadRpcInterface {
       return new AlgoIndexerTransaction(toCamelCase(res.data) as IAlgoGetTransactionRes) as AlgoIndexerTransaction;
    }
 
-   async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock | null> {
+   async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock | undefined> {
       if (!this.indexerClient) {
-         return null;
+         return undefined;
       }
       if (!this.createConfig.indexer) {
          // No indexer
@@ -313,9 +313,9 @@ export class ALGOImplementation implements ReadRpcInterface {
       return new AlgoIndexerBlock(camelBlockRes);
    }
 
-   async getIndexerAssetInfo(assetIndex: number): Promise<IAlgoIndexerAsset | null> {
+   async getIndexerAssetInfo(assetIndex: number): Promise<IAlgoIndexerAsset | undefined> {
       if (!this.indexerClient) {
-         return null;
+         return undefined;
       }
       const res = await this.indexerClient.get(`/v2/assets/${assetIndex}`);
       if (algo_check_expect_empty(res)) {

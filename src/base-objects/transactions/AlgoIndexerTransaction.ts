@@ -8,6 +8,7 @@ import { Managed } from "../../utils/managed";
 import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 import { mccError, mccErrorCode } from "../../utils/errors";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const web3 = require("web3");
 
 @Managed()
@@ -138,7 +139,7 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
             if (this.data.transaction.assetTransferTransaction.closeAmount) {
                preamount += this.data.transaction.assetTransferTransaction.closeAmount;
             }
-            let amount = preamount.toString();
+            const amount = preamount.toString();
             if (!(this.additionalData && this.additionalData.assetInfo)) {
                throw new mccError(mccErrorCode.InvalidResponse, Error("call the makeFull before to make sure additional data full"));
             }
@@ -174,10 +175,10 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
    }
    // TODO what if receiver=closeTo
    public get assetReceivedAmounts(): AddressAmount[] {
-      let asRecAm: AddressAmount[] = [];
+      const asRecAm: AddressAmount[] = [];
       if (this.type === "axfer") {
          if (this.data.transaction.assetTransferTransaction) {
-            let amount = this.data.transaction.assetTransferTransaction.amount.toString();
+            const amount = this.data.transaction.assetTransferTransaction.amount.toString();
             if (!(this.additionalData && this.additionalData.assetInfo)) {
                throw new mccError(mccErrorCode.InvalidResponse, Error("call the makeFull before to make sure additional data is full"));
             }
@@ -191,7 +192,7 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
                elementaryUnits: web3.utils.toBN(Math.pow(10, decimals)),
             });
             if (this.data.transaction.assetTransferTransaction.closeTo) {
-               let clAmount = this.data.transaction.assetTransferTransaction.closeAmount.toString();
+               const clAmount = this.data.transaction.assetTransferTransaction.closeAmount.toString();
                asRecAm.push({
                   address: this.data.transaction.assetTransferTransaction.closeTo,
                   amount: toBN(clAmount),
@@ -230,6 +231,7 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
       return TransactionSuccessStatus.SUCCESS;
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    public async paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       if (!this.isNativePayment) {
          return { isNativePayment: false };

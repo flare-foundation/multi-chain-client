@@ -31,7 +31,7 @@ export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
    }
 
    public get transactionIds(): string[] {
-      return this.data.tx!.map((tx) => {
+      return this.data.tx?.map((tx) => {
          /* istanbul ignore if */
          if (!tx) {
             return "0x0";
@@ -41,6 +41,7 @@ export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
             return prefix0x(tx.txid);
          } else {
             if (typeof tx === "string") {
+               // eslint-disable-next-line @typescript-eslint/no-explicit-any
                return prefix0x(tx as any as string);
             } else {
                return "0x0";
@@ -51,7 +52,8 @@ export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
 
    public get stdTransactionIds(): string[] {
       // todo: @Luka: tx is already Id on DOGE
-      return this.data.tx!.map((tx) => (tx.txid ? tx.txid : (tx as any as string)));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return this.data.tx?.map((tx) => (tx.txid ? tx.txid : (tx as any as string)));
    }
 
    public get transactionCount(): number {
