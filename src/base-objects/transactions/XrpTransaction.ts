@@ -91,7 +91,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          return [
             {
                address: this.sourceAddresses[0],
-               amount: this.fee
+               amount: this.fee,
             },
          ];
       }
@@ -217,7 +217,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public async makeFull(client: MccClient): Promise<void> {
-      return
+      return;
    }
 
    //////////////////////////////

@@ -173,8 +173,8 @@ export abstract class TransactionBase<T, AT> {
 
    /**
     * Ensures that the transaction object has all the required information retrievable from current client
-    * Make 
-    * @param client 
+    * Make
+    * @param client
     */
    public abstract makeFull(client: MccClient): Promise<void>;
 

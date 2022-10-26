@@ -10,10 +10,10 @@ const XrpAddress = require("ripple-address-codec");
 
 export function xrp_ensure_data(data: any) {
    if (data.result.status === "error") {
-      if(data.result.error === "txnNotFound") {
+      if (data.result.error === "txnNotFound") {
          throw new mccError(mccErrorCode.InvalidTransaction);
       }
-      if(data.result.error === "lgrNotFound") {
+      if (data.result.error === "lgrNotFound") {
          throw new mccError(mccErrorCode.InvalidBlock);
       }
       throw MccError(data);

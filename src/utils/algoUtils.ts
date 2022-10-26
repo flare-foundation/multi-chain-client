@@ -148,7 +148,6 @@ export function hexToAddress(algoKeyPair: IAlgoHexAddress): string {
 // https://emn178.github.io/online-tools/sha512_256.html hash SHA512/256
 // https://github.com/algorand/go-algorand-sdk/blob/develop/types/address.go
 
-
 /**
  * buffer address to buffer address with checksum
  */
@@ -238,12 +237,12 @@ export function mpDecode(buffer: ArrayLike<number>) {
 export function calculateAlgoTxid(gh: Buffer, gen: string, stib: any) {
    const t = stib.txn as algosdk.EncodedTransaction;
    // Manually add gh/gen to construct a correct transaction object
-   if(stib.hgi){
+   if (stib.hgi) {
       t.gh = gh;
       t.gen = gen;
    } else {
-      t.gh = gh
-      t.gen = '';
+      t.gh = gh;
+      t.gen = "";
    }
 
    // Modify the fields as needed

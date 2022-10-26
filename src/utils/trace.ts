@@ -2,34 +2,29 @@ import { createHook, executionAsyncId, triggerAsyncId } from "async_hooks";
 import { mccError, mccOutsideError, MCC_ERROR } from "./errors";
 import { StackTrace } from "./strackTrace";
 import { mccJsonStringify } from "./utils";
-const async_hooks = require('async_hooks')
+const async_hooks = require("async_hooks");
 
 // forces PromiseHooks to be enabled.
-createHook({ init() { } }).enable();
+createHook({ init() {} }).enable();
 
-async_hooks.createHook({
-   init(asyncId: any, type: any, triggerAsyncId: any) {
-
-      if (TraceManager.enabled) {
-         TraceManager.async_promise_map.set(asyncId, triggerAsyncId);
-      }
-   },
-   before(asyncId: any) {
-      //TraceManager.async_promise_map.set( asyncId , "before" );
-   },
-   after(asyncId: any) {
-      //TraceManager.async_promise_map.set( asyncId , "after" );
-   },
-   destroy(asyncId: any) {
-      //TraceManager.async_promise_map.set( asyncId , "destroy" );
-   },
-
-}).enable();
-
-
-
-
-
+async_hooks
+   .createHook({
+      init(asyncId: any, type: any, triggerAsyncId: any) {
+         if (TraceManager.enabled) {
+            TraceManager.async_promise_map.set(asyncId, triggerAsyncId);
+         }
+      },
+      before(asyncId: any) {
+         //TraceManager.async_promise_map.set( asyncId , "before" );
+      },
+      after(asyncId: any) {
+         //TraceManager.async_promise_map.set( asyncId , "after" );
+      },
+      destroy(asyncId: any) {
+         //TraceManager.async_promise_map.set( asyncId , "destroy" );
+      },
+   })
+   .enable();
 
 export enum TraceMethodType {
    ClassGetter,
@@ -56,7 +51,6 @@ export class TraceMethod {
       this.calls = 0;
       this.methodType = methodType;
    }
-
 }
 
 export class TraceCall {
@@ -134,12 +128,10 @@ export class TraceCall {
 
       if (typeof obj === "string") {
          text = obj;
-      }
-      else {
+      } else {
          try {
             text = mccJsonStringify(obj);
-         }
-         catch {
+         } catch {
             text = "error stringifying object";
          }
       }
@@ -169,22 +161,18 @@ export class TraceCall {
       if (this.isAsync) {
          if (this.isAwait) {
             status = "▼"; // await
-         }
-         else {
+         } else {
             status = "▲"; // new async
          }
       }
 
-
       if (this.completed) {
          if (this.error) {
             status += "‼";
-         }
-         else {
+         } else {
             status += "◼";
          }
-      }
-      else {
+      } else {
          status += "▶";
       }
 
@@ -196,8 +184,7 @@ export class TraceCall {
 
       if (this.ret) {
          return `${status} ${indent}${this.method.className}.${this.method.methodName}(${args})=${this.verbose(this.ret, showVerbose)} ${source}${timing}`;
-      }
-      else {
+      } else {
          return `${status} ${indent}${this.method.className}.${this.method.methodName}(${args}) ${source}${timing}`;
       }
    }
@@ -207,8 +194,7 @@ export class TraceCall {
 
       if (this.ret) {
          return `${this.method.className}.${this.method.methodName}(${args})=${this.verbose(this.ret, showVerbose)}`;
-      }
-      else {
+      } else {
          return `${this.method.className}.${this.method.methodName}(${args})`;
       }
    }
@@ -234,7 +220,7 @@ export class TraceManager {
    public displayRuntimeTrace = false;
    public displayStateOnException = true;
 
-   public onException = function (error: Error): void { };
+   public onException = function (error: Error): void {};
 
    private methods: TraceMethod[];
 
@@ -250,7 +236,7 @@ export class TraceManager {
    }
 
    createMethod(className: string, methodName: string, methodType: TraceMethodType): TraceMethod {
-      let method = this.methods.find(x => x.className == className && x.methodName == methodName);
+      let method = this.methods.find((x) => x.className == className && x.methodName == methodName);
 
       if (method) return method;
 
@@ -277,7 +263,7 @@ export class TraceManager {
          parents.push(i);
       }
 
-      let async = this.asyncs.reverse().find(x => parents.find(y => y === x.tid) != null);
+      let async = this.asyncs.reverse().find((x) => parents.find((y) => y === x.tid) != null);
 
       if (async) return async;
 
@@ -298,7 +284,7 @@ export class TraceManager {
       // add methods called
       const top = trace.async.stack[trace.async.stack.length - 1];
       if (top) {
-         if (!top.method.methodsCalled.find(x => x.className == className && x.methodName == methodName)) {
+         if (!top.method.methodsCalled.find((x) => x.className == className && x.methodName == methodName)) {
             top.method.methodsCalled.push(method);
          }
       }
@@ -339,11 +325,10 @@ export class TraceManager {
       if (top) {
          top.method.innerTime += last.traceTime;
       }
-
    }
 
    getAsync(id: number): TraceAsync | undefined {
-      return this.asyncs.find(x => x.id === id);
+      return this.asyncs.find((x) => x.id === id);
    }
 
    completeError(trace: TraceCall | undefined, error: Error) {
@@ -353,7 +338,6 @@ export class TraceManager {
    }
 
    showException(error: any) {
-
       // todo: user exception callback
       //this.onException?(error);
 
@@ -375,7 +359,7 @@ export class TraceManager {
 
    showState(stack: any = undefined) {
       if (stack) {
-         console.log(`NODE STACK ${stack.stack}`)
+         console.log(`NODE STACK ${stack.stack}`);
       }
 
       this.showStack();
@@ -403,7 +387,6 @@ export class TraceManager {
    showMethods(indent = false, source = true, timing = false) {
       console.log("\nMETHODS");
       for (let method of this.methods) {
-
          const exclusiveTime = Math.max(0, method.inclusiveTime - method.innerTime);
 
          console.log(`◼ ${method.className}.${method.methodName}  ${method.calls} ${method.inclusiveTime}ms ${exclusiveTime}ms`);
@@ -413,7 +396,6 @@ export class TraceManager {
          }
       }
    }
-
 
    get main(): TraceAsync | undefined {
       if (this.asyncs.length === 0) {
@@ -439,7 +421,6 @@ export class TraceManager {
 
       return this.main!.trace[this.main!.trace.length - 1].toShortString();
    }
-
 }
 
 export const traceManager = new TraceManager();
@@ -463,8 +444,7 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
 
          if (cached) {
             isAwait = cached;
-         }
-         else {
+         } else {
             // check if that source file has 'await'
             const fs = require("fs");
             const data = fs.readFileSync(stackTrace.source).toString();
@@ -486,7 +466,7 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
       let res = methodType === TraceMethodType.ClassGetter ? funct.apply(cx) : funct.apply(cx, args);
 
       if (!isPromise(res)) {
-         traceManager.complete(trace, res)
+         traceManager.complete(trace, res);
          return res;
       }
       return new Promise((resolve, reject) => {
@@ -495,45 +475,38 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
 
             resolve(result);
          }).catch((error: any) => {
-
             if (error?.name === MCC_ERROR) {
                traceManager.showException(error);
                traceManager.completeError(trace, error);
                reject(error);
-            }
-            else {
+            } else {
                const newError = new mccOutsideError(error);
                traceManager.showException(newError);
                traceManager.completeError(trace, newError);
                reject(newError);
             }
          });
-      })
+      });
    } catch (error: any) {
       if (error?.name === MCC_ERROR) {
          traceManager.showException(error);
          traceManager.completeError(trace, error);
          throw error;
-      }
-      else {
+      } else {
          const newError = new mccOutsideError(error);
          traceManager.showException(newError);
          traceManager.completeError(trace, newError);
          throw new mccOutsideError(newError);
       }
    }
-
 }
 
 export function isPromise(p: any) {
-   if (typeof p === 'object' && typeof p.then === 'function') {
+   if (typeof p === "object" && typeof p.then === "function") {
       return true;
    }
    return false;
 }
-
-
-
 
 // export function RegisterTraceValue(target: any, name?: string, descriptor?: any) {
 //    //  decorating a method
@@ -576,11 +549,9 @@ export function RegisterTraceSetter(target: any, name?: string, descriptor?: any
    return null;
 }
 
-
 export function RegisterTraceClass(targetClass: any) {
    // add tracing capability to all own methods, setters and getters
    Object.getOwnPropertyNames(targetClass.prototype).forEach((methodName: string) => {
-
       const desc = Object.getOwnPropertyDescriptor(targetClass.prototype, methodName);
 
       // getter
@@ -633,4 +604,3 @@ export function round(x: number, decimal: number = 0) {
 
    return Math.round(x * dec10) / dec10;
 }
-

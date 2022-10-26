@@ -1,8 +1,8 @@
 import * as msgpack from "algo-msgpack-with-bigint";
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 import { AlgoBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { IBlockHeader, IBlockTip } from "../base-objects/BlockBase";
+import { IBlockTip } from "../base-objects/BlockBase";
 import { AlgoIndexerBlock } from "../base-objects/blocks/AlgoIndexerBlock";
 import { AlgoNodeStatus } from "../base-objects/StatusBase";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
@@ -11,12 +11,12 @@ import {
    AlgoMccCreate,
    ChainType,
    IAlgoGetBlockHeaderRes,
+   IAlgoIndexerAsset,
    IAlgoListTransactionRes,
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
    RateLimitOptions,
-   IAlgoIndexerAsset,
 } from "../types";
 import {
    IAlgoAssets,
@@ -43,8 +43,8 @@ function algoResponseValidator(responseCode: number) {
 }
 @Managed()
 export class ALGOImplementation implements ReadRpcInterface {
-   algodClient: any;
-   indexerClient: any;
+   algodClient: AxiosInstance;
+   indexerClient: AxiosInstance | undefined;
    chainType: ChainType;
    inRegTest: boolean;
    createConfig: AlgoMccCreate;
@@ -91,10 +91,12 @@ export class ALGOImplementation implements ReadRpcInterface {
       this.chainType = ChainType.ALGO;
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    getBlockTips?(height_gte: number): Promise<IBlockTip[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
-   
+
+   // eslint-disable-next-line @typescript-eslint/no-inferrable-types, @typescript-eslint/no-unused-vars
    getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<IBlockTip[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
@@ -104,15 +106,15 @@ export class ALGOImplementation implements ReadRpcInterface {
     */
 
    async getNodeStatus(): Promise<AlgoNodeStatus> {
-      let res = await this.algodClient.get("health");
+      const res = await this.algodClient.get("health");
       algo_ensure_data(res);
 
-      let ver = await this.algodClient.get("versions");
+      const ver = await this.algodClient.get("versions");
       algo_ensure_data(ver);
 
-      let status = await this.algodClient.get("/v2/status");
-      algo_ensure_data(status);
-      status = toCamelCase(status.data) as IAlgoGetStatus;
+      const statusRes = await this.algodClient.get("/v2/status");
+      algo_ensure_data(statusRes);
+      const status = toCamelCase(statusRes.data) as IAlgoGetStatus;
 
       const statusData = {
          health: res.status,
@@ -155,9 +157,9 @@ export class ALGOImplementation implements ReadRpcInterface {
          const status = await this.getStatus();
          round = status.lastRound;
       }
-      let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
+      const res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
          responseType: "arraybuffer",
-         headres: { "Content-Type": "application/msgpack" },
+         headers: { "Content-Type": "application/msgpack" },
       });
       if (algo_check_expect_block_out_of_range(res)) {
          throw new mccError(mccErrorCode.InvalidBlock);
@@ -189,12 +191,13 @@ export class ALGOImplementation implements ReadRpcInterface {
     * @param txid
     */
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    async getTransaction(txid: string): Promise<AlgoTransaction> {
       throw new mccError(mccErrorCode.InvalidMethodCall);
    }
 
    async listTransactions(options?: IAlgoLitsTransaction): Promise<IAlgoListTransactionRes | null> {
-      if (!this.createConfig.indexer) {
+      if (!this.indexerClient) {
          // No indexer
          return null;
       }
@@ -202,16 +205,16 @@ export class ALGOImplementation implements ReadRpcInterface {
       if (options !== undefined) {
          snakeObject = toSnakeCase(options);
       }
-      let res = await this.indexerClient.get(`/v2/transactions`, {
+      const res = await this.indexerClient.get(`/v2/transactions`, {
          params: snakeObject,
       });
       algo_ensure_data(res);
-      let camelList = {
+      const camelList = {
          currentRound: res.data["current-round"],
          nextToken: res.data["next-token"],
          transactions: [] as IAlgoTransaction[],
       };
-      for (let key of Object.keys(res.data.transactions)) {
+      for (const key of Object.keys(res.data.transactions)) {
          camelList.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
       }
       return camelList as IAlgoListTransactionRes;
@@ -222,7 +225,7 @@ export class ALGOImplementation implements ReadRpcInterface {
    ///////////////////////////////////////////////////////////////////////////////////////
 
    async getAssetInfo(assetId: number): Promise<IAlgoAssets> {
-      let res = await this.algodClient.get(`/v2/assets/${assetId}`);
+      const res = await this.algodClient.get(`/v2/assets/${assetId}`);
       algo_ensure_data(res);
       return res.data as IAlgoAssets;
    }
@@ -232,15 +235,15 @@ export class ALGOImplementation implements ReadRpcInterface {
    ///////////////////////////////////////////////////////////////////////////////////////
 
    private async getStatus(): Promise<IAlgoStatusRes> {
-      let res = await this.algodClient.get("/v2/status");
+      const res = await this.algodClient.get("/v2/status");
       algo_ensure_data(res);
       return toCamelCase(res.data) as IAlgoStatusRes;
    }
 
    private async getBlockHeaderCert(round: number): Promise<IAlgoCert> {
-      let res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
+      const res = await this.algodClient.get(`/v2/blocks/${round}?format=msgpack`, {
          responseType: "arraybuffer",
-         headres: { "Content-Type": "application/msgpack" },
+         headers: { "Content-Type": "application/msgpack" },
       });
       algo_ensure_data(res);
       const decoded = msgpack.decode(res.data) as IAlgoGetBlockHeaderRes;
@@ -252,9 +255,9 @@ export class ALGOImplementation implements ReadRpcInterface {
          const status = await this.getStatus();
          round = status.lastRound;
       }
-      let resorig = await this.algodClient.get(`/v2/blocks/${round}`);
+      const resorig = await this.algodClient.get(`/v2/blocks/${round}`);
       algo_ensure_data(resorig);
-      let responseData = toCamelCase(resorig.data) as IAlgoGetBlockHeaderRes;
+      const responseData = toCamelCase(resorig.data) as IAlgoGetBlockHeaderRes;
       responseData.type = "IAlgoGetBlockHeaderRes";
       return responseData;
    }
@@ -268,11 +271,14 @@ export class ALGOImplementation implements ReadRpcInterface {
     * @param txid base32 encoded txid || standardized txid (prefixed or unprefixed)
     * @returns
     */
-   async getIndexerTransaction(txid: string): Promise<AlgoIndexerTransaction> {
+   async getIndexerTransaction(txid: string): Promise<AlgoIndexerTransaction | null> {
+      if (!this.indexerClient) {
+         return null;
+      }
       if (isPrefixed0x(txid)) {
          txid = unPrefix0x(txid);
       }
-      let res = await this.indexerClient.get(`/v2/transactions/${txid}`);
+      const res = await this.indexerClient.get(`/v2/transactions/${txid}`);
       if (algo_check_expect_empty(res)) {
          throw new mccError(mccErrorCode.InvalidBlock);
       }
@@ -280,7 +286,10 @@ export class ALGOImplementation implements ReadRpcInterface {
       return new AlgoIndexerTransaction(toCamelCase(res.data) as IAlgoGetTransactionRes) as AlgoIndexerTransaction;
    }
 
-   async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock> {
+   async getIndexerBlock(round?: number): Promise<AlgoIndexerBlock | null> {
+      if (!this.indexerClient) {
+         return null;
+      }
       if (!this.createConfig.indexer) {
          // No indexer
          throw new mccError(mccErrorCode.InvalidMethodCall);
@@ -289,23 +298,26 @@ export class ALGOImplementation implements ReadRpcInterface {
          const status = await this.getStatus();
          round = status.lastRound - 1;
       }
-      let res = await this.indexerClient.get(`/v2/blocks/${round}`);
+      const res = await this.indexerClient.get(`/v2/blocks/${round}`);
       if (algo_check_expect_block_out_of_range(res)) {
          throw new mccError(mccErrorCode.InvalidBlock);
       }
       algo_ensure_data(res);
       const cert = await this.getBlockHeaderCert(round);
-      let camelBlockRes = toCamelCase(res.data) as IAlgoGetIndexerBlockRes;
+      const camelBlockRes = toCamelCase(res.data) as IAlgoGetIndexerBlockRes;
       camelBlockRes.transactions = [];
-      for (let key of Object.keys(res.data.transactions)) {
+      for (const key of Object.keys(res.data.transactions)) {
          camelBlockRes.transactions.push(toCamelCase(res.data.transactions[key]) as IAlgoTransaction);
       }
       camelBlockRes.cert = certToInCert(cert);
       return new AlgoIndexerBlock(camelBlockRes);
    }
 
-   async getIndexerAssetInfo(assetIndex: number): Promise<IAlgoIndexerAsset> {
-      let res = await this.indexerClient.get(`/v2/assets/${assetIndex}`);
+   async getIndexerAssetInfo(assetIndex: number): Promise<IAlgoIndexerAsset | null> {
+      if (!this.indexerClient) {
+         return null;
+      }
+      const res = await this.indexerClient.get(`/v2/assets/${assetIndex}`);
       if (algo_check_expect_empty(res)) {
          throw new mccError(mccErrorCode.InvalidResponse);
       }

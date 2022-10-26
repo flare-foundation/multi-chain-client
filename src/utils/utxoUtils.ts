@@ -34,7 +34,13 @@ export async function recursive_block_tip(clinet: UtxoCore, tip: UtxoBlockTip, p
       const CurrBlock = await clinet.getBlockHeader(tip.stdBlockHash);
       const previousHash = CurrBlock.previousBlockHash;
       const previousHeight = CurrBlock.number - 1;
-      return (await recursive_block_tip(clinet, new UtxoBlockTip({ hash: previousHash, height: previousHeight, branchlen: tip.data.branchlen, status: tip.chainTipStatus }), processHeight - 1)).concat([tempTip]);
+      return (
+         await recursive_block_tip(
+            clinet,
+            new UtxoBlockTip({ hash: previousHash, height: previousHeight, branchlen: tip.data.branchlen, status: tip.chainTipStatus }),
+            processHeight - 1
+         )
+      ).concat([tempTip]);
    }
 }
 
@@ -48,7 +54,7 @@ export async function recursive_block_tip(clinet: UtxoCore, tip: UtxoBlockTip, p
  * @returns
  */
 export function utxo_check_expect_empty(data: any): boolean {
-   if (!data || !data.error || !data.error.code ) {
+   if (!data || !data.error || !data.error.code) {
       return false;
    }
    if (data.error.code && data.error.code === -5) {

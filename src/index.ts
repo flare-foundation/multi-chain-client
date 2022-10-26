@@ -118,11 +118,10 @@ export * from "./utils/typeReflection";
 export * from "./utils/retry";
 
 // managed
-export * from "./utils/managed"
+export * from "./utils/managed";
 
 // trace
-export * from "./utils/trace"
+export * from "./utils/trace";
 
 // Types
 export * from "./types";
-

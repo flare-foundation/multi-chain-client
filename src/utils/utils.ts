@@ -2,7 +2,7 @@ import BN from "bn.js";
 import Web3 from "web3";
 import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
 const camelCase = require("camelcase");
-const safeStringify = require('fast-safe-stringify')
+const safeStringify = require("fast-safe-stringify");
 
 export const ZERO_BYTES_32 = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -44,7 +44,7 @@ export function isPrefixed0x(tx: string) {
    return tx.startsWith("0x") ? true : false;
 }
 
-export function toHex(x: string | number | BN) : string {
+export function toHex(x: string | number | BN): string {
    return Web3.utils.toHex(x);
 }
 
@@ -105,8 +105,8 @@ export function isValidBytes32Hex(address: string) {
 export function mccJsonStringify(toStringify: any) {
    const options = {
       depthLimit: 2,
-      edgesLimit: 3
-    };
+      edgesLimit: 3,
+   };
 
    return safeStringify(toStringify, null, 2, options);
 }

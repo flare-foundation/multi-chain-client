@@ -245,9 +245,9 @@ export class UtxoCore implements ReadRpcInterface {
     */
    async getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<UtxoBlockTip[]> {
       const height = await this.getBlockHeight();
-      let callBranchLength: undefined | number = undefined
-      if (read_main){
-         callBranchLength = branch_len
+      let callBranchLength: undefined | number = undefined;
+      if (read_main) {
+         callBranchLength = branch_len;
       }
       return this.getBlockTipsHelper(height - branch_len, callBranchLength);
    }

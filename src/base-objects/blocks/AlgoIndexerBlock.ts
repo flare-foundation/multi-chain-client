@@ -1,16 +1,14 @@
-
-
 import { IAlgoGetIndexerBlockRes, IAlgoTransaction } from "../../types";
 import { base64ToHex, hexToBase64, txIdToHexNo0x } from "../../utils/algoUtils";
 import { Managed } from "../../utils/managed";
 import { BlockBase } from "../BlockBase";
 
 function filterHashesIndexer(trans: IAlgoTransaction) {
-  if (trans.id) {
-     return trans.id;
-  } else {
-     return "";
-  }
+   if (trans.id) {
+      return trans.id;
+   } else {
+      return "";
+   }
 }
 
 @Managed()
@@ -30,7 +28,7 @@ export class AlgoIndexerBlock extends BlockBase<IAlgoGetIndexerBlockRes> {
    public get previousBlockHash(): string {
       throw new Error("Method not implemented.");
    }
-   
+
    public get stdPreviousBlockHash(): string {
       throw new Error("Method not implemented.");
    }

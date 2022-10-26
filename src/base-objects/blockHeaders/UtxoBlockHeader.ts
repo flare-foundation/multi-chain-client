@@ -13,22 +13,22 @@ export class UtxoBlockHeader extends BlockHeaderBase<IUtxoGetBlockHeaderRes> {
    }
 
    public get unixTimestamp(): number {
-      return this.data.mediantime
+      return this.data.mediantime;
    }
 
    public get transactionCount(): number {
-      return this.data.nTx
+      return this.data.nTx;
    }
 
    public get number(): number {
-      return this.data.height
+      return this.data.height;
    }
 
    public get blockHash(): string {
-      return this.data.hash
+      return this.data.hash;
    }
 
    public get stdBlockHash(): string {
-      return this.blockHash
+      return this.blockHash;
    }
 }

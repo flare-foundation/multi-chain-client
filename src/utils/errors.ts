@@ -1,4 +1,3 @@
-
 export const MCC_ERROR = "mccError";
 
 export enum mccErrorCode {

@@ -83,7 +83,7 @@ export interface IUtxoGetBlockHeaderRes {
    bits: string;
    difficulty: number;
    chainwork: string;
-   nTx : number,
+   nTx: number;
    previousblockhash: string;
    nextblockhash: string;
 }
@@ -168,7 +168,7 @@ export interface IUtxoChainTip {
    height: number; // height of the chain tip
    hash: string; // block hash of the tip
    branchlen: number; // zero for main chain
-   status: IUtxoChainTipStatuses
+   status: IUtxoChainTipStatuses;
    // Possible status options
    // 1.  "invalid"               This branch contains at least one invalid block
    // 2.  "headers-only"          Not all blocks for this branch are available, but the headers are valid

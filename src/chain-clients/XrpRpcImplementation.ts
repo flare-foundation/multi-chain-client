@@ -109,7 +109,7 @@ export class XRPImplementation implements ReadRpcInterface {
          transactions: true,
          expand: true,
          binary: false,
-      }
+      };
       if (typeof blockNumberOrHash === "string") {
          if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockNumberOrHash)) {
             blockNumberOrHash = unPrefix0x(blockNumberOrHash);
@@ -136,8 +136,8 @@ export class XRPImplementation implements ReadRpcInterface {
    }
 
    getBlockHeader(blockNumberOrHash: number | string): Promise<XrpBlock> {
-      return this.getBlock(blockNumberOrHash)
-  }
+      return this.getBlock(blockNumberOrHash);
+   }
 
    async getBlockHeight(): Promise<number> {
       let res = await this.client.post("", {

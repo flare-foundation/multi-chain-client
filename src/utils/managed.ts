@@ -9,8 +9,6 @@ export function enableManaged() {
 }
 
 export function Managed() {
-
-
    return (target: any, name?: string, descriptor?: any) => {
       if (!TraceManager.enabled) return target;
 

@@ -23,7 +23,7 @@
 //          Error("Method not implemented.")
 //       );
 //    }
-   
+
 //    public get stdPreviousBlockHash(): string {
 //       throw new mccError(
 //          mccErrorCode.InvalidMethodCall,
