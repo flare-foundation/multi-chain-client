@@ -18,15 +18,15 @@ describe("DOGE mainnet client tests", () => {
 
    describe("Should initialize", function () {
       it("Direct initialize", async function () {
-         const client = new MCC.DOGE(DogeMccConnection)
+         const client = new MCC.DOGE(DogeMccConnection);
          expect(client).to.not.eq(null);
-      })
+      });
 
       it("Client initialize", async function () {
-         const client = MCC.Client('DOGE',DogeMccConnection)
+         const client = MCC.Client("DOGE", DogeMccConnection);
          expect(client).to.not.eq(null);
-      })
-   })
+      });
+   });
 
    describe("get transaction tests", function () {
       it("should get transaction ", async function () {

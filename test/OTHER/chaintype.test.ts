@@ -111,7 +111,7 @@ describe("Lite block base test ", function () {
    describe("Client", function () {
       it("Should not initialize", async function () {
          const fn = () => {
-            return MCC.Client("invalid", {url: "", password: ""});
+            return MCC.Client("invalid", { url: "", password: "" });
          };
          expect(fn).to.throw(Error);
          expect(fn).to.throw("Not implemented");

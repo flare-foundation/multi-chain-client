@@ -1,13 +1,33 @@
 import { expect } from "chai";
 import { traceManager } from "../../src";
-import { addressToHex, algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, base32ToHex, base64ToHex, base64ToText, bufAddToCBufAdd, bytesToHex, concatArrays, hasher, hexToAddress, hexToBase32, hexToBase64, hexToBytes, mpDecode, mpEncode, txIdToHex, txIdToHexNo0x } from "../../src/utils/algoUtils";
+import {
+   addressToHex,
+   algo_check_expect_block_out_of_range,
+   algo_check_expect_empty,
+   algo_ensure_data,
+   base32ToHex,
+   base64ToHex,
+   base64ToText,
+   bufAddToCBufAdd,
+   bytesToHex,
+   concatArrays,
+   hasher,
+   hexToAddress,
+   hexToBase32,
+   hexToBase64,
+   hexToBytes,
+   mpDecode,
+   mpEncode,
+   txIdToHex,
+   txIdToHexNo0x,
+} from "../../src/utils/algoUtils";
 import { mccJsonStringify } from "../../src/utils/utils";
 import { addressToBtyeAddress } from "../testUtils";
 
 describe("ALGO utils tests", () => {
    before(async function () {
       traceManager.displayStateOnException = false;
-   })
+   });
 
    describe("ALGO address <-> hex", () => {
       it("should decode address to hex pair ", function () {
@@ -41,7 +61,7 @@ describe("ALGO utils tests", () => {
          expect(encodedAddress).to.equal(address);
       });
 
-     it("should throw incorrect public key due to wrong checksum", function () {
+      it("should throw incorrect public key due to wrong checksum", function () {
          const decoded = {
             publicKey: "0x06c0d7985fae2d64be14b9b4d9d5b07b3df0931baf01828f2c06bb6c0fe500ba",
             checksum: "0xa7084dff",
@@ -68,7 +88,7 @@ describe("ALGO utils tests", () => {
       });
    });
 
-   describe("ALGO transaction id <-> hex", () => {  
+   describe("ALGO transaction id <-> hex", () => {
       it("should encode txId", function () {
          const txid = "K6HBZAEREHOYVDA2PR5I56MIAOFAIHGSZLUZFCON3RRSATCMNX6Q";
          const encodedTxid = txIdToHex(txid);
@@ -87,10 +107,7 @@ describe("ALGO utils tests", () => {
    describe("ALGO bytes <-> hex", () => {
       it("hex -> bytes ", async function () {
          const expected = new Uint8Array([
-            66,   2,   8,  64, 224, 159,   7, 166,
-            59, 253, 162, 230,  98, 221,  58, 108,
-           184,  38, 243, 153, 157, 122, 167, 241,
-            43, 113,  49, 207,  48,  79, 122,  87
+            66, 2, 8, 64, 224, 159, 7, 166, 59, 253, 162, 230, 98, 221, 58, 108, 184, 38, 243, 153, 157, 122, 167, 241, 43, 113, 49, 207, 48, 79, 122, 87,
          ]);
          const hex = "42020840e09f07a63bfda2e662dd3a6cb826f3999d7aa7f12b7131cf304f7a57";
          const bytes = hexToBytes(hex);
@@ -100,10 +117,7 @@ describe("ALGO utils tests", () => {
       it("bytes -> hex ", async function () {
          const expected = "42020840e09f07a63bfda2e662dd3a6cb826f3999d7aa7f12b7131cf304f7a57";
          const bytes = new Uint8Array([
-            66,   2,   8,  64, 224, 159,   7, 166,
-            59, 253, 162, 230,  98, 221,  58, 108,
-           184,  38, 243, 153, 157, 122, 167, 241,
-            43, 113,  49, 207,  48,  79, 122,  87
+            66, 2, 8, 64, 224, 159, 7, 166, 59, 253, 162, 230, 98, 221, 58, 108, 184, 38, 243, 153, 157, 122, 167, 241, 43, 113, 49, 207, 48, 79, 122, 87,
          ]);
          const hex = bytesToHex(bytes);
          expect(hex).to.equal(expected);
@@ -127,10 +141,7 @@ describe("ALGO utils tests", () => {
       it("hex -> base32 from uint8array", async function () {
          const expected = "IIBAQQHAT4D2MO75ULTGFXJ2NS4CN44ZTV5KP4JLOEY46MCPPJLQ";
          const bytes = new Uint8Array([
-            66,   2,   8,  64, 224, 159,   7, 166,
-            59, 253, 162, 230,  98, 221,  58, 108,
-           184,  38, 243, 153, 157, 122, 167, 241,
-            43, 113,  49, 207,  48,  79, 122,  87
+            66, 2, 8, 64, 224, 159, 7, 166, 59, 253, 162, 230, 98, 221, 58, 108, 184, 38, 243, 153, 157, 122, 167, 241, 43, 113, 49, 207, 48, 79, 122, 87,
          ]);
          const base32hex = hexToBase32(bytes);
          expect(base32hex).to.equal(expected);
@@ -152,12 +163,9 @@ describe("ALGO utils tests", () => {
       });
 
       it("hex -> base64 from uint8array", async function () {
-         const expected = "QgIIQOCfB6Y7/aLmYt06bLgm85mdeqfxK3ExzzBPelc="
+         const expected = "QgIIQOCfB6Y7/aLmYt06bLgm85mdeqfxK3ExzzBPelc=";
          const bytes = new Uint8Array([
-            66,   2,   8,  64, 224, 159,   7, 166,
-            59, 253, 162, 230,  98, 221,  58, 108,
-           184,  38, 243, 153, 157, 122, 167, 241,
-            43, 113,  49, 207,  48,  79, 122,  87
+            66, 2, 8, 64, 224, 159, 7, 166, 59, 253, 162, 230, 98, 221, 58, 108, 184, 38, 243, 153, 157, 122, 167, 241, 43, 113, 49, 207, 48, 79, 122, 87,
          ]);
          const base64hex = hexToBase64(bytes);
          expect(base64hex).to.equal(expected);
@@ -200,11 +208,11 @@ describe("ALGO utils tests", () => {
          const er = `Not a valid address buffer: ${bufferAddress}`;
          expect(fn).to.throw(Error);
          expect(fn).to.throw(er);
-      });      
+      });
    });
 
    describe("MCC Error handling", () => {
-      it("should throw error - 400", async function() {
+      it("should throw error - 400", async function () {
          const data = { status: 400 };
          const fn = () => {
             return algo_ensure_data(data);
@@ -213,7 +221,7 @@ describe("ALGO utils tests", () => {
          expect(fn).to.throw(Error);
          expect(fn).to.throw(er);
       });
-      it("should throw error - 401", async function() {
+      it("should throw error - 401", async function () {
          const data = { status: 401 };
          const fn = () => {
             return algo_ensure_data(data);
@@ -222,7 +230,7 @@ describe("ALGO utils tests", () => {
          expect(fn).to.throw(Error);
          expect(fn).to.throw(er);
       });
-      it("should throw error - 404", async function() {
+      it("should throw error - 404", async function () {
          const data = { status: 404 };
          const fn = () => {
             return algo_ensure_data(data);
@@ -231,7 +239,7 @@ describe("ALGO utils tests", () => {
          expect(fn).to.throw(Error);
          expect(fn).to.throw(er);
       });
-      it("should throw error - 500", async function() {
+      it("should throw error - 500", async function () {
          const data = { status: 500 };
          const fn = () => {
             return algo_ensure_data(data);
@@ -240,7 +248,7 @@ describe("ALGO utils tests", () => {
          expect(fn).to.throw(Error);
          expect(fn).to.throw(er);
       });
-      it("should throw error - 503", async function() {
+      it("should throw error - 503", async function () {
          const data = { status: 503 };
          const fn = () => {
             return algo_ensure_data(data);
@@ -249,12 +257,12 @@ describe("ALGO utils tests", () => {
          expect(fn).to.throw(Error);
          expect(fn).to.throw(er);
       });
-      it("should return true - 404", async function() {
+      it("should return true - 404", async function () {
          const data = { status: 404 };
          expect(algo_check_expect_block_out_of_range(data)).to.equal(true);
          expect(algo_check_expect_empty(data)).to.equal(true);
       });
-      it("should return false", async function() {
+      it("should return false", async function () {
          const data = { status: 200 };
          expect(algo_check_expect_block_out_of_range(data)).to.equal(false);
          expect(algo_check_expect_empty(data)).to.equal(false);
@@ -263,27 +271,24 @@ describe("ALGO utils tests", () => {
 
    describe("ALGO helper functions", () => {
       const arr0 = [1, 2, 3, 4, 5];
-      it("concat one array", async function() {
+      it("concat one array", async function () {
          const expected = new Uint8Array([1, 2, 3, 4, 5]);
          let res = concatArrays(arr0);
          expect(res).to.be.eql(expected);
       });
-      it("concat multiple arrays", async function() {
+      it("concat multiple arrays", async function () {
          const expected = new Uint8Array([1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 10, 11, 12, 0, 0]);
-         let res = concatArrays(arr0, arr0,  {0: 10, 1: 11, 2: 12, length: 5});
+         let res = concatArrays(arr0, arr0, { 0: 10, 1: 11, 2: 12, length: 5 });
          expect(res).to.be.eql(expected);
       });
-      it("hash an array", async function() {
+      it("hash an array", async function () {
          const expected = new Uint8Array([
-            25, 181, 125,  65, 111,  93,  89, 122,
-            212,   7, 132, 243,   5,   0, 180, 208,
-            126, 217, 103, 190, 245, 236, 136,  60,
-            129,  85,  77, 233, 246, 250, 108,  61
+            25, 181, 125, 65, 111, 93, 89, 122, 212, 7, 132, 243, 5, 0, 180, 208, 126, 217, 103, 190, 245, 236, 136, 60, 129, 85, 77, 233, 246, 250, 108, 61,
          ]);
          let res = hasher(new Uint8Array(arr0));
          expect(res).to.be.eql(expected);
       });
-      it("msgpack", async function() {
+      it("msgpack", async function () {
          let res = mpEncode(arr0);
          let arr0_again = mpDecode(res);
          expect(arr0).to.be.eql(arr0_again);

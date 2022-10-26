@@ -1,9 +1,9 @@
 import { MCC, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
-const chai = require('chai')
-const expect = chai.expect
-chai.use(require('chai-as-promised'))
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const DogeMccConnection = {
    url: process.env.DOGE_URL || "",
@@ -15,7 +15,7 @@ describe("Transaction DOGE base test ", function () {
    let MccClient: MCC.DOGE;
 
    before(async function () {
-      traceManager.displayStateOnException=false
+      traceManager.displayStateOnException = false;
 
       MccClient = new MCC.DOGE(DogeMccConnection);
    });
@@ -25,11 +25,11 @@ describe("Transaction DOGE base test ", function () {
 
       it("Should get transaction does not exist ", async function () {
          let transaction = MccClient.getTransaction(txid);
-         await expect( transaction ).to.be.rejectedWith("InvalidTransaction");
+         await expect(transaction).to.be.rejectedWith("InvalidTransaction");
       });
    });
 
-   const TransactionsToTest : transactionTestCases[] = [
+   const TransactionsToTest: transactionTestCases[] = [
       {
          description: "Transaction 1 ",
          txid: "de07c395ab9e3d987f13f72ee71f0b3ba4217c3b4df6f9dd928fe579c014b90e",

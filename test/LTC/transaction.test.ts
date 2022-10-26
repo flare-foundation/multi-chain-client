@@ -23,7 +23,7 @@ describe("Transaction Ltc base test ", function () {
 
       it("Should get transaction does not exist ", async function () {
          let transaction = MccClient.getTransaction(txid);
-         await expect( transaction ).to.be.rejectedWith("InvalidTransaction");
+         await expect(transaction).to.be.rejectedWith("InvalidTransaction");
       });
    });
 
@@ -187,7 +187,7 @@ describe("Transaction Ltc base test ", function () {
          expect: {
             txid: "458584edb759bc2b5842ba52467445c6c8e51dffcac5b5b9c59c8d88fd8447b6",
             stdTxid: "458584edb759bc2b5842ba52467445c6c8e51dffcac5b5b9c59c8d88fd8447b6",
-            hash: "818e7777f12becb8a61d90b48dbc966aeb45a1bc1221d83db92767f772564043" ,
+            hash: "818e7777f12becb8a61d90b48dbc966aeb45a1bc1221d83db92767f772564043",
             reference: ["aa21a9edc37769589e812ce376b3f0189ca132bf1005b764416ad2d851a6efb2f8021aae"],
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1655666505,

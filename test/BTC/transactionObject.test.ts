@@ -155,6 +155,5 @@ describe("Transaction Btc test ", function () {
          expect(summary.oneToOne).to.eq(false);
          expect(summary.isFull).to.eq(true);
       });
-
    });
 });

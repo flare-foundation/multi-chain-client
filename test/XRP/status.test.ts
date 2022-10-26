@@ -6,8 +6,8 @@ const XRPMccConnection = {
    username: process.env.XRP_USERNAME || "",
    password: process.env.XRP_PASSWORD || "",
    rateLimitOptions: {
-      timeoutMs: 15000
-   }
+      timeoutMs: 15000,
+   },
 };
 
 describe("Block Xrp base test ", function () {
@@ -21,7 +21,7 @@ describe("Block Xrp base test ", function () {
 
    it("Should get status version ", async function () {
       const version = status.version.split("_");
-      expect(version[0]).to.be.oneOf(["1.9.1","1.8.5","1.9.4"]);
+      expect(version[0]).to.be.oneOf(["1.9.1", "1.8.5", "1.9.4"]);
    });
 
    it("Should get status state ", async function () {
@@ -37,7 +37,6 @@ describe("Block Xrp base test ", function () {
    });
 });
 
-
 describe("Xrp bottom block ", function () {
    let MccClient: MCC.XRP;
 
@@ -46,7 +45,7 @@ describe("Xrp bottom block ", function () {
    });
 
    it("Should get status version ", async function () {
-      const bottom = await MccClient.getBottomBlockHeight()
+      const bottom = await MccClient.getBottomBlockHeight();
       expect(bottom).to.greaterThanOrEqual(32_570);
    });
 });

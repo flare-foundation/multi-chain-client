@@ -6,8 +6,8 @@ const BtcMccConnection = {
    username: process.env.BTC_USERNAME || "",
    password: process.env.BTC_PASSWORD || "",
    rateLimitOptions: {
-      timeoutMs: 15000
-   }
+      timeoutMs: 15000,
+   },
 } as UtxoMccCreate;
 
 describe("Block BTC base test ", function () {
@@ -48,7 +48,7 @@ describe("BTC bottom block ", function () {
    });
 
    it("Should get status version ", async function () {
-      const bottom = await MccClient.getBottomBlockHeight()
+      const bottom = await MccClient.getBottomBlockHeight();
       expect(bottom).to.eq(0);
    });
 });

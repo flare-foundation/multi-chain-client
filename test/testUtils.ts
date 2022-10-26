@@ -63,20 +63,20 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
    return txId;
 }
 
-export function addressToBtyeAddress(address: string) : Uint8Array {
+export function addressToBtyeAddress(address: string): Uint8Array {
    const algoKeyPair = addressToHex(address);
    return hexToBytes(unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum));
 }
 
 export interface algoTransactionTestCases extends transactionTestCases {
-   block: number
+   block: number;
 }
 
 export interface transactionTestCases {
    description: string;
    txid: string;
    expect: expectTransactionTestCase;
-   summary?: PaymentSummary
+   summary?: PaymentSummary;
 }
 
 export interface expectTransactionTestCase {
@@ -97,5 +97,5 @@ export interface expectTransactionTestCase {
    currencyName: string;
    elementaryUnits: string; // number as string
    successStatus: TransactionSuccessStatus;
-   isOneToOne?: boolean
+   isOneToOne?: boolean;
 }

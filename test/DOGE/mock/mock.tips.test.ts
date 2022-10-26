@@ -17,7 +17,7 @@ describe("Chain tips test ", function () {
       mock = new MockAdapter(MccClient.client, { onNoMatch: "passthrough" });
 
       const latest = 4410875;
-            
+
       mock
          .onPost("", {
             // asymmetricMatch: (actual: any) => actual.method === "getblockcount",

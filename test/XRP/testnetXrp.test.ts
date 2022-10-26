@@ -1,9 +1,8 @@
 import { MCC, traceManager } from "../../src";
 
-const chai = require('chai')
-const expect = chai.expect
-chai.use(require('chai-as-promised'))
-
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -15,8 +14,8 @@ describe("XRP testnet client tests", () => {
    let client: MCC.XRP;
 
    before(function () {
-      traceManager.displayStateOnException=false
-      
+      traceManager.displayStateOnException = false;
+
       client = new MCC.XRP(XRPMccConnection);
    });
 
@@ -39,10 +38,10 @@ describe("XRP testnet client tests", () => {
       it("Should return InvalidBlock if block does not exist", async () => {
          let n = 694537820;
          let block = client.getBlock(n);
-         await expect( block ).to.be.rejectedWith("InvalidBlock");
+         await expect(block).to.be.rejectedWith("InvalidBlock");
          n *= 100;
          block = client.getBlock(n);
-         await expect( block ).to.be.rejectedWith("InvalidBlock");
+         await expect(block).to.be.rejectedWith("InvalidBlock");
       });
 
       it("Should return transaction if exists", async () => {

@@ -47,7 +47,7 @@ describe("Algo block height", function () {
    });
 
    it("Should get bottom block height ", async function () {
-      const bottom = await MccClient.getBottomBlockHeight()
+      const bottom = await MccClient.getBottomBlockHeight();
       expect(bottom).to.greaterThan(19_000_000);
    });
 
@@ -64,5 +64,5 @@ describe("Algo block height", function () {
    it("Should get block proof ", async function () {
       const c = await MccClient.getBlockProof(21_908_076);
       expect(c.rnd).to.eq(21_908_076);
-   })
+   });
 });

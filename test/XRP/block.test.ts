@@ -65,7 +65,7 @@ describe("Block Xrp base test ", function () {
    });
 
    it("Should not get block", async function () {
-      await expect(MccClient.getBlock(blockNumber.toString())).to.eventually.be.rejected; 
+      await expect(MccClient.getBlock(blockNumber.toString())).to.eventually.be.rejected;
    });
 
    it("Should get previousBlockHash", async function () {

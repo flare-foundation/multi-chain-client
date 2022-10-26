@@ -2,142 +2,125 @@ import { sleepMs, traceFunction } from "../src";
 import { mccError, mccErrorCode } from "../src/utils/errors";
 import { Managed } from "../src/utils/managed";
 
-
-
-
-export function TestFunctionCall(a: number, s: string) {    
-    traceFunction( TestFunction, a , s );
+export function TestFunctionCall(a: number, s: string) {
+   traceFunction(TestFunction, a, s);
 }
 
-export function TestFunction(a: number, s: string) {    
-}
-
-
+export function TestFunction(a: number, s: string) {}
 
 export class Test2 {
-
-    async test2() {
-        return 5;
-    }
-
+   async test2() {
+      return 5;
+   }
 }
 
 @Managed()
 export class ManagedTest {
-    val = 3;
-    constructor() {
-        console.log("ManagedTest Constructor");
-    }
+   val = 3;
+   constructor() {
+      console.log("ManagedTest Constructor");
+   }
 
-    get getter() {
-        console.log("ManagedTest Getter");
-        return 1;
-    }
+   get getter() {
+      console.log("ManagedTest Getter");
+      return 1;
+   }
 
-    get getterThrow() {
-        console.log("GetterThrow");
-        throw new Error("test crash");
-        return 1;
-    }
+   get getterThrow() {
+      console.log("GetterThrow");
+      throw new Error("test crash");
+      return 1;
+   }
 
-    set setter(a: number) {
-        this.val = a;
-    }
+   set setter(a: number) {
+      this.val = a;
+   }
 
-    set setterThrow(a: number) {
-        throw new Error("test crash");
-    }
+   set setterThrow(a: number) {
+      throw new Error("test crash");
+   }
 
+   method(a: number, b: number) {
+      return this.sum(a, this.mad(a, a, b));
+   }
 
-    method(a: number, b: number) {
-        return this.sum(a, this.mad(a, a, b));
-    }
+   methodThrow(a: number, b: number) {
+      throw new Error("test crash");
+   }
 
-    methodThrow(a: number, b: number) {
-        throw new Error("test crash");
-    }
+   methodThrowMccError() {
+      throw new mccError(mccErrorCode.InvalidData);
+   }
 
-    methodThrowMccError() {
-        throw new mccError(mccErrorCode.InvalidData);
-    }
+   mad(a: number, b: number, c: number) {
+      return a * b + c;
+   }
 
+   sum(a: number, b: number) {
+      return a + b;
+   }
 
-    mad(a: number, b: number, c: number) {
-        return a * b + c;
-    }
+   mul(a: number, b: number) {
+      return a * b;
+   }
 
-    sum(a: number, b: number) {
-        return a + b;
-    }
+   async asyncMethod(a: number, b: number) {
+      return this.mul(this.sum(a, a), this.sum(b, b));
+   }
 
-    mul(a: number, b: number) {
-        return a * b;
-    }
+   async asyncMethodThrow(a: number, b: number) {
+      throw new Error("test crash");
+   }
 
-    async asyncMethod(a: number, b: number) {
-        return this.mul(this.sum(a, a), this.sum(b, b));
-    }
+   // async nested test
 
-    async asyncMethodThrow(a: number, b: number) {
-        throw new Error("test crash");
-    }
+   async asyncNestedMethod() {
+      for (let a = 0; a < 10; a++) {
+         this.asyncMethod3(a);
+      }
+   }
 
+   async asyncNestedMethodAwait() {
+      for (let a = 0; a < 10; a++) {
+         await this.asyncMethod3(a);
+      }
+   }
 
-    // async nested test
+   async asyncNestedMethodWaitOnEnd() {
+      const promises = [];
 
-    async asyncNestedMethod() {
-        for(let a=0; a<10; a++) {
-            this.asyncMethod3(a);
-        }
-    }
+      for (let a = 0; a < 3; a++) {
+         promises.push(this.asyncMethod3(a));
+      }
 
-    async asyncNestedMethodAwait() {
-        for(let a=0; a<10; a++) {
-            await this.asyncMethod3(a);
-        }
-    }
+      await Promise.all(promises);
+   }
 
-    async asyncNestedMethodWaitOnEnd() {
+   async asyncMethod3(a: number) {
+      for (let i = 0; i < 3; i++) {
+         this.f0(a, i);
+         await sleepMs(10);
+      }
+   }
 
-        const promises = [];
+   f0(a: number, b: number) {}
 
-        for(let a=0; a<3; a++) {
-            promises.push( this.asyncMethod3(a) );
-        }
+   //
 
-        await Promise.all( promises );
-    }
+   f1(param: string) {
+      this.f2(`f1(${param})->f2`);
+      this.f3(`f1(${param})->f3`);
+   }
 
-    async asyncMethod3(a:number) {
-        for(let i=0; i<3; i++){
-            this.f0(a,i);
-            await sleepMs( 10 );
-        }
-    }
+   f2(param: string) {
+      this.f3(`f2(${param})->f3`);
+   }
 
-    f0(a:number,b:number){
-    }
+   f3(param: string) {
+      for (let a = 0; a < 3; a++) {
+         this.f4(`f3(${param})->f4(${a})`);
+      }
+   }
 
-
-    // 
-
-    f1(param: string) {
-        this.f2( `f1(${param})->f2` );
-        this.f3( `f1(${param})->f3` );
-    }
-
-    f2(param: string) {
-        this.f3( `f2(${param})->f3` );
-    }
-
-    f3(param: string) {
-        for(let a=0; a<3; a++) {
-            this.f4( `f3(${param})->f4(${a})` );
-        }
-    }
-
-    f4(param: string) {
-    }
-
-
+   f4(param: string) {}
 }

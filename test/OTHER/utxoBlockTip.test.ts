@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { UtxoBlockTip } from "../../src";
 
-
 // To be checked again!!!!!!
 
 describe("Lite block base test ", function () {

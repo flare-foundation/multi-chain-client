@@ -85,7 +85,6 @@ describe(`Find some transaction`, async () => {
 
                console.log(tx);
                console.log(tx.data.transaction.assetTransferTransaction);
-               
             }
          }
 

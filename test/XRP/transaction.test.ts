@@ -1,8 +1,8 @@
 import { TransactionMetadata } from "xrpl";
 import { MCC, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
-const chai = require('chai')
-const expect = chai.expect
-chai.use(require('chai-as-promised'))
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -93,7 +93,7 @@ describe("Transaction Xrp tests ", function () {
 
       it("Should get payment summary ", async function () {
          const summary = await transaction.paymentSummary(MccClient);
-         expect(summary).to.eql({ "isNativePayment": false });
+         expect(summary).to.eql({ isNativePayment: false });
       });
 
       it("Should spend amount ", async function () {
@@ -101,7 +101,6 @@ describe("Transaction Xrp tests ", function () {
          expect(transaction.spentAmounts[0].address).to.eq("rETx8GBiH6fxhTcfHM9fGeyShqxozyD3xe");
          expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(20);
       });
-
    });
 
    describe("Token Transfer transaction ", function () {
@@ -191,12 +190,11 @@ describe("Transaction Xrp tests ", function () {
          expect(summary.spentAmount?.toNumber()).to.eq(20);
          expect(summary.receivedAmount?.toNumber()).to.eq(undefined);
          expect(summary.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-         expect(summary.tokenElementaryUnits?.toNumber()).to.eq(1)
-         expect(summary.receivedTokenAmount?.toNumber()).to.eq(10)
+         expect(summary.tokenElementaryUnits?.toNumber()).to.eq(1);
+         expect(summary.receivedTokenAmount?.toNumber()).to.eq(10);
          expect(summary.oneToOne).to.eq(true);
          expect(summary.isFull).to.eq(true);
       });
-
    });
 
    describe("Transaction with native currency ", function () {
@@ -289,8 +287,8 @@ describe("Transaction Xrp tests ", function () {
          expect(summary.spentAmount?.toNumber()).to.eq(342390045);
          expect(summary.receivedAmount?.toNumber()).to.eq(342390000);
          expect(summary.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-         expect(summary.tokenElementaryUnits?.toNumber()).to.eq(undefined)
-         expect(summary.receivedTokenAmount?.toNumber()).to.eq(undefined)
+         expect(summary.tokenElementaryUnits?.toNumber()).to.eq(undefined);
+         expect(summary.receivedTokenAmount?.toNumber()).to.eq(undefined);
          expect(summary.oneToOne).to.eq(true);
          expect(summary.isFull).to.eq(true);
       });
@@ -384,14 +382,14 @@ describe("Transaction Xrp tests ", function () {
          expect(summary.spentAmount?.toNumber()).to.eq(10);
          expect(summary.receivedAmount?.toNumber()).to.eq(undefined);
          expect(summary.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-         expect(summary.tokenElementaryUnits?.toNumber()).to.eq(1)
-         expect(summary.receivedTokenAmount?.toNumber()).to.eq(400000)
+         expect(summary.tokenElementaryUnits?.toNumber()).to.eq(1);
+         expect(summary.receivedTokenAmount?.toNumber()).to.eq(400000);
          expect(summary.oneToOne).to.eq(true);
          expect(summary.isFull).to.eq(true);
       });
 
       it("Should received amount 2 ", async function () {
-         delete transaction.data.result.meta
+         delete transaction.data.result.meta;
          expect(transaction.receivedAmounts.length).to.eq(0);
       });
    });
@@ -428,7 +426,6 @@ describe("Transaction Xrp tests ", function () {
          }
          expect(transaction2.isAccountCreate).to.be.false;
       });
-
    });
 
    describe("Transaction status and payment summary tests ", function () {
@@ -458,13 +455,13 @@ describe("Transaction Xrp tests ", function () {
       });
 
       it("Should not get transaction status ", async function () {
-         delete transaction2.data.result.meta
+         delete transaction2.data.result.meta;
          const fn = () => {
             return transaction2.successStatus;
          };
          expect(fn).to.throw("OutsideError");
          // await expect( fn ).to.be.rejectedWith("OutsideError");
-      })
+      });
 
       it("Should get payment summary ", async function () {
          const summary1 = await transaction1.paymentSummary(MccClient);
@@ -475,7 +472,6 @@ describe("Transaction Xrp tests ", function () {
          expect(summary3.isNativePayment).to.be.true;
          expect(summary3.receivedAmount?.toNumber()).to.eq(0);
       });
-
    });
 
    describe("Reference tests ", function () {
@@ -488,14 +484,13 @@ describe("Transaction Xrp tests ", function () {
          transaction.data.result.Memos![0] = { Memo: { MemoType: "string" } };
          expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
          transaction.data.result.Memos![0] = { Memo: { MemoData: txid } };
-         expect(transaction.stdPaymentReference).to.eq("0x"+txid);
-      })
+         expect(transaction.stdPaymentReference).to.eq("0x" + txid);
+      });
    });
 
    describe("Transaction not found ", function () {
       it("Should not found", async () => {
-         await expect( MccClient.getTransaction("93D194C45CC60B2C17B8747BA50F1C028B637CFD9C5813918DBA73D2C21C2F20") ).to.be.rejected;
-      })
+         await expect(MccClient.getTransaction("93D194C45CC60B2C17B8747BA50F1C028B637CFD9C5813918DBA73D2C21C2F20")).to.be.rejected;
+      });
    });
-
 });

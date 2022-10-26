@@ -45,7 +45,7 @@ describe("LTC bottom block ", function () {
    });
 
    it("Should get status version ", async function () {
-      const bottom = await MccClient.getBottomBlockHeight()
+      const bottom = await MccClient.getBottomBlockHeight();
       expect(bottom).to.eq(0);
    });
 });

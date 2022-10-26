@@ -1,9 +1,9 @@
 import { MCC, toBN, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
-const chai = require('chai')
-const expect = chai.expect
-chai.use(require('chai-as-promised'))
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -15,20 +15,22 @@ describe("Transaction Xrp tests ", function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
-      traceManager.displayStateOnException=false
-      
+      traceManager.displayStateOnException = false;
+
       MccClient = new MCC.XRP(XRPMccConnection);
    });
 
-   const TransactionsToTest : transactionTestCases[] = [
+   const TransactionsToTest: transactionTestCases[] = [
       {
          description: "Token CORE",
          txid: "546433CEADAEEDB0DF3B67221F9FE6E2041482775C4BD67F34A41476F766B189",
          expect: {
             txid: "546433CEADAEEDB0DF3B67221F9FE6E2041482775C4BD67F34A41476F766B189",
             stdTxid: "546433CEADAEEDB0DF3B67221F9FE6E2041482775C4BD67F34A41476F766B189",
-            hash: "546433CEADAEEDB0DF3B67221F9FE6E2041482775C4BD67F34A41476F766B189" ,
-            reference: ["436F7265756D202824434F524529203574682041697264726F702028415052203230323220536E617073686F7429202D2049443A2032323031363834202D20636F7265756D2E636F6D"],
+            hash: "546433CEADAEEDB0DF3B67221F9FE6E2041482775C4BD67F34A41476F766B189",
+            reference: [
+               "436F7265756D202824434F524529203574682041697264726F702028415052203230323220536E617073686F7429202D2049443A2032323031363834202D20636F7265756D2E636F6D",
+            ],
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1654092632,
             sourceAddresses: ["rBrY6tLYMYYRRFAXwKtZoFYF6kpb7ZCore"],
@@ -41,7 +43,7 @@ describe("Transaction Xrp tests ", function () {
                   amount: toBN(10000),
                },
             ],
-            receivedAmounts: [ ],
+            receivedAmounts: [],
             type: "Payment",
             isNativePayment: false,
             currencyName: "434F524500000000000000000000000000000000",
@@ -55,7 +57,7 @@ describe("Transaction Xrp tests ", function () {
          expect: {
             txid: "D0DBB956BD1DEFAB0CB46246F111B567BBD2D0CA090C26AFD57782C7C8C4BCE1",
             stdTxid: "D0DBB956BD1DEFAB0CB46246F111B567BBD2D0CA090C26AFD57782C7C8C4BCE1",
-            hash: "D0DBB956BD1DEFAB0CB46246F111B567BBD2D0CA090C26AFD57782C7C8C4BCE1" ,
+            hash: "D0DBB956BD1DEFAB0CB46246F111B567BBD2D0CA090C26AFD57782C7C8C4BCE1",
             reference: ["596F752063616E277420757365207468652066617563657420666F7220746865206E65787420323420686F757273"],
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1654092640,
@@ -69,7 +71,7 @@ describe("Transaction Xrp tests ", function () {
                   amount: toBN(50),
                },
             ],
-            receivedAmounts: [ ],
+            receivedAmounts: [],
             type: "Payment",
             isNativePayment: false,
             currencyName: "4C4F564500000000000000000000000000000000",
@@ -83,7 +85,7 @@ describe("Transaction Xrp tests ", function () {
          expect: {
             txid: "69BE6AAD4A8D0991E72AA23ECB15C7847A0D3D44E3B23CE6BDA53701B7E0F9D2",
             stdTxid: "69BE6AAD4A8D0991E72AA23ECB15C7847A0D3D44E3B23CE6BDA53701B7E0F9D2",
-            hash: "69BE6AAD4A8D0991E72AA23ECB15C7847A0D3D44E3B23CE6BDA53701B7E0F9D2" ,
+            hash: "69BE6AAD4A8D0991E72AA23ECB15C7847A0D3D44E3B23CE6BDA53701B7E0F9D2",
             reference: ["4358312046617563657420F09F8E89"],
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1654096800,
@@ -97,12 +99,12 @@ describe("Transaction Xrp tests ", function () {
                   amount: toBN(20),
                },
             ],
-            receivedAmounts: [ ],
+            receivedAmounts: [],
             type: "Payment",
             isNativePayment: false,
             currencyName: "CX1",
             elementaryUnits: "1000000", // number as string
-            successStatus: TransactionSuccessStatus.SUCCESS, 
+            successStatus: TransactionSuccessStatus.SUCCESS,
          },
       },
       {
@@ -111,7 +113,7 @@ describe("Transaction Xrp tests ", function () {
          expect: {
             txid: "84464F5001B9E7FD79C448B9C5F01085ACE56E94A1F6E2A737FDE9A993086F16",
             stdTxid: "84464F5001B9E7FD79C448B9C5F01085ACE56E94A1F6E2A737FDE9A993086F16",
-            hash: "84464F5001B9E7FD79C448B9C5F01085ACE56E94A1F6E2A737FDE9A993086F16" ,
+            hash: "84464F5001B9E7FD79C448B9C5F01085ACE56E94A1F6E2A737FDE9A993086F16",
             reference: [],
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1646141781,
@@ -125,7 +127,7 @@ describe("Transaction Xrp tests ", function () {
                   amount: toBN(10),
                },
             ],
-            receivedAmounts: [ ],
+            receivedAmounts: [],
             type: "Payment",
             isNativePayment: false,
             currencyName: "426C657373656400000000000000000000000000",

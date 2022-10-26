@@ -12,10 +12,10 @@ chai.use(require("chai-as-promised"));
 // };
 
 const algoCreateConfig = {
-  algod: {
-     url: process.env.ALGO_ALGOD_URL || "",
-     token: process.env.ALGO_ALGOD_TOKEN || "",
-  },
+   algod: {
+      url: process.env.ALGO_ALGOD_URL || "",
+      token: process.env.ALGO_ALGOD_TOKEN || "",
+   },
 };
 
 describe(`Algo`, async () => {
@@ -25,11 +25,10 @@ describe(`Algo`, async () => {
       const block = await MccClient.getBlock(24940749);
 
       console.log(block);
-      for(let data of block.transactionObjects){
-        console.log(data);
-        await data.makeFull(MccClient)
-        console.log(data);
-        
+      for (let data of block.transactionObjects) {
+         console.log(data);
+         await data.makeFull(MccClient);
+         console.log(data);
       }
    });
 });

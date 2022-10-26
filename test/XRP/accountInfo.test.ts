@@ -2,8 +2,8 @@ import { expect } from "chai";
 import { MCC, SpecialAddresses } from "../../src";
 import { mccSettings } from "../../src/global-settings/globalSettings";
 import { processFlags } from "../../src/utils/xrpUtils";
-const chai = require('chai');
-chai.use(require('chai-as-promised'));
+const chai = require("chai");
+chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -16,8 +16,9 @@ describe("Xrpl account test mainnet ", function () {
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnection);
-      mccSettings.setLoggingCallback = () => { return }
-
+      mccSettings.setLoggingCallback = () => {
+         return;
+      };
    });
 
    describe("account info", async () => {
@@ -26,8 +27,8 @@ describe("Xrpl account test mainnet ", function () {
          const info = await MccClient.getAccountInfo(acc);
          // Get the flags
          const flags = processFlags(info.result.account_data.Flags);
-         expect(flags.length).to.eq(1)
-         expect(flags[0]).to.eq("lsfDisableMaster")
+         expect(flags.length).to.eq(1);
+         expect(flags[0]).to.eq("lsfDisableMaster");
       });
 
       it(`Should get account info 2 `, async () => {
@@ -35,11 +36,11 @@ describe("Xrpl account test mainnet ", function () {
          const info = await MccClient.getAccountInfo(acc);
          // Get the flags
          const flags = processFlags(info.result.account_data.Flags);
-         expect(flags.length).to.eq(0)
+         expect(flags.length).to.eq(0);
          // get account founding transaction (account create)
          const fTx = "5439BB6872644CE74A09F4654CECFC5F443E9687AD5EF6D119E729898F41A8C5";
          const trans = await MccClient.getTransaction(fTx);
-         expect(trans.isAccountCreate).to.eq(true)
+         expect(trans.isAccountCreate).to.eq(true);
       });
 
       it(`Should not get account info - invalid upper bound`, async () => {
@@ -52,12 +53,12 @@ describe("Xrpl account test mainnet ", function () {
          const info = await MccClient.getAccountInfo(acc);
          // Get the flags
          const flags = processFlags(info.result.account_data.Flags);
-         expect(flags.length).to.eq(0)
+         expect(flags.length).to.eq(0);
          // get account founding transaction (account create)
          const fTx = "5439BB6872644CE74A09F4654CECFC5F443E9687AD5EF6D119E729898F41A8C5";
          const trans = await MccClient.getTransaction(fTx, { binary: true, min_block: 1, max_block: 2 });
-         expect(trans.isAccountCreate).to.eq(false)
-      });      
+         expect(trans.isAccountCreate).to.eq(false);
+      });
    });
 
    describe("account transactions", async () => {
@@ -65,7 +66,7 @@ describe("Xrpl account test mainnet ", function () {
          const acc = "r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd";
          // get account transactions
          const tr = await MccClient.getAccountTransactions(acc, 71_859_000, 71_867_500);
-         expect(tr.result.transactions.length).to.eq(73)
+         expect(tr.result.transactions.length).to.eq(73);
       });
       it(`Should get account transactions`, async () => {
          const acc = "r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd";
@@ -94,16 +95,16 @@ describe("Xrpl account test testnet ", function () {
          const info = await MccClient.getAccountInfo("rBwD7GqAPFoZvzz6YaR5HyJWD8TUoaUbJo");
          // Get the flags
          const flags = processFlags(info.result.account_data.Flags);
-         expect(flags.length).to.eq(3)
+         expect(flags.length).to.eq(3);
          // Regular key
-         expect(info.result.account_data.RegularKey).to.eq(SpecialAddresses.ACCOUNT_ONE)
+         expect(info.result.account_data.RegularKey).to.eq(SpecialAddresses.ACCOUNT_ONE);
 
          // Multisig check
          // TODO ripple has a problem here?
          // @ts-ignore
          if (info.result.account_data?.signer_lists) {
             // @ts-ignore
-            expect(info.result.account_data?.signer_lists.length).to.eq(0)
+            expect(info.result.account_data?.signer_lists.length).to.eq(0);
          }
       });
    });
@@ -114,7 +115,7 @@ describe("Xrpl account test testnet ", function () {
       it.skip(`Should get account info at the begging`, async () => {
          const info = await MccClient.getAccountInfo(acc, 28_014_551);
          const flags = processFlags(info.result.account_data.Flags);
-     
+
          expect(flags.length).to.eq(0);
          expect(info.result.account_data.RegularKey).to.not.eq(SpecialAddresses.ACCOUNT_ONE);
       });

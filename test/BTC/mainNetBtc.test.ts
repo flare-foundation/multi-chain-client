@@ -1,8 +1,8 @@
 import { ChainType, MCC, traceManager, UtxoMccCreate } from "../../src";
 
-const chai = require('chai')
-const expect = chai.expect
-chai.use(require('chai-as-promised'))
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("chai-as-promised"));
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",
@@ -11,11 +11,10 @@ const BtcMccConnection = {
 } as UtxoMccCreate;
 
 describe("BTC mainnet client tests", () => {
-
    let MccClient: MCC.BTC;
    before(async function () {
-      this.timeout(10000) // set timeout to 10 sec from 2 sec
-      traceManager.displayStateOnException=false
+      this.timeout(10000); // set timeout to 10 sec from 2 sec
+      traceManager.displayStateOnException = false;
       MccClient = new MCC.BTC(BtcMccConnection);
    });
 
@@ -44,7 +43,7 @@ describe("BTC mainnet client tests", () => {
 
       it("Should get block header 2 ", async function () {
          const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c5368";
-         let header = await MccClient.getBlockHeaderBase("0x"+blockhash);
+         let header = await MccClient.getBlockHeaderBase("0x" + blockhash);
          expect(header!.hash).to.eq(blockhash);
       });
 

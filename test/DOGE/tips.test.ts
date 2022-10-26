@@ -23,17 +23,16 @@ describe("Chain tips test ", function () {
       let latest = tips.length > 0 ? tips[0] : undefined;
       let latestH = 0;
       for (let tip of tips) {
-        if(tip.chainTipStatus !== 'active'){
-          if (tip.number > latestH) {
-             latestH = tip.number;
-             latest = tip;
-          }
-        }
+         if (tip.chainTipStatus !== "active") {
+            if (tip.number > latestH) {
+               latestH = tip.number;
+               latest = tip;
+            }
+         }
       }
-      console.log(latest)
+      console.log(latest);
       expect(latest?.number).to.greaterThanOrEqual(4406287);
    });
-
 
    it("Should get tips and all blocks to certain height ", async function () {
       const tips = await MccClient.getTopLiteBlocks(5);
