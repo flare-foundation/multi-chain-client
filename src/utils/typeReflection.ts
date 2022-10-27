@@ -10,9 +10,12 @@ export function optional(): PropertyDecorator {
    };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getOptionalKeys(object: any) {
    try {
       return Reflect.get(object, PROPERTY_METADATA_KEY);
-   } catch {}
+   } catch {
+      return undefined;
+   }
    return undefined;
 }

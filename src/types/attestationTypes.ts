@@ -7,6 +7,7 @@ export interface IAdditionalTxRequestOptions {
 }
 
 export interface AdditionalTransactionDetails {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    transaction: any;
    blockNumber: BN;
    blockHash: string;

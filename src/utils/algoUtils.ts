@@ -2,7 +2,9 @@ import * as msgpack from "algo-msgpack-with-bigint";
 import algosdk from "algosdk";
 import { IAlgoCert, IAlgoHexAddress, IAlgoIndexerCert } from "../types/algoTypes";
 import { MccError, prefix0x, unPrefix0x } from "./utils";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const base32 = require("base32.js");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const sha512_256 = require("js-sha512").sha512_256;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +28,7 @@ export const INVALIDPUBKEYPAIRERROR = (algoKeyPair: IAlgoHexAddress) => {
 
 // Convert a hex string to a byte array
 export function hexToBytes(hex: string): Uint8Array {
-   let bytes = [];
+   const bytes = [];
    for (let c = 0; c < hex.length; c += 2) bytes.push(parseInt(hex.substr(c, 2), 16));
    return new Uint8Array(bytes);
 }
@@ -34,8 +36,9 @@ export function hexToBytes(hex: string): Uint8Array {
 // Convert a byte array to a hex string
 export function bytesToHex(bytes: Buffer | Uint8Array): string {
    // should be: buffer and uint are unsigned
-   for (var hex = [], i = 0; i < bytes.length; i++) {
-      var current = bytes[i];
+   const hex: string[] = [];
+   for (let i = 0; i < bytes.length; i++) {
+      const current = bytes[i];
       hex.push((current >>> 4).toString(16));
       hex.push((current & 0xf).toString(16));
    }
@@ -54,7 +57,7 @@ export function bytesToHex(bytes: Buffer | Uint8Array): string {
 export function base32ToHex(data: string): string {
    // old base 32 decoding
    const decoder = new base32.Decoder({ type: "rfc4648" });
-   let out = decoder.write(data).finalize();
+   const out = decoder.write(data).finalize();
    return out.toString("hex");
 }
 
@@ -62,12 +65,12 @@ export function hexToBase32(hex: string | Uint8Array): string {
    // old base 32 encoding
    const encoder = new base32.Encoder({ type: "rfc4648" });
    if (typeof hex === "string") {
-      let bufHex = Buffer.from(hex, "hex");
-      let base32Out = encoder.write(bufHex).finalize();
+      const bufHex = Buffer.from(hex, "hex");
+      const base32Out = encoder.write(bufHex).finalize();
       return base32Out;
    } else {
-      let bufHex = Buffer.from(bytesToHex(hex), "hex");
-      let base32Out = encoder.write(bufHex).finalize();
+      const bufHex = Buffer.from(bytesToHex(hex), "hex");
+      const base32Out = encoder.write(bufHex).finalize();
       return base32Out;
    }
 }
@@ -82,7 +85,7 @@ export function hexToBase32(hex: string | Uint8Array): string {
  * @returns
  */
 export function base64ToHex(rawdata: string): string {
-   let data = Buffer.from(rawdata, "base64").toString("binary");
+   const data = Buffer.from(rawdata, "base64").toString("binary");
    let hexData = "";
    for (let i = 0; i < data.length; i++) {
       const hex = data.charCodeAt(i).toString(16);
@@ -110,7 +113,7 @@ export function hexToBase64(hex: string | Uint8Array): string {
  * @returns
  */
 export function base64ToText(rawdata: string): string {
-   let buff = Buffer.from(rawdata, "base64");
+   const buff = Buffer.from(rawdata, "base64");
    return buff.toString("ascii");
 }
 
@@ -122,7 +125,7 @@ export function addressToHex(address: string): IAlgoHexAddress {
    if (!algosdk.isValidAddress(address)) {
       throw INVALIDADDRESERROR(address);
    }
-   let dad = algosdk.decodeAddress(address);
+   const dad = algosdk.decodeAddress(address);
    const publicKey = Buffer.from(dad.publicKey).toString("hex");
    const checksum = Buffer.from(dad.checksum).toString("hex");
    return {
@@ -132,8 +135,8 @@ export function addressToHex(address: string): IAlgoHexAddress {
 }
 
 export function hexToAddress(algoKeyPair: IAlgoHexAddress): string {
-   let conc = unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum);
-   let concBytes = hexToBytes(conc);
+   const conc = unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum);
+   const concBytes = hexToBytes(conc);
    const address = hexToBase32(concBytes);
    if (!algosdk.isValidAddress(address)) {
       throw INVALIDPUBKEYPAIRERROR(algoKeyPair);
@@ -180,6 +183,7 @@ export function txIdToHexNo0x(txid: string) {
 //////////////////////////
 
 export function certToInCert(cert: IAlgoCert): IAlgoIndexerCert {
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    const { prop, ...rest } = cert;
    const newCert: IAlgoIndexerCert = { prop: { dig: "", encdig: "", oprop: "" }, ...rest } as IAlgoIndexerCert;
    newCert.prop.dig = bytesToHex(cert.prop.dig);
@@ -192,6 +196,7 @@ export function certToInCert(cert: IAlgoCert): IAlgoIndexerCert {
 //// MCC Error handling ////
 ////////////////////////////
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function algo_ensure_data(data: any) {
    const error_codes = [400, 401, 404, 500, 503];
    if (error_codes.includes(data.status)) {
@@ -199,6 +204,7 @@ export function algo_ensure_data(data: any) {
    }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function algo_check_expect_block_out_of_range(data: any): boolean {
    if (data.status === 404) {
       return true;
@@ -207,6 +213,7 @@ export function algo_check_expect_block_out_of_range(data: any): boolean {
    }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function algo_check_expect_empty(data: any): boolean {
    if (data.status === 404) {
       return true;
@@ -219,6 +226,7 @@ export function algo_check_expect_empty(data: any): boolean {
 //// Message Pack encoding and decoding ////
 ////////////////////////////////////////////
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mpEncode(obj: Record<string | number | symbol, any>) {
    // enable the canonical option
    const options = { sortKeys: true };
@@ -234,6 +242,7 @@ export function mpDecode(buffer: ArrayLike<number>) {
 ////////////////////////////////////////////
 
 // Reduce code
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function calculateAlgoTxid(gh: Buffer, gen: string, stib: any) {
    const t = stib.txn as algosdk.EncodedTransaction;
    // Manually add gh/gen to construct a correct transaction object

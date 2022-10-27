@@ -53,6 +53,7 @@ export async function recursive_block_tip(clinet: UtxoCore, tip: UtxoBlockTip, p
  * @param data
  * @returns
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function utxo_check_expect_empty(data: any): boolean {
    if (!data || !data.error || !data.error.code) {
       return false;
@@ -64,6 +65,7 @@ export function utxo_check_expect_empty(data: any): boolean {
    }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function utxo_check_expect_block_out_of_range(data: any): boolean {
    if (data && data.error && data.error.code) {
       if (data.error.code === -8) {
@@ -79,6 +81,7 @@ export function utxo_check_expect_block_out_of_range(data: any): boolean {
    }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function utxo_ensure_data(data: any) {
    if (data?.error) {
       throw MccError(data);

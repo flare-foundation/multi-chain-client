@@ -6,6 +6,7 @@ export class StackTraceCall {
 
    constructor(stackTrace: string) {
       if (stackTrace.indexOf("(") > 0) {
+         // eslint-disable-next-line no-useless-escape
          const traceLine = /\s*at ([^(]*)\(([^\:]*)\:(\d+)\:(\d+)\)/.exec(stackTrace);
          if (traceLine && traceLine.length === 5) {
             this.method = traceLine[1].trim();
@@ -14,6 +15,7 @@ export class StackTraceCall {
             this.column = parseInt(traceLine[4]);
          }
       } else {
+         // eslint-disable-next-line no-useless-escape
          const traceLine = /\s*at ([^\:]*)\:(\d+)\:(\d+)/.exec(stackTrace);
          if (traceLine && traceLine.length === 4) {
             this.method = "";
@@ -33,13 +35,14 @@ export class StackTrace {
    stackTrace: StackTraceCall[] = [];
 
    constructor() {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const stack = Error().stack!;
 
       const trace = stack.split("\n");
 
       this.stackTrace = [];
 
-      for (let traceLine of trace) {
+      for (const traceLine of trace) {
          const trace = new StackTraceCall(traceLine);
          if (trace.isValid) {
             this.stackTrace.push(trace);
@@ -50,7 +53,7 @@ export class StackTrace {
    get stack(): string {
       let trace = "";
 
-      for (let call of this.stackTrace) {
+      for (const call of this.stackTrace) {
          if (call.method != "") {
             trace += `${call.method}\n`;
          }

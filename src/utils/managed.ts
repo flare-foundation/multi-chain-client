@@ -9,6 +9,7 @@ export function enableManaged() {
 }
 
 export function Managed() {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    return (target: any, name?: string, descriptor?: any) => {
       if (!TraceManager.enabled) return target;
 

@@ -15,7 +15,9 @@ export interface ReadRpcInterface extends BaseRpcInterface {
    getBottomBlockHeight(): Promise<number>;
 
    // Block data
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    getBlockHeader(blockNumberOrHash: number | string | any): Promise<IBlockHeader>;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    getBlock(blockNumberOrHash: number | string | any): Promise<IBlock>;
    getBlockHeight(): Promise<number>;
 
@@ -25,6 +27,7 @@ export interface ReadRpcInterface extends BaseRpcInterface {
 
    // Transaction data
    getTransaction(txId: string, metaData?: getTransactionOptions): Promise<ITransaction>;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    listTransactions?(options?: any): any;
 
    // bottom block in connected node (0 if nodes dont support partial history)
@@ -34,15 +37,21 @@ export interface WriteRpcInterface extends BaseRpcInterface {
    // Wallets
 
    // Addresses
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    createAddress(createAddressData: any): any;
 
    // Transactions
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    createRawTransaction(walletLabel: string, vin: any[], out: any[]): any;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    signRawTransaction(walletLabel: string, rawTx: string, keysList: string[]): any;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    sendRawTransaction(walletLabel: string, signedRawTx: string): any;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    sendRawTransactionInBlock(walletLabel: string, signedRawTx: string): any;
 
    // Faucet
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    fundAddress(address: string, amount: number): any;
 }
 
@@ -53,8 +62,10 @@ export interface RPCInterface extends ReadRpcInterface, WriteRpcInterface {}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Parent Class objects that are extended on each unique underlying chain
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IIGetTransactionRes {}
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IIGetBlockRes {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,6 +108,7 @@ export enum ChainType {
 // - develop : full debugging mode
 export type LoggingModes = "off" | "production" | "develop";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type IExceptionCallback = (error: any, message: string) => void;
 export type ILoggingCallback = (message: string) => void;
 
@@ -118,4 +130,5 @@ export class MccLoggingOptionsFull {
 ////////////////////// Lite blocks /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IEmptyObject {}

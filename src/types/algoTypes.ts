@@ -1,7 +1,5 @@
 import { EncodedTransaction } from "algosdk";
 import { Asset } from "algosdk/dist/types/src/client/v2/algod/models/types";
-import BlockHeader from "algosdk/dist/types/src/types/blockHeader";
-import internal from "stream";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
@@ -53,6 +51,7 @@ export interface IAlgoBlockHeaderData {
    tc: number;
    ts: number;
    txn: string;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    txns: any[]; // improve
 }
 
@@ -61,6 +60,7 @@ export interface IAlgoBlockData {
    genesisHash: string;
    genesisId: string;
    previousBlockHash: string;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    rewards?: any;
    round: number;
    seed: string;
@@ -68,7 +68,9 @@ export interface IAlgoBlockData {
    transactions?: IAlgoTransaction[];
    transactionsRoot: string;
    txnCounter?: number;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    upgradeState: any;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    upgradeVote: any;
 }
 
@@ -88,6 +90,7 @@ export interface IAlgoCert {
    prop: IAlgoCertProp;
    rnd: number;
    step: number;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    vote: any[];
 }
 
@@ -95,6 +98,7 @@ export interface IAlgoIndexerCert {
    prop: IAlgoIndexerCertProp;
    rnd: number;
    step: number;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    vote: any[];
 }
 
@@ -153,10 +157,9 @@ export interface IAlgoBlockMsgPackBlock {
    tc: number;
    ts: number;
    txn: Buffer;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    txns?: any[]; // Array of transaction objects
 }
-
-type IALgoBlock = BlockHeader;
 
 export interface IAlgoBlockMsgPack {
    block: IAlgoBlockMsgPackBlock;
@@ -182,9 +185,13 @@ export interface IAlgoPaymentTransaction {
  * Docs from : https://developer.algorand.org/docs/rest-apis/indexer/#transaction
  */
 export interface IAlgoTransaction {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    applicationTransaction?: any;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    assetConfigTransaction?: any;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    assetFreezeTransaction?: any;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    assetTransferTransaction?: any;
    authAddr?: string;
    closeRewards?: number;
@@ -195,14 +202,17 @@ export interface IAlgoTransaction {
    firstValid: number;
    genesisHash?: string;
    genesisId?: string;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    globalStateDelta?: any;
    group?: string;
    id?: string;
    innerTxns?: IAlgoTransaction[];
    intraRoundOffset?: number;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    keyregTransaction?: any;
    lastValid: number;
    lease?: string;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    localStateDelta?: any;
    logs?: string[];
    note?: string;
@@ -212,6 +222,7 @@ export interface IAlgoTransaction {
    roundTime?: number;
    sender: string;
    senderRewards?: number;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    stateProofTransaction?: any; //TODO
    signature?: IAlgoSignature;
    txType: AlgoTransactionTypeOptions;
@@ -223,12 +234,12 @@ export interface IAlgoTransaction {
    // * [appl] application-transaction
 }
 
-interface IALgoApar {
-   an: string;
-   au: string;
-   t: number;
-   un: string;
-}
+// interface IALgoApar {
+//    an: string;
+//    au: string;
+//    t: number;
+//    un: string;
+// }
 
 // take as reference https://github.com/algorand/go-algorand-sdk/blob/develop/types/transaction.go
 

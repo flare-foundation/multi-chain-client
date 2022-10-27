@@ -23,6 +23,7 @@ export class mccError extends Error {
    innerError: Error | undefined;
 
    constructor(errorCode: mccErrorCode, innerError?: Error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       super(mccErrorCode[errorCode as any as number]);
 
       this.name = MCC_ERROR;
@@ -50,6 +51,7 @@ export class mccError extends Error {
 }
 
 export class mccOutsideError extends mccError {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    constructor(innerError: any) {
       super(mccErrorCode.OutsideError, innerError as Error);
    }

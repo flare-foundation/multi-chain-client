@@ -2,24 +2,30 @@ import { createHook, executionAsyncId, triggerAsyncId } from "async_hooks";
 import { mccError, mccOutsideError, MCC_ERROR } from "./errors";
 import { StackTrace } from "./strackTrace";
 import { mccJsonStringify } from "./utils";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const async_hooks = require("async_hooks");
 
 // forces PromiseHooks to be enabled.
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 createHook({ init() {} }).enable();
 
 async_hooks
    .createHook({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       init(asyncId: any, type: any, triggerAsyncId: any) {
          if (TraceManager.enabled) {
             TraceManager.async_promise_map.set(asyncId, triggerAsyncId);
          }
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
       before(asyncId: any) {
          //TraceManager.async_promise_map.set( asyncId , "before" );
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
       after(asyncId: any) {
          //TraceManager.async_promise_map.set( asyncId , "after" );
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
       destroy(asyncId: any) {
          //TraceManager.async_promise_map.set( asyncId , "destroy" );
       },
@@ -56,7 +62,9 @@ export class TraceMethod {
 export class TraceCall {
    method: TraceMethod;
    async: TraceAsync;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    args: any[];
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    ret: any = null;
    callIndex: number;
    isAsync: boolean;
@@ -73,6 +81,7 @@ export class TraceCall {
    stack: string = "";
    level: number = 0;
 
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    constructor(async: TraceAsync, method: TraceMethod, args: any[], isAsync: boolean, isAwait: boolean) {
       this.async = async;
       this.method = method;
@@ -105,6 +114,7 @@ export class TraceCall {
       }
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    complete(ret: any) {
       this.endTime = this.systemTime;
 
@@ -123,6 +133,7 @@ export class TraceCall {
       return this.args.map((val) => this.stringifyObject(val)).join(",");
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    stringifyObject(obj: any): string {
       let text = "";
 
@@ -139,8 +150,9 @@ export class TraceCall {
       return text;
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    verbose(obj: any, verbose: boolean = true, maxlength = 32): string {
-      let text = this.stringifyObject(obj);
+      const text = this.stringifyObject(obj);
 
       if (verbose) return text;
 
@@ -156,7 +168,7 @@ export class TraceCall {
 
       const args = this.verbose(this.argsToString, showVerbose);
 
-      var status = " ";
+      let status = " ";
 
       if (this.isAsync) {
          if (this.isAwait) {
@@ -220,6 +232,7 @@ export class TraceManager {
    public displayRuntimeTrace = false;
    public displayStateOnException = true;
 
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
    public onException = function (error: Error): void {};
 
    private methods: TraceMethod[];
@@ -259,6 +272,7 @@ export class TraceManager {
       const tid = triggerAsyncId();
 
       const parents: number[] = [];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       for (let i = tid; i; i = TraceManager.async_promise_map.get(i)!) {
          parents.push(i);
       }
@@ -273,6 +287,7 @@ export class TraceManager {
       return async;
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    start(className: string, methodName: string, args: any[], methodType: TraceMethodType, isAsync: boolean, isAwait: boolean): TraceCall | undefined {
       const method = this.createMethod(className, methodName, methodType);
       //const tid = triggerAsyncId();
@@ -303,6 +318,7 @@ export class TraceManager {
       return trace;
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    complete(trace: TraceCall | undefined, ret: any) {
       if (!trace) return;
 
@@ -337,6 +353,7 @@ export class TraceManager {
       trace.async.stack.pop()?.completeException(error);
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    showException(error: any) {
       // todo: user exception callback
       //this.onException?(error);
@@ -357,6 +374,7 @@ export class TraceManager {
       this.showState();
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    showState(stack: any = undefined) {
       if (stack) {
          console.log(`NODE STACK ${stack.stack}`);
@@ -367,31 +385,32 @@ export class TraceManager {
    }
 
    showStack() {
-      for (let async of this.asyncs) {
+      for (const async of this.asyncs) {
          console.log(`\nTRACE ASYNC STACK ${async.id} #${async.eid}`);
-         for (let trace of async.stack) {
+         for (const trace of async.stack) {
             console.log(trace.toString());
          }
       }
    }
 
    showTrace(indent = false, source = true, timing = false, verbose = false) {
-      for (let async of this.asyncs) {
+      for (const async of this.asyncs) {
          console.log(`\nTRACE ASYNC ${async.id} #${async.eid}`);
-         for (let trace of async.trace) {
+         for (const trace of async.trace) {
             console.log(trace.toString(indent, source, timing, verbose));
          }
       }
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    showMethods(indent = false, source = true, timing = false) {
       console.log("\nMETHODS");
-      for (let method of this.methods) {
+      for (const method of this.methods) {
          const exclusiveTime = Math.max(0, method.inclusiveTime - method.innerTime);
 
          console.log(`◼ ${method.className}.${method.methodName}  ${method.calls} ${method.inclusiveTime}ms ${exclusiveTime}ms`);
 
-         for (let inner of method.methodsCalled) {
+         for (const inner of method.methodsCalled) {
             console.log(`    ${inner.className}.${inner.methodName}`);
          }
       }
@@ -411,14 +430,18 @@ export class TraceManager {
    }
 
    get firstTrace(): string {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       if (this.main!.trace.length === 0) return "";
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.main!.trace[0].toShortString();
    }
 
    get lastTrace(): string {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       if (this.main!.trace.length === 0) return "";
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.main!.trace[this.main!.trace.length - 1].toShortString();
    }
 }
@@ -427,6 +450,7 @@ export const traceManager = new TraceManager();
 
 const awaitSourceMap = new Map<string, boolean>();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function Stub(className: string, name: string, funct: any, cx: any, args: any[], methodType: TraceMethodType) {
    const isAsync = funct.constructor.name === "AsyncFunction";
    let isAwait = false;
@@ -446,6 +470,7 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
             isAwait = cached;
          } else {
             // check if that source file has 'await'
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             const fs = require("fs");
             const data = fs.readFileSync(stackTrace.source).toString();
             const lines = data.split("\n");
@@ -460,20 +485,23 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
       }
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
    const trace = TraceManager.enabled ? traceManager.start(className, name!, args, methodType, isAsync, isAwait) : undefined;
 
    try {
-      let res = methodType === TraceMethodType.ClassGetter ? funct.apply(cx) : funct.apply(cx, args);
+      const res = methodType === TraceMethodType.ClassGetter ? funct.apply(cx) : funct.apply(cx, args);
 
       if (!isPromise(res)) {
          traceManager.complete(trace, res);
          return res;
       }
       return new Promise((resolve, reject) => {
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
          res.then((result: any) => {
             traceManager.complete(trace, result);
 
             resolve(result);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
          }).catch((error: any) => {
             if (error?.name === MCC_ERROR) {
                traceManager.showException(error);
@@ -487,6 +515,8 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
             }
          });
       });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
    } catch (error: any) {
       if (error?.name === MCC_ERROR) {
          traceManager.showException(error);
@@ -501,6 +531,7 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
    }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isPromise(p: any) {
    if (typeof p === "object" && typeof p.then === "function") {
       return true;
@@ -523,11 +554,13 @@ export function isPromise(p: any) {
 //    return null;
 // }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function RegisterTraceGetter(target: any, name?: string, descriptor?: any) {
    if (descriptor && descriptor.get) {
-      let original = descriptor.get;
+      const original = descriptor.get;
 
       descriptor.get = function () {
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          return Stub(target.name, name!, original, this, [], TraceMethodType.ClassGetter);
       };
 
@@ -536,11 +569,14 @@ export function RegisterTraceGetter(target: any, name?: string, descriptor?: any
    return null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function RegisterTraceSetter(target: any, name?: string, descriptor?: any) {
    if (descriptor && descriptor.set) {
-      let original = descriptor.set;
+      const original = descriptor.set;
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       descriptor.set = function (...args: any[]) {
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          return Stub(target.name, name!, original, this, args, TraceMethodType.ClassSetter);
       };
 
@@ -549,6 +585,7 @@ export function RegisterTraceSetter(target: any, name?: string, descriptor?: any
    return null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function RegisterTraceClass(targetClass: any) {
    // add tracing capability to all own methods, setters and getters
    Object.getOwnPropertyNames(targetClass.prototype).forEach((methodName: string) => {
@@ -568,7 +605,7 @@ export function RegisterTraceClass(targetClass: any) {
          return;
       }
 
-      let original = targetClass.prototype[methodName];
+      const original = targetClass.prototype[methodName];
 
       // constructor
       if (methodName === "constructor") {
@@ -585,6 +622,7 @@ export function RegisterTraceClass(targetClass: any) {
       }
 
       // an arrow function can't be used while we have to preserve right 'this'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       targetClass.prototype[methodName] = function (...args: any[]) {
          return Stub(targetClass.name, methodName, original, this, args, TraceMethodType.ClassMethod);
       };
@@ -593,6 +631,7 @@ export function RegisterTraceClass(targetClass: any) {
    return targetClass;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function traceFunction(funct: any, ...args: any[]) {
    return Stub("", funct.name, funct, null, args, TraceMethodType.Function);
 }

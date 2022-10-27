@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type loggingCallbackType = { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
 
 class MccGlobalSettings {
@@ -5,6 +6,7 @@ class MccGlobalSettings {
    warningCallback = console.warn;
    errorCallback = console.error;
 
+   // eslint-disable-next-line @typescript-eslint/no-empty-function
    constructor() {}
 
    public set setLoggingCallback(logCallback: loggingCallbackType) {

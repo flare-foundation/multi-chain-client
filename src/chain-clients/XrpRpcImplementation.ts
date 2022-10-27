@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { AccountInfoResponse, AccountTxResponse, LedgerRequest, ServerStateResponse } from "xrpl";
+import { AccountInfoResponse, AccountTxResponse, ServerStateResponse } from "xrpl";
 import { XrpBlock, XrpTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { IBlockHeader, IBlockTip } from "../base-objects/BlockBase";
+import { IBlockTip } from "../base-objects/BlockBase";
 import { XrpNodeStatus } from "../base-objects/StatusBase";
 import { mccSettings } from "../global-settings/globalSettings";
 import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxRequest, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
@@ -19,8 +19,11 @@ const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
 
 @Managed()
 export class XRPImplementation implements ReadRpcInterface {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    rippleApi: any;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    client: any;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    inRegTest: any;
    chainType: ChainType;
 
@@ -39,7 +42,7 @@ export class XRPImplementation implements ReadRpcInterface {
             password: createConfig.password,
          };
       }
-      let client = axios.create(createAxiosConfig);
+      const client = axios.create(createAxiosConfig);
       this.client = axiosRateLimit(client, {
          ...DEFAULT_RATE_LIMIT_OPTIONS,
          ...createConfig.rateLimitOptions,
@@ -48,14 +51,17 @@ export class XRPImplementation implements ReadRpcInterface {
       this.chainType = ChainType.XRP;
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    getBlockTips?(height_gte: number): Promise<IBlockTip[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<IBlockTip[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
    listTransactions?(options?: any) {
       throw new mccError(mccErrorCode.NotImplemented);
    }
@@ -66,7 +72,7 @@ export class XRPImplementation implements ReadRpcInterface {
     */
 
    async getNodeStatus(): Promise<XrpNodeStatus> {
-      let res = await this.client.post("", {
+      const res = await this.client.post("", {
          method: "server_state",
          params: [],
       });
@@ -80,7 +86,7 @@ export class XRPImplementation implements ReadRpcInterface {
     */
 
    async getBottomBlockHeight(): Promise<number> {
-      let res = await this.client.post("", {
+      const res = await this.client.post("", {
          method: "server_state",
          params: [],
       });
@@ -105,7 +111,7 @@ export class XRPImplementation implements ReadRpcInterface {
          ledger_hash?: string;
          ledger_index?: number;
       }
-      let params: XrpBlockParams = {
+      const params: XrpBlockParams = {
          transactions: true,
          expand: true,
          binary: false,
@@ -121,12 +127,13 @@ export class XRPImplementation implements ReadRpcInterface {
       try {
          mccSettings.loggingCallback(`block number: ${blockNumberOrHash} `);
 
-         let res = await this.client.post("", {
+         const res = await this.client.post("", {
             method: "ledger",
             params: [params],
          });
          xrp_ensure_data(res.data);
          return new XrpBlock(res.data);
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
          if (e.response?.status === 400) {
             throw new mccError(mccErrorCode.InvalidBlock);
@@ -140,7 +147,7 @@ export class XRPImplementation implements ReadRpcInterface {
    }
 
    async getBlockHeight(): Promise<number> {
-      let res = await this.client.post("", {
+      const res = await this.client.post("", {
          method: "ledger_closed",
          params: [{}],
       });
@@ -165,13 +172,13 @@ export class XRPImplementation implements ReadRpcInterface {
          min_ledger?: number;
          max_ledger?: number;
       }
-      let params: XrpTxParams = {
+      const params: XrpTxParams = {
          transaction: txId,
          binary: binary,
       };
       if (min_block) params.min_ledger = min_block;
       if (max_block) params.max_ledger = max_block;
-      let res = await this.client.post("", {
+      const res = await this.client.post("", {
          method: "tx",
          params: [params],
       });
@@ -207,7 +214,7 @@ export class XRPImplementation implements ReadRpcInterface {
       // AccountInfoRequest
       mccSettings.loggingCallback("Call Params");
       mccSettings.loggingCallback(mccJsonStringify(params));
-      let res = await this.client.post("", {
+      const res = await this.client.post("", {
          method: "account_info",
          params: [params],
       });
@@ -222,7 +229,7 @@ export class XRPImplementation implements ReadRpcInterface {
       params.ledger_index_min = lowerBound;
       params.ledger_index_max = upperBound;
       mccSettings.loggingCallback(mccJsonStringify(params));
-      let res = await this.client.post("", {
+      const res = await this.client.post("", {
          method: "account_tx",
          params: [params],
       });

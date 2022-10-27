@@ -2,8 +2,8 @@ import { defaultExceptionCallback, defaultWarningCallback, MccError } from "..";
 import { IExceptionCallback as backOffTime, ILoggingCallback } from "../types/genericMccTypes";
 import { getSimpleRandom, sleepMs } from "./utils";
 
-let TIMEOUT_STEP_MULTIPLY = 1.2;
-let BACKOFF_TIME_STEP_MULTIPLY = 1.2;
+const TIMEOUT_STEP_MULTIPLY = 1.2;
+const BACKOFF_TIME_STEP_MULTIPLY = 1.2;
 
 const retrySleepResult = "wVgdz8YJgsUud6CPtKYH8tw4mHdLHLbgrEGsGqdWetPDKWAW5hbZ5LMz";
 
@@ -14,16 +14,18 @@ async function retrySleepMs(ms: number): Promise<string> {
 
 export async function retry<T>(
    label: string,
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    funct: (...args: any) => T,
    timeoutTime: number = 5000,
    numRetries: number = 5,
    backOddTimeout: number = 1000,
    exceptionCallback: backOffTime = defaultExceptionCallback,
    warningCallback: ILoggingCallback = defaultWarningCallback,
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
    failure: (label: string) => void = (label) => {}
 ): Promise<T> {
    try {
-      let result = await Promise.race([funct(), retrySleepMs(timeoutTime)]);
+      const result = await Promise.race([funct(), retrySleepMs(timeoutTime)]);
 
       if (result !== retrySleepResult) return result as T;
       // timeout section

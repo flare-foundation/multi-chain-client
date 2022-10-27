@@ -1,13 +1,15 @@
-import { AccountRootFlags, allHexFlags, HexToFlag, PosToFlag } from "../types";
+import { AccountRootFlags, PosToFlag } from "../types";
 import { XRP_UTD } from "./constants";
 import { mccError, mccErrorCode } from "./errors";
 import { MccError } from "./utils";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const XrpAddress = require("ripple-address-codec");
 
 ////////////////////////////
 //// MCC Error handling ////
 ////////////////////////////
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function xrp_ensure_data(data: any) {
    if (data.result.status === "error") {
       if (data.result.error === "txnNotFound") {
@@ -29,10 +31,11 @@ export function unixEpochToRippleTime(timestamp: number) {
 }
 
 export function processFlags(flag: number): AccountRootFlags[] {
-   let altFlags: AccountRootFlags[] = [];
+   const altFlags: AccountRootFlags[] = [];
    const flagPos = [16, 17, 18, 19, 20, 21, 22, 23, 24];
-   for (let posFlag of flagPos) {
+   for (const posFlag of flagPos) {
       if ((flag >> posFlag) % 2 === 1) {
+         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
          // @ts-ignore
          altFlags.push(PosToFlag[posFlag]);
       }

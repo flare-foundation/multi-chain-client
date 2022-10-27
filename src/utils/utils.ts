@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import BN from "bn.js";
 import Web3 from "web3";
 import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const camelCase = require("camelcase");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const safeStringify = require("fast-safe-stringify");
 
 export const ZERO_BYTES_32 = "0x0000000000000000000000000000000000000000000000000000000000000000";
@@ -67,8 +70,8 @@ export function toNumber(x: number | BN | undefined | null) {
 }
 
 export function toCamelCase(obj: object): object {
-   let camelObject: any = {};
-   for (let prop in obj) {
+   const camelObject: any = {};
+   for (const prop in obj) {
       if (typeof (obj as any)[prop] == "object") {
          camelObject[camelCase(prop)] = toCamelCase((obj as any)[prop]);
       } else {
@@ -78,13 +81,15 @@ export function toCamelCase(obj: object): object {
    return camelObject;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-inferrable-types
 export function camelToSnakeCase(str: string, splitWith: string = "-") {
    return str.replace(/[A-Z]/g, (letter) => `${splitWith}${letter.toLowerCase()}`);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-inferrable-types
 export function toSnakeCase(obj: object, splitWith: string = "-"): object {
-   let camelObject: any = {};
-   for (let prop in obj) {
+   const camelObject: any = {};
+   for (const prop in obj) {
       if (typeof (obj as any)[prop] == "object") {
          camelObject[camelToSnakeCase(camelCase(prop), splitWith)] = toSnakeCase((obj as any)[prop], splitWith);
       } else {
