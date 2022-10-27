@@ -1,9 +1,11 @@
+import { expect } from "chai";
 import { StackTrace } from "../../src/utils/strackTrace";
 import { traceManager } from "../../src/utils/trace";
 import { ManagedTest, TestFunctionCall } from "../managedTest";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 describe("Managed test", () => {
@@ -113,6 +115,6 @@ describe("Managed test", () => {
    it("Managed nested test", async () => {
       dec.f1("123");
 
-      expect(traceManager.getAsync(0)!.trace.length).to.eq(20);
+      expect(traceManager.getAsync(0)?.trace.length).to.eq(20);
    });
 });

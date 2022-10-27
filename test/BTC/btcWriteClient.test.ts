@@ -11,12 +11,13 @@ export function round_for_ltc(input: number) {
    return parseFloat(input.toFixed(8));
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: string, from: string, to: string) {
-   let unspent = await RPC.listUnspentTransactions(fromWalletLabel);
-   let vin = [];
-   let vinaddresses = [];
+   const unspent = await RPC.listUnspentTransactions(fromWalletLabel);
+   const vin = [];
+   const vinaddresses = [];
    let unspentAmount = 0;
-   for (let utx of unspent) {
+   for (const utx of unspent) {
       if (utx.address == from) {
          vin.push({
             txid: utx.txid,
@@ -32,26 +33,27 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
       console.error("Not enough founds on sender wallet");
       throw Error("Insufficient founds on sender wallet");
    }
-   let vout: IIUtxoVout[] = [
+   const vout: IIUtxoVout[] = [
       { address: to, amount: test_amount },
       { address: from, amount: round_for_ltc(unspentAmount - test_amount - gas) },
    ];
-   let a = await RPC.createRawTransaction(fromWalletLabel, vin, vout);
-   let signkeys = [];
-   for (let add of vinaddresses) {
+   const a = await RPC.createRawTransaction(fromWalletLabel, vin, vout);
+   const signkeys = [];
+   for (const add of vinaddresses) {
       signkeys.push(await RPC.getPrivateKey(fromWalletLabel, add));
    }
-   let signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
+   const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
    const txId = await RPC.sendRawTransactionInBlock(fromWalletLabel, signedTx.hex);
    return txId;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function sendUtxoTransaction(RPC: any, fromWalletLabel: string, from: string, to: string, amount: number, gas: number = 1e-5) {
-   let unspent = await RPC.listUnspentTransactions(fromWalletLabel);
-   let vin = [];
-   let vinaddresses = [];
+   const unspent = await RPC.listUnspentTransactions(fromWalletLabel);
+   const vin = [];
+   const vinaddresses = [];
    let unspentAmount = 0;
-   for (let utx of unspent) {
+   for (const utx of unspent) {
       if (utx.address == from) {
          vin.push({
             txid: utx.txid,
@@ -66,16 +68,16 @@ export async function sendUtxoTransaction(RPC: any, fromWalletLabel: string, fro
       console.error("Not enough founds on sender wallet");
       throw Error("Insufficient founds on sender wallet");
    }
-   let vout: IIUtxoVout[] = [
+   const vout: IIUtxoVout[] = [
       { address: to, amount: test_amount },
       { address: from, amount: round_for_ltc(unspentAmount - test_amount - gas) },
    ];
-   let a = await RPC.createRawTransaction(fromWalletLabel, vin, vout);
-   let signkeys = [];
-   for (let add of vinaddresses) {
+   const a = await RPC.createRawTransaction(fromWalletLabel, vin, vout);
+   const signkeys = [];
+   for (const add of vinaddresses) {
       signkeys.push(await RPC.getPrivateKey(fromWalletLabel, add));
    }
-   let signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
+   const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
    // const txId = await RPC.sendRawTransactionInBlock(fromWalletLabel, signedTx.hex);
    const txId = await RPC.sendRawTransaction(fromWalletLabel, signedTx.hex);
    return txId;
@@ -85,7 +87,7 @@ describe("BTC client tests", () => {
    describe("General functionalities", function () {
       it.skip("should get block height from regtest network", async function () {
          const BtcRpc = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass });
-         let a = await BtcRpc.getBlockHeight();
+         const a = await BtcRpc.getBlockHeight();
          expect(a).to.greaterThan(100);
       });
    });
@@ -98,11 +100,13 @@ describe("BTC client tests", () => {
       try {
          await nBtcRpc.createWallet(test_wall);
          // load wallet
-      } catch {}
+      } catch {
+         console.log("Catch");
+      }
 
-      let new_add = await nBtcRpc.createAddress(test_wall, "test_add", "bech32");
+      const new_add = await nBtcRpc.createAddress(test_wall, "test_add", "bech32");
 
-      let new_add_2 = await nBtcRpc.createAddress(test_wall, "test_add2", "bech32");
+      const new_add_2 = await nBtcRpc.createAddress(test_wall, "test_add2", "bech32");
 
       console.log("From");
       console.log(new_add);
@@ -110,12 +114,12 @@ describe("BTC client tests", () => {
       console.log("To:");
       console.log(new_add_2);
 
-      let found = await nBtcRpc.fundAddress(new_add, 10);
+      const found = await nBtcRpc.fundAddress(new_add, 10);
 
       console.log("fund the address");
       console.log(found);
 
-      let bb = await sendMinimalUTXOTransaction(nBtcRpc, test_wall, new_add, new_add_2);
+      const bb = await sendMinimalUTXOTransaction(nBtcRpc, test_wall, new_add, new_add_2);
 
       console.log("transakcija");
       console.log(bb);
@@ -126,14 +130,14 @@ describe("BTC client tests", () => {
 
    it.skip("should be able to get addresses list ", async function () {
       const nBtcRpc = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass });
-      let addresses = await nBtcRpc.listAllAddressesByLabel("test_wall", "test_add");
+      const addresses = await nBtcRpc.listAllAddressesByLabel("test_wall", "test_add");
       // console.log(addresses);
       expect(addresses.length).to.greaterThan(0);
    });
 
    it.skip("should get no such transaction response ", async function () {
       const nBtcRpc = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass });
-      let transaction = await nBtcRpc.getTransaction("ab2267bafb5a4d93486b451cf9de79dec478763e21ddd22705a24ae3aa856ec7");
+      const transaction = await nBtcRpc.getTransaction("ab2267bafb5a4d93486b451cf9de79dec478763e21ddd22705a24ae3aa856ec7");
       console.log(transaction);
       // expect(addresses.length).to.greaterThan(0);
    });
@@ -141,27 +145,27 @@ describe("BTC client tests", () => {
    it.skip("should check get transaction response typings ", async function () {
       const nBtcRpc = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass, inRegTest: true });
       const tx = "ab2267bafb5a4d93486b451cf9de79dec478763e21ddd22705a24ae3aa856ec3";
-      let txres = await nBtcRpc.getTransaction(tx);
+      const txres = await nBtcRpc.getTransaction(tx);
       expect(typeof txres).to.equal("string");
    });
 
    describe("All possible transaction types", function () {
       let possibleRPC: UtxoRpcInterface;
-      let addresses_leg: getAddressByLabelResponse[] = [];
-      let addresses_leg_2: getAddressByLabelResponse[] = [];
-      let addresses_seg: getAddressByLabelResponse[] = [];
-      let addresses_seg_2: getAddressByLabelResponse[] = [];
-      let addresses_bec: getAddressByLabelResponse[] = [];
-      let addresses_bec_2: getAddressByLabelResponse[] = [];
+      const addresses_leg: getAddressByLabelResponse[] = [];
+      const addresses_leg_2: getAddressByLabelResponse[] = [];
+      const addresses_seg: getAddressByLabelResponse[] = [];
+      const addresses_seg_2: getAddressByLabelResponse[] = [];
+      const addresses_bec: getAddressByLabelResponse[] = [];
+      const addresses_bec_2: getAddressByLabelResponse[] = [];
 
       const test_wall = "all_possible_wallet";
-      const test_acc_leg = "all_possible_add_leg";
-      const test_acc_seg = "all_possible_add_seg";
-      const test_acc_bec = "all_possible_add_bec";
+      // const test_acc_leg = "all_possible_add_leg";
+      // const test_acc_seg = "all_possible_add_seg";
+      // const test_acc_bec = "all_possible_add_bec";
 
-      const test_acc_2_leg = "all_possible_add_leg_rec";
-      const test_acc_2_seg = "all_possible_add_seg_rec";
-      const test_acc_2_bec = "all_possible_add_bec_rec";
+      // const test_acc_2_leg = "all_possible_add_leg_rec";
+      // const test_acc_2_seg = "all_possible_add_seg_rec";
+      // const test_acc_2_bec = "all_possible_add_bec_rec";
 
       // before(async function () {
       //    possibleRPC = new MCC.BTC({ url: reg_tests_url, username: reg_test_user, password: reg_test_pass, inRegTest: true });
@@ -228,21 +232,21 @@ describe("BTC client tests", () => {
 
       it.skip("should create tx legacy -> legacy", async function () {
          await possibleRPC.fundAddress(addresses_leg[0].address, 10);
-         let ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_leg[0].address, addresses_leg_2[0].address, 10 - 1e-4, 1e-4);
+         const ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_leg[0].address, addresses_leg_2[0].address, 10 - 1e-4, 1e-4);
 
          console.log("Legacy -> Legacy: ", ttx);
       });
 
       it.skip("should create tx p2sh-segwit -> p2sh-segwit", async function () {
          await possibleRPC.fundAddress(addresses_seg[0].address, 10);
-         let ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_seg[0].address, addresses_seg_2[0].address, 10 - 1e-4, 1e-4);
+         const ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_seg[0].address, addresses_seg_2[0].address, 10 - 1e-4, 1e-4);
 
          console.log("p2sh-segwit -> p2sh-segwit: ", ttx);
       });
 
       it.skip("should create tx bech32 -> bech32", async function () {
          await possibleRPC.fundAddress(addresses_bec[0].address, 10);
-         let ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_bec[0].address, addresses_bec_2[0].address, 10 - 1e-4, 1e-4);
+         const ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_bec[0].address, addresses_bec_2[0].address, 10 - 1e-4, 1e-4);
 
          console.log("bech32 -> bech32: ", ttx);
       });

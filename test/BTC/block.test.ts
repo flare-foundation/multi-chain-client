@@ -1,7 +1,9 @@
 import { expect } from "chai";
 import { BtcBlock, MCC, UtxoMccCreate } from "../../src";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const BtcMccConnection = {

@@ -2,7 +2,10 @@ import { expect } from "chai";
 import { MCC, SpecialAddresses } from "../../src";
 import { mccSettings } from "../../src/global-settings/globalSettings";
 import { processFlags } from "../../src/utils/xrpUtils";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
@@ -101,8 +104,10 @@ describe("Xrpl account test testnet ", function () {
 
          // Multisig check
          // TODO ripple has a problem here?
+         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
          // @ts-ignore
          if (info.result.account_data?.signer_lists) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             expect(info.result.account_data?.signer_lists.length).to.eq(0);
          }

@@ -16,9 +16,13 @@ import {
    toSnakeCase,
    unPrefix0x,
 } from "../../src";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const stdout = require("test-console").stdout;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const stderr = require("test-console").stderr;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 describe("Utils tests ", () => {
@@ -155,6 +159,7 @@ describe("Utils tests ", () => {
       function justLikeDefaultWarningCallback(message: string): void {
          console.log(message);
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       function justLikeDefaultExceptionCallback(error: any, message: string): void {
          console.log(message);
          console.error(error);

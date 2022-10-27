@@ -1,8 +1,10 @@
+import { expect } from "chai";
 import { BtcTransaction, MCC, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const LtcMccConnection = {
@@ -22,7 +24,7 @@ describe("Transaction Ltc base test ", function () {
       const txid = "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d37786156ff";
 
       it("Should get transaction does not exist ", async function () {
-         let transaction = MccClient.getTransaction(txid);
+         const transaction = MccClient.getTransaction(txid);
          await expect(transaction).to.be.rejectedWith("InvalidTransaction");
       });
    });
@@ -32,7 +34,7 @@ describe("Transaction Ltc base test ", function () {
       let transaction: BtcTransaction;
 
       before(async () => {
-         let fullTrans = await MccClient.getTransaction(txid);
+         const fullTrans = await MccClient.getTransaction(txid);
          if (fullTrans) {
             transaction = new BtcTransaction(fullTrans.data);
             await transaction.makeFullPayment(MccClient);
@@ -220,7 +222,7 @@ describe("Transaction Ltc base test ", function () {
       },
    ];
 
-   for (let transData of TransactionsToTest) {
+   for (const transData of TransactionsToTest) {
       describe(transData.description, function () {
          let transaction: UtxoTransaction;
          before(async function () {

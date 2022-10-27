@@ -1,7 +1,9 @@
+import { expect } from "chai";
 import { ChainType, MCC, traceManager, UtxoMccCreate } from "../../src";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const BtcMccConnection = {
@@ -37,13 +39,15 @@ describe("BTC mainnet client tests", () => {
 
       it("Should get block header ", async function () {
          const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c5368";
-         let header = await MccClient.getBlockHeaderBase(blockhash);
+         const header = await MccClient.getBlockHeaderBase(blockhash);
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          expect(header!.hash).to.eq(blockhash);
       });
 
       it("Should get block header 2 ", async function () {
          const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c5368";
-         let header = await MccClient.getBlockHeaderBase("0x" + blockhash);
+         const header = await MccClient.getBlockHeaderBase("0x" + blockhash);
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          expect(header!.hash).to.eq(blockhash);
       });
 
@@ -63,9 +67,9 @@ describe("BTC mainnet client tests", () => {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const txid = "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684";
 
-         let trans = await BtcRpc.getTransaction(txid);
+         const trans = await BtcRpc.getTransaction(txid);
          if (trans) {
-            let reference = trans.reference;
+            const reference = trans.reference;
             expect(reference.length).to.eq(1);
             expect(reference[0]).to.eq("636861726c6579206c6f766573206865696469");
          } else {
@@ -77,9 +81,9 @@ describe("BTC mainnet client tests", () => {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const txid = "4dd738c1aebb7a1e50f36100779369053fffd790acfacd0ab10dbbb587e4af01";
 
-         let trans = await BtcRpc.getTransaction(txid);
+         const trans = await BtcRpc.getTransaction(txid);
          if (trans) {
-            let reference = trans.reference;
+            const reference = trans.reference;
             expect(reference.length).to.eq(1);
          } else {
             expect(trans).to.eq(null);
@@ -90,9 +94,9 @@ describe("BTC mainnet client tests", () => {
          const BtcRpc = new MCC.BTC(BtcMccConnection);
          const coinbaseTx = "fbf351cd9f1a561be21e3977282e931c5209ed6b90472e225b4a674dbc643511";
 
-         let trans = await BtcRpc.getTransaction(coinbaseTx);
+         const trans = await BtcRpc.getTransaction(coinbaseTx);
          if (trans) {
-            let reference = trans.reference;
+            const reference = trans.reference;
             expect(reference.length).to.eq(3);
          } else {
             expect(trans).to.eq(null);

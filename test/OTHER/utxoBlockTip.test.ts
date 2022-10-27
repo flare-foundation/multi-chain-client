@@ -5,7 +5,7 @@ import { UtxoBlockTip } from "../../src";
 
 describe("Lite block base test ", function () {
    let block: UtxoBlockTip;
-   let height = 0;
+   const height = 0;
 
    before(async function () {
       block = new UtxoBlockTip({ hash: "2579f72f3f80f68b02767c44024d697826af787776b58", height: 0, branchlen: 0, status: "active" });

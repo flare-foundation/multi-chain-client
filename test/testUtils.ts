@@ -3,15 +3,18 @@ import { AddressAmount, PaymentSummary, unPrefix0x } from "../src";
 import { IIUtxoVout, TransactionSuccessStatus } from "../src/types";
 import { addressToHex, hexToBytes } from "../src/utils/algoUtils";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const expectThrow = async (method: any, errorMessage: any) => {
    let error = null;
    try {
       await method;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
    } catch (err: any) {
       error = err;
    }
    if (typeof errorMessage === "object") {
-      for (let prop in errorMessage) {
+      // eslint-disable-next-line guard-for-in
+      for (const prop in errorMessage) {
          expect(error).to.haveOwnProperty(prop);
          expect(error[prop]).to.eq(errorMessage[prop]);
       }
@@ -24,12 +27,13 @@ export function round_for_ltc(input: number) {
    return parseFloat(input.toFixed(8));
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: string, from: string, to: string) {
-   let unspent = await RPC.listUnspentTransactions(fromWalletLabel);
-   let vin = [];
-   let vinaddresses = [];
+   const unspent = await RPC.listUnspentTransactions(fromWalletLabel);
+   const vin = [];
+   const vinaddresses = [];
    let unspentAmount = 0;
-   for (let utx of unspent) {
+   for (const utx of unspent) {
       console.log("ALL utxo", utx);
 
       if (utx.address == from) {
@@ -49,16 +53,16 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
       console.error("Not enough founds on sender wallet");
       throw Error("Insufficient founds on sender wallet");
    }
-   let vout: IIUtxoVout[] = [
+   const vout: IIUtxoVout[] = [
       { address: to, amount: test_amount },
       { address: from, amount: round_for_ltc(unspentAmount - test_amount - gas) },
    ];
-   let a = await RPC.createRawTransaction(fromWalletLabel, vin, vout);
-   let signkeys = [];
-   for (let add of vinaddresses) {
+   const a = await RPC.createRawTransaction(fromWalletLabel, vin, vout);
+   const signkeys = [];
+   for (const add of vinaddresses) {
       signkeys.push(await RPC.getPrivateKey(fromWalletLabel, add));
    }
-   let signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
+   const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
    const txId = await RPC.sendRawTransactionInBlock(fromWalletLabel, signedTx.hex);
    return txId;
 }

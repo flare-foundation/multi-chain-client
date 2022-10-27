@@ -22,7 +22,7 @@ describe("Chain tips test ", function () {
       const tips = await MccClient.getBlockTips(0);
       let latest = tips.length > 0 ? tips[0] : undefined;
       let latestH = 0;
-      for (let tip of tips) {
+      for (const tip of tips) {
          if (tip.chainTipStatus !== "active") {
             if (tip.number > latestH) {
                latestH = tip.number;

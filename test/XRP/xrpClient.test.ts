@@ -24,19 +24,19 @@ describe("XRP ripple client tests", () => {
 
    it(`should get block height from public network`, async function () {
       const XRP = new MCC.XRP({ url: public_url });
-      let a = await XRP.getBlockHeight();
+      const a = await XRP.getBlockHeight();
       expect(a).to.greaterThan(68100602);
    });
 
    it(`should get block height from testnet network`, async function () {
       const XRP = new MCC.XRP({ url: public_url });
-      let a = await XRP.getBlockHeight();
+      const a = await XRP.getBlockHeight();
       expect(a).to.greaterThan(0);
    });
 
    it(`should get block height from devnet network`, async function () {
       const XRP = new MCC.XRP({ url: public_url });
-      let a = await XRP.getBlockHeight();
+      const a = await XRP.getBlockHeight();
       expect(a).to.greaterThan(0);
    });
 });

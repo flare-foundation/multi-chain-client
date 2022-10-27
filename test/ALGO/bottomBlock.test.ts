@@ -1,7 +1,9 @@
-import { AlgoBlock, base64ToHex, hexToBase32, MCC, traceManager } from "../../src";
+import { expect } from "chai";
+import { MCC, traceManager } from "../../src";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
-const fs = require("fs");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {

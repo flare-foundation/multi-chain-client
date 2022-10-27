@@ -4,12 +4,6 @@ export const getBlockHashRes = {
    id: "rpc",
 };
 
-const a = {
-   result: "00000000000000000002579f72f3f80f68b02767c44024d697826af787776b58",
-   error: null,
-   id: "rpc",
-};
-
 export const getBlockRes = {
    result: {
       hash: "00000000000000000002579f72f3f80f68b02767c44024d697826af787776b58",

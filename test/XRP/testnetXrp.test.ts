@@ -1,7 +1,9 @@
+import { expect } from "chai";
 import { MCC, traceManager } from "../../src";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
@@ -21,15 +23,15 @@ describe("XRP testnet client tests", () => {
 
    describe("Should be able to get block height", async () => {
       it(`Should be able to get block height `, async () => {
-         let height = await client.getBlockHeight();
+         const height = await client.getBlockHeight();
          expect(height).to.be.greaterThan(70_000_000);
       });
    });
 
    describe("Basic functionalities", function () {
       it("Should return block if exists", async () => {
-         let n = 69453782;
-         let block = await client.getBlock(n);
+         const n = 69453782;
+         const block = await client.getBlock(n);
          if (block) {
             expect(block.number).to.equal(n);
          }
@@ -45,12 +47,12 @@ describe("XRP testnet client tests", () => {
       });
 
       it("Should return transaction if exists", async () => {
-         let txResponse = await client.getTransaction("0x0569969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2");
+         const txResponse = await client.getTransaction("0x0569969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2");
          expect(txResponse).to.not.equal(null);
       });
 
       it("Should return null if transaction does not exist", async () => {
-         let txResponse = client.getTransaction("0669969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2");
+         const txResponse = client.getTransaction("0669969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2");
          await expect(txResponse).to.be.rejectedWith("InvalidTransaction");
       });
    });

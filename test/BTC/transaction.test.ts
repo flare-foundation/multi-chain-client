@@ -1,8 +1,10 @@
+import { expect } from "chai";
 import { BtcTransaction, MCC, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const BtcMccConnection = {
@@ -32,7 +34,7 @@ describe("Transaction Btc base test ", function () {
       let transaction: BtcTransaction;
 
       before(async () => {
-         let fullTrans = await MccClient.getTransaction(txid);
+         const fullTrans = await MccClient.getTransaction(txid);
 
          if (fullTrans) {
             transaction = new BtcTransaction(fullTrans.data);
@@ -127,7 +129,7 @@ describe("Transaction Btc base test ", function () {
       let transaction: BtcTransaction;
 
       before(async () => {
-         let fullTrans = await MccClient.getTransaction(txid);
+         const fullTrans = await MccClient.getTransaction(txid);
 
          if (fullTrans) {
             transaction = new BtcTransaction(fullTrans.data);
@@ -376,11 +378,11 @@ describe("Transaction Btc base test ", function () {
       },
    ];
 
-   for (let transData of TransactionsToTest) {
+   for (const transData of TransactionsToTest) {
       describe(transData.description, function () {
          let transaction: UtxoTransaction;
          before(async function () {
-            let transactionb = await MccClient.getTransaction(transData.txid);
+            const transactionb = await MccClient.getTransaction(transData.txid);
             if (transactionb !== null) {
                transaction = transactionb;
             }
@@ -539,6 +541,7 @@ describe("Transaction Btc base test ", function () {
       });
 
       it("Should get partial_payment type ", async function () {
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          transaction.additionalData!.vinouts = [
             { index: -1, vinvout: { value: 1, n: 300, scriptPubKey: { asm: "", hex: "", type: "" } } },
             { index: -1, vinvout: undefined },
@@ -565,14 +568,17 @@ describe("Transaction Btc base test ", function () {
          };
          expect(fn00).to.throw(Error);
 
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          transaction.additionalData!.vinouts = [undefined, { index: Number.MAX_SAFE_INTEGER, vinvout: undefined }, { index: -1, vinvout: undefined }];
          const fn01 = () => {
             return transaction.synchronizeAdditionalData();
          };
          expect(fn01).to.throw(Error);
 
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          transaction.additionalData!.vinouts = [{ index: 0, vinvout: undefined }];
          transaction.synchronizeAdditionalData();
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          expect(transaction.additionalData!.vinouts[0]?.index).to.eq(0);
 
          transaction.data.vin.splice(-1);

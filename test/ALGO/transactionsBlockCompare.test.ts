@@ -1,7 +1,9 @@
+import { expect } from "chai";
 import { AlgoBlock, AlgoTransaction, MCC } from "../../src";
 import { AlgoIndexerTransaction } from "../../src/base-objects/transactions/AlgoIndexerTransaction";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
@@ -25,35 +27,35 @@ type TxPair = {
 };
 
 describe(`Algo transaction from algod block ${hei} VS from indexer compare`, function () {
-   let MccClient: MCC.ALGO;
    let block: AlgoBlock;
-   MccClient = new MCC.ALGO(algoCreateConfig);
+   const MccClient = new MCC.ALGO(algoCreateConfig);
 
-   let txPairs: TxPair[];
+   const txPairs: TxPair[] = [];
    before(async function () {
-      txPairs = [];
       block = await MccClient.getBlock(hei);
-      let iTrans: AlgoIndexerTransaction;
-      for (let tra of block.transactions) {
-         iTrans = await MccClient.getIndexerTransaction(tra.txid);
-         txPairs.push({ BTrans: tra, ITrans: iTrans } as TxPair);
+
+      for (const tra of block.transactions) {
+         const iTrans = await MccClient.getIndexerTransaction(tra.txid);
+         if (iTrans) {
+            txPairs.push({ BTrans: tra, ITrans: iTrans } as TxPair);
+         }
       }
    });
 
    it("Should compare transaction hash ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.hash).to.eq(pair.ITrans.hash);
       }
    });
 
    it("Should compare transaction std txid ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.stdTxid).to.eq(pair.ITrans.stdTxid);
       }
    });
 
    it("Should compare transaction reference ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.reference.length).to.eq(pair.ITrans.reference.length);
          pair.ITrans.reference.sort();
          pair.BTrans.reference.sort();
@@ -64,19 +66,19 @@ describe(`Algo transaction from algod block ${hei} VS from indexer compare`, fun
    });
 
    it("Should compare transaction stdPaymentReference ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.stdPaymentReference).to.eq(pair.ITrans.stdPaymentReference);
       }
    });
 
    it("Should compare transaction std txid ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.stdTxid).to.eq(pair.ITrans.stdTxid);
       }
    });
 
    it("Should compare transaction unix timestamp ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.unixTimestamp).to.eq(pair.ITrans.unixTimestamp);
       }
    });
@@ -106,7 +108,7 @@ describe(`Algo transaction from algod block ${hei} VS from indexer compare`, fun
    // });
 
    it("Should compare transaction fee ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.fee.toString()).to.eq(pair.ITrans.fee.toString());
       }
    });
@@ -136,31 +138,31 @@ describe(`Algo transaction from algod block ${hei} VS from indexer compare`, fun
    // });
 
    it("Should compare transaction type ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.type).to.eq(pair.ITrans.type);
       }
    });
 
    it("Should compare transaction isNativePayment ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.isNativePayment).to.eq(pair.ITrans.isNativePayment);
       }
    });
 
    it("Should compare transaction currencyName ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.currencyName).to.eq(pair.ITrans.currencyName);
       }
    });
 
    it("Should compare transaction elementaryUnits ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.elementaryUnits.toString()).to.eq(pair.ITrans.elementaryUnits.toString());
       }
    });
 
    it("Should compare transaction successStatus ", async function () {
-      for (let pair of txPairs) {
+      for (const pair of txPairs) {
          expect(pair.BTrans.successStatus).to.eq(pair.ITrans.successStatus);
       }
    });

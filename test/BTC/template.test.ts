@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
+import { MCC, UtxoMccCreate } from "../../src";
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",
@@ -9,7 +9,6 @@ const BtcMccConnection = {
 
 describe("Template test ", function () {
    let MccClient: MCC.BTC;
-   let block: UtxoBlock;
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
    });
@@ -37,7 +36,7 @@ describe("Template test ", function () {
       for (let i = 7; i < 20; i++) {
          const bl = await MccClient.getBlock(h - i);
          if (bl) {
-            for (let tran of bl.stdTransactionIds) {
+            for (const tran of bl.stdTransactionIds) {
                const t = await MccClient.getTransaction(tran);
                if (t) {
                   if (t.type !== "coinbase" && t.reference.length > 0) {

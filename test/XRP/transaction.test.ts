@@ -1,7 +1,9 @@
+import { expect } from "chai";
 import { TransactionMetadata } from "xrpl";
 import { MCC, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
@@ -413,13 +415,13 @@ describe("Transaction Xrp tests ", function () {
 
       it("Should get account create 2 ", async function () {
          const Meta = transaction2.data.result.meta as TransactionMetadata;
-         for (let elem of Meta.AffectedNodes) {
+         for (const elem of Meta.AffectedNodes) {
             if ("CreatedNode" in elem) {
                elem.CreatedNode.NewFields.Account = "rDKsbvy9uaNpPtvVFraJyNGfjvTw8xivgK";
             }
          }
          expect(transaction2.isAccountCreate).to.be.false;
-         for (let elem of Meta.AffectedNodes) {
+         for (const elem of Meta.AffectedNodes) {
             if ("CreatedNode" in elem) {
                delete elem.CreatedNode.NewFields.Account;
             }
@@ -445,7 +447,8 @@ describe("Transaction Xrp tests ", function () {
          expect(transaction1.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
          expect(transaction2.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
          expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
-         let metaData: TransactionMetadata = transaction3.data.result.meta || (transaction3.data.result as any).metaData;
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const metaData: TransactionMetadata = transaction3.data.result.meta || (transaction3.data.result as any).metaData;
          metaData.TransactionResult = "tecDST_TAG_NEEDED";
          expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
          metaData.TransactionResult = "tecNO_DST";
@@ -481,8 +484,10 @@ describe("Transaction Xrp tests ", function () {
          transaction = await MccClient.getTransaction(txid);
       });
       it("References ", async () => {
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          transaction.data.result.Memos![0] = { Memo: { MemoType: "string" } };
          expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          transaction.data.result.Memos![0] = { Memo: { MemoData: txid } };
          expect(transaction.stdPaymentReference).to.eq("0x" + txid);
       });

@@ -1,7 +1,10 @@
-import { AlgoBlock, AlgoTransaction, MCC, toBN, toNumber, ZERO_BYTES_32 } from "../../src";
+import { expect } from "chai";
+import { AlgoBlock, AlgoTransaction, MCC, ZERO_BYTES_32 } from "../../src";
 import { AlgoIndexerTransaction } from "../../src/base-objects/transactions/AlgoIndexerTransaction";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
@@ -28,37 +31,37 @@ describe(`Algo block processing`, async () => {
 
    before(async function () {
       MccClient = new MCC.ALGO(algoCreateConfig);
-      let tblock = await MccClient.getBlock(21_700_000);
+      const tblock = await MccClient.getBlock(21_700_000);
       if (tblock !== null) {
          block1 = tblock;
          const bttrans = block1.transactions[0];
          if (bttrans !== null) {
             BTrans1 = bttrans;
-            let titrans = await MccClient.getIndexerTransaction(BTrans1.txid);
-            if (titrans !== null) {
+            const titrans = await MccClient.getIndexerTransaction(BTrans1.txid);
+            if (titrans) {
                ITrans1 = titrans;
             }
          }
       }
-      let tblock2 = await MccClient.getBlock(21_797_543);
+      const tblock2 = await MccClient.getBlock(21_797_543);
       if (tblock2 !== null) {
          block2 = tblock2;
          const bttrans = block2.transactions[0];
          if (bttrans !== null) {
             BTrans2 = bttrans;
-            let titrans = await MccClient.getIndexerTransaction(BTrans2.txid);
-            if (titrans !== null) {
+            const titrans = await MccClient.getIndexerTransaction(BTrans2.txid);
+            if (titrans) {
                ITrans2 = titrans;
             }
          }
       }
-      let titrans1 = await MccClient.getIndexerTransaction("O4PGGEM3ZCA27SQHCJH4VBTB3FYM7FJNRF2ROOGFQRI4BSYWPKLQ");
-      if (titrans1 !== null) {
+      const titrans1 = await MccClient.getIndexerTransaction("O4PGGEM3ZCA27SQHCJH4VBTB3FYM7FJNRF2ROOGFQRI4BSYWPKLQ");
+      if (titrans1) {
          ITrans3 = titrans1;
       }
 
-      let titrans2 = await MccClient.getIndexerTransaction("TSLAKUC3THKQDGRAQVEF2I3WVMWLBYBSK2HAO5GPCMY27KRDUWNA");
-      if (titrans2 !== null) {
+      const titrans2 = await MccClient.getIndexerTransaction("TSLAKUC3THKQDGRAQVEF2I3WVMWLBYBSK2HAO5GPCMY27KRDUWNA");
+      if (titrans2) {
          ITrans4 = titrans2;
       }
    });
@@ -188,12 +191,12 @@ describe(`Algo block processing`, async () => {
    });
 
    it("Should list transactions with options", async function () {
-      let res = await MccClient.listTransactions({ sigType: "sig" });
+      const res = await MccClient.listTransactions({ sigType: "sig" });
       expect(res).to.not.be.null;
    });
 
    it("Should get transaction", async function () {
-      let res = await MccClient.getIndexerTransaction("0xULHDCNM665O7M4E44PGEJ7XB3Z7YIF7QYUWY5ZBTPO434M47SZ3Q");
+      const res = await MccClient.getIndexerTransaction("0xULHDCNM665O7M4E44PGEJ7XB3Z7YIF7QYUWY5ZBTPO434M47SZ3Q");
       expect(res).to.not.be.null;
    });
 
@@ -202,7 +205,7 @@ describe(`Algo block processing`, async () => {
    });
 
    it("Should get standard payment reference 2", async function () {
-      let ti = await MccClient.getIndexerTransaction("2DWIMCX2EUXG2A5PJ55DRNENT5HRHMW7CHBAMY5IWXAA7QWPDHLA");
-      expect(ti.stdPaymentReference).to.eq("0x44d5b4718d6bb8daa193c0f3ad272604dd0352ae0e6273aa93d6b2622395313b");
+      const ti = await MccClient.getIndexerTransaction("2DWIMCX2EUXG2A5PJ55DRNENT5HRHMW7CHBAMY5IWXAA7QWPDHLA");
+      expect(ti?.stdPaymentReference).to.eq("0x44d5b4718d6bb8daa193c0f3ad272604dd0352ae0e6273aa93d6b2622395313b");
    });
 });

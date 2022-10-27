@@ -36,7 +36,7 @@ describe("ALGO utils tests", () => {
             publicKey: "0x06c0d7985fae2d64be14b9b4d9d5b07b3df0931baf01828f2c06bb6c0fe500ba",
             checksum: "0xa7084de0",
          };
-         let dec = addressToHex(address);
+         const dec = addressToHex(address);
          expect(dec.publicKey).to.equal(decoded.publicKey);
          expect(dec.checksum).to.equal(decoded.checksum);
       });
@@ -273,24 +273,24 @@ describe("ALGO utils tests", () => {
       const arr0 = [1, 2, 3, 4, 5];
       it("concat one array", async function () {
          const expected = new Uint8Array([1, 2, 3, 4, 5]);
-         let res = concatArrays(arr0);
+         const res = concatArrays(arr0);
          expect(res).to.be.eql(expected);
       });
       it("concat multiple arrays", async function () {
          const expected = new Uint8Array([1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 10, 11, 12, 0, 0]);
-         let res = concatArrays(arr0, arr0, { 0: 10, 1: 11, 2: 12, length: 5 });
+         const res = concatArrays(arr0, arr0, { 0: 10, 1: 11, 2: 12, length: 5 });
          expect(res).to.be.eql(expected);
       });
       it("hash an array", async function () {
          const expected = new Uint8Array([
             25, 181, 125, 65, 111, 93, 89, 122, 212, 7, 132, 243, 5, 0, 180, 208, 126, 217, 103, 190, 245, 236, 136, 60, 129, 85, 77, 233, 246, 250, 108, 61,
          ]);
-         let res = hasher(new Uint8Array(arr0));
+         const res = hasher(new Uint8Array(arr0));
          expect(res).to.be.eql(expected);
       });
       it("msgpack", async function () {
-         let res = mpEncode(arr0);
-         let arr0_again = mpDecode(res);
+         const res = mpEncode(arr0);
+         const arr0_again = mpDecode(res);
          expect(arr0).to.be.eql(arr0_again);
       });
    });

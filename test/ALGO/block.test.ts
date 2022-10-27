@@ -1,7 +1,9 @@
-import { AlgoBlock, base64ToHex, hexToBase32, MCC, traceManager } from "../../src";
+import { expect } from "chai";
+import { AlgoBlock, MCC, traceManager } from "../../src";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
-const fs = require("fs");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
@@ -37,7 +39,7 @@ describe(`Algo block processing`, async () => {
          ];
       }
 
-      let aBlock = new AlgoBlock({ block: block.data.block, cert: block.data.cert });
+      const aBlock = new AlgoBlock({ block: block.data.block, cert: block.data.cert });
       expect(aBlock).to.not.eq(undefined);
    });
 
@@ -104,13 +106,13 @@ describe(`Algo block processing`, async () => {
       });
 
       it("Should get previousBlockHash ", async function () {
-         let prevBlock = await MccClient.getBlock(blockNumber - 1);
+         const prevBlock = await MccClient.getBlock(blockNumber - 1);
 
          expect(block.previousBlockHash).to.eq(prevBlock.blockHash);
       });
 
       it("Should get stdpreviousBlockHash ", async function () {
-         let prevBlock = await MccClient.getBlock(blockNumber - 1);
+         const prevBlock = await MccClient.getBlock(blockNumber - 1);
          expect(block.stdPreviousBlockHash).to.eq(prevBlock.stdBlockHash);
       });
 

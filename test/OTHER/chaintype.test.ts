@@ -1,7 +1,9 @@
+import { expect } from "chai";
 import { ChainType, MCC, traceManager } from "../../src";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 describe("Lite block base test ", function () {

@@ -1,7 +1,9 @@
+import { expect } from "chai";
 import { MCC, traceManager, UtxoMccCreate } from "../../src";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const DogeMccConnection = {
@@ -32,7 +34,7 @@ describe("DOGE mainnet client tests", () => {
       it("should get transaction ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const txid = "2d906dbce50eb47567d1decae6a0ce5267eaabe56838ea9fd700a732bbcdcb3b";
-         let trans = await RPC.getTransaction(txid);
+         const trans = await RPC.getTransaction(txid);
          if (trans) {
             expect(trans.hash).to.eq(txid);
          }
@@ -41,54 +43,54 @@ describe("DOGE mainnet client tests", () => {
       it("should return null if transaction does not exist ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const txid = "2d906dbce50eb47567d1decae6a0ce5267eaabe56838ea9fd700a732bbcdcbff";
-         let trans = RPC.getTransaction(txid);
+         const trans = RPC.getTransaction(txid);
          await expect(trans).to.be.rejectedWith("InvalidTransaction");
       });
 
       it("should be able to get block height ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
-         let blockHeight = await RPC.getBlockHeight();
+         const blockHeight = await RPC.getBlockHeight();
          expect(blockHeight).to.be.above(0);
       });
 
       it("should be able to get block height ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
-         let blockHeight = await RPC.getBlockHeight();
+         const blockHeight = await RPC.getBlockHeight();
          expect(blockHeight).to.be.above(0);
       });
 
       it("should be able to get block header from height ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const height = 4103881;
-         let blockHeader = await RPC.getBlockHeaderBase(height);
+         const blockHeader = await RPC.getBlockHeaderBase(height);
          expect(blockHeader).to.not.eq(null);
       });
 
       it("should be able to get block header from hash ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const hash = "8ea32399901c056e32c0fef84208bc257824f6718a6d4906ab00833b8d87ea89";
-         let blockHeader = await RPC.getBlockHeaderBase(hash);
+         const blockHeader = await RPC.getBlockHeaderBase(hash);
          expect(blockHeader).to.not.eq(null);
       });
 
       it("should be able to get block from height ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const height = 4103881;
-         let blockHeader = await RPC.getBlock(height);
+         const blockHeader = await RPC.getBlock(height);
          expect(blockHeader).to.not.eq(null);
       });
 
       it("should be able to get block from hash ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const hash = "8ea32399901c056e32c0fef84208bc257824f6718a6d4906ab00833b8d87ea89";
-         let blockHeader = await RPC.getBlock(hash);
+         const blockHeader = await RPC.getBlock(hash);
          expect(blockHeader).to.not.eq(null);
       });
 
       it("should get full transaction ", async function () {
          const RPC = new MCC.DOGE(DogeMccConnection);
          const txid = "2d906dbce50eb47567d1decae6a0ce5267eaabe56838ea9fd700a732bbcdcb3b";
-         let trans = await RPC.getTransaction(txid);
+         const trans = await RPC.getTransaction(txid);
          if (trans) {
             expect(trans.hash).to.eq(txid);
          }

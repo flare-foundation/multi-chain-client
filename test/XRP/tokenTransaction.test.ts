@@ -1,8 +1,10 @@
 import { MCC, toBN, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
 const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
@@ -137,7 +139,7 @@ describe("Transaction Xrp tests ", function () {
       },
    ];
 
-   for (let transData of TransactionsToTest) {
+   for (const transData of TransactionsToTest) {
       describe(transData.description, function () {
          let transaction: XrpTransaction;
          before(async function () {

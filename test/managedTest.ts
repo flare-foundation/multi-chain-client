@@ -6,6 +6,7 @@ export function TestFunctionCall(a: number, s: string) {
    traceFunction(TestFunction, a, s);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
 export function TestFunction(a: number, s: string) {}
 
 export class Test2 {
@@ -44,6 +45,7 @@ export class ManagedTest {
       return this.sum(a, this.mad(a, a, b));
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    methodThrow(a: number, b: number) {
       throw new Error("test crash");
    }
@@ -68,6 +70,7 @@ export class ManagedTest {
       return this.mul(this.sum(a, a), this.sum(b, b));
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    async asyncMethodThrow(a: number, b: number) {
       throw new Error("test crash");
    }
@@ -75,9 +78,11 @@ export class ManagedTest {
    // async nested test
 
    async asyncNestedMethod() {
+      const promises = [];
       for (let a = 0; a < 10; a++) {
-         this.asyncMethod3(a);
+         promises.push(this.asyncMethod3(a));
       }
+      return promises;
    }
 
    async asyncNestedMethodAwait() {
@@ -103,6 +108,7 @@ export class ManagedTest {
       }
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
    f0(a: number, b: number) {}
 
    //
@@ -122,5 +128,6 @@ export class ManagedTest {
       }
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
    f4(param: string) {}
 }

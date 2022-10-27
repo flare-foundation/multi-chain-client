@@ -20,13 +20,16 @@ describe(`Algo block from algod and indexer compare`, async () => {
       MccClient = new MCC.ALGO(algoCreateConfig);
    });
 
-   for (let hei of checkBlocks) {
+   for (const hei of checkBlocks) {
       describe(`Compare block from indexer and algod ${hei}`, function () {
          let block: AlgoBlock;
          let IBlock: AlgoIndexerBlock;
 
          before(async function () {
-            IBlock = await MccClient.getIndexerBlock(hei);
+            const tempBlock = await MccClient.getIndexerBlock(hei);
+            if (tempBlock) {
+               IBlock = tempBlock;
+            }
             block = await MccClient.getBlock(hei);
          });
 
@@ -60,7 +63,7 @@ describe(`Algo block from algod and indexer compare`, async () => {
                } else {
                   // transaction was not found
                   diffs += 1;
-                  const indexTr = await MccClient.getIndexerTransaction(trans2[i]);
+                  // const indexTr = await MccClient.getIndexerTransaction(trans2[i]);
                   allSame = false;
                }
             }
@@ -81,6 +84,7 @@ describe(`Algo block from algod and indexer compare`, async () => {
                // find all transaction ids in indexer block, and if not print them out
                const found = trans1.find((elem) => trans2[i] === elem);
                if (found) {
+                  console.log("Found");
                } else {
                   // transaction was not found
                   diffs += 1;

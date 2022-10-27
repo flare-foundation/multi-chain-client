@@ -1,9 +1,9 @@
-import { assert } from "console";
+import { expect } from "chai";
 import { AlgoBlock, AlgoTransaction, MCC, toBN, TransactionSuccessStatus } from "../../src";
-import { mccError } from "../../src/utils/errors";
 import { algoTransactionTestCases } from "../testUtils";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
-const expect = chai.expect;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
 const algoCreateConfig = {
@@ -228,20 +228,20 @@ const testCases: testCase[] = [
 ];
 
 describe("Transaction id tests", function () {
-   for (let testTx of testCases) {
+   for (const testTx of testCases) {
       describe(`Should compute the right txid for ${testTx.txtype}`, function () {
          let MccClient: MCC.ALGO;
          let block: AlgoBlock;
          let transaction: AlgoTransaction;
          MccClient = new MCC.ALGO(algoCreateConfig);
 
-         let round = testTx.blockRound;
-         let txId = testTx.txId;
+         const round = testTx.blockRound;
+         const txId = testTx.txId;
          before(async function () {
-            let txId = testTx.txId;
+            const txId = testTx.txId;
             MccClient = new MCC.ALGO(algoCreateConfig);
             block = await MccClient.getBlock(round);
-            for (let txOb of block.transactions) {
+            for (const txOb of block.transactions) {
                if (txOb.txid === txId) {
                   transaction = txOb;
                }
@@ -268,7 +268,7 @@ describe("Transaction id tests", function () {
    }
 });
 
-for (let transData of TransactionsToTest) {
+for (const transData of TransactionsToTest) {
    describe(`Algo transaction in block (Expect block ${transData.block} in node) `, function () {
       let MccClient: MCC.ALGO;
       let block: AlgoBlock;
@@ -288,7 +288,7 @@ for (let transData of TransactionsToTest) {
          // https://algoexplorer.io/tx/TQA6RDIWO6FINMAJDQSMTKJTOCFO5CCXTWR2DWZJPZWDVAUZ4WQQ
 
          before(async function () {
-            for (let txOb of block.transactions) {
+            for (const txOb of block.transactions) {
                if (txOb.txid === transData.txid) {
                   transaction = txOb;
                }
@@ -466,23 +466,23 @@ for (let transData of TransactionsToTest) {
 
 describe("Misc tests", function () {
    it("Should get invalid method call ", async function () {
-      let MccClient = new MCC.ALGO(algoCreateConfig);
+      const MccClient = new MCC.ALGO(algoCreateConfig);
       await expect(MccClient.getTransaction("")).to.be.rejectedWith("InvalidMethodCall");
    });
 
    it("Should not list transactions ", async function () {
-      let MccClient = new MCC.ALGO(algoCreateConfig);
-      let res = await MccClient.listTransactions();
+      const MccClient = new MCC.ALGO(algoCreateConfig);
+      const res = await MccClient.listTransactions();
       expect(res).to.be.null;
    });
 
    // Next is not testing the right thing NOT ACLOSE
    it("Should get receiving address with aclose ", async function () {
-      let MccClient = new MCC.ALGO(algoCreateConfig);
-      let res = await MccClient.getBlock(23208015);
-      let txId = "W4VEWI5ZRJTNRGS4ITNLPFLCIC3HOKB3JJ7ZXB5I24X7DEBTBZNQ";
+      const MccClient = new MCC.ALGO(algoCreateConfig);
+      const res = await MccClient.getBlock(23208015);
+      const txId = "W4VEWI5ZRJTNRGS4ITNLPFLCIC3HOKB3JJ7ZXB5I24X7DEBTBZNQ";
       let tr = res.transactions[0];
-      for (let tra of res.transactions) {
+      for (const tra of res.transactions) {
          if (tra.txid === txId) {
             tr = tra;
          }
@@ -494,11 +494,11 @@ describe("Misc tests", function () {
    });
 
    it("Should get receiving address  and should not get spent amounts with close ", async function () {
-      let MccClient = new MCC.ALGO(algoCreateConfig);
-      let res = await MccClient.getBlock();
+      const MccClient = new MCC.ALGO(algoCreateConfig);
+      const res = await MccClient.getBlock();
       let tr = res.transactions[0];
       // TODO the assumption that every block has a pay transaction may be a bit much
-      for (let tra of res.transactions) {
+      for (const tra of res.transactions) {
          if (tra.type === "pay") {
             tr = tra;
          }
@@ -509,15 +509,15 @@ describe("Misc tests", function () {
    });
 
    it("Should get receiving fee (no fee) ", async function () {
-      let MccClient = new MCC.ALGO(algoCreateConfig);
-      let res = await MccClient.getBlock();
-      let tr = res.transactions[0];
+      const MccClient = new MCC.ALGO(algoCreateConfig);
+      const res = await MccClient.getBlock();
+      const tr = res.transactions[0];
       delete tr.data.fee;
       expect(tr.fee.toNumber()).to.eq(0);
    });
 
    it("Should not list transactions ", async function () {
-      let MccClient = new MCC.ALGO(algoCreateConfig);
+      const MccClient = new MCC.ALGO(algoCreateConfig);
       await expect(MccClient.getIndexerBlock()).to.be.rejectedWith("InvalidMethodCall");
    });
 });
@@ -531,17 +531,16 @@ const axferTestdata = {
 };
 
 describe("Axfer assets tests", function () {
-   let MccClient: MCC.ALGO;
    let block: AlgoBlock;
    let transaction: AlgoTransaction;
    // let transaction2: AlgoTransaction;
-   MccClient = new MCC.ALGO(algoCreateConfig);
+   const MccClient = new MCC.ALGO(algoCreateConfig);
 
    before(async function () {
-      let txId = axferTestdata.txId;
+      const txId = axferTestdata.txId;
 
       block = await MccClient.getBlock(axferTestdata.blockRound);
-      for (let txOb of block.transactions) {
+      for (const txOb of block.transactions) {
          if (txOb.txid === txId) {
             transaction = txOb;
          }
@@ -553,7 +552,9 @@ describe("Axfer assets tests", function () {
    });
 
    it("Should throw if not full transaction", async function () {
+      // eslint-disable-next-line @typescript-eslint/await-thenable
       await expect(() => transaction.assetSpentAmounts).to.throw("InvalidResponse");
+      // eslint-disable-next-line @typescript-eslint/await-thenable
       await expect(() => transaction.assetReceivedAmounts).to.throw("InvalidResponse");
       // await transaction.makeFull(MccClient);
       // console.log(transaction);
@@ -580,18 +581,18 @@ const payCloseTestdata = {
    txtype: "pay",
    rcvAdd: "KRZYFYXTQ3YK5ADN4VFYFHGRLA6RGUIEO3D54LZC3MV5LKI66P3LDLPVTI",
 };
+
 describe("Pay_close tests", function () {
-   let MccClient: MCC.ALGO;
    let block: AlgoBlock;
    let transaction: AlgoTransaction;
    // let transaction2: AlgoTransaction;
-   MccClient = new MCC.ALGO(algoCreateConfig);
+   const MccClient = new MCC.ALGO(algoCreateConfig);
 
    before(async function () {
-      let txId = payCloseTestdata.txId;
+      const txId = payCloseTestdata.txId;
 
       block = await MccClient.getBlock(payCloseTestdata.blockRound);
-      for (let txOb of block.transactions) {
+      for (const txOb of block.transactions) {
          if (txOb.txid === txId) {
             transaction = txOb;
          }
@@ -635,17 +636,16 @@ const assetCloseTestdata = {
    rcvAdd: "KRZYFYXTQ3YK5ADN4VFYFHGRLA6RGUIEO3D54LZC3MV5LKI66P3LDLPVTI",
 };
 describe("Axfer_close tests", function () {
-   let MccClient: MCC.ALGO;
    let block: AlgoBlock;
    let transaction: AlgoTransaction;
    // let transaction2: AlgoTransaction;
-   MccClient = new MCC.ALGO(algoCreateConfig);
+   const MccClient = new MCC.ALGO(algoCreateConfig);
 
    before(async function () {
-      let txId = assetCloseTestdata.txId;
+      const txId = assetCloseTestdata.txId;
 
       block = await MccClient.getBlock(assetCloseTestdata.blockRound);
-      for (let txOb of block.transactions) {
+      for (const txOb of block.transactions) {
          if (txOb.txid === txId) {
             transaction = txOb;
          }
