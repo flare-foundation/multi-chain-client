@@ -473,7 +473,7 @@ describe("Misc tests", function () {
    it("Should not list transactions ", async function () {
       const MccClient = new MCC.ALGO(algoCreateConfig);
       const res = await MccClient.listTransactions();
-      expect(res).to.be.null;
+      expect(res).to.be.undefined;
    });
 
    // Next is not testing the right thing NOT ACLOSE
