@@ -11,6 +11,7 @@ const LtcMccConnection = {
    url: process.env.LTC_URL || "",
    username: process.env.LTC_USERNAME || "",
    password: process.env.LTC_PASSWORD || "",
+   apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
 describe("Transaction Ltc base test ", function () {

@@ -47,7 +47,10 @@ export class UtxoCore implements ReadRpcInterface {
       const client = axios.create({
          baseURL: createConfig.url,
          timeout: createConfig.rateLimitOptions?.timeoutMs || DEFAULT_TIMEOUT,
-         headers: { "Content-Type": "application/json" },
+         headers: {
+            "Content-Type": "application/json",
+            "x-apikey": createConfig.apiTokenKey || "",
+         },
          auth: {
             username: createConfig.username,
             password: createConfig.password,

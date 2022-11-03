@@ -31,7 +31,7 @@ export class XRPImplementation implements ReadRpcInterface {
       const createAxiosConfig: AxiosRequestConfig = {
          baseURL: createConfig.url,
          timeout: createConfig.rateLimitOptions?.timeoutMs || DEFAULT_TIMEOUT,
-         headers: { "Content-Type": "application/json" },
+         headers: { "Content-Type": "application/json", "x-apikey": createConfig.apiTokenKey || "" },
          validateStatus: function (status: number) {
             return (status >= 200 && status < 300) || status == 500;
          },

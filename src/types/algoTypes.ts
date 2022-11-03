@@ -7,6 +7,7 @@ import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions } from "./generic
 
 export class AlgoMccCreate {
    algod = new AlgoNodeApp();
+   @optional() apiTokenKey?: string = "";
    @optional() indexer? = new AlgoNodeApp();
    @optional() inRegTest? = false;
    @optional() rateLimitOptions? = new RateLimitOptions();

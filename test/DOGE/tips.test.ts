@@ -5,6 +5,7 @@ const DogeMccConnection = {
    url: process.env.DOGE_URL || "",
    username: process.env.DOGE_USERNAME || "",
    password: process.env.DOGE_PASSWORD || "",
+   apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
 describe("Chain tips test ", function () {
@@ -30,7 +31,6 @@ describe("Chain tips test ", function () {
             }
          }
       }
-      console.log(latest);
       expect(latest?.number).to.greaterThanOrEqual(4406287);
    });
 

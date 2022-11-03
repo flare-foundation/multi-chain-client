@@ -1,16 +1,10 @@
+import { expect } from "chai";
 import { MCC, traceManager } from "../../src";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
-
-// const algoCreateConfig = {
-//    algod: {
-//       url: process.env.ALGO_ALGOD_URL_TESTNET || "",
-//       token: process.env.ALGO_ALGOD_TOKEN_TESTNET || "",
-//    },
-// };
 
 const algoCreateConfig = {
    algod: {
@@ -20,17 +14,17 @@ const algoCreateConfig = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe(`Algo`, async () => {
-   it("Transaction bigint", async function () {
+describe(`Algo bottom block`, async () => {
+   it("Should get bottom block", async function () {
       traceManager.displayStateOnException = false;
       const MccClient = new MCC.ALGO(algoCreateConfig);
-      const block = await MccClient.getBlock(24940749);
+      // const height = await MccClient.getBlockHeight();
 
-      console.log(block);
-      for (const data of block.transactionObjects) {
-         console.log(data);
-         await data.makeFull(MccClient);
-         console.log(data);
-      }
+      const bottomBlockHeight = await MccClient.getBottomBlockHeight();
+
+      console.log(bottomBlockHeight);
+
+      const bottomBlock = await MccClient.getBlock(bottomBlockHeight);
+      console.log(bottomBlock);
    });
 });

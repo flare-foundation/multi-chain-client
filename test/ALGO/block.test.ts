@@ -11,6 +11,15 @@ const algoCreateConfig = {
       url: process.env.ALGO_ALGOD_URL || "",
       token: process.env.ALGO_ALGOD_TOKEN || "",
    },
+   apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
+};
+
+const algoCreateConfigFull = {
+   algod: {
+      url: process.env.ALGO_ALGOD_URL_FULL || "",
+      token: process.env.ALGO_ALGOD_TOKEN_FULL || "",
+   },
+   apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
 describe(`Algo block processing`, async () => {
@@ -24,7 +33,8 @@ describe(`Algo block processing`, async () => {
 
    it("Should create block with msig", async function () {
       const MccClient = new MCC.ALGO(algoCreateConfig);
-      const block = await MccClient.getBlock(21_659_776);
+      const height = await MccClient.getBlockHeight();
+      const block = await MccClient.getBlock(height);
       const msigNew = Buffer.from([
          0xad, 0x35, 0x08, 0xb8, 0xfa, 0x7e, 0x9c, 0x1d, 0x38, 0x43, 0x97, 0xb0, 0x70, 0x8a, 0xa1, 0x56, 0x7a, 0x74, 0xe7, 0x9e, 0xc9, 0xe3, 0x7c, 0xbd, 0x37,
          0x0c, 0xe2, 0x27, 0x6b, 0xd8, 0x95, 0x98,
@@ -54,7 +64,7 @@ describe(`Algo block processing`, async () => {
       const blockNumber = 21_659_776;
 
       before(async function () {
-         MccClient = new MCC.ALGO(algoCreateConfig);
+         MccClient = new MCC.ALGO(algoCreateConfigFull);
          block = await MccClient.getBlock(blockNumber);
       });
 

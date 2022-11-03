@@ -11,6 +11,7 @@ const algoCreateConfig = {
       url: process.env.ALGO_ALGOD_URL || "",
       token: process.env.ALGO_ALGOD_TOKEN || "",
    },
+   apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
 const TransactionsToTest: algoTransactionTestCases[] = [

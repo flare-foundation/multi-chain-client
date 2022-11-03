@@ -58,6 +58,7 @@ export class ALGOImplementation implements ReadRpcInterface {
             "Content-Type": "application/json",
             "X-Algo-API-Token": createConfig.algod.token,
             "x-api-key": createConfig.algod.token,
+            "x-apikey": createConfig.apiTokenKey || "",
          },
          validateStatus: algoResponseValidator,
       });
@@ -126,8 +127,8 @@ export class ALGOImplementation implements ReadRpcInterface {
    }
 
    async getBottomBlockHeight(): Promise<number> {
-      let bottomBlockHeight = await this.getBlockHeight();
-
+      const TopBlock = await this.getBlockHeight();
+      let bottomBlockHeight = TopBlock;
       // check -1.000 -10.000 and -100.000 blocs
       for (let checkRound = 0; checkRound < 3; checkRound++) {
          bottomBlockHeight -= Math.pow(10, 3 + checkRound);
@@ -143,6 +144,10 @@ export class ALGOImplementation implements ReadRpcInterface {
                }
             }
             // If we ever come here we are not healthy
+         }
+         // correct for 10 for delays
+         if (TopBlock >= bottomBlockHeight + 10) {
+            bottomBlockHeight += 10;
          }
       }
       return bottomBlockHeight;

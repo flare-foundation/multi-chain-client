@@ -5,6 +5,7 @@ import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions } from "./generic
 
 export class XrpMccCreate {
    url: string = "";
+   @optional() apiTokenKey?: string = "";
    @optional() username?: string = "";
    @optional() password?: string = "";
    @optional() inRegTest?: boolean = false;

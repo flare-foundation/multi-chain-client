@@ -6,6 +6,7 @@ export class UtxoMccCreate {
    url: string = "";
    username: string = "";
    password: string = "";
+   @optional() apiTokenKey?: string = "";
    @optional() inRegTest?: boolean;
    @optional() rateLimitOptions? = new RateLimitOptions();
    @optional() loggingOptions? = new MccLoggingOptions();

@@ -15,6 +15,7 @@ const algoCreateConfig = {
       url: process.env.ALGO_INDEXER_URL || "",
       token: process.env.ALGO_INDEXER_TOKEN || "",
    },
+   apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
 //TODO: cannnot call mix describe w/ async
