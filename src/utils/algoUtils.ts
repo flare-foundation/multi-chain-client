@@ -33,16 +33,43 @@ export function hexToBytes(hex: string): Uint8Array {
    return new Uint8Array(bytes);
 }
 
+// prefix helper
+function bufferEntryToHexString(bytePair: [number, number]) {
+   let toAdd = bytePair[1].toString(16);
+   if (toAdd.length === 1) {
+      toAdd = "0" + toAdd;
+   }
+   return toAdd;
+}
+
 // Convert a byte array to a hex string
 export function bytesToHex(bytes: Buffer | Uint8Array): string {
    // should be: buffer and uint are unsigned
-   const hex: string[] = [];
-   for (let i = 0; i < bytes.length; i++) {
-      const current = bytes[i];
-      hex.push((current >>> 4).toString(16));
-      hex.push((current & 0xf).toString(16));
+   if (bytes instanceof Buffer) {
+      const hex: string[] = [];
+      for (const x of bytes.entries()) {
+         hex.push(bufferEntryToHexString(x));
+      }
+      return hex.join("");
+   } else if (bytes instanceof Uint8Array) {
+      const hex: string[] = [];
+      for (let i = 0; i < bytes.length; i++) {
+         const current = bytes[i];
+         hex.push((current >>> 4).toString(16));
+         hex.push((current & 0xf).toString(16));
+      }
+      return hex.join("");
+   } else {
+      return "";
    }
-   return hex.join("");
+}
+
+const decoder = new TextDecoder("UTF-8");
+
+// Bytes to hex string
+export function bytesToString(bytes: Buffer | Uint8Array) {
+   const array = new Uint8Array(bytes);
+   return decoder.decode(array);
 }
 
 ////////////////////
