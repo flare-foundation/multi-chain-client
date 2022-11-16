@@ -34,8 +34,8 @@ export function hexToBytes(hex: string): Uint8Array {
 }
 
 // prefix helper
-function bufferEntryToHexString(bytePair: [number, number]) {
-   let toAdd = bytePair[1].toString(16);
+function bufferEntryToHexString(bytePair: number) {
+   let toAdd = bytePair.toString(16);
    if (toAdd.length === 1) {
       toAdd = "0" + toAdd;
    }
@@ -43,12 +43,12 @@ function bufferEntryToHexString(bytePair: [number, number]) {
 }
 
 // Convert a byte array to a hex string
-export function bytesToHex(bytes: Buffer | Uint8Array): string {
+export function bytesToHex(bytes: Buffer | Uint8Array | any): string {
    // should be: buffer and uint are unsigned
    if (bytes instanceof Buffer) {
       const hex: string[] = [];
       for (const x of bytes.entries()) {
-         hex.push(bufferEntryToHexString(x));
+         hex.push(bufferEntryToHexString(x[1]));
       }
       return hex.join("");
    } else if (bytes instanceof Uint8Array) {
@@ -57,6 +57,12 @@ export function bytesToHex(bytes: Buffer | Uint8Array): string {
          const current = bytes[i];
          hex.push((current >>> 4).toString(16));
          hex.push((current & 0xf).toString(16));
+      }
+      return hex.join("");
+   } else if (bytes.type === "Buffer") {
+      const hex: string[] = [];
+      for (const x of bytes.data) {
+         hex.push(bufferEntryToHexString(x));
       }
       return hex.join("");
    } else {

@@ -131,6 +131,28 @@ describe("ALGO utils tests", () => {
          const hex = bytesToHex(bytes);
          expect(hex).to.equal(expected);
       });
+
+      it.only("bytes as Uint8Array -> hex ", async function () {
+         const expected = "42020840e09f07a63bfda2e662dd3a6cb826f3999d7aa7f12b7131cf304f7a57";
+         const uint8 = new Uint8Array([
+            66, 2, 8, 64, 224, 159, 7, 166, 59, 253, 162, 230, 98, 221, 58, 108, 184, 38, 243, 153, 157, 122, 167, 241, 43, 113, 49, 207, 48, 79, 122, 87,
+         ]);
+         const buffer = new Buffer([
+            66, 2, 8, 64, 224, 159, 7, 166, 59, 253, 162, 230, 98, 221, 58, 108, 184, 38, 243, 153, 157, 122, 167, 241, 43, 113, 49, 207, 48, 79, 122, 87,
+         ]);
+         const bufferFrom = Buffer.from([
+            66, 2, 8, 64, 224, 159, 7, 166, 59, 253, 162, 230, 98, 221, 58, 108, 184, 38, 243, 153, 157, 122, 167, 241, 43, 113, 49, 207, 48, 79, 122, 87,
+         ]);
+
+         console.log("uint8    | uint8", uint8 instanceof Uint8Array);
+         console.log("uint8    | buffer", uint8 instanceof Buffer);
+
+         console.log("buffer   | uint8", buffer instanceof Uint8Array);
+         console.log("buffer   | buffer", buffer instanceof Buffer);
+
+         console.log("buffer f | uint8", bufferFrom instanceof Uint8Array);
+         console.log("buffer f | buffer", bufferFrom instanceof Buffer);
+      });
    });
 
    describe("ALGO base32 <-> hex", () => {
