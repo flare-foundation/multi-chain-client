@@ -51,6 +51,12 @@ describe("ALGO utils tests", () => {
          expect(fn).to.throw(er);
       });
 
+      it("should decode transaction id", function () {
+         const transactionId = "CRMERBQOF6PIDRWCD2XKUD6L7YWUQ5VYOLAJ5IRJJYM2SZNZFRBA";
+         const transactionDecoded = txIdToHex(transactionId);
+         console.log(transactionDecoded);
+      });
+
       it("should encode address", function () {
          const address = "A3ANPGC7VYWWJPQUXG2NTVNQPM67BEY3V4AYFDZMA25WYD7FAC5KOCCN4A";
          const decoded = {

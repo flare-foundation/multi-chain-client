@@ -5,7 +5,7 @@ import { MccClient, TransactionSuccessStatus } from "../../types";
 import { IXrpGetTransactionRes } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
-import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
+import { bytesAsHexToString, isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 
 @Managed()
@@ -33,11 +33,16 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get stdPaymentReference(): string {
-      let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
-      if (!isValidBytes32Hex(paymentReference)) {
-         paymentReference = ZERO_BYTES_32;
+      const paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
+      if (isValidBytes32Hex(paymentReference)) {
+         return paymentReference;
+      } else {
+         const alternative = bytesAsHexToString(paymentReference);
+         if (isValidBytes32Hex(alternative)) {
+            return alternative;
+         }
+         return ZERO_BYTES_32;
       }
-      return paymentReference;
    }
 
    public get unixTimestamp(): number {

@@ -70,14 +70,6 @@ export function bytesToHex(bytes: Buffer | Uint8Array | any): string {
    }
 }
 
-const decoder = new TextDecoder("UTF-8");
-
-// Bytes to hex string
-export function bytesToString(bytes: Buffer | Uint8Array) {
-   const array = new Uint8Array(bytes);
-   return decoder.decode(array);
-}
-
 ////////////////////
 // Base32 <-> Hex //
 ////////////////////

@@ -2,6 +2,7 @@
 import BN from "bn.js";
 import Web3 from "web3";
 import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
+import { hexToBytes } from "./algoUtils";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const camelCase = require("camelcase");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -101,6 +102,35 @@ export function toSnakeCase(obj: object, splitWith: string = "-"): object {
 
 export function isValidBytes32Hex(address: string) {
    return /^0x[0-9a-fA-F]{64}$/i.test(address);
+}
+
+export function isValidBytes32HexPrefix(address: string) {
+   return /^(0x|0X)?[0-9a-fA-F]{64}$/i.test(address);
+}
+
+export function isValidHexString(maybeHexString: string) {
+   return /^(0x|0X)?[0-9a-fA-F]*$/i.test(maybeHexString);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////// bytes to string (utf8) decoder //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const decoder = new TextDecoder("UTF-8");
+
+// Bytes to hex string
+export function bytesToString(bytes: Buffer | Uint8Array) {
+   const array = new Uint8Array(bytes);
+   return decoder.decode(array);
+}
+
+// Bytes as hex string to string
+export function bytesAsHexToString(bytesString: string) {
+   if (isValidHexString(bytesString)) {
+      const array = new Uint8Array(hexToBytes(unPrefix0x(bytesString)));
+      return prefix0x(decoder.decode(array));
+   }
+   return "";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
