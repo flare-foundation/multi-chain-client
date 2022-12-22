@@ -10,7 +10,7 @@ const XRPMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("XRP ripple client tests", () => {
+describe("XRP client tests", () => {
    describe("Should initialize", function () {
       it("Direct initialize", async function () {
          const client = new MCC.XRP(XRPMccConnection);
