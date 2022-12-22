@@ -41,7 +41,7 @@ export class XrpBlock extends BlockBase<IXrpGetBlockRes> {
    public get transactionCount(): number {
       return this.data.result.ledger.transactions?.length || 0;
    }
-   // problematic ???invalid in BlockBase ???
+
    public get isValid(): boolean {
       return this.data.result.validated === true ? true : false;
    }

@@ -3,6 +3,7 @@ import { AccountInfoResponse, AccountTxResponse, ServerStateResponse } from "xrp
 import { XrpBlock, XrpTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { IBlockTip } from "../base-objects/BlockBase";
+import { XrpBlockHeader } from "../base-objects/blockHeaders/XrpBlockHeader";
 import { XrpNodeStatus } from "../base-objects/StatusBase";
 import { mccSettings } from "../global-settings/globalSettings";
 import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxRequest, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
@@ -142,8 +143,43 @@ export class XRPImplementation implements ReadRpcInterface {
       }
    }
 
-   getBlockHeader(blockNumberOrHash: number | string): Promise<XrpBlock> {
-      return this.getBlock(blockNumberOrHash);
+   async getBlockHeader(blockNumberOrHash: number | string): Promise<XrpBlockHeader> {
+      interface XrpBlockParams {
+         transactions: boolean;
+         expand: boolean;
+         binary: boolean;
+         ledger_hash?: string;
+         ledger_index?: number;
+      }
+      const params: XrpBlockParams = {
+         transactions: true,
+         expand: false,
+         binary: false,
+      };
+      if (typeof blockNumberOrHash === "string") {
+         if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockNumberOrHash)) {
+            blockNumberOrHash = unPrefix0x(blockNumberOrHash);
+         }
+         params.ledger_hash = blockNumberOrHash;
+      } else {
+         params.ledger_index = blockNumberOrHash;
+      }
+      try {
+         mccSettings.loggingCallback(`block number: ${blockNumberOrHash} `);
+
+         const res = await this.client.post("", {
+            method: "ledger",
+            params: [params],
+         });
+         xrp_ensure_data(res.data);
+         return new XrpBlockHeader(res.data);
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (e: any) {
+         if (e.response?.status === 400) {
+            throw new mccError(mccErrorCode.InvalidBlock);
+         }
+         throw e;
+      }
    }
 
    async getBlockHeight(): Promise<number> {
