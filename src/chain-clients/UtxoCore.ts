@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { UtxoBlock } from "../base-objects/BlockBase";
@@ -44,21 +44,24 @@ export class UtxoCore implements ReadRpcInterface {
    chainType: ChainType;
 
    constructor(createConfig: UtxoMccCreate) {
-      const client = axios.create({
+      const createAxiosConfig: AxiosRequestConfig = {
          baseURL: createConfig.url,
          timeout: createConfig.rateLimitOptions?.timeoutMs || DEFAULT_TIMEOUT,
          headers: {
             "Content-Type": "application/json",
             "x-apikey": createConfig.apiTokenKey || "",
          },
-         auth: {
-            username: createConfig.username,
-            password: createConfig.password,
-         },
          validateStatus: function (status: number) {
             return (status >= 200 && status < 300) || status == 500;
          },
-      });
+      };
+      if (createConfig.username && createConfig.password) {
+         createAxiosConfig.auth = {
+            username: createConfig.username,
+            password: createConfig.password,
+         };
+      }
+      const client = axios.create(createAxiosConfig);
       this.client = axiosRateLimit(client, {
          ...DEFAULT_RATE_LIMIT_OPTIONS,
          ...createConfig.rateLimitOptions,
