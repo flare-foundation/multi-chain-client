@@ -2,7 +2,7 @@ import BN from "bn.js";
 import { Payment, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { MccClient, TransactionSuccessStatus } from "../../types";
-import { IXrpGetTransactionRes } from "../../types/xrpTypes";
+import { IXrpGetTransactionRes, XrpTransactionTypeUnion } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
 import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, toBN } from "../../utils/utils";
@@ -143,7 +143,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       throw new Error("Method not implemented.");
    }
 
-   public get type(): string {
+   public get type(): XrpTransactionTypeUnion {
       return this.data.result.TransactionType;
    }
 

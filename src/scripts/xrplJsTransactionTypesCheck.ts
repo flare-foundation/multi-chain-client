@@ -85,7 +85,6 @@ async function checkTransactionTypes(): Promise<boolean> {
 
 checkTransactionTypes()
    .then((res) => {
-      console.log("Result: ", res);
       if (res) {
          process.exit(0);
       }
