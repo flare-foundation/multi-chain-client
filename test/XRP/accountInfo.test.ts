@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, SpecialAddresses } from "../../src";
+import { MCC, SpecialAddresses, traceManager } from "../../src";
 import { mccSettings } from "../../src/global-settings/globalSettings";
 import { processFlags } from "../../src/utils/xrpUtils";
 
@@ -19,6 +19,8 @@ describe("Xrpl account test mainnet ", function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
+      traceManager.displayRuntimeTrace = false;
+      traceManager.displayStateOnException = false;
       MccClient = new MCC.XRP(XRPMccConnection);
       mccSettings.setLoggingCallback = () => {
          return;

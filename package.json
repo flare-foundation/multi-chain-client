@@ -54,7 +54,8 @@
       "pack": "npm pack",
       "----------TEST----------": "----------TEST----------",
       "test": "mocha -r ts-node/register -r dotenv/config --require source-map-support/register -t 0",
-      "test_all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/**/*.ts ",
+      "test:xrp": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/XRP/**/*.ts ",
+      "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/**/*.ts ",
       "test:coverage": "yarn nyc yarn test_all"
    },
    "dependencies": {
