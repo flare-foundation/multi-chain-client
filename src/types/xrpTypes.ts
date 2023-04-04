@@ -29,6 +29,32 @@ export interface IXrpGetBlockHeaderRes extends LedgerResponse, IIGetBlockRes {}
 // CONSTANTS
 ////
 
+export type XrpTransactionTypeUnion =
+   | "NFTokenAcceptOffer"
+   | "NFTokenBurn"
+   | "NFTokenCancelOffer"
+   | "NFTokenCreateOffer"
+   | "NFTokenMint"
+   | "AccountDelete"
+   | "AccountSet"
+   | "CheckCancel"
+   | "CheckCash"
+   | "CheckCreate"
+   | "DepositPreauth"
+   | "EscrowCancel"
+   | "EscrowCreate"
+   | "EscrowFinish"
+   | "OfferCancel"
+   | "OfferCreate"
+   | "Payment"
+   | "PaymentChannelClaim"
+   | "PaymentChannelCreate"
+   | "PaymentChannelFund"
+   | "SetRegularKey"
+   | "SignerListSet"
+   | "TicketCreate"
+   | "TrustSet";
+
 // Flags
 // maybe one day https://github.com/ripple/rippled/issues/2457
 export type AccountRootFlags =

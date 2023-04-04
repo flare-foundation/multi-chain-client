@@ -5,7 +5,7 @@ import { MccClient, TransactionSuccessStatus } from "../../types";
 import { IXrpGetTransactionRes } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
-import { bytesAsHexToString, isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
+import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, toBN } from "../../utils/utils";
 import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 
 @Managed()
@@ -84,6 +84,14 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get spentAmounts(): AddressAmount[] {
+      // switch (this.type) {
+      //    case "Payment":
+      //    default:
+      //       // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+      //       // eslint-disable-next-line @typescript-eslint/no-empty-function
+      //       ((_: never): void => {})(this.type);
+      // }
+
       if (this.isNativePayment) {
          const payment = this.data.result as Payment;
          return [
@@ -137,7 +145,6 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public get type(): string {
       return this.data.result.TransactionType;
-      // Possible types available at Transaction object in xrpl lib
    }
 
    public get isNativePayment(): boolean {

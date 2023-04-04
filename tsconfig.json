@@ -12,5 +12,5 @@
       "preserveWatchOutput": true
       // "composite": true
    },
-   "include": ["src/**/*","test/**/*"]
+   "include": ["src/**/*", "test/**/*"]
 }

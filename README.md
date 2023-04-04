@@ -1,6 +1,6 @@
 # Multi-Chain Client
 
-Welcome to version 1.1.9 of the MCC.
+Welcome to MCC.
 
 ## What is the MCC?
 
@@ -16,8 +16,6 @@ Currently supported versions of nodes
 - DOGE = [ 1140500_70015_/Shibetoshi:1.14.5/ ]
 - XRP = [ 1.8.5 , 1.9.1]
 - ALGO = [ 3.6.2 ]
-
-
 
 
 ## Documentation

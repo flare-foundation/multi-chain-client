@@ -3,6 +3,7 @@ import BN from "bn.js";
 import Web3 from "web3";
 import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { hexToBytes } from "./algoUtils";
+import { TextDecoder } from "util";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const camelCase = require("camelcase");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
