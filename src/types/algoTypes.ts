@@ -1,5 +1,5 @@
 import { EncodedTransaction } from "algosdk";
-import { Asset } from "algosdk/dist/types/src/client/v2/algod/models/types";
+import { Asset } from "algosdk/dist/types/client/v2/algod/models/types";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
