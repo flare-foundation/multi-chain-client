@@ -100,12 +100,23 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             const payment = this.data.result as Payment;
             return [payment.Destination];
          }
+         case "AccountDelete":
+            if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
+               return [];
+            } else {
+               if (typeof this.data.result.meta.DeliveredAmount === "string") {
+                  const accountDelete = this.data.result as AccountDelete;
+                  return [accountDelete.Destination];
+               } else {
+                  // Token transfer recieved by account deletion
+                  return [];
+               }
+            }
          case "NFTokenAcceptOffer":
          case "NFTokenBurn":
          case "NFTokenCancelOffer":
          case "NFTokenCreateOffer":
          case "NFTokenMint":
-         case "AccountDelete":
          case "AccountSet":
          case "CheckCancel":
          case "CheckCash":
@@ -171,6 +182,16 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             }
          }
          case "AccountDelete":
+            if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
+               return [{ address: this.sourceAddresses[0], amount: toBN(this.fee) }];
+            } else {
+               if (typeof this.data.result.meta.DeliveredAmount === "string") {
+                  return [{ address: this.sourceAddresses[0], amount: toBN(this.fee).add(toBN(this.data.result.meta.DeliveredAmount)) }];
+               } else {
+                  // Token transfer delivered by account deletion
+                  return [{ address: this.sourceAddresses[0], amount: toBN(this.fee) }];
+               }
+            }
          case "NFTokenAcceptOffer":
          case "NFTokenBurn":
          case "NFTokenCancelOffer":
@@ -227,12 +248,23 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                return [];
             }
          }
+         case "AccountDelete":
+            if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
+               return [];
+            } else {
+               if (typeof this.data.result.meta.DeliveredAmount === "string") {
+                  const accountDelete = this.data.result as AccountDelete;
+                  return [{ address: accountDelete.Destination, amount: toBN(this.data.result.meta.DeliveredAmount) }];
+               } else {
+                  // Token transfer recieved by account deletion
+                  return [];
+               }
+            }
          case "NFTokenAcceptOffer":
          case "NFTokenBurn":
          case "NFTokenCancelOffer":
          case "NFTokenCreateOffer":
          case "NFTokenMint":
-         case "AccountDelete":
          case "AccountSet":
          case "CheckCancel":
          case "CheckCash":
