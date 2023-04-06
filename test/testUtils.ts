@@ -31,7 +31,7 @@ export function round_for_ltc(input: number) {
 export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: string, from: string, to: string) {
    const unspent = await RPC.listUnspentTransactions(fromWalletLabel);
    const vin = [];
-   const vinaddresses = [];
+   const vinAddresses = [];
    let unspentAmount = 0;
    for (const utx of unspent) {
       console.log("ALL utxo", utx);
@@ -43,7 +43,7 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
             txid: utx.txid,
             vout: utx.vout,
          });
-         vinaddresses.push(utx.address);
+         vinAddresses.push(utx.address);
          unspentAmount += utx.amount;
       }
    }
@@ -59,7 +59,7 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
    ];
    const a = await RPC.createRawTransaction(fromWalletLabel, vin, vout);
    const signkeys = [];
-   for (const add of vinaddresses) {
+   for (const add of vinAddresses) {
       signkeys.push(await RPC.getPrivateKey(fromWalletLabel, add));
    }
    const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
@@ -70,6 +70,23 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
 export function addressToBtyeAddress(address: string): Uint8Array {
    const algoKeyPair = addressToHex(address);
    return hexToBytes(unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum));
+}
+
+export function AddressAmountEqual(a: AddressAmount[], b: AddressAmount[]) {
+   if (a.length != b.length) {
+      return false;
+   }
+   for (let i = 0; i < a.length; i++) {
+      if (
+         a[i].address != b[i].address ||
+         a[i].amount.toString() != b[i].amount.toString() ||
+         a[i].elementaryUnits != b[i].elementaryUnits ||
+         a[i].utxo != b[i].utxo
+      ) {
+         return false;
+      }
+   }
+   return true;
 }
 
 export interface algoTransactionTestCases extends transactionTestCases {

@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { Payment, TransactionMetadata } from "xrpl";
+import { AccountDelete, Payment, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { MccClient, TransactionSuccessStatus } from "../../types";
 import { IXrpGetTransactionRes, XrpTransactionTypeUnion } from "../../types/xrpTypes";
@@ -55,7 +55,39 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get sourceAddresses(): string[] {
-      return [this.data.result.Account];
+      switch (this.type) {
+         case "Payment":
+         case "NFTokenAcceptOffer":
+         case "NFTokenBurn":
+         case "NFTokenCancelOffer":
+         case "NFTokenCreateOffer":
+         case "NFTokenMint":
+         case "AccountDelete":
+         case "AccountSet":
+         case "CheckCancel":
+         case "CheckCash":
+         case "CheckCreate":
+         case "DepositPreauth":
+         case "EscrowCancel":
+         case "EscrowCreate":
+         case "EscrowFinish":
+         case "OfferCancel":
+         case "OfferCreate":
+         case "PaymentChannelClaim":
+         case "PaymentChannelCreate":
+         case "PaymentChannelFund":
+         case "SetRegularKey":
+         case "SignerListSet":
+         case "TicketCreate":
+         case "TrustSet":
+            return [this.data.result.Account];
+         default:
+            // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+            // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            ((_: never): void => {})(this.type);
+      }
+      // TODO: Check if in other types of payments one has something similar to Destination
+      throw new Error("Exhaustive switch guard: Cannot happen");
    }
 
    public get assetSourceAddresses(): (string | undefined)[] {
@@ -63,12 +95,42 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get receivingAddresses(): string[] {
-      if (this.data.result.TransactionType == "Payment") {
-         const payment = this.data.result as Payment;
-         return [payment.Destination];
+      switch (this.type) {
+         case "Payment": {
+            const payment = this.data.result as Payment;
+            return [payment.Destination];
+         }
+         case "NFTokenAcceptOffer":
+         case "NFTokenBurn":
+         case "NFTokenCancelOffer":
+         case "NFTokenCreateOffer":
+         case "NFTokenMint":
+         case "AccountDelete":
+         case "AccountSet":
+         case "CheckCancel":
+         case "CheckCash":
+         case "CheckCreate":
+         case "DepositPreauth":
+         case "EscrowCancel":
+         case "EscrowCreate":
+         case "EscrowFinish":
+         case "OfferCancel":
+         case "OfferCreate":
+         case "PaymentChannelClaim":
+         case "PaymentChannelCreate":
+         case "PaymentChannelFund":
+         case "SetRegularKey":
+         case "SignerListSet":
+         case "TicketCreate":
+         case "TrustSet":
+            return [];
+         default:
+            // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+            // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            ((_: never): void => {})(this.type);
       }
       // TODO: Check if in other types of payments one has something similar to Destination
-      return [];
+      throw new Error("Exhaustive switch guard: Cannot happen");
    }
 
    public get assetReceivingAddresses(): (string | undefined)[] {
@@ -85,16 +147,19 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public get spentAmounts(): AddressAmount[] {
       switch (this.type) {
-         case "Payment":
+         case "Payment": {
+            const payment = this.data.result as Payment;
             if (this.isNativePayment) {
-               const payment = this.data.result as Payment;
-               return [
-                  {
-                     address: this.sourceAddresses[0],
-                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                     amount: toBN(payment.Amount as any).add(this.fee),
-                  },
-               ];
+               if (typeof payment.Amount === "string") {
+                  return [
+                     {
+                        address: this.sourceAddresses[0],
+                        amount: toBN(payment.Amount).add(this.fee),
+                     },
+                  ];
+               } else {
+                  throw new Error("Native payment classification error: Cannot happen");
+               }
             } else {
                // Token transfer
                return [
@@ -104,12 +169,13 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                   },
                ];
             }
+         }
+         case "AccountDelete":
          case "NFTokenAcceptOffer":
          case "NFTokenBurn":
          case "NFTokenCancelOffer":
          case "NFTokenCreateOffer":
          case "NFTokenMint":
-         case "AccountDelete":
          case "AccountSet":
          case "CheckCancel":
          case "CheckCash":
@@ -146,17 +212,51 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get receivedAmounts(): AddressAmount[] {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
-      if (this.isNativePayment) {
-         return [
-            {
-               address: this.receivingAddresses[0],
-               amount: toBN(metaData.delivered_amount as string),
-            },
-         ];
+      switch (this.type) {
+         case "Payment": {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
+            if (this.isNativePayment) {
+               return [
+                  {
+                     address: this.receivingAddresses[0],
+                     amount: toBN(metaData.delivered_amount as string),
+                  },
+               ];
+            } else {
+               return [];
+            }
+         }
+         case "NFTokenAcceptOffer":
+         case "NFTokenBurn":
+         case "NFTokenCancelOffer":
+         case "NFTokenCreateOffer":
+         case "NFTokenMint":
+         case "AccountDelete":
+         case "AccountSet":
+         case "CheckCancel":
+         case "CheckCash":
+         case "CheckCreate":
+         case "DepositPreauth":
+         case "EscrowCancel":
+         case "EscrowCreate":
+         case "EscrowFinish":
+         case "OfferCancel":
+         case "OfferCreate":
+         case "PaymentChannelClaim":
+         case "PaymentChannelCreate":
+         case "PaymentChannelFund":
+         case "SetRegularKey":
+         case "SignerListSet":
+         case "TicketCreate":
+         case "TrustSet":
+            return [];
+         default:
+            // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+            // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            ((_: never): void => {})(this.type);
       }
-      return [];
+      throw new Error("Exhaustive switch guard: Cannot happen");
    }
 
    public get assetReceivedAmounts(): AddressAmount[] {
@@ -286,35 +386,3 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return false;
    }
 }
-
-// Exhaustive transaction type switch
-// switch (this.type) {
-//    case "NFTokenAcceptOffer":
-//    case "NFTokenBurn":
-//    case "NFTokenCancelOffer":
-//    case "NFTokenCreateOffer":
-//    case "NFTokenMint":
-//    case "AccountDelete":
-//    case "AccountSet":
-//    case "CheckCancel":
-//    case "CheckCash":
-//    case "CheckCreate":
-//    case "DepositPreauth":
-//    case "EscrowCancel":
-//    case "EscrowCreate":
-//    case "EscrowFinish":
-//    case "OfferCancel":
-//    case "OfferCreate":
-//    case "Payment":
-//    case "PaymentChannelClaim":
-//    case "PaymentChannelCreate":
-//    case "PaymentChannelFund":
-//    case "SetRegularKey":
-//    case "SignerListSet":
-//    case "TicketCreate":
-//    case "TrustSet":
-//    default:
-//       // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-//       // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-//       ((_: never): void => {})(this.type);
-// }
