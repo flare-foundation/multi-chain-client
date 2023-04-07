@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { expect, assert } from "chai";
 import { MCC, XrpTransaction, toBN, traceManager } from "../../src";
 import { AddressAmountEqual } from "../testUtils";
 
@@ -184,6 +184,79 @@ describe("XRP Transaction Types", function () {
       });
    });
 
+   describe("Payment failed", function () {
+      let transaction: XrpTransaction;
+      let txId = "ABCB6A1F027446C2A0711055978455FE272D69D945A3244D2DC76D16346F60BF";
+      before(async function () {
+         transaction = await MccClient.getTransaction(txId);
+      });
+
+      it("Should get type", function () {
+         const type = transaction.type;
+         expect(type).to.eq("");
+      });
+      it("Should get successStatus", function () {
+         const status = transaction.successStatus;
+         expect(status).to.eq("Payment");
+      });
+
+      it("Should get reference", function () {
+         const reference = transaction.reference;
+         expect(reference).to.eq("");
+      });
+
+      it("Should get currencyName", function () {
+         const currencyName = transaction.currencyName;
+         expect(currencyName).to.eq("");
+      });
+
+      it("Should get fee", function () {
+         const fee = transaction.fee;
+         expect(fee).to.eq(toBN(12));
+      });
+      it("Should get sourceAddress", function () {
+         const sourceAddress = transaction.sourceAddresses[0];
+         expect(sourceAddress).to.eq("r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB");
+      });
+      it("Should get spentAmounts", function () {
+         const spentAmount = transaction.spentAmounts[0];
+         expect(spentAmount.amount).to.eq(toBN(12));
+         expect(spentAmount.address).to.eq("r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB");
+      });
+
+      it("Should get receivingAddress", function () {
+         const receivingAddress = transaction.receivingAddresses[0];
+         assert(!receivingAddress, "No xrp was transferred");
+      });
+      it("Should get receivedAmounts", function () {
+         const receivedAmounts = transaction.receivedAmounts[0];
+         assert(!receivedAmounts, "No xrp was transferred");
+      });
+
+      it("Should get assetSpentAmounts", function () {
+         const assetSpentAmount = transaction.assetSpentAmounts[0];
+         assert(!assetSpentAmount, "No assets were transferred");
+      });
+      it("Should get assetSourceAddresses", function () {
+         const assetSourceAddress = transaction.assetSourceAddresses[0];
+         assert(!assetSourceAddress, "No assets were transferred");
+      });
+
+      it("Should get assetReceivingAddress", function () {
+         const assetReceivingAddress = transaction.assetReceivingAddresses[0];
+         assert(!assetReceivingAddress, "No assets were transferred");
+      });
+
+      it("Should get assetReceivingAddress", function () {
+         const assetReceivedAmount = transaction.assetSpentAmounts[0];
+         assert(!assetReceivedAmount, "No assets were transferred");
+      });
+
+      it("Should get paymentSummary", async function () {
+         const paymentSummary = await transaction.paymentSummary();
+      });
+   });
+
    describe.skip("Template", function () {
       let transaction: XrpTransaction;
       let txId = "";
@@ -231,6 +304,21 @@ describe("XRP Transaction Types", function () {
       it("Should get receivedAmounts", function () {
          const receivedAmounts = transaction.receivedAmounts[0];
          expect(receivedAmounts.amount).to.eq(0);
+      });
+
+      it("Should get assetSpentAmounts", function () {
+         const assetSpentAmount = transaction.assetSpentAmounts;
+      });
+      it("Should get assetSourceAddresses", function () {
+         const assetSpentAmount = transaction.assetSourceAddresses;
+      });
+
+      it("Should get assetReceivingAddress", function () {
+         const assetReceivingAddress = transaction.assetReceivingAddresses[0];
+      });
+
+      it("Should get assetReceivingAddress", function () {
+         const assetReceivedAmount = transaction.assetSpentAmounts[0];
       });
 
       it("Should get paymentSummary", async function () {
