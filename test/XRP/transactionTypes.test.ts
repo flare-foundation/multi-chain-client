@@ -183,4 +183,58 @@ describe("XRP Transaction Types", function () {
          return;
       });
    });
+
+   describe.skip("Template", function () {
+      let transaction: XrpTransaction;
+      let txId = "";
+      before(async function () {
+         transaction = await MccClient.getTransaction(txId);
+      });
+
+      it("Should get type", function () {
+         const type = transaction.type;
+         expect(type).to.eq("");
+      });
+      it("Should get successStatus", function () {
+         const status = transaction.successStatus;
+         expect(status).to.eq("");
+      });
+
+      it("Should get reference", function () {
+         const reference = transaction.reference;
+         expect(reference).to.eq("");
+      });
+
+      it("Should get currencyName", function () {
+         const currencyName = transaction.currencyName;
+         expect(currencyName).to.eq("");
+      });
+
+      it("Should get fee", function () {
+         const fee = transaction.fee;
+         expect(fee).to.eq(toBN(12));
+      });
+      it("Should get sourceAddress", function () {
+         const sourceAddress = transaction.sourceAddresses[0];
+         expect(sourceAddress).to.eq("");
+      });
+      it("Should get spentAmounts", function () {
+         const spentAmount = transaction.spentAmounts[0];
+         expect(spentAmount.amount).to.eq(toBN(0));
+         expect(spentAmount.address).to.eq("");
+      });
+
+      it("Should get receivingAddress", function () {
+         const receivingAddress = transaction.receivingAddresses[0];
+         expect(receivingAddress).to.eq("");
+      });
+      it("Should get receivedAmounts", function () {
+         const receivedAmounts = transaction.receivedAmounts[0];
+         expect(receivedAmounts.amount).to.eq(0);
+      });
+
+      it("Should get paymentSummary", async function () {
+         const paymentSummary = await transaction.paymentSummary();
+      });
+   });
 });

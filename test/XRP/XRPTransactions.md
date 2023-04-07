@@ -6,7 +6,7 @@ We use a hybrid of xrpl.js xrpl docs and a pre-build verification script found h
 2. We have dependency on xrpl.js that has tagged parameter called `TransactionType`
 3. We have a script that checks if they match found here `src/scripts/xrplJsTransactionTypesCheck.ts`
 
-For each specific type it is crucial to read the official documentation and to find examples of the transaction type and represent them in tests.
+For each specific type, it is crucial to read the official documentation and to find examples of the transaction type and represent them in tests.
 
 ## AccountSet
 
@@ -25,16 +25,19 @@ Account
 ```
 
 receivingAddresses
+
 ```
 /
 ```
 
 spentAmounts
+
 ```
 Fee
 ```
 
 receivedAmounts
+
 ```
 /
 ```
@@ -52,6 +55,7 @@ assetReceivingAddresses
 ```
 /
 ```
+
 assetSpentAmounts
 
 ```
@@ -81,20 +85,22 @@ Account
 ```
 
 receivingAddresses
+
 ```
 Destination
 ```
 
 spentAmounts
+
 ```
 Fee + DeliveredAmount
 ```
 
 receivedAmounts
+
 ```
 DeliveredAmount
 ```
-
 
 # AMMBid
 
@@ -175,43 +181,51 @@ Submit an order to exchange currency.
 ## Payment
 
 Send funds from one account to another.
-Mcc further differentiates between native token payments and build-in assets payments. On XRP ledger the transaction of type payment is used for both cases. The lib differentiates between the two depending on the `Amount` field. 
-- Native Payment --- Amount is of type `string`
-- Token Payment  --- Amount is of type `Object`
+Mcc further differentiates between native token payments and build-in assets payments. On XRP ledger the transaction of type payment is used for both cases. The lib differentiates between the two depending on the `Amount` field.
+
+-  Native Payment --- Amount is of type `string`
+-  Token Payment --- Amount is of type `Object`
 
 ### Field grouping / native tokens
 
 sourceAddresses (both Native and Token)
+
 ```
 Account
 ```
 
 receivingAddresses (If Native)
+
 ```
 Destination
 ```
 
 receivingAddresses (If Token)
+
 ```
 /
 ```
 
 spentAmounts (If Native)
+
 ```
 Fee + Amount
 ```
 
 spentAmounts (If Token)
+
 ```
 Fee
 ```
 
 receivedAmounts (If Native)
+
 ```
 Amount
 ```
 
 receivedAmounts (If Token)
+
 ```
 /
 ```
@@ -229,6 +243,7 @@ assetReceivingAddresses
 ```
 /
 ```
+
 assetSpentAmounts
 
 ```

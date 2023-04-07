@@ -25,8 +25,8 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public get reference(): string[] {
       if (this.data.result.Memos) {
-         return this.data.result.Memos.map((memoobj: Memo) => {
-            return memoobj.Memo.MemoData || "";
+         return this.data.result.Memos.map((memoObj: Memo) => {
+            return memoObj.Memo.MemoData || "";
          });
       }
       return [];
@@ -108,7 +108,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                   const accountDelete = this.data.result as AccountDelete;
                   return [accountDelete.Destination];
                } else {
-                  // Token transfer recieved by account deletion
+                  // Token transfer received by account deletion
                   return [];
                }
             }
@@ -256,7 +256,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                   const accountDelete = this.data.result as AccountDelete;
                   return [{ address: accountDelete.Destination, amount: toBN(this.data.result.meta.DeliveredAmount) }];
                } else {
-                  // Token transfer recieved by account deletion
+                  // Token transfer received by account deletion
                   return [];
                }
             }
@@ -303,6 +303,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return this.currencyName === XRP_NATIVE_TOKEN_NAME;
    }
 
+   //!!! issuer is sometimes important !!!
    public get currencyName(): string {
       // With ripple this is currency code
       if (this.type === "Payment") {
@@ -346,7 +347,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   public async paymentSummary(client: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
+   public async paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
       if (!this.isNativePayment) {
          if (this.type === "Payment") {
             // token transfer
@@ -387,7 +388,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   public async makeFull(client: MccClient): Promise<void> {
+   public async makeFull(client?: MccClient): Promise<void> {
       return;
    }
 
