@@ -186,7 +186,7 @@ describe("XRP Transaction Types", function () {
 
    describe("Payment failed", function () {
       let transaction: XrpTransaction;
-      let txId = "ABCB6A1F027446C2A0711055978455FE272D69D945A3244D2DC76D16346F60BF";
+      const txId = "ABCB6A1F027446C2A0711055978455FE272D69D945A3244D2DC76D16346F60BF";
       before(async function () {
          transaction = await MccClient.getTransaction(txId);
       });
@@ -259,7 +259,7 @@ describe("XRP Transaction Types", function () {
 
    describe.skip("Template", function () {
       let transaction: XrpTransaction;
-      let txId = "";
+      const txId = "";
       before(async function () {
          transaction = await MccClient.getTransaction(txId);
       });
@@ -323,6 +323,91 @@ describe("XRP Transaction Types", function () {
 
       it("Should get paymentSummary", async function () {
          const paymentSummary = await transaction.paymentSummary();
+      });
+   });
+
+   describe("Check Cancel Transaction", function () {
+      // TODO: Find example where account delete transfers both native XRP and an issued token (Asset)
+      let transaction: XrpTransaction;
+      before(async function () {
+         transaction = await MccClient.getTransaction("D3328000315C6DCEC1426E4E549288E3672752385D86A40D56856DBD10382953");
+      });
+
+      it("should correctly parse sourceAddresses", async function () {
+         expect(transaction.sourceAddresses).to.deep.equal(["r4uZkneFvKrbNVJgtB3tBJooMBryzySnEa"]);
+      });
+
+      it("should correctly parse receivingAddresses", async function () {
+         expect(transaction.receivingAddresses).to.deep.equal([]);
+      });
+
+      it("should correctly parse spentAmounts", async function () {
+         const expected = [{ address: "r4uZkneFvKrbNVJgtB3tBJooMBryzySnEa", amount: toBN("12") }];
+         expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
+      });
+
+      it("should correctly parse receivedAmounts", async function () {
+         expect(transaction.receivedAmounts).to.deep.equal([]);
+      });
+
+      // Token transfers
+      it.skip("should correctly parse assetSourceAddresses", async function () {
+         return;
+      });
+
+      it.skip("should correctly parse assetReceivingAddresses", async function () {
+         return;
+      });
+
+      it.skip("should correctly parse assetSpentAmounts", async function () {
+         return;
+      });
+
+      it.skip("should correctly parse assetReceivedAmounts", async function () {
+         return;
+      });
+   });
+
+   describe("Check Cash Transaction", function () {
+      // TODO: Find example where account delete transfers both native XRP and an issued token (Asset)
+      let transaction: XrpTransaction;
+      before(async function () {
+         transaction = await MccClient.getTransaction("67B71B13601CDA5402920691841AC27A156463678E106FABD45357175F9FF406");
+      });
+
+      it("should correctly parse sourceAddresses", async function () {
+         expect(transaction.sourceAddresses).to.deep.equal(["rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am", "rKiCet8SdvWxPXnAgYarFUXMh1zCPz432Y"]);
+      });
+
+      it("should correctly parse receivingAddresses", async function () {
+         expect(transaction.receivingAddresses).to.deep.equal(["rU2CAvi6DHACUMBTEKxHRSL2QLrdHgptnx"]);
+      });
+
+      it("should correctly parse spentAmounts", async function () {
+         const expected = [{ address: "rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre", amount: toBN("2000000").add(toBN("12665795")) }];
+         expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
+      });
+
+      it("should correctly parse receivedAmounts", async function () {
+         const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("12665795") }];
+         expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
+      });
+
+      // Token transfers
+      it.skip("should correctly parse assetSourceAddresses", async function () {
+         return;
+      });
+
+      it.skip("should correctly parse assetReceivingAddresses", async function () {
+         return;
+      });
+
+      it.skip("should correctly parse assetSpentAmounts", async function () {
+         return;
+      });
+
+      it.skip("should correctly parse assetReceivedAmounts", async function () {
+         return;
       });
    });
 });

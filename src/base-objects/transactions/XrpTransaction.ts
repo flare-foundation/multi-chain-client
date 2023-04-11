@@ -56,15 +56,15 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    public get sourceAddresses(): string[] {
       switch (this.type) {
-         case "Payment":
+         case "Payment": // OK
          case "NFTokenAcceptOffer":
          case "NFTokenBurn":
          case "NFTokenCancelOffer":
          case "NFTokenCreateOffer":
          case "NFTokenMint":
-         case "AccountDelete":
-         case "AccountSet":
-         case "CheckCancel":
+         case "AccountDelete": // OK
+         case "AccountSet": // OK
+         case "CheckCancel": // OK
          case "CheckCash":
          case "CheckCreate":
          case "DepositPreauth":
@@ -112,15 +112,17 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                   return [];
                }
             }
+         case "CheckCash": {
+            return [];
+         }
+         case "AccountSet": // OK
          case "NFTokenAcceptOffer":
          case "NFTokenBurn":
          case "NFTokenCancelOffer":
          case "NFTokenCreateOffer":
          case "NFTokenMint":
-         case "AccountSet":
-         case "CheckCancel":
-         case "CheckCash":
-         case "CheckCreate":
+         case "CheckCancel": // OK
+         case "CheckCreate": // OK
          case "DepositPreauth":
          case "EscrowCancel":
          case "EscrowCreate":
@@ -192,15 +194,17 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                   return [{ address: this.sourceAddresses[0], amount: toBN(this.fee) }];
                }
             }
+         case "CheckCash": {
+            return [];
+         }
+         case "AccountSet": // OK
          case "NFTokenAcceptOffer":
          case "NFTokenBurn":
          case "NFTokenCancelOffer":
          case "NFTokenCreateOffer":
          case "NFTokenMint":
-         case "AccountSet":
-         case "CheckCancel":
-         case "CheckCash":
-         case "CheckCreate":
+         case "CheckCancel": // OK
+         case "CheckCreate": // OK
          case "DepositPreauth":
          case "EscrowCancel":
          case "EscrowCreate":
@@ -260,15 +264,17 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                   return [];
                }
             }
+         case "CheckCash": {
+            return [];
+         }
+         case "AccountSet": // OK
          case "NFTokenAcceptOffer":
          case "NFTokenBurn":
          case "NFTokenCancelOffer":
          case "NFTokenCreateOffer":
          case "NFTokenMint":
-         case "AccountSet":
-         case "CheckCancel":
-         case "CheckCash":
-         case "CheckCreate":
+         case "CheckCancel": // OK
+         case "CheckCreate": // OK
          case "DepositPreauth":
          case "EscrowCancel":
          case "EscrowCreate":
