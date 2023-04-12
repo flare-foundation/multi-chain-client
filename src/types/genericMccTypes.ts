@@ -1,4 +1,4 @@
-import { IBlock, IBlockHeader, IBlockTip } from "../base-objects/BlockBase";
+import { IBlock, IBlockHeader, IBlockTip, IFullBlock } from "../base-objects/BlockBase";
 import { INodeStatus } from "../base-objects/StatusBase";
 import { ITransaction } from "../base-objects/TransactionBase";
 
@@ -19,6 +19,7 @@ export interface ReadRpcInterface extends BaseRpcInterface {
    getBlockHeader(blockNumberOrHash: number | string | any): Promise<IBlockHeader>;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    getBlock(blockNumberOrHash: number | string | any): Promise<IBlock>;
+   getFullBlock(blockNumberOrHash: number | string): Promise<IFullBlock>;
    getBlockHeight(): Promise<number>;
 
    // To be used with chain tip indexer processing

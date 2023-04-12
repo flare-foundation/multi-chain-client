@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { UtxoBlock } from "../base-objects/BlockBase";
+import { IFullBlock, UtxoBlock } from "../base-objects/BlockBase";
 import { UtxoBlockHeader } from "../base-objects/blockHeaders/UtxoBlockHeader";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
 import { UtxoNodeStatus } from "../base-objects/StatusBase";
@@ -107,6 +107,10 @@ export class UtxoCore implements ReadRpcInterface {
    ///////////////////////////////////////////////////////////////////////////////////////
    // Block methods //////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
+
+   getFullBlock(blockNumberOrHash: string | number): Promise<IFullBlock> {
+      throw new Error("Method not implemented.");
+   }
 
    /**
     * Returns the block information

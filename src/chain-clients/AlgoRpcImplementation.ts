@@ -2,7 +2,7 @@ import * as msgpack from "algo-msgpack-with-bigint";
 import axios, { AxiosInstance } from "axios";
 import { AlgoBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { IBlockTip } from "../base-objects/BlockBase";
+import { IBlockTip, IFullBlock } from "../base-objects/BlockBase";
 import { AlgoIndexerBlock } from "../base-objects/blocks/AlgoIndexerBlock";
 import { AlgoNodeStatus } from "../base-objects/StatusBase";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
@@ -90,6 +90,9 @@ export class ALGOImplementation implements ReadRpcInterface {
          this.inRegTest = createConfig.inRegTest;
       }
       this.chainType = ChainType.ALGO;
+   }
+   getFullBlock(blockNumberOrHash: string | number): Promise<IFullBlock> {
+      throw new Error("Method not implemented.");
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars

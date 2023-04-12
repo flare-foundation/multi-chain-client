@@ -69,12 +69,24 @@ export abstract class BlockBase<B> extends BlockHeaderBase<B> {
    }
 }
 
+/**
+ * Base class for blocks that also include all transactions (including information about the transaction)
+ */
+export abstract class FullBlockBase<B, T> extends BlockBase<B> {
+   /**
+    * Array of transactions objects in block
+    */
+   public abstract get transactions(): T[];
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type IBlockTip = BlockTipBase<any>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type IBlockHeader = BlockHeaderBase<any>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type IBlock = BlockBase<any>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type IFullBlock = FullBlockBase<any, any>;
 
 // Block Tips
 /**

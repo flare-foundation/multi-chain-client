@@ -1,3 +1,4 @@
+import { Transaction } from "xrpl";
 import { IXrpGetBlockRes } from "../../types/xrpTypes";
 import { XRP_UTD } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
@@ -30,8 +31,11 @@ export class XrpBlock extends BlockBase<IXrpGetBlockRes> {
    }
 
    public get transactionIds(): string[] {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-      return (this.data.result.ledger.transactions! as any).map((tx: any) => (tx as any).hash);
+      if (!this.data.result.ledger.transactions) return [];
+      if (this.data.result.ledger.transactions.length === 0) return [];
+      if (typeof this.data.result.ledger.transactions[0] === "string") return this.data.result.ledger.transactions as string[];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return this.data.result.ledger.transactions.map((tx: any) => tx.hash);
    }
 
    public get stdTransactionIds(): string[] {

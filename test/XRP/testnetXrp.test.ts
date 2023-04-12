@@ -18,6 +18,7 @@ describe("XRP testnet client tests", () => {
 
    before(function () {
       traceManager.displayStateOnException = false;
+      traceManager.displayRuntimeTrace = false;
 
       client = new MCC.XRP(XRPMccConnection);
    });
@@ -39,7 +40,7 @@ describe("XRP testnet client tests", () => {
       });
 
       it("Should return InvalidBlock if block does not exist", async () => {
-         let n = 694537820;
+         let n = 85_000_000;
          let block = client.getBlock(n);
          await expect(block).to.be.rejectedWith("InvalidBlock");
          n *= 100;

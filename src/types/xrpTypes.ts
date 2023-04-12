@@ -1,4 +1,4 @@
-import { AccountInfoRequest, AccountTxRequest, LedgerResponse, TxResponse } from "xrpl";
+import { AccountInfoRequest, AccountTxRequest, LedgerRequest, LedgerResponse, TxResponse } from "xrpl";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
 import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions } from "./genericMccTypes";
@@ -135,6 +135,8 @@ export const SpecialAddresses = {
 ////
 // INTERNAL USE
 ////
+
+export type XrpBlockReqParams = Omit<LedgerRequest, "command">;
 
 //// Params data for methods (internal use)
 export type IAccountInfoRequest = Omit<AccountInfoRequest, "command">;
