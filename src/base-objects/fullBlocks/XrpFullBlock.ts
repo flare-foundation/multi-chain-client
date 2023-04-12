@@ -1,4 +1,4 @@
-import { IXrpGetBlockRes } from "../../types";
+import { IXrpGetBlockRes, IXrpGetTransactionRes } from "../../types";
 import { Managed } from "../../utils/managed";
 import { FullBlockBase, XrpBlock } from "../BlockBase";
 import { XrpTransaction } from "../TransactionBase";
@@ -6,6 +6,32 @@ import { XrpTransaction } from "../TransactionBase";
 @Managed()
 export class XrpFullBlock extends XrpBlock implements FullBlockBase<IXrpGetBlockRes, XrpTransaction> {
    public get transactions(): XrpTransaction[] {
-      throw new Error("Method not implemented.");
+      if (!this.data.result.ledger.transactions) return [];
+      const transactions: XrpTransaction[] = [];
+      for (const txData of this.data.result.ledger.transactions) {
+         if (typeof txData === "string") {
+            // Maybe raise invalid node response error
+            return [];
+         }
+         const { metaData: _, ...txDataRest } = txData;
+         const modifiedTxData: IXrpGetTransactionRes = {
+            result: {
+               ...txDataRest,
+               // TODO: this is due to xrpl.js lib mistakes
+               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+               // @ts-ignore
+               hash: txData.hash,
+               ledger_index: this.number,
+               meta: txData.metaData,
+               validated: this.isValid,
+               date: this.data.result.ledger.close_time,
+            },
+            // TODO: this is due to xrpl.js lib mistakes
+            id: "",
+            type: "",
+         };
+         transactions.push(new XrpTransaction(modifiedTxData));
+      }
+      return transactions;
    }
 }

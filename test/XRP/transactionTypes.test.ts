@@ -141,11 +141,13 @@ describe("XRP Transaction Types", function () {
       });
    });
 
-   describe.skip("Account Delete Transaction", function () {
+   describe.only("Account Delete Transaction", function () {
       // TODO: Find example where account delete transfers both native XRP and an issued token (Asset)
       let transaction: XrpTransaction;
       before(async function () {
          transaction = await MccClient.getTransaction("1AF19BF9717DA0B05A3BFC5007873E7743BA54C0311CCCCC60776AAEAC5C4635");
+         console.log("type: ", transaction.data.type);
+         console.log("id: ", transaction.data.id);
          console.dir(transaction.data);
          console.dir(transaction.data.result.meta);
          if (
