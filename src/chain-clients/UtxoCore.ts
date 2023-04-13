@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { IFullBlock, UtxoBlock } from "../base-objects/BlockBase";
+import { IFullBlock, UtxoBlock, UtxoFullBlock } from "../base-objects/BlockBase";
 import { UtxoBlockHeader } from "../base-objects/blockHeaders/UtxoBlockHeader";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
 import { UtxoNodeStatus } from "../base-objects/StatusBase";
@@ -36,6 +36,8 @@ export class UtxoCore implements ReadRpcInterface {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    transactionConstructor: any;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   fullBlockConstructor: any;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    blockConstructor: any;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    blockHeaderConstructor: any;
@@ -67,6 +69,7 @@ export class UtxoCore implements ReadRpcInterface {
 
       // This has to be shadowed
       this.transactionConstructor = UtxoTransaction;
+      this.fullBlockConstructor = UtxoFullBlock;
       this.blockConstructor = UtxoBlock;
       this.blockHeaderConstructor = UtxoBlockHeader;
       this.blockTipConstructor = UtxoBlockTip;
@@ -108,8 +111,40 @@ export class UtxoCore implements ReadRpcInterface {
    // Block methods //////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   getFullBlock(blockNumberOrHash: string | number): Promise<IFullBlock> {
-      throw new Error("Method not implemented.");
+   private async blockRequestBase(blockNumberOrHash: string | number, full: boolean) {
+      let blockHash: string;
+      if (typeof blockNumberOrHash === "string") {
+         blockHash = blockNumberOrHash as string;
+      } else if (typeof blockNumberOrHash === "number") {
+         try {
+            blockHash = await this.getBlockHashFromHeight(blockNumberOrHash as number);
+         } catch (e) {
+            throw new mccError(mccErrorCode.InvalidParameter);
+         }
+      } else {
+         // This type is not supported
+         throw new mccError(mccErrorCode.InvalidParameter);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let params: any[] = [blockHash, full ? 2 : 1];
+      if (this.chainType === ChainType.DOGE) {
+         params = [blockHash, true];
+      }
+      return await this.client.post("", {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "getblock",
+         params: params,
+      });
+   }
+
+   async getFullBlock(blockNumberOrHash: string | number): Promise<IFullBlock> {
+      const res = await this.blockRequestBase(blockNumberOrHash, true);
+      if (utxo_check_expect_block_out_of_range(res.data)) {
+         throw new mccError(mccErrorCode.InvalidBlock);
+      }
+      utxo_ensure_data(res.data);
+      return new this.fullBlockConstructor(res.data.result);
    }
 
    /**
@@ -118,29 +153,8 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns All available block information
     */
    //
-   async getBlock(blockHashOrHeight: string | number): Promise<UtxoBlock> {
-      let blockHash: string | null = null;
-      if (typeof blockHashOrHeight === "string") {
-         blockHash = blockHashOrHeight as string;
-      }
-      if (typeof blockHashOrHeight === "number") {
-         try {
-            blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
-         } catch (e) {
-            throw new mccError(mccErrorCode.InvalidParameter);
-         }
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let params: any[] = [blockHash, 2];
-      if (this.chainType === ChainType.DOGE) {
-         params = [blockHash, true];
-      }
-      const res = await this.client.post("", {
-         jsonrpc: "1.0",
-         id: "rpc",
-         method: "getblock",
-         params: params,
-      });
+   async getBlock(blockNumberOrHash: string | number): Promise<UtxoBlock> {
+      const res = await this.blockRequestBase(blockNumberOrHash, true);
       if (utxo_check_expect_block_out_of_range(res.data)) {
          throw new mccError(mccErrorCode.InvalidBlock);
       }

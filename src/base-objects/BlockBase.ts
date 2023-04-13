@@ -108,3 +108,9 @@ export { BtcBlockTip } from "./blockTips/BtcBlockTip";
 export { DogeBlockTip } from "./blockTips/DogeBlockTip";
 export { LtcBlockTip } from "./blockTips/LtcBlockTip";
 export { UtxoBlockTip } from "./blockTips/UtxoBlockTip";
+// Full blocks
+export { BtcFullBlock } from "./fullBlocks/BtcFullBlock";
+export { DogeFullBlock } from "./fullBlocks/DogeFullBlock";
+export { LtcFullBlock } from "./fullBlocks/LtcFullBlock";
+export { UtxoFullBlock } from "./fullBlocks/UtxoFullBlock";
+export { XrpFullBlock } from "./fullBlocks/XrpFullBlock";

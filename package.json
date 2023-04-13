@@ -54,8 +54,12 @@
       "pack": "npm pack",
       "----------TEST----------": "----------TEST----------",
       "test": "mocha -r ts-node/register -r dotenv/config --require source-map-support/register -t 0",
-      "test:xrp": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/XRP/**/*.ts ",
-      "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/**/*.ts ",
+      "test:xrp": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/XRP/**/*.test.ts ",
+      "test:doge": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/DOGE/**/*.test.ts ",
+      "test:btc": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/BTC/**/*.test.ts ",
+      "test:ltc": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/LTC/**/*.test.ts ",
+      "test:algo": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/ALGO/**/*.test.ts ",
+      "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 test/**/*.test.ts ",
       "test:coverage": "yarn nyc yarn test_all"
    },
    "dependencies": {
