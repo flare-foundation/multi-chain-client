@@ -22,7 +22,7 @@ describe("Account delete type", function () {
       let transaction: XrpTransaction;
       before(async function () {
          transaction = await MccClient.getTransaction("1AF19BF9717DA0B05A3BFC5007873E7743BA54C0311CCCCC60776AAEAC5C4635");
-         console.dir(transaction.data, { depth: null });
+         //  console.dir(transaction.data, { depth: null });
       });
 
       it("should correctly parse sourceAddresses", async function () {

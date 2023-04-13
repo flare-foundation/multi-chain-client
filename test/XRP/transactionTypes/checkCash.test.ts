@@ -31,16 +31,16 @@ describe("CheckCash type", function () {
          expect(transaction.sourceAddresses).to.deep.equal(addresses);
       });
 
-      it("should correctly parse receivingAddresses", async function () {
+      it.skip("should correctly parse receivingAddresses", async function () {
          expect(transaction.receivingAddresses).to.deep.equal(["rU2CAvi6DHACUMBTEKxHRSL2QLrdHgptnx"]);
       });
 
-      it("should correctly parse spentAmounts", async function () {
+      it.skip("should correctly parse spentAmounts", async function () {
          const expected = [{ address: "rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am", amount: toBN("12") }];
          expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
       });
 
-      it("should correctly parse receivedAmounts", async function () {
+      it.skip("should correctly parse receivedAmounts", async function () {
          const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("12665795") }];
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
       });

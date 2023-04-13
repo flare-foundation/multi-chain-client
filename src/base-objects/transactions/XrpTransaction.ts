@@ -1,6 +1,7 @@
 import BN from "bn.js";
 import { AccountDelete, Payment, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
+import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { MccClient, TransactionSuccessStatus } from "../../types";
 import { IXrpGetTransactionRes, XrpTransactionTypeUnion } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
@@ -55,39 +56,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get sourceAddresses(): string[] {
-      if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
-         return [this.data.result.Account];
-      }
       const sourceAddresses: string[] = [];
-      for (const node of this.data.result.meta.AffectedNodes) {
-         if ("ModifiedNode" in node) {
-            if (
-               node.ModifiedNode.LedgerEntryType === "AccountRoot" &&
-               node.ModifiedNode.FinalFields &&
-               node.ModifiedNode.PreviousFields &&
-               node.ModifiedNode.FinalFields.Account &&
-               node.ModifiedNode.FinalFields.Balance &&
-               node.ModifiedNode.PreviousFields.Balance
-            ) {
-               const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
-               if (diff.lt(toBN(0))) {
-                  sourceAddresses.push(node.ModifiedNode.FinalFields.Account as string);
-               }
-            }
-         }
-         if ("CreatedNode" in node) {
-            // TODO: check if true
-            // Created node can't affect source address
-         }
-         if ("DeletedNode" in node) {
-            if (
-               node.DeletedNode.LedgerEntryType === "AccountRoot" &&
-               node.DeletedNode.FinalFields &&
-               node.DeletedNode.FinalFields.Account &&
-               node.DeletedNode.FinalFields.Balance
-            ) {
-               sourceAddresses.push(node.DeletedNode.FinalFields.Account as string);
-            }
+      for (const addAmm of this.spentAmounts) {
+         if (addAmm.address) {
+            sourceAddresses.push(addAmm.address);
          }
       }
       return sourceAddresses;
@@ -133,56 +105,89 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       throw new Error("Method not implemented.");
    }
 
+   // public get receivingAddresses(): string[] {
+   //    switch (this.type) {
+   //       case "Payment": {
+   //          const payment = this.data.result as Payment;
+   //          return [payment.Destination];
+   //       }
+   //       case "AccountDelete":
+   //          if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
+   //             return [];
+   //          } else {
+   //             if (typeof this.data.result.meta.DeliveredAmount === "string") {
+   //                const accountDelete = this.data.result as AccountDelete;
+   //                return [accountDelete.Destination];
+   //             } else {
+   //                // Token transfer received by account deletion
+   //                return [];
+   //             }
+   //          }
+   //       case "CheckCash": {
+   //          return [];
+   //       }
+   //       case "AccountSet": // OK
+   //       case "NFTokenAcceptOffer":
+   //       case "NFTokenBurn":
+   //       case "NFTokenCancelOffer":
+   //       case "NFTokenCreateOffer":
+   //       case "NFTokenMint":
+   //       case "CheckCancel": // OK
+   //       case "CheckCreate": // OK
+   //       case "DepositPreauth":
+   //       case "EscrowCancel":
+   //       case "EscrowCreate":
+   //       case "EscrowFinish":
+   //       case "OfferCancel":
+   //       case "OfferCreate":
+   //       case "PaymentChannelClaim":
+   //       case "PaymentChannelCreate":
+   //       case "PaymentChannelFund":
+   //       case "SetRegularKey":
+   //       case "SignerListSet":
+   //       case "TicketCreate":
+   //       case "TrustSet":
+   //          return [];
+   //       default:
+   //          // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+   //          // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+   //          ((_: never): void => {})(this.type);
+   //    }
+   //    // TODO: Check if in other types of payments one has something similar to Destination
+   //    throw new Error("Exhaustive switch guard: Cannot happen");
+   // }
+
    public get receivingAddresses(): string[] {
-      switch (this.type) {
-         case "Payment": {
-            const payment = this.data.result as Payment;
-            return [payment.Destination];
-         }
-         case "AccountDelete":
-            if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
-               return [];
-            } else {
-               if (typeof this.data.result.meta.DeliveredAmount === "string") {
-                  const accountDelete = this.data.result as AccountDelete;
-                  return [accountDelete.Destination];
-               } else {
-                  // Token transfer received by account deletion
-                  return [];
+      if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
+         return [this.data.result.Account];
+      }
+      const receivingAddresses: string[] = [];
+      for (const node of this.data.result.meta.AffectedNodes) {
+         if (isModifiedNode(node)) {
+            if (
+               node.ModifiedNode.LedgerEntryType === "AccountRoot" &&
+               node.ModifiedNode.FinalFields &&
+               node.ModifiedNode.PreviousFields &&
+               node.ModifiedNode.FinalFields.Account &&
+               node.ModifiedNode.FinalFields.Balance &&
+               node.ModifiedNode.PreviousFields.Balance
+            ) {
+               const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
+               if (diff.gt(toBN(0))) {
+                  receivingAddresses.push(node.ModifiedNode.FinalFields.Account as string);
                }
             }
-         case "CheckCash": {
-            return [];
          }
-         case "AccountSet": // OK
-         case "NFTokenAcceptOffer":
-         case "NFTokenBurn":
-         case "NFTokenCancelOffer":
-         case "NFTokenCreateOffer":
-         case "NFTokenMint":
-         case "CheckCancel": // OK
-         case "CheckCreate": // OK
-         case "DepositPreauth":
-         case "EscrowCancel":
-         case "EscrowCreate":
-         case "EscrowFinish":
-         case "OfferCancel":
-         case "OfferCreate":
-         case "PaymentChannelClaim":
-         case "PaymentChannelCreate":
-         case "PaymentChannelFund":
-         case "SetRegularKey":
-         case "SignerListSet":
-         case "TicketCreate":
-         case "TrustSet":
-            return [];
-         default:
-            // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-            // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-            ((_: never): void => {})(this.type);
+         if (isCreatedNode(node)) {
+            // TODO: check if true
+            // Created node can't affect source address
+         }
+         if (isDeletedNode(node)) {
+            // TODO: check if true
+            // Deleted node can't affect receiving address
+         }
       }
-      // TODO: Check if in other types of payments one has something similar to Destination
-      throw new Error("Exhaustive switch guard: Cannot happen");
+      return receivingAddresses;
    }
 
    public get assetReceivingAddresses(): (string | undefined)[] {
@@ -197,78 +202,142 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return toBN(this.data.result.Fee);
    }
 
+   // public get spentAmounts(): AddressAmount[] {
+   //    switch (this.type) {
+   //       case "Payment": {
+   //          const payment = this.data.result as Payment;
+   //          if (this.isNativePayment) {
+   //             if (typeof payment.Amount === "string") {
+   //                return [
+   //                   {
+   //                      address: this.sourceAddresses[0],
+   //                      amount: toBN(payment.Amount).add(this.fee),
+   //                   },
+   //                ];
+   //             } else {
+   //                throw new Error("Native payment classification error: Cannot happen");
+   //             }
+   //          } else {
+   //             // Token transfer
+   //             return [
+   //                {
+   //                   address: this.sourceAddresses[0],
+   //                   amount: this.fee,
+   //                },
+   //             ];
+   //          }
+   //       }
+   //       case "AccountDelete":
+   //          if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
+   //             return [{ address: this.sourceAddresses[0], amount: toBN(this.fee) }];
+   //          } else {
+   //             if (typeof this.data.result.meta.DeliveredAmount === "string") {
+   //                return [{ address: this.sourceAddresses[0], amount: toBN(this.fee).add(toBN(this.data.result.meta.DeliveredAmount)) }];
+   //             } else {
+   //                // Token transfer delivered by account deletion
+   //                return [{ address: this.sourceAddresses[0], amount: toBN(this.fee) }];
+   //             }
+   //          }
+   //       case "CheckCash": {
+   //          return [];
+   //       }
+   //       case "AccountSet": // OK
+   //       case "NFTokenAcceptOffer":
+   //       case "NFTokenBurn":
+   //       case "NFTokenCancelOffer":
+   //       case "NFTokenCreateOffer":
+   //       case "NFTokenMint":
+   //       case "CheckCancel": // OK
+   //       case "CheckCreate": // OK
+   //       case "DepositPreauth":
+   //       case "EscrowCancel":
+   //       case "EscrowCreate":
+   //       case "EscrowFinish":
+   //       case "OfferCancel":
+   //       case "OfferCreate":
+   //       case "PaymentChannelClaim":
+   //       case "PaymentChannelCreate":
+   //       case "PaymentChannelFund":
+   //       case "SetRegularKey":
+   //       case "SignerListSet":
+   //       case "TicketCreate":
+   //       case "TrustSet":
+   //          return [
+   //             {
+   //                address: this.sourceAddresses[0],
+   //                amount: toBN(this.fee),
+   //             },
+   //          ];
+   //       default:
+   //          // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+   //          // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+   //          ((_: never): void => {})(this.type);
+   //    }
+   //    throw new Error("Exhaustive switch guard: Cannot happen");
+   // }
+
    public get spentAmounts(): AddressAmount[] {
-      switch (this.type) {
-         case "Payment": {
-            const payment = this.data.result as Payment;
-            if (this.isNativePayment) {
-               if (typeof payment.Amount === "string") {
-                  return [
-                     {
-                        address: this.sourceAddresses[0],
-                        amount: toBN(payment.Amount).add(this.fee),
-                     },
-                  ];
-               } else {
-                  throw new Error("Native payment classification error: Cannot happen");
-               }
-            } else {
-               // Token transfer
-               return [
-                  {
-                     address: this.sourceAddresses[0],
-                     amount: this.fee,
-                  },
-               ];
-            }
-         }
-         case "AccountDelete":
-            if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
-               return [{ address: this.sourceAddresses[0], amount: toBN(this.fee) }];
-            } else {
-               if (typeof this.data.result.meta.DeliveredAmount === "string") {
-                  return [{ address: this.sourceAddresses[0], amount: toBN(this.fee).add(toBN(this.data.result.meta.DeliveredAmount)) }];
-               } else {
-                  // Token transfer delivered by account deletion
-                  return [{ address: this.sourceAddresses[0], amount: toBN(this.fee) }];
-               }
-            }
-         case "CheckCash": {
-            return [];
-         }
-         case "AccountSet": // OK
-         case "NFTokenAcceptOffer":
-         case "NFTokenBurn":
-         case "NFTokenCancelOffer":
-         case "NFTokenCreateOffer":
-         case "NFTokenMint":
-         case "CheckCancel": // OK
-         case "CheckCreate": // OK
-         case "DepositPreauth":
-         case "EscrowCancel":
-         case "EscrowCreate":
-         case "EscrowFinish":
-         case "OfferCancel":
-         case "OfferCreate":
-         case "PaymentChannelClaim":
-         case "PaymentChannelCreate":
-         case "PaymentChannelFund":
-         case "SetRegularKey":
-         case "SignerListSet":
-         case "TicketCreate":
-         case "TrustSet":
-            return [
-               {
-                  address: this.sourceAddresses[0],
-                  amount: toBN(this.fee),
-               },
-            ];
-         default:
-            // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-            // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-            ((_: never): void => {})(this.type);
+      if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
+         throw new Error("Transaction meta is not available thus spent amounts cannot be calculated");
       }
-      throw new Error("Exhaustive switch guard: Cannot happen");
+      const spendAmounts: AddressAmount[] = [];
+      for (const node of this.data.result.meta.AffectedNodes) {
+         if (isModifiedNode(node)) {
+            if (
+               node.ModifiedNode.LedgerEntryType === "AccountRoot" &&
+               node.ModifiedNode.FinalFields &&
+               node.ModifiedNode.PreviousFields &&
+               node.ModifiedNode.FinalFields.Account &&
+               node.ModifiedNode.FinalFields.Balance &&
+               node.ModifiedNode.PreviousFields.Balance
+            ) {
+               // TODO: this is due to xrpl.js lib mistakes
+               const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
+               if (diff.lt(toBN(0))) {
+                  spendAmounts.push({
+                     address: node.ModifiedNode.FinalFields.Account as string,
+                     amount: diff.mul(toBN(-1)),
+                  });
+               }
+            }
+         }
+         if (isCreatedNode(node)) {
+            // TODO: check if true
+            // Created node can't affect source address
+         }
+         if (isDeletedNode(node)) {
+            if (node.DeletedNode.LedgerEntryType === "AccountRoot" && "PreviousFields" in node.DeletedNode) {
+               // console.dir(node, { depth: null });
+               if (node.DeletedNode.FinalFields && node.DeletedNode.FinalFields.Account) {
+                  if (node.DeletedNode.FinalFields.Balance) {
+                     // TODO: this is due to xrpl.js lib mistakes
+                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                     const diff = toBN(node.DeletedNode.FinalFields.Balance as string).sub(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        toBN(((node.DeletedNode as any).PreviousFields as any).Balance as string)
+                     );
+                     if (diff.lt(toBN(0))) {
+                        spendAmounts.push({
+                           address: node.DeletedNode.FinalFields.Account as string,
+                           amount: diff.mul(toBN(-1)),
+                        });
+                     }
+                  } else {
+                     // TODO: this is due to xrpl.js lib mistakes
+                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                     const diff = toBN(((node.DeletedNode as any).PreviousFields as any).Balance as string);
+                     if (diff.gt(toBN(0))) {
+                        spendAmounts.push({
+                           address: node.DeletedNode.FinalFields.Account as string,
+                           amount: diff,
+                        });
+                     }
+                  }
+               }
+            }
+         }
+      }
+      return spendAmounts;
    }
 
    public get assetSpentAmounts(): AddressAmount[] {
@@ -276,65 +345,84 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get receivedAmounts(): AddressAmount[] {
-      switch (this.type) {
-         case "Payment": {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
-            if (this.isNativePayment) {
-               return [
-                  {
-                     address: this.receivingAddresses[0],
-                     amount: toBN(metaData.delivered_amount as string),
-                  },
-               ];
-            } else {
-               return [];
-            }
-         }
-         case "AccountDelete":
-            if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
-               return [];
-            } else {
-               if (typeof this.data.result.meta.DeliveredAmount === "string") {
-                  const accountDelete = this.data.result as AccountDelete;
-                  return [{ address: accountDelete.Destination, amount: toBN(this.data.result.meta.DeliveredAmount) }];
-               } else {
-                  // Token transfer received by account deletion
-                  return [];
-               }
-            }
-         case "CheckCash": {
-            return [];
-         }
-         case "AccountSet": // OK
-         case "NFTokenAcceptOffer":
-         case "NFTokenBurn":
-         case "NFTokenCancelOffer":
-         case "NFTokenCreateOffer":
-         case "NFTokenMint":
-         case "CheckCancel": // OK
-         case "CheckCreate": // OK
-         case "DepositPreauth":
-         case "EscrowCancel":
-         case "EscrowCreate":
-         case "EscrowFinish":
-         case "OfferCancel":
-         case "OfferCreate":
-         case "PaymentChannelClaim":
-         case "PaymentChannelCreate":
-         case "PaymentChannelFund":
-         case "SetRegularKey":
-         case "SignerListSet":
-         case "TicketCreate":
-         case "TrustSet":
-            return [];
-         default:
-            // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-            // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-            ((_: never): void => {})(this.type);
+      if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
+         throw new Error("Transaction meta is not available thus received amounts cannot be calculated");
       }
-      throw new Error("Exhaustive switch guard: Cannot happen");
+      const receivedAmounts: AddressAmount[] = [];
+      for (const node of this.data.result.meta.AffectedNodes) {
+         if (isModifiedNode(node)) {
+            // Handle me
+         }
+         if (isCreatedNode(node)) {
+            // Handle me
+         }
+         if (isDeletedNode(node)) {
+            // handle me
+         }
+      }
+      return receivedAmounts;
    }
+
+   // public get receivedAmounts(): AddressAmount[] {
+   //    switch (this.type) {
+   //       case "Payment": {
+   //          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   //          const metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
+   //          if (this.isNativePayment) {
+   //             return [
+   //                {
+   //                   address: this.receivingAddresses[0],
+   //                   amount: toBN(metaData.delivered_amount as string),
+   //                },
+   //             ];
+   //          } else {
+   //             return [];
+   //          }
+   //       }
+   //       case "AccountDelete":
+   //          if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
+   //             return [];
+   //          } else {
+   //             if (typeof this.data.result.meta.DeliveredAmount === "string") {
+   //                const accountDelete = this.data.result as AccountDelete;
+   //                return [{ address: accountDelete.Destination, amount: toBN(this.data.result.meta.DeliveredAmount) }];
+   //             } else {
+   //                // Token transfer received by account deletion
+   //                return [];
+   //             }
+   //          }
+   //       case "CheckCash": {
+   //          return [];
+   //       }
+   //       case "AccountSet": // OK
+   //       case "NFTokenAcceptOffer":
+   //       case "NFTokenBurn":
+   //       case "NFTokenCancelOffer":
+   //       case "NFTokenCreateOffer":
+   //       case "NFTokenMint":
+   //       case "CheckCancel": // OK
+   //       case "CheckCreate": // OK
+   //       case "DepositPreauth":
+   //       case "EscrowCancel":
+   //       case "EscrowCreate":
+   //       case "EscrowFinish":
+   //       case "OfferCancel":
+   //       case "OfferCreate":
+   //       case "PaymentChannelClaim":
+   //       case "PaymentChannelCreate":
+   //       case "PaymentChannelFund":
+   //       case "SetRegularKey":
+   //       case "SignerListSet":
+   //       case "TicketCreate":
+   //       case "TrustSet":
+   //          return [];
+   //       default:
+   //          // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+   //          // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+   //          ((_: never): void => {})(this.type);
+   //    }
+   //    throw new Error("Exhaustive switch guard: Cannot happen");
+   // }
 
    public get assetReceivedAmounts(): AddressAmount[] {
       throw new Error("Method not implemented.");
