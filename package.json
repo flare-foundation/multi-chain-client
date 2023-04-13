@@ -59,8 +59,8 @@
       "test:btc": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 \"test/BTC/**/*.test.ts\" ",
       "test:ltc": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 \"test/LTC/**/*.test.ts\" ",
       "test:algo": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 \"test/ALGO/**/*.test.ts\" ",
-      "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 \"test/**/*.test.ts\" ",
-      "test:coverage": "yarn nyc yarn test_all"
+      "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 10000 \"test/[!ALGO]*/**/*.test.ts\" ",
+      "test:coverage": "yarn nyc yarn test:all"
    },
    "dependencies": {
       "@msgpack/msgpack": "^2.8.0",

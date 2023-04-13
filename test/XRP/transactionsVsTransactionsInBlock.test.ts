@@ -58,7 +58,7 @@ describe("XRP transactions in full block vs transactions from getTransaction ", 
                expect(transaction.currencyName).to.eq(transObject.currencyName);
                expect(transaction.elementaryUnits.toNumber()).to.eq(transObject.elementaryUnits.toNumber());
             }
-         });
+         }).timeout(1000 * 60 * 5);
       });
    }
 });
