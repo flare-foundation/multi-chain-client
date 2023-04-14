@@ -63,6 +63,7 @@ describe("Payment transaction type", function () {
       let transaction: XrpTransaction;
       before(async function () {
          transaction = await MccClient.getTransaction("0E8C600BB375A62708E662F6B7D1F096CA364793F655A8DBB358F8D723A59AB7");
+         //  console.dir(transaction, { depth: null });
       });
 
       it("should correctly parse sourceAddresses", async function () {
@@ -74,15 +75,13 @@ describe("Payment transaction type", function () {
       });
 
       it("should correctly parse spentAmounts", async function () {
-         const expected = [{ address: "rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5", amount: toBN("1400_000010") }];
-         // console.dir(transaction.spentAmounts, { depth: null });
-         // console.dir(expected, { depth: null });
+         const expected = [{ address: "rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5", amount: toBN("1400000010") }];
          expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
       });
 
       it("should correctly parse receivedAmounts", async function () {
-         const expected = [{ address: "r14f8Luu4dYKzNEwFYV2KfA74YZcWVS5F", amount: toBN("1400_000000") }];
-         expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.deep.equal([]);
+         const expected = [{ address: "r14f8Luu4dYKzNEwFYV2KfA74YZcWVS5F", amount: toBN("1400000000") }];
+         expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
       });
    });
 
@@ -106,7 +105,8 @@ describe("Payment transaction type", function () {
       });
 
       it("should correctly parse receivedAmounts", async function () {
-         expect(transaction.receivedAmounts).to.deep.equal([{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("27") }]);
+         const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("27") }];
+         expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
       });
 
       // Token transfers
