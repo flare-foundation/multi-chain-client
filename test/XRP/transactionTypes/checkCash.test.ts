@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import { MCC, XrpTransaction, toBN, traceManager } from "../../../src";
+import { AddressAmount, MCC, XrpTransaction, toBN, traceManager } from "../../../src";
 import { AddressAmountEqual } from "../../testUtils";
 
 const XRPMccConnection = {
-   url: process.env.XRP_URL || "",
+   url: process.env.XRP_URL || "https://xrplcluster.com",
    username: process.env.XRP_USERNAME || "",
    password: process.env.XRP_PASSWORD || "",
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
@@ -31,18 +31,18 @@ describe("CheckCash type", function () {
          expect(transaction.sourceAddresses).to.deep.equal(addresses);
       });
 
-      it.skip("should correctly parse receivingAddresses", async function () {
-         expect(transaction.receivingAddresses).to.deep.equal(["rU2CAvi6DHACUMBTEKxHRSL2QLrdHgptnx"]);
+      it("should correctly parse receivingAddresses", async function () {
+         expect(transaction.receivingAddresses, "No one receives any xrp").to.deep.equal([]);
       });
 
-      it.skip("should correctly parse spentAmounts", async function () {
+      it("should correctly parse spentAmounts", async function () {
          const expected = [{ address: "rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am", amount: toBN("12") }];
-         expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
+         expect(AddressAmountEqual(transaction.spentAmounts, expected), "Only the fee is payed in xrp").to.be.true;
       });
 
-      it.skip("should correctly parse receivedAmounts", async function () {
-         const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("12665795") }];
-         expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
+      it("should correctly parse receivedAmounts", async function () {
+         const expected: AddressAmount[] = [];
+         expect(AddressAmountEqual(transaction.receivedAmounts, expected), "No one receives any xrp").to.be.true;
       });
 
       // Token transfers
