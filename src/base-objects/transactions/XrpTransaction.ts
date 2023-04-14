@@ -157,34 +157,44 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    //    throw new Error("Exhaustive switch guard: Cannot happen");
    // }
 
+   // public get receivingAddresses(): string[] {
+   //    if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
+   //       return [this.data.result.Account];
+   //    }
+   //    const receivingAddresses: string[] = [];
+   //    for (const node of this.data.result.meta.AffectedNodes) {
+   //       if (isModifiedNode(node)) {
+   //          if (
+   //             node.ModifiedNode.LedgerEntryType === "AccountRoot" &&
+   //             node.ModifiedNode.FinalFields &&
+   //             node.ModifiedNode.PreviousFields &&
+   //             node.ModifiedNode.FinalFields.Account &&
+   //             node.ModifiedNode.FinalFields.Balance &&
+   //             node.ModifiedNode.PreviousFields.Balance
+   //          ) {
+   //             const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
+   //             if (diff.gt(toBN(0))) {
+   //                receivingAddresses.push(node.ModifiedNode.FinalFields.Account as string);
+   //             }
+   //          }
+   //       }
+   //       if (isCreatedNode(node)) {
+   //          // TODO: check if true
+   //          // Created node can't affect source address
+   //       }
+   //       if (isDeletedNode(node)) {
+   //          // TODO: check if true
+   //          // Deleted node can't affect receiving address
+   //       }
+   //    }
+   //    return receivingAddresses;
+   // }
+
    public get receivingAddresses(): string[] {
-      if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
-         return [this.data.result.Account];
-      }
       const receivingAddresses: string[] = [];
-      for (const node of this.data.result.meta.AffectedNodes) {
-         if (isModifiedNode(node)) {
-            if (
-               node.ModifiedNode.LedgerEntryType === "AccountRoot" &&
-               node.ModifiedNode.FinalFields &&
-               node.ModifiedNode.PreviousFields &&
-               node.ModifiedNode.FinalFields.Account &&
-               node.ModifiedNode.FinalFields.Balance &&
-               node.ModifiedNode.PreviousFields.Balance
-            ) {
-               const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
-               if (diff.gt(toBN(0))) {
-                  receivingAddresses.push(node.ModifiedNode.FinalFields.Account as string);
-               }
-            }
-         }
-         if (isCreatedNode(node)) {
-            // TODO: check if true
-            // Created node can't affect source address
-         }
-         if (isDeletedNode(node)) {
-            // TODO: check if true
-            // Deleted node can't affect receiving address
+      for (const addAmm of this.receivedAmounts) {
+         if (addAmm.address) {
+            receivingAddresses.push(addAmm.address);
          }
       }
       return receivingAddresses;
@@ -303,11 +313,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          }
          if (isCreatedNode(node)) {
             // TODO: check if true
-            // Created node can't affect source address
+            // Created node can't affect spend amounts
          }
          if (isDeletedNode(node)) {
             if (node.DeletedNode.LedgerEntryType === "AccountRoot" && "PreviousFields" in node.DeletedNode) {
-               // console.dir(node, { depth: null });
                if (node.DeletedNode.FinalFields && node.DeletedNode.FinalFields.Account) {
                   if (node.DeletedNode.FinalFields.Balance) {
                      // TODO: this is due to xrpl.js lib mistakes
@@ -351,13 +360,35 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       const receivedAmounts: AddressAmount[] = [];
       for (const node of this.data.result.meta.AffectedNodes) {
          if (isModifiedNode(node)) {
-            // Handle me
-         }
-         if (isCreatedNode(node)) {
-            // Handle me
-         }
-         if (isDeletedNode(node)) {
-            // handle me
+            if (
+               node.ModifiedNode.LedgerEntryType === "AccountRoot" &&
+               node.ModifiedNode.FinalFields &&
+               node.ModifiedNode.PreviousFields &&
+               node.ModifiedNode.FinalFields.Account &&
+               node.ModifiedNode.FinalFields.Balance &&
+               node.ModifiedNode.PreviousFields.Balance
+            ) {
+               // TODO: this is due to xrpl.js lib mistakes
+               const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
+               if (diff.gt(toBN(0))) {
+                  receivedAmounts.push({
+                     address: node.ModifiedNode.FinalFields.Account as string,
+                     amount: diff,
+                  });
+               }
+            }
+         } else if (isCreatedNode(node)) {
+            if (node.CreatedNode.LedgerEntryType === "AccountRoot" && node.CreatedNode.NewFields && node.CreatedNode.NewFields.Account) {
+               if (node.CreatedNode.NewFields.Balance) {
+                  receivedAmounts.push({
+                     address: node.CreatedNode.NewFields.Account as string,
+                     amount: toBN(node.CreatedNode.NewFields.Balance as string),
+                  });
+               }
+            }
+         } else if (isDeletedNode(node)) {
+            // TODO: check if true
+            // Created node can't affect spend amounts
          }
       }
       return receivedAmounts;
