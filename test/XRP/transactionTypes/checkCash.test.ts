@@ -26,7 +26,7 @@ describe("CheckCash type", function () {
 
       it("should correctly parse sourceAddresses", async function () {
          const addresses = [
-            "rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am", // Transaction sender (pays for fee
+            "rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am", // Transaction sender (pays for fee)
          ];
          expect(transaction.sourceAddresses).to.deep.equal(addresses);
       });
