@@ -147,7 +147,7 @@ describe("Payment transaction type", function () {
 
       it("Should get reference", function () {
          const reference = transaction.reference;
-         expect(reference).to.eq([]);
+         expect(reference).to.deep.eq([]);
       });
 
       it("Should get currencyName", function () {

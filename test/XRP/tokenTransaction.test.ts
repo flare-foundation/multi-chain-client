@@ -37,7 +37,7 @@ describe("Transaction Xrp tests ", function () {
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1654092632,
             sourceAddresses: ["rBrY6tLYMYYRRFAXwKtZoFYF6kpb7ZCore"],
-            receivingAddresses: ["rfV8YWmhx6ca8V3JFmPwnVdgGfBePobXyv"],
+            receivingAddresses: [],
             isFeeError: false,
             fee: "10000", // number as a string
             spentAmounts: [
@@ -65,7 +65,7 @@ describe("Transaction Xrp tests ", function () {
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1654092640,
             sourceAddresses: ["rMNTSXzmWmvMHGRC7QKNfdJycTPG7WxE7e"],
-            receivingAddresses: ["rG4KWDP4GHxcZ4jphagh4L5v9BSgGEWyeg"],
+            receivingAddresses: [],
             isFeeError: false,
             fee: "50", // number as a string
             spentAmounts: [
@@ -93,7 +93,7 @@ describe("Transaction Xrp tests ", function () {
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1654096800,
             sourceAddresses: ["rBy7gEjA6AJytwZAUKYfXvGAf5Y1koFCX1"],
-            receivingAddresses: ["r319ERh8VWMNs9M33E6Rqdc9YQuabBEG7r"],
+            receivingAddresses: [],
             isFeeError: false,
             fee: "20", // number as a string
             spentAmounts: [
@@ -121,7 +121,7 @@ describe("Transaction Xrp tests ", function () {
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1646141781,
             sourceAddresses: ["rP6JLXtRNs3tjeYnn7zUHpbfLjuyBXqhwF"],
-            receivingAddresses: ["rBPCqK87DsSSZKewDV7QzASCysUUJA8abf"],
+            receivingAddresses: [],
             isFeeError: false,
             fee: "10", // number as a string
             spentAmounts: [

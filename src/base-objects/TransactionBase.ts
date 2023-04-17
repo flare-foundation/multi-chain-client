@@ -14,7 +14,7 @@ export interface AddressAmount {
 export interface PaymentSummary {
    isNativePayment: boolean;
    isTokenTransfer?: boolean; // sometimes even no native payments can still be token transfers
-   tokenElementaryUnits?: BN; // if it is a token transfer // not the same for all trasnactions with this token
+   tokenElementaryUnits?: BN; // if it is a token transfer // not the same for all transactions with this token
    receivedTokenAmount?: BN; // only if token transfer
    tokenName?: string; // only if token transfer
    sourceAddress?: string;
