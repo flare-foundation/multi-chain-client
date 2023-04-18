@@ -11,7 +11,7 @@ const XRPMccConnection = {
 
 // Find Escrow examples with XRP where offer is actually accepted.
 
-describe(`Escrow types (${getTestFile(__filename)})`, function () {
+describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
@@ -20,12 +20,12 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
       MccClient = new MCC.XRP(XRPMccConnection);
    });
 
-   describe("EscrowCreate", function () {
+   describe("PaymentChannelCreate", function () {
       let transaction: XrpTransaction;
 
-      const txId = "C44F2EB84196B9AD820313DBEBA6316A15C9A2D35787579ED172B87A30131DA7";
+      const txId = "711C4F606C63076137FAE90ADC36379D7066CF551E96DA6FE2BDAB5ECBFACF2B";
       const fee = "10";
-      const value = "10000";
+      const value = "1000";
       const addressPay = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn";
       const addressRec = "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX";
 
@@ -69,14 +69,13 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
       });
    });
 
-   describe("EscrowCancel", function () {
+   describe("PaymentChannelFund", function () {
       let transaction: XrpTransaction;
 
-      const txId = "B24B9D7843F99AED7FB8A3929151D0CCF656459AE40178B77C9D44CED64E839B";
+      const txId = "877FA6E2FF8E08597D1F24E30BE8E52D0C9C06F0D620C5721E55622B6A632DFF";
       const fee = "12";
-      const value = "10000";
-      const addressPay = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn";
-      const addressRec = "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX";
+      const value = "1000000";
+      const addressPay = "rJnQrhRTXutuSwtrwxYiTkHn4Dtp8sF2LM";
 
       before(async function () {
          transaction = await MccClient.getTransaction(txId);
@@ -87,16 +86,16 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
       });
 
       it("should correctly parse receivingAddresses", async function () {
-         expect(transaction.receivingAddresses).to.deep.equal([addressPay]);
+         expect(transaction.receivingAddresses).to.deep.equal([]);
       });
 
       it("should correctly parse spentAmounts", async function () {
-         const expected = [{ address: addressPay, amount: toBN(value).neg().add(toBN(fee)) }];
+         const expected = [{ address: addressPay, amount: toBN(value).add(toBN(fee)) }];
          expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
       });
 
       it("should correctly parse receivedAmounts", async function () {
-         const expected = [{ address: addressPay, amount: toBN(value).sub(toBN(fee)) }];
+         const expected: AddressAmount[] = [];
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
       });
 
@@ -118,21 +117,20 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
       });
    });
 
-   describe("EscrowFinish", function () {
+   describe("PaymentChannelClaim", function () {
       let transaction: XrpTransaction;
 
-      const txId = "317081AF188CDD4DBE55C418F41A90EC3B959CDB3B76105E0CBE6B7A0F56C5F7";
-      const fee = "5000";
-      const value = "1000000000000000";
-      const addressPay = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn";
-      const addressRec = "rKDvgGUsNPZxsgmoemfrgXPS2Not4co2op";
+      const txId = "9C0CAAC3DD1A74461132DA4451F9E53BDF4C93DFDBEFCE1B10021EC569013B33";
+      const fee = "5606";
+      const value = "99000000";
+      const addressRec = "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH";
 
       before(async function () {
          transaction = await MccClient.getTransaction(txId);
       });
 
       it("should correctly parse sourceAddresses", async function () {
-         expect(transaction.sourceAddresses).to.deep.equal([addressPay]);
+         expect(transaction.sourceAddresses).to.deep.equal([addressRec]);
       });
 
       it("should correctly parse receivingAddresses", async function () {
@@ -140,12 +138,12 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
       });
 
       it("should correctly parse spentAmounts", async function () {
-         const expected: AddressAmount[] = [{ address: addressPay, amount: toBN(fee) }];
+         const expected: AddressAmount[] = [{ address: addressRec, amount: toBN(fee).sub(toBN(value)) }];
          expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
       });
 
       it("should correctly parse receivedAmounts", async function () {
-         const expected = [{ address: addressRec, amount: toBN(value) }];
+         const expected = [{ address: addressRec, amount: toBN(value).sub(toBN(fee)) }];
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
       });
 
