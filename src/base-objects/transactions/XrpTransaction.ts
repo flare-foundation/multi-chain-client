@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { AccountDelete, Payment, TransactionMetadata } from "xrpl";
+import { Payment, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { MccClient, TransactionSuccessStatus } from "../../types";
@@ -65,130 +65,9 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return sourceAddresses;
    }
 
-   // public get sourceAddresses(): string[] {
-   //    switch (this.type) {
-   //       case "Payment": // OK
-   //       case "NFTokenAcceptOffer":
-   //       case "NFTokenBurn":
-   //       case "NFTokenCancelOffer":
-   //       case "NFTokenCreateOffer":
-   //       case "NFTokenMint":
-   //       case "AccountDelete": // OK
-   //       case "AccountSet": // OK
-   //       case "CheckCancel": // OK
-   //       case "CheckCash":
-   //       case "CheckCreate":
-   //       case "DepositPreauth":
-   //       case "EscrowCancel":
-   //       case "EscrowCreate":
-   //       case "EscrowFinish":
-   //       case "OfferCancel":
-   //       case "OfferCreate":
-   //       case "PaymentChannelClaim":
-   //       case "PaymentChannelCreate":
-   //       case "PaymentChannelFund":
-   //       case "SetRegularKey":
-   //       case "SignerListSet":
-   //       case "TicketCreate":
-   //       case "TrustSet":
-   //          return [this.data.result.Account];
-   //       default:
-   //          // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-   //          // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-   //          ((_: never): void => {})(this.type);
-   //    }
-   //    // TODO: Check if in other types of payments one has something similar to Destination
-   //    throw new Error("Exhaustive switch guard: Cannot happen");
-   // }
-
    public get assetSourceAddresses(): (string | undefined)[] {
       throw new Error("Method not implemented.");
    }
-
-   // public get receivingAddresses(): string[] {
-   //    switch (this.type) {
-   //       case "Payment": {
-   //          const payment = this.data.result as Payment;
-   //          return [payment.Destination];
-   //       }
-   //       case "AccountDelete":
-   //          if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
-   //             return [];
-   //          } else {
-   //             if (typeof this.data.result.meta.DeliveredAmount === "string") {
-   //                const accountDelete = this.data.result as AccountDelete;
-   //                return [accountDelete.Destination];
-   //             } else {
-   //                // Token transfer received by account deletion
-   //                return [];
-   //             }
-   //          }
-   //       case "CheckCash": {
-   //          return [];
-   //       }
-   //       case "AccountSet": // OK
-   //       case "NFTokenAcceptOffer":
-   //       case "NFTokenBurn":
-   //       case "NFTokenCancelOffer":
-   //       case "NFTokenCreateOffer":
-   //       case "NFTokenMint":
-   //       case "CheckCancel": // OK
-   //       case "CheckCreate": // OK
-   //       case "DepositPreauth":
-   //       case "EscrowCancel":
-   //       case "EscrowCreate":
-   //       case "EscrowFinish":
-   //       case "OfferCancel":
-   //       case "OfferCreate":
-   //       case "PaymentChannelClaim":
-   //       case "PaymentChannelCreate":
-   //       case "PaymentChannelFund":
-   //       case "SetRegularKey":
-   //       case "SignerListSet":
-   //       case "TicketCreate":
-   //       case "TrustSet":
-   //          return [];
-   //       default:
-   //          // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-   //          // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-   //          ((_: never): void => {})(this.type);
-   //    }
-   //    // TODO: Check if in other types of payments one has something similar to Destination
-   //    throw new Error("Exhaustive switch guard: Cannot happen");
-   // }
-
-   // public get receivingAddresses(): string[] {
-   //    if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
-   //       return [this.data.result.Account];
-   //    }
-   //    const receivingAddresses: string[] = [];
-   //    for (const node of this.data.result.meta.AffectedNodes) {
-   //       if (isModifiedNode(node)) {
-   //          if (
-   //             node.ModifiedNode.LedgerEntryType === "AccountRoot" &&
-   //             node.ModifiedNode.FinalFields &&
-   //             node.ModifiedNode.PreviousFields &&
-   //             node.ModifiedNode.FinalFields.Account &&
-   //             node.ModifiedNode.FinalFields.Balance &&
-   //             node.ModifiedNode.PreviousFields.Balance
-   //          ) {
-   //             const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
-   //             if (diff.gt(toBN(0))) {
-   //                receivingAddresses.push(node.ModifiedNode.FinalFields.Account as string);
-   //             }
-   //          }
-   //       }
-   //       if (isCreatedNode(node)) {
-   //          // TODO: check if true
-   //          // Created node can't affect source address
-   //       }
-   //       if (isDeletedNode(node)) {
-   //          // TODO: check if true
-   //          // Deleted node can't affect receiving address
-   //       }
-   //    }
-   //    return receivingAddresses;
-   // }
 
    public get receivingAddresses(): string[] {
       const receivingAddresses: string[] = [];
@@ -211,80 +90,6 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       }
       return toBN(this.data.result.Fee);
    }
-
-   // public get spentAmounts(): AddressAmount[] {
-   //    switch (this.type) {
-   //       case "Payment": {
-   //          const payment = this.data.result as Payment;
-   //          if (this.isNativePayment) {
-   //             if (typeof payment.Amount === "string") {
-   //                return [
-   //                   {
-   //                      address: this.sourceAddresses[0],
-   //                      amount: toBN(payment.Amount).add(this.fee),
-   //                   },
-   //                ];
-   //             } else {
-   //                throw new Error("Native payment classification error: Cannot happen");
-   //             }
-   //          } else {
-   //             // Token transfer
-   //             return [
-   //                {
-   //                   address: this.sourceAddresses[0],
-   //                   amount: this.fee,
-   //                },
-   //             ];
-   //          }
-   //       }
-   //       case "AccountDelete":
-   //          if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
-   //             return [{ address: this.sourceAddresses[0], amount: toBN(this.fee) }];
-   //          } else {
-   //             if (typeof this.data.result.meta.DeliveredAmount === "string") {
-   //                return [{ address: this.sourceAddresses[0], amount: toBN(this.fee).add(toBN(this.data.result.meta.DeliveredAmount)) }];
-   //             } else {
-   //                // Token transfer delivered by account deletion
-   //                return [{ address: this.sourceAddresses[0], amount: toBN(this.fee) }];
-   //             }
-   //          }
-   //       case "CheckCash": {
-   //          return [];
-   //       }
-   //       case "AccountSet": // OK
-   //       case "NFTokenAcceptOffer":
-   //       case "NFTokenBurn":
-   //       case "NFTokenCancelOffer":
-   //       case "NFTokenCreateOffer":
-   //       case "NFTokenMint":
-   //       case "CheckCancel": // OK
-   //       case "CheckCreate": // OK
-   //       case "DepositPreauth":
-   //       case "EscrowCancel":
-   //       case "EscrowCreate":
-   //       case "EscrowFinish":
-   //       case "OfferCancel":
-   //       case "OfferCreate":
-   //       case "PaymentChannelClaim":
-   //       case "PaymentChannelCreate":
-   //       case "PaymentChannelFund":
-   //       case "SetRegularKey":
-   //       case "SignerListSet":
-   //       case "TicketCreate":
-   //       case "TrustSet":
-   //          return [
-   //             {
-   //                address: this.sourceAddresses[0],
-   //                amount: toBN(this.fee),
-   //             },
-   //          ];
-   //       default:
-   //          // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-   //          // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-   //          ((_: never): void => {})(this.type);
-   //    }
-   //    throw new Error("Exhaustive switch guard: Cannot happen");
-   // }
 
    public get spentAmounts(): AddressAmount[] {
       if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
@@ -346,6 +151,17 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             }
          }
       }
+      // Check if signer is already in source address with negative amount
+      const feeSigner = this.data.result.Account;
+      for (const spendAmount of spendAmounts) {
+         if (spendAmount.address === feeSigner) {
+            return spendAmounts;
+         }
+      }
+      spendAmounts.push({
+         address: feeSigner,
+         amount: this.fee.muln(-1),
+      });
       return spendAmounts;
    }
 
@@ -393,67 +209,6 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       }
       return receivedAmounts;
    }
-
-   // public get receivedAmounts(): AddressAmount[] {
-   //    switch (this.type) {
-   //       case "Payment": {
-   //          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   //          const metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
-   //          if (this.isNativePayment) {
-   //             return [
-   //                {
-   //                   address: this.receivingAddresses[0],
-   //                   amount: toBN(metaData.delivered_amount as string),
-   //                },
-   //             ];
-   //          } else {
-   //             return [];
-   //          }
-   //       }
-   //       case "AccountDelete":
-   //          if (!this.data.result.meta || typeof this.data.result.meta === "string" || !this.data.result.meta.DeliveredAmount) {
-   //             return [];
-   //          } else {
-   //             if (typeof this.data.result.meta.DeliveredAmount === "string") {
-   //                const accountDelete = this.data.result as AccountDelete;
-   //                return [{ address: accountDelete.Destination, amount: toBN(this.data.result.meta.DeliveredAmount) }];
-   //             } else {
-   //                // Token transfer received by account deletion
-   //                return [];
-   //             }
-   //          }
-   //       case "CheckCash": {
-   //          return [];
-   //       }
-   //       case "AccountSet": // OK
-   //       case "NFTokenAcceptOffer":
-   //       case "NFTokenBurn":
-   //       case "NFTokenCancelOffer":
-   //       case "NFTokenCreateOffer":
-   //       case "NFTokenMint":
-   //       case "CheckCancel": // OK
-   //       case "CheckCreate": // OK
-   //       case "DepositPreauth":
-   //       case "EscrowCancel":
-   //       case "EscrowCreate":
-   //       case "EscrowFinish":
-   //       case "OfferCancel":
-   //       case "OfferCreate":
-   //       case "PaymentChannelClaim":
-   //       case "PaymentChannelCreate":
-   //       case "PaymentChannelFund":
-   //       case "SetRegularKey":
-   //       case "SignerListSet":
-   //       case "TicketCreate":
-   //       case "TrustSet":
-   //          return [];
-   //       default:
-   //          // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-   //          // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-   //          ((_: never): void => {})(this.type);
-   //    }
-   //    throw new Error("Exhaustive switch guard: Cannot happen");
-   // }
 
    public get assetReceivedAmounts(): AddressAmount[] {
       throw new Error("Method not implemented.");
