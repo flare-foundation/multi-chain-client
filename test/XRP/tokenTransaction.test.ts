@@ -1,5 +1,5 @@
 import { MCC, toBN, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
-import { transactionTestCases } from "../testUtils";
+import { getTestFile, transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -14,7 +14,7 @@ const XRPMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("Transaction Xrp tests ", function () {
+describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
