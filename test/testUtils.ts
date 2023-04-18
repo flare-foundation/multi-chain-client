@@ -76,6 +76,17 @@ export function AddressAmountEqual(a: AddressAmount[], b: AddressAmount[]) {
    if (a.length != b.length) {
       return false;
    }
+
+   const sortParam = (x: AddressAmount, y: AddressAmount) => {
+      if (!x.address || !y.address) return 1;
+      if (x.address == y.address) return 0;
+      if (x.address > y.address) return 1;
+      else return -1;
+   };
+
+   a.sort(sortParam);
+   b.sort(sortParam);
+
    for (let i = 0; i < a.length; i++) {
       if (
          a[i].address != b[i].address ||
