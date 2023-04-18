@@ -111,7 +111,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                if (diff.lt(toBN(0))) {
                   spendAmounts.push({
                      address: node.ModifiedNode.FinalFields.Account as string,
-                     amount: diff.mul(toBN(-1)),
+                     amount: diff.neg(),
                   });
                }
             }
@@ -133,12 +133,12 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                      if (diff.lt(toBN(0))) {
                         spendAmounts.push({
                            address: node.DeletedNode.FinalFields.Account as string,
-                           amount: diff.mul(toBN(-1)),
+                           amount: diff.neg(),
                         });
                      }
                   } else {
                      // TODO: this is due to xrpl.js lib mistakes
-                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
                      const diff = toBN(((node.DeletedNode as any).PreviousFields as any).Balance as string);
                      if (diff.gt(toBN(0))) {
                         spendAmounts.push({
@@ -164,7 +164,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          if (receivedAmount.address === feeSigner) {
             const { amount, ...rest } = receivedAmount;
             spendAmounts.push({
-               amount: amount.muln(-1),
+               amount: amount.neg(),
                ...rest,
             });
             return spendAmounts;
