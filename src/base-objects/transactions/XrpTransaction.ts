@@ -151,16 +151,29 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             }
          }
       }
-      // Check if signer is already in source address with negative amount
+      // Check if signer is already in source amounts
       const feeSigner = this.data.result.Account;
       for (const spendAmount of spendAmounts) {
          if (spendAmount.address === feeSigner) {
             return spendAmounts;
          }
       }
+      // Check if singer got positive amount
+      const receivedAmounts = this.receivedAmounts;
+      for (const receivedAmount of receivedAmounts) {
+         if (receivedAmount.address === feeSigner) {
+            const { amount, ...rest } = receivedAmount;
+            spendAmounts.push({
+               amount: amount.muln(-1),
+               ...rest,
+            });
+            return spendAmounts;
+         }
+      }
+      // You cash a check for exactly fee amount
       spendAmounts.push({
+         amount: toBN(0),
          address: feeSigner,
-         amount: this.fee.muln(-1),
       });
       return spendAmounts;
    }
