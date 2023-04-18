@@ -1,7 +1,8 @@
 import { expect } from "chai";
 import { XrpFullBlock } from "../../src/base-objects/fullBlocks/XrpFullBlock";
 import { MCC, XrpBlock } from "../../src/index";
-import { AddressAmountEqual } from "../testUtils";
+import { AddressAmountEqual, getTestFile } from "../testUtils";
+import sinon from "sinon";
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -10,8 +11,15 @@ const XRPMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("XRP transactions in full block vs transactions from getTransaction ", () => {
+describe(`XRP transactions in full block vs transactions from getTransaction (${getTestFile(__filename)})`, () => {
    const blockNumbersToCheck = [75728627];
+
+   before(function () {
+      sinon.stub(console, "log");
+   });
+   after(function () {
+      sinon.restore();
+   });
    for (const blockNumber of blockNumbersToCheck) {
       describe(`Testing transactions in block ${blockNumber} (transitions from full block vs )`, () => {
          let client: MCC.XRP;

@@ -1,4 +1,5 @@
 import { MCC, XrpBlock } from "../../src";
+import { getTestFile } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -13,7 +14,7 @@ const XRPMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("Block Xrp base test ", function () {
+describe(`Block Xrp base test (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.XRP;
    let block: XrpBlock;
    const blockNumber = 72_387_695;

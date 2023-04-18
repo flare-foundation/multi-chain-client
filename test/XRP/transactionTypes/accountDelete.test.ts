@@ -3,7 +3,7 @@ import { MCC, XrpTransaction, toBN, traceManager } from "../../../src";
 import { AddressAmountEqual } from "../../testUtils";
 
 const XRPMccConnection = {
-   url: process.env.XRP_URL || "",
+   url: process.env.XRP_URL || "https://xrplcluster.com",
    username: process.env.XRP_USERNAME || "",
    password: process.env.XRP_PASSWORD || "",
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",

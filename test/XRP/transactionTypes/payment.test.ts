@@ -3,7 +3,7 @@ import { MCC, XrpTransaction, toBN, traceManager } from "../../../src";
 import { AddressAmountEqual } from "../../testUtils";
 
 const XRPMccConnection = {
-   url: process.env.XRP_URL || "",
+   url: process.env.XRP_URL || "https://xrplcluster.com",
    username: process.env.XRP_USERNAME || "",
    password: process.env.XRP_PASSWORD || "",
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
@@ -127,8 +127,8 @@ describe("Payment transaction type", function () {
       });
    });
 
-   // TODO: GreProd
-   describe.skip("Payment failed", function () {
+   //TODO: find a failed transaction, where it is receiver's fault
+   describe("Payment failed", function () {
       let transaction: XrpTransaction;
       const txId = "ABCB6A1F027446C2A0711055978455FE272D69D945A3244D2DC76D16346F60BF";
       before(async function () {
@@ -142,31 +142,30 @@ describe("Payment transaction type", function () {
 
       it("Should get successStatus", function () {
          const status = transaction.successStatus;
-         expect(status).to.be.true;
+         expect(status).to.eq(1);
       });
 
       it("Should get reference", function () {
          const reference = transaction.reference;
-         expect(reference).to.eq("");
+         expect(reference).to.deep.eq([]);
       });
 
       it("Should get currencyName", function () {
          const currencyName = transaction.currencyName;
-         expect(currencyName).to.eq("");
+         expect(currencyName).to.eq("XCC");
       });
 
       it("Should get fee", function () {
          const fee = transaction.fee;
-         expect(fee).to.eq(toBN(12));
+         expect(fee.toString()).to.eq("10");
       });
       it("Should get sourceAddress", function () {
          const sourceAddress = transaction.sourceAddresses[0];
          expect(sourceAddress).to.eq("r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB");
       });
       it("Should get spentAmounts", function () {
-         const spentAmount = transaction.spentAmounts[0];
-         expect(spentAmount.amount).to.eq(toBN(12));
-         expect(spentAmount.address).to.eq("r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB");
+         const spentAmounts = transaction.spentAmounts;
+         assert(AddressAmountEqual(spentAmounts, [{ address: "r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB", amount: toBN(10) }]));
       });
 
       it("Should get receivingAddress", function () {

@@ -2,6 +2,8 @@ import { expect } from "chai";
 import { MCC, SpecialAddresses, traceManager } from "../../src";
 import { mccSettings } from "../../src/global-settings/globalSettings";
 import { processFlags } from "../../src/utils/xrpUtils";
+import { getTestFile } from "../testUtils";
+import sinon from "sinon";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -19,6 +21,7 @@ describe("Xrpl account test mainnet ", function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
+      sinon.stub(console, "error");
       traceManager.displayRuntimeTrace = false;
       traceManager.displayStateOnException = false;
       MccClient = new MCC.XRP(XRPMccConnection);
@@ -84,12 +87,12 @@ describe("Xrpl account test mainnet ", function () {
 });
 
 const XRPMccConnectionTest = {
-   url: process.env.XRP_URL_TESTNET || "",
+   url: process.env.XRP_URL_TESTNET || "https://s1.ripple.com:51234",
    username: process.env.XRP_USERNAME_TESTNET || "",
    password: process.env.XRP_PASSWORD_TESTNET || "",
 };
 
-describe("Xrpl account test testnet ", function () {
+describe(`Xrpl account test testnet (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
