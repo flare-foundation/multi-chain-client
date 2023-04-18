@@ -29,6 +29,8 @@ export interface IXrpGetBlockHeaderRes extends LedgerResponse, IIGetBlockRes {}
 // CONSTANTS
 ////
 
+export type XrpTransactionStatusPrefixes = "tes" | "ter" | "tem" | "tel" | "tef" | "tec";
+
 export type XrpTransactionTypeUnion =
    | "NFTokenAcceptOffer"
    | "NFTokenBurn"

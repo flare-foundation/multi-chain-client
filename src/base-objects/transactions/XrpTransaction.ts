@@ -3,7 +3,7 @@ import { Payment, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { MccClient, TransactionSuccessStatus } from "../../types";
-import { IXrpGetTransactionRes, XrpTransactionTypeUnion } from "../../types/xrpTypes";
+import { IXrpGetTransactionRes, XrpTransactionStatusPrefixes, XrpTransactionTypeUnion } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
 import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, toBN } from "../../utils/utils";
@@ -254,28 +254,43 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get successStatus(): TransactionSuccessStatus {
-      // https://xrpl.org/transaction-results.html
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const metaData: TransactionMetadata = this.data.result.meta || (this.data.result as any).metaData;
-      const result = metaData.TransactionResult;
-      if (result === "tesSUCCESS") {
-         // https://xrpl.org/tes-success.html
-         return TransactionSuccessStatus.SUCCESS;
+      if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
+         throw new Error("Transaction meta is not available thus transaction status cannot be extracted");
       }
-      if (result.startsWith("tec")) {
-         // https://xrpl.org/tec-codes.html
-         switch (result) {
-            case "tecDST_TAG_NEEDED":
-            case "tecNO_DST":
-            case "tecNO_DST_INSUF_XRP":
-            case "tecNO_PERMISSION":
-               return TransactionSuccessStatus.RECEIVER_FAILURE;
-            default:
-               return TransactionSuccessStatus.SENDER_FAILURE;
-         }
+      const result = this.data.result.meta.TransactionResult;
+      const prefix = result.slice(0, 3) as XrpTransactionStatusPrefixes;
+      // about statuses https://xrpl.org/transaction-results.html
+      switch (prefix) {
+         case "tes": // SUCCESS - Transaction was applied. Only final in a validated ledger.
+            return TransactionSuccessStatus.SUCCESS;
+         case "tec": // FAILED - Transaction failed, and only the fee was charged. Only final in a validated ledger.
+            switch (result) {
+               case "tecDST_TAG_NEEDED":
+               case "tecNO_DST":
+               case "tecNO_DST_INSUF_XRP":
+               case "tecNO_PERMISSION":
+                  return TransactionSuccessStatus.RECEIVER_FAILURE;
+               default:
+                  return TransactionSuccessStatus.SENDER_FAILURE;
+            }
+         case "tef":
+            // FAILED - The transaction cannot be applied to the server's current (in-progress) ledger or any later one. It may have already been applied, or the condition of the ledger makes it impossible to apply in the future.
+            return TransactionSuccessStatus.SENDER_FAILURE;
+         case "tel":
+            // LOCAL_ERROR - The transaction was not applied. The transaction was not applied to the ledger because it failed local checks, such as a bad signature or an unavailable fee level.
+            return TransactionSuccessStatus.SENDER_FAILURE;
+         case "tem":
+            // MALFORMED - The transaction was not applied. The transaction was not applied to the ledger because it was malformed in some way, such as a bad signature or an unavailable fee level.
+            return TransactionSuccessStatus.SENDER_FAILURE;
+         case "ter":
+            // FAILED_PROCESSING - The transaction was not applied. The transaction was not applied to the ledger because it failed to meet some other constraint imposed by the server.
+            return TransactionSuccessStatus.SENDER_FAILURE;
+         default:
+            // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+            // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+            ((_: never): void => {})(prefix);
       }
-      // Other codes: tef, tel, tem, ter are not applied to ledgers
-      return TransactionSuccessStatus.SENDER_FAILURE;
+      throw new Error(`Unexpected transaction status prefix found ${prefix}`);
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
