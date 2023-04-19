@@ -6,7 +6,14 @@ import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
 import { Managed } from "../../utils/managed";
 import { WordToOpcode } from "../../utils/utxoUtils";
-import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
+import {
+   AddressAmount,
+   BalanceDecreasingProps,
+   BalanceDecreasingSummaryResponse,
+   PaymentSummaryProps,
+   PaymentSummaryResponse,
+   TransactionBase,
+} from "../TransactionBase";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
 // Transaction types and their description
@@ -14,7 +21,6 @@ export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payme
 // - payment         : what you get from node
 // - partial_payment : transaction with some vout of vins added to additional data
 // - full_payment    : transaction with vouts for all vins added to additional data
-
 @Managed()
 export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUtxoTransactionAdditionalData> {
    constructor(data: IUtxoGetTransactionRes, additionalData?: IUtxoTransactionAdditionalData) {
@@ -199,81 +205,88 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       return TransactionSuccessStatus.SUCCESS;
    }
 
-   public async paymentSummary(client?: MccClient, vinIndex?: number, voutIndex?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
-      this.assertValidVinIndex(vinIndex, true);
-      this.assertValidVoutIndex(voutIndex, true);
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   public async paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
+      throw new Error("Method not implemented.");
+      // this.assertValidVinIndex(vinIndex, true);
+      // this.assertValidVoutIndex(voutIndex, true);
 
-      // Refresh the inputs if needed
-      if (makeFullPayment) {
-         await this.makeFullPayment(client as MccUtxoClient);
-      } else {
-         // If vinIndex is not defined or null, then we do not need the input
-         if (vinIndex != null) {
-            await this.vinVoutAt(vinIndex, client as MccUtxoClient);
-         }
-      }
+      // // Refresh the inputs if needed
+      // if (makeFullPayment) {
+      //    await this.makeFullPayment(client as MccUtxoClient);
+      // } else {
+      //    // If vinIndex is not defined or null, then we do not need the input
+      //    if (vinIndex != null) {
+      //       await this.vinVoutAt(vinIndex, client as MccUtxoClient);
+      //    }
+      // }
 
-      const sourceAddress = vinIndex != null ? this.sourceAddresses[vinIndex] : undefined;
-      const receivingAddress = voutIndex != null ? this.receivingAddresses[voutIndex] : undefined;
-      let oneToOne: boolean = !!sourceAddress && !!receivingAddress;
-      const isFull = this.type === "full_payment";
+      // const sourceAddress = vinIndex != null ? this.sourceAddresses[vinIndex] : undefined;
+      // const receivingAddress = voutIndex != null ? this.receivingAddresses[voutIndex] : undefined;
+      // let oneToOne: boolean = !!sourceAddress && !!receivingAddress;
+      // const isFull = this.type === "full_payment";
 
-      if (isFull) {
-         let inFunds = toBN(0);
-         let returnFunds = toBN(0);
-         let outFunds = toBN(0);
-         let inFundsOfReceivingAddress = toBN(0);
+      // if (isFull) {
+      //    let inFunds = toBN(0);
+      //    let returnFunds = toBN(0);
+      //    let outFunds = toBN(0);
+      //    let inFundsOfReceivingAddress = toBN(0);
 
-         for (const vinAmount of this.spentAmounts) {
-            if (sourceAddress && vinAmount.address === sourceAddress) {
-               inFunds = inFunds.add(vinAmount.amount);
-            }
-            if (receivingAddress && vinAmount.address === receivingAddress) {
-               inFundsOfReceivingAddress = inFundsOfReceivingAddress.add(vinAmount.amount);
-            }
-            if (oneToOne && vinAmount.address != sourceAddress && vinAmount.address != receivingAddress) {
-               oneToOne = false;
-            }
-         }
-         for (const voutAmount of this.receivedAmounts) {
-            if (sourceAddress && voutAmount.address === sourceAddress) {
-               returnFunds = returnFunds.add(voutAmount.amount);
-            }
-            if (receivingAddress && voutAmount.address === receivingAddress) {
-               outFunds = outFunds.add(voutAmount.amount);
-            }
-            // Outputs without address do not break one-to-one condition
-            if (oneToOne && !voutAmount.address && voutAmount.amount.gt(toBN(0))) {
-               oneToOne = false;
-            }
-            if (oneToOne && voutAmount.address && voutAmount.address != sourceAddress && voutAmount.address != receivingAddress) {
-               oneToOne = false;
-            }
-         }
-         return {
-            isNativePayment: true,
-            sourceAddress,
-            receivingAddress,
-            spentAmount: inFunds.sub(returnFunds),
-            receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
-            paymentReference: this.stdPaymentReference,
-            oneToOne,
-            isFull,
-         };
-      }
-      const spentAmount = sourceAddress && vinIndex != null ? this.spentAmounts[vinIndex].amount : toBN(0);
-      const receivedAmount = receivingAddress && voutIndex != null ? this.receivedAmounts[voutIndex].amount : toBN(0);
-      oneToOne = false;
-      return {
-         isNativePayment: true,
-         sourceAddress,
-         receivingAddress,
-         spentAmount,
-         receivedAmount,
-         paymentReference: this.stdPaymentReference,
-         oneToOne,
-         isFull,
-      };
+      //    for (const vinAmount of this.spentAmounts) {
+      //       if (sourceAddress && vinAmount.address === sourceAddress) {
+      //          inFunds = inFunds.add(vinAmount.amount);
+      //       }
+      //       if (receivingAddress && vinAmount.address === receivingAddress) {
+      //          inFundsOfReceivingAddress = inFundsOfReceivingAddress.add(vinAmount.amount);
+      //       }
+      //       if (oneToOne && vinAmount.address != sourceAddress && vinAmount.address != receivingAddress) {
+      //          oneToOne = false;
+      //       }
+      //    }
+      //    for (const voutAmount of this.receivedAmounts) {
+      //       if (sourceAddress && voutAmount.address === sourceAddress) {
+      //          returnFunds = returnFunds.add(voutAmount.amount);
+      //       }
+      //       if (receivingAddress && voutAmount.address === receivingAddress) {
+      //          outFunds = outFunds.add(voutAmount.amount);
+      //       }
+      //       // Outputs without address do not break one-to-one condition
+      //       if (oneToOne && !voutAmount.address && voutAmount.amount.gt(toBN(0))) {
+      //          oneToOne = false;
+      //       }
+      //       if (oneToOne && voutAmount.address && voutAmount.address != sourceAddress && voutAmount.address != receivingAddress) {
+      //          oneToOne = false;
+      //       }
+      //    }
+      //    return {
+      //       isNativePayment: true,
+      //       sourceAddress,
+      //       receivingAddress,
+      //       spentAmount: inFunds.sub(returnFunds),
+      //       receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
+      //       paymentReference: this.stdPaymentReference,
+      //       oneToOne,
+      //       isFull,
+      //    };
+      // }
+      // const spentAmount = sourceAddress && vinIndex != null ? this.spentAmounts[vinIndex].amount : toBN(0);
+      // const receivedAmount = receivingAddress && voutIndex != null ? this.receivedAmounts[voutIndex].amount : toBN(0);
+      // oneToOne = false;
+      // return {
+      //    isNativePayment: true,
+      //    sourceAddress,
+      //    receivingAddress,
+      //    spentAmount,
+      //    receivedAmount,
+      //    paymentReference: this.stdPaymentReference,
+      //    oneToOne,
+      //    isFull,
+      // };
+   }
+
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   public balanceDecreasingSummary(props: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
+      throw new Error("Method not implemented.");
    }
 
    public async makeFull(client: MccClient): Promise<void> {

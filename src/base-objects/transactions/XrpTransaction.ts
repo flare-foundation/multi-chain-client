@@ -6,8 +6,15 @@ import { MccClient, TransactionSuccessStatus } from "../../types";
 import { IXrpGetTransactionRes, XrpTransactionStatusPrefixes, XrpTransactionTypeUnion } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
-import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, toBN } from "../../utils/utils";
-import { AddressAmount, BalanceDecreasingSummaryResponse, PaymentSummaryResponse, TransactionBase } from "../TransactionBase";
+import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash, toBN } from "../../utils/utils";
+import {
+   AddressAmount,
+   BalanceDecreasingProps,
+   BalanceDecreasingSummaryResponse,
+   PaymentSummaryProps,
+   PaymentSummaryResponse,
+   TransactionBase,
+} from "../TransactionBase";
 
 @Managed()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,91 +99,90 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    public get spentAmounts(): AddressAmount[] {
-      throw new Error("Test me");
-      // if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
-      //    throw new Error("Transaction meta is not available thus spent amounts cannot be calculated");
-      // }
-      // const spendAmounts: AddressAmount[] = [];
-      // for (const node of this.data.result.meta.AffectedNodes) {
-      //    if (isModifiedNode(node)) {
-      //       if (
-      //          node.ModifiedNode.LedgerEntryType === "AccountRoot" &&
-      //          node.ModifiedNode.FinalFields &&
-      //          node.ModifiedNode.PreviousFields &&
-      //          node.ModifiedNode.FinalFields.Account &&
-      //          node.ModifiedNode.FinalFields.Balance &&
-      //          node.ModifiedNode.PreviousFields.Balance
-      //       ) {
-      //          // TODO: this is due to xrpl.js lib mistakes
-      //          const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
-      //          if (diff.lt(toBN(0))) {
-      //             spendAmounts.push({
-      //                address: node.ModifiedNode.FinalFields.Account as string,
-      //                amount: diff.neg(),
-      //             });
-      //          }
-      //       }
-      //    }
-      //    if (isCreatedNode(node)) {
-      //       // TODO: check if true
-      //       // Created node can't affect spend amounts
-      //    }
-      //    if (isDeletedNode(node)) {
-      //       if (node.DeletedNode.LedgerEntryType === "AccountRoot" && "PreviousFields" in node.DeletedNode) {
-      //          if (node.DeletedNode.FinalFields && node.DeletedNode.FinalFields.Account) {
-      //             if (node.DeletedNode.FinalFields.Balance) {
-      //                // TODO: this is due to xrpl.js lib mistakes
-      //                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      //                const diff = toBN(node.DeletedNode.FinalFields.Balance as string).sub(
-      //                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      //                   toBN(((node.DeletedNode as any).PreviousFields as any).Balance as string)
-      //                );
-      //                if (diff.lt(toBN(0))) {
-      //                   spendAmounts.push({
-      //                      address: node.DeletedNode.FinalFields.Account as string,
-      //                      amount: diff.neg(),
-      //                   });
-      //                }
-      //             } else {
-      //                // TODO: this is due to xrpl.js lib mistakes
-      //                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-      //                const diff = toBN(((node.DeletedNode as any).PreviousFields as any).Balance as string);
-      //                if (diff.gt(toBN(0))) {
-      //                   spendAmounts.push({
-      //                      address: node.DeletedNode.FinalFields.Account as string,
-      //                      amount: diff,
-      //                   });
-      //                }
-      //             }
-      //          }
-      //       }
-      //    }
-      // }
-      // // Check if signer is already in source amounts
-      // const feeSigner = this.data.result.Account;
-      // for (const spendAmount of spendAmounts) {
-      //    if (spendAmount.address === feeSigner) {
-      //       return spendAmounts;
-      //    }
-      // }
-      // // Check if singer got positive amount
-      // const receivedAmounts = this.receivedAmounts;
-      // for (const receivedAmount of receivedAmounts) {
-      //    if (receivedAmount.address === feeSigner) {
-      //       const { amount, ...rest } = receivedAmount;
-      //       spendAmounts.push({
-      //          amount: amount.neg(),
-      //          ...rest,
-      //       });
-      //       return spendAmounts;
-      //    }
-      // }
-      // // You cash a check for exactly fee amount
-      // spendAmounts.push({
-      //    amount: toBN(0),
-      //    address: feeSigner,
-      // });
-      // return spendAmounts;
+      if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
+         throw new Error("Transaction meta is not available thus spent amounts cannot be calculated");
+      }
+      const spendAmounts: AddressAmount[] = [];
+      for (const node of this.data.result.meta.AffectedNodes) {
+         if (isModifiedNode(node)) {
+            if (
+               node.ModifiedNode.LedgerEntryType === "AccountRoot" &&
+               node.ModifiedNode.FinalFields &&
+               node.ModifiedNode.PreviousFields &&
+               node.ModifiedNode.FinalFields.Account &&
+               node.ModifiedNode.FinalFields.Balance &&
+               node.ModifiedNode.PreviousFields.Balance
+            ) {
+               // TODO: this is due to xrpl.js lib mistakes
+               const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
+               if (diff.lt(toBN(0))) {
+                  spendAmounts.push({
+                     address: node.ModifiedNode.FinalFields.Account as string,
+                     amount: diff.neg(),
+                  });
+               }
+            }
+         }
+         if (isCreatedNode(node)) {
+            // TODO: check if true
+            // Created node can't affect spend amounts
+         }
+         if (isDeletedNode(node)) {
+            if (node.DeletedNode.LedgerEntryType === "AccountRoot" && "PreviousFields" in node.DeletedNode) {
+               if (node.DeletedNode.FinalFields && node.DeletedNode.FinalFields.Account) {
+                  if (node.DeletedNode.FinalFields.Balance) {
+                     // TODO: this is due to xrpl.js lib mistakes
+                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                     const diff = toBN(node.DeletedNode.FinalFields.Balance as string).sub(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        toBN(((node.DeletedNode as any).PreviousFields as any).Balance as string)
+                     );
+                     if (diff.lt(toBN(0))) {
+                        spendAmounts.push({
+                           address: node.DeletedNode.FinalFields.Account as string,
+                           amount: diff.neg(),
+                        });
+                     }
+                  } else {
+                     // TODO: this is due to xrpl.js lib mistakes
+                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
+                     const diff = toBN(((node.DeletedNode as any).PreviousFields as any).Balance as string);
+                     if (diff.gt(toBN(0))) {
+                        spendAmounts.push({
+                           address: node.DeletedNode.FinalFields.Account as string,
+                           amount: diff,
+                        });
+                     }
+                  }
+               }
+            }
+         }
+      }
+      // Check if signer is already in source amounts
+      const feeSigner = this.data.result.Account;
+      for (const spendAmount of spendAmounts) {
+         if (spendAmount.address === feeSigner) {
+            return spendAmounts;
+         }
+      }
+      // Check if singer got positive amount
+      const receivedAmounts = this.receivedAmounts;
+      for (const receivedAmount of receivedAmounts) {
+         if (receivedAmount.address === feeSigner) {
+            const { amount, ...rest } = receivedAmount;
+            spendAmounts.push({
+               amount: amount.neg(),
+               ...rest,
+            });
+            return spendAmounts;
+         }
+      }
+      // You cash a check for exactly fee amount
+      spendAmounts.push({
+         amount: toBN(0),
+         address: feeSigner,
+      });
+      return spendAmounts;
    }
 
    public get assetSpentAmounts(): AddressAmount[] {
@@ -295,55 +301,84 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   public async paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummaryResponse> {
-      throw new Error("Method not implemented.");
-      // if (!this.isNativePayment) {
-      //    if (this.type === "Payment") {
-      //       // token transfer
-      //       const value = ((this.data.result as Payment).Amount as IssuedCurrencyAmount).value;
-      //       const valueSplit = value.split(".");
-      //       let eleUnits = 1;
-      //       if (valueSplit.length === 2) {
-      //          eleUnits = Math.pow(10, valueSplit[1].length);
-      //       }
-      //       return {
-      //          isNativePayment: false,
-      //          isTokenTransfer: true,
-      //          tokenElementaryUnits: toBN(eleUnits),
-      //          receivedTokenAmount: toBN(valueSplit.join("")),
-      //          sourceAddress: this.sourceAddresses[0],
-      //          receivingAddress: this.receivingAddresses[0],
-      //          spentAmount: this.spentAmounts[0].amount, // We still spend fee
-      //          paymentReference: this.stdPaymentReference,
-      //          tokenName: this.currencyName,
-      //          oneToOne: true,
-      //          isFull: true,
-      //       };
-      //    } else {
-      //       return { isNativePayment: false };
-      //    }
-      // }
-      // return {
-      //    isNativePayment: true,
-      //    sourceAddress: this.sourceAddresses[0],
-      //    receivingAddress: this.receivingAddresses[0],
-      //    spentAmount: this.spentAmounts[0].amount,
-      //    // TODO: Check if intended sent value can be set
-      //    receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? this.receivedAmounts[0].amount : toBN(0),
-      //    oneToOne: true,
-      //    paymentReference: this.stdPaymentReference,
-      //    isFull: true,
-      // };
+   public async paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
+      try {
+         if (this.type === "Payment" && this.isNativePayment) {
+            // Is native transfer
+            if (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1) {
+               return {
+                  status: "notOneToOne",
+               };
+            }
+            const spendAmount = this.spentAmounts[0];
+            const receiveAmount = this.receivedAmounts[0];
+            if (!spendAmount.address) {
+               return {
+                  status: "noSpendAmountAddress",
+               };
+            }
+            if (!receiveAmount.address) {
+               return {
+                  status: "noReceiveAmountAddress",
+               };
+            }
+            return {
+               status: "success",
+               response: {
+                  isNativePayment: true,
+                  blockTimestamp: this.unixTimestamp,
+                  transactionHash: this.stdTxid,
+                  sourceAddress: spendAmount.address,
+                  sourceAddressHash: standardAddressHash(spendAmount.address),
+                  receivingAddressHash: standardAddressHash(receiveAmount.address),
+                  receivingAddress: receiveAmount.address,
+                  spentAmount: spendAmount.amount,
+                  // TODO: Check if intended sent value can be set
+                  receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : toBN(0),
+                  oneToOne: true,
+                  paymentReference: this.stdPaymentReference,
+                  isFull: true,
+               },
+            };
+         }
+         return {
+            status: "notNativePayment",
+         };
+      } catch (e) {
+         // TODO: analyze error
+         return { status: "unexpectedError" };
+      }
    }
 
-   public async balanceDecreasingSummary(sourceAddressIndicator: string, client?: MccClient): Promise<BalanceDecreasingSummaryResponse> {
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   public async balanceDecreasingSummary({ sourceAddressIndicator, client }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
       try {
          const spendAmounts = this.spentAmounts;
+         for (const spendAmount of spendAmounts) {
+            if (spendAmount.address && standardAddressHash(spendAmount.address) === sourceAddressIndicator) {
+               // We found the address we are looking for
+               return {
+                  status: "success",
+                  response: {
+                     blockTimestamp: this.unixTimestamp,
+                     transactionHash: this.stdTxid,
+                     sourceAddressIndicator: sourceAddressIndicator,
+                     sourceAddressHash: standardAddressHash(spendAmount.address),
+                     sourceAddress: spendAmount.address,
+                     spentAmount: spendAmount.amount,
+                     paymentReference: this.stdPaymentReference,
+                     isFull: true,
+                  },
+               };
+            }
+         }
+         // We didn't find the address we are looking for
+         return { status: "noSourceAddress" };
       } catch (e) {
-         return { status: "noSpendAmounts" };
+         console.log(e);
+         // TODO: analyze error
+         return { status: "unexpectedError" };
       }
-
-      return { status: "unexpectedError" };
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars

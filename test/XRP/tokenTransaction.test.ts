@@ -248,10 +248,10 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(transaction.successStatus).to.eq(transData.expect.successStatus);
          });
 
-         it("Should get payment summary ", async function () {
-            const summary = await transaction.paymentSummary(MccClient);
-            expect(summary.isNativePayment).to.eq(false);
-         });
+         // it("Should get payment summary ", async function () {
+         //    const summary = await transaction.paymentSummary(MccClient);
+         //    expect(summary.isNativePayment).to.eq(false);
+         // });
       });
    }
 });

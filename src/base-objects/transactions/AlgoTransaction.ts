@@ -5,13 +5,21 @@ import { base32ToHex, bufAddToCBufAdd, bytesToHex, hexToBase32 } from "../../uti
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
 import { Managed } from "../../utils/managed";
-import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
-import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
+import { ZERO_BYTES_32, isValidBytes32Hex, prefix0x, toBN } from "../../utils/utils";
+import {
+   AddressAmount,
+   BalanceDecreasingProps,
+   BalanceDecreasingSummaryResponse,
+   PaymentSummaryProps,
+   PaymentSummaryResponse,
+   TransactionBase,
+} from "../TransactionBase";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const web3 = require("web3");
 /**
  * docs https://developer.algorand.org/docs/get-details/transactions/transactions/
  */
+
 @Managed()
 export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IAlgoAdditionalData> {
    public get txid(): string {
@@ -253,34 +261,41 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IA
       return TransactionSuccessStatus.SUCCESS;
    }
 
-   public async paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
-      if (!this.isNativePayment) {
-         if (this.type === "axfer") {
-            if (client && makeFullPayment) {
-               await this.getTransactionAssetParams(client);
-               // TODO payment summary for algorand token transaction
-            } else {
-               const ErrorMessage =
-                  "To get all information about token transactions makeFullPayment must be set to true and an instance of client must be provided";
-               throw new mccError(mccErrorCode.InvalidParameter, Error(ErrorMessage));
-            }
-         }
-         return { isNativePayment: false };
-      }
-      return {
-         isNativePayment: true,
-         sourceAddress: this.sourceAddresses[0],
-         receivingAddress: this.receivingAddresses[0],
-         spentAmount: this.spentAmounts[0].amount,
-         receivedAmount: this.receivedAmounts[0].amount,
-         paymentReference: this.stdPaymentReference,
-         oneToOne: true,
-         isFull: true,
-      };
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   public async paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
+      throw new Error("Method not implemented.");
+      // if (!this.isNativePayment) {
+      //    if (this.type === "axfer") {
+      //       if (client && makeFullPayment) {
+      //          await this.getTransactionAssetParams(client);
+      //          // TODO payment summary for algorand token transaction
+      //       } else {
+      //          const ErrorMessage =
+      //             "To get all information about token transactions makeFullPayment must be set to true and an instance of client must be provided";
+      //          throw new mccError(mccErrorCode.InvalidParameter, Error(ErrorMessage));
+      //       }
+      //    }
+      //    return { isNativePayment: false };
+      // }
+      // return {
+      //    isNativePayment: true,
+      //    sourceAddress: this.sourceAddresses[0],
+      //    receivingAddress: this.receivingAddresses[0],
+      //    spentAmount: this.spentAmounts[0].amount,
+      //    receivedAmount: this.receivedAmounts[0].amount,
+      //    paymentReference: this.stdPaymentReference,
+      //    oneToOne: true,
+      //    isFull: true,
+      // };
    }
 
    public async makeFull(client: MccClient): Promise<void> {
       await this.getTransactionAssetParams(client);
+   }
+
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   public balanceDecreasingSummary(props: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
+      throw new Error("Method not implemented.");
    }
 
    //////////////////////////////////////////

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, PaymentSummary, unPrefix0x } from "../src";
+import { AddressAmount, PaymentSummaryResponse, unPrefix0x } from "../src";
 import { IIUtxoVout, TransactionSuccessStatus } from "../src/types";
 import { addressToHex, hexToBytes } from "../src/utils/algoUtils";
 
@@ -108,7 +108,7 @@ export interface transactionTestCases {
    description: string;
    txid: string;
    expect: expectTransactionTestCase;
-   summary?: PaymentSummary;
+   summary?: PaymentSummaryResponse;
 }
 
 export interface expectTransactionTestCase {

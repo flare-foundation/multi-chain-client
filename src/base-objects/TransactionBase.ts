@@ -4,6 +4,19 @@ import { MccClient, TransactionSuccessStatus } from "../types";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ITransaction = TransactionBase<any, any>;
 
+type SummaryBaseProps = {
+   client?: MccClient;
+};
+
+export type BalanceDecreasingProps = SummaryBaseProps & {
+   sourceAddressIndicator: string;
+};
+
+export type PaymentSummaryProps = SummaryBaseProps & {
+   inUtxo: number;
+   outUtxo: number;
+};
+
 export interface AddressAmount {
    address?: string;
    amount: BN;
@@ -17,23 +30,30 @@ interface TransactionSummaryBase<ST, TO> {
    response?: TO;
 }
 
-export type PaymentSummaryStatus = SummaryStatusBase | "notFull";
-export type BalanceDecreasingSummaryStatus = SummaryStatusBase | "noSpendAmounts" | "notOneToOne";
+export type PaymentSummaryStatus = SummaryStatusBase | "notFull" | "notNativePayment" | "notOneToOne" | "noSpendAmountAddress" | "noReceiveAmountAddress";
+export type BalanceDecreasingSummaryStatus = SummaryStatusBase | "noSpendAmounts" | "noSourceAddress";
 
-export interface PaymentSummaryObject {
-   isNativePayment: boolean;
-   sourceAddress: string;
-   receivingAddress?: string;
-   spentAmount?: BN;
-   receivedAmount?: BN;
-   paymentReference?: string; // standardized payment reference, if it exists
-   oneToOne?: boolean;
-   isFull?: boolean;
-}
-
-export interface BalanceDecreasingSummaryObject {
+interface SummaryObjectBase {
+   // blockNumber: number;
+   blockTimestamp: number;
+   transactionHash: string;
+   sourceAddressHash: string;
    sourceAddress: string;
    spentAmount: BN;
+   paymentReference: string;
+}
+
+export interface PaymentSummaryObject extends SummaryObjectBase {
+   isNativePayment: boolean;
+   receivingAddressHash: string;
+   receivingAddress: string;
+   receivedAmount: BN;
+   oneToOne: boolean;
+   isFull: boolean;
+}
+
+export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
+   sourceAddressIndicator: string;
    isFull: boolean;
 }
 
@@ -193,9 +213,9 @@ export abstract class TransactionBase<T, AT> {
     */
    public abstract makeFull(client: MccClient): Promise<void>;
 
-   public abstract paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummaryResponse>;
+   public abstract paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse>;
 
-   public abstract balanceDecreasingSummary(sourceAddressIndicator: string, client?: MccClient): Promise<BalanceDecreasingSummaryResponse>;
+   public abstract balanceDecreasingSummary(props: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse>;
 }
 
 export { AlgoTransaction } from "./transactions/AlgoTransaction";
