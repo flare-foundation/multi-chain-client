@@ -11,13 +11,18 @@ export interface AddressAmount {
    utxo?: number;
 }
 
-export interface PaymentSummary {
+type SummaryStatusBase = "success" | "unexpectedError";
+interface TransactionSummaryBase<ST, TO> {
+   status: ST;
+   response?: TO;
+}
+
+export type PaymentSummaryStatus = SummaryStatusBase | "notFull";
+export type BalanceDecreasingSummaryStatus = SummaryStatusBase | "noSpendAmounts" | "notOneToOne";
+
+export interface PaymentSummaryObject {
    isNativePayment: boolean;
-   isTokenTransfer?: boolean; // sometimes even no native payments can still be token transfers
-   tokenElementaryUnits?: BN; // if it is a token transfer // not the same for all transactions with this token
-   receivedTokenAmount?: BN; // only if token transfer
-   tokenName?: string; // only if token transfer
-   sourceAddress?: string;
+   sourceAddress: string;
    receivingAddress?: string;
    spentAmount?: BN;
    receivedAmount?: BN;
@@ -25,6 +30,15 @@ export interface PaymentSummary {
    oneToOne?: boolean;
    isFull?: boolean;
 }
+
+export interface BalanceDecreasingSummaryObject {
+   sourceAddress: string;
+   spentAmount: BN;
+   isFull: boolean;
+}
+
+export type BalanceDecreasingSummaryResponse = TransactionSummaryBase<BalanceDecreasingSummaryStatus, BalanceDecreasingSummaryObject>;
+export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus, PaymentSummaryObject>;
 
 export abstract class TransactionBase<T, AT> {
    data: T;
@@ -179,7 +193,9 @@ export abstract class TransactionBase<T, AT> {
     */
    public abstract makeFull(client: MccClient): Promise<void>;
 
-   public abstract paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary>;
+   public abstract paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummaryResponse>;
+
+   public abstract balanceDecreasingSummary(sourceAddressIndicator: string, client?: MccClient): Promise<BalanceDecreasingSummaryResponse>;
 }
 
 export { AlgoTransaction } from "./transactions/AlgoTransaction";
