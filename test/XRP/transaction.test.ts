@@ -15,7 +15,7 @@ const XRPMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("Transaction Xrp tests ", function () {
+describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
@@ -440,15 +440,15 @@ describe("Transaction Xrp tests ", function () {
       const txid2 = "F262BA3BD2575BCAC804E9320FEA90EFEA59BCA6723F431D9A4B80EBF9CC1058";
       const txid3 = "93D194C45CC60B2C17B8747BA50F1C028B637CFD9C5813918DBA73D2C21C2F27";
       before(async function () {
-         sinon.stub(console, "error");
+         //sinon.stub(console, "error");
          transaction1 = await MccClient.getTransaction(txid1);
          transaction2 = await MccClient.getTransaction(txid2);
          transaction3 = await MccClient.getTransaction(txid3);
       });
 
-      after(function () {
-         sinon.restore();
-      });
+      // after(function () {
+      //    sinon.restore();
+      // });
 
       it(`Should get transaction status (${getTestFile(__filename)})`, async function () {
          expect(transaction1.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);

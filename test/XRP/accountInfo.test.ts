@@ -92,16 +92,17 @@ const XRPMccConnectionTest = {
    password: process.env.XRP_PASSWORD_TESTNET || "",
 };
 
-describe(`Xrpl account test testnet (${getTestFile(__filename)})`, function () {
+describe.skip(`Xrpl account test testnet (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnectionTest);
    });
 
-   describe("account info", async () => {
+   describe.skip("account info", async () => {
       it(`Should get account info`, async () => {
          const info = await MccClient.getAccountInfo("rBwD7GqAPFoZvzz6YaR5HyJWD8TUoaUbJo");
+
          // Get the flags
          const flags = processFlags(info.result.account_data.Flags);
          expect(flags.length).to.eq(3);

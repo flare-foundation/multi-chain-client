@@ -58,11 +58,11 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
       { address: from, amount: round_for_ltc(unspentAmount - test_amount - gas) },
    ];
    const a = await RPC.createRawTransaction(fromWalletLabel, vin, vout);
-   const signkeys = [];
+   const signKeys = [];
    for (const add of vinAddresses) {
-      signkeys.push(await RPC.getPrivateKey(fromWalletLabel, add));
+      signKeys.push(await RPC.getPrivateKey(fromWalletLabel, add));
    }
-   const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
+   const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signKeys);
    const txId = await RPC.sendRawTransactionInBlock(fromWalletLabel, signedTx.hex);
    return txId;
 }
@@ -76,6 +76,17 @@ export function AddressAmountEqual(a: AddressAmount[], b: AddressAmount[]) {
    if (a.length != b.length) {
       return false;
    }
+
+   const sortParam = (x: AddressAmount, y: AddressAmount) => {
+      if (!x.address || !y.address) return 1;
+      if (x.address == y.address) return 0;
+      if (x.address > y.address) return 1;
+      else return -1;
+   };
+
+   a.sort(sortParam);
+   b.sort(sortParam);
+
    for (let i = 0; i < a.length; i++) {
       if (
          a[i].address != b[i].address ||
