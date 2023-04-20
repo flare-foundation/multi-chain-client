@@ -22,6 +22,7 @@
    "peacock.color": "#022941",
    "cSpell.words": [
       "blockhash",
+      "blockheight",
       "blocktime",
       "getblock",
       "locktime",

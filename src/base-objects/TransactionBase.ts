@@ -30,7 +30,14 @@ interface TransactionSummaryBase<ST, TO> {
    response?: TO;
 }
 
-export type PaymentSummaryStatus = SummaryStatusBase | "notFull" | "notNativePayment" | "notOneToOne" | "noSpendAmountAddress" | "noReceiveAmountAddress";
+export type PaymentSummaryStatus =
+   | SummaryStatusBase
+   | "successNotFull"
+   | "notFull"
+   | "notNativePayment"
+   | "notOneToOne"
+   | "noSpendAmountAddress"
+   | "noReceiveAmountAddress";
 export type BalanceDecreasingSummaryStatus = SummaryStatusBase | "noSpendAmounts" | "noSourceAddress";
 
 interface SummaryObjectBase {

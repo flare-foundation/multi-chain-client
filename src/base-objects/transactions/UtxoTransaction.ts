@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { isValidBytes32Hex, IUtxoGetTransactionRes, prefix0x, toBN, toHex, unPrefix0x, ZERO_BYTES_32 } from "../..";
+import { isValidBytes32Hex, IUtxoGetTransactionRes, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x, ZERO_BYTES_32 } from "../..";
 import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types";
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
@@ -206,82 +206,108 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   public async paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
-      throw new Error("Method not implemented.");
-      // this.assertValidVinIndex(vinIndex, true);
-      // this.assertValidVoutIndex(voutIndex, true);
+   public async paymentSummary({ client, inUtxo, outUtxo }: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
+      this.assertValidVinIndex(inUtxo, true);
+      this.assertValidVoutIndex(outUtxo, true);
 
-      // // Refresh the inputs if needed
-      // if (makeFullPayment) {
-      //    await this.makeFullPayment(client as MccUtxoClient);
-      // } else {
-      //    // If vinIndex is not defined or null, then we do not need the input
-      //    if (vinIndex != null) {
-      //       await this.vinVoutAt(vinIndex, client as MccUtxoClient);
-      //    }
-      // }
+      // If vinIndex is not defined or null, then we do not need the input
+      if (inUtxo != null) {
+         if (!client) {
+            throw new Error(`Client is not defined`);
+         }
+         await this.vinVoutAt(inUtxo, client as MccUtxoClient);
+      }
 
-      // const sourceAddress = vinIndex != null ? this.sourceAddresses[vinIndex] : undefined;
-      // const receivingAddress = voutIndex != null ? this.receivingAddresses[voutIndex] : undefined;
-      // let oneToOne: boolean = !!sourceAddress && !!receivingAddress;
-      // const isFull = this.type === "full_payment";
+      const spendAmount = this.spentAmounts[inUtxo];
+      if (!spendAmount.address) {
+         return { status: "noSpendAmountAddress" };
+      }
+      const receiveAmount = this.receivedAmounts[outUtxo];
+      if (!receiveAmount.address) {
+         return { status: "noReceiveAmountAddress" };
+      }
 
-      // if (isFull) {
-      //    let inFunds = toBN(0);
-      //    let returnFunds = toBN(0);
-      //    let outFunds = toBN(0);
-      //    let inFundsOfReceivingAddress = toBN(0);
+      // Extract addresses from input and output fields
+      const sourceAddress = spendAmount.address;
+      const receivingAddress = receiveAmount.address;
 
-      //    for (const vinAmount of this.spentAmounts) {
-      //       if (sourceAddress && vinAmount.address === sourceAddress) {
-      //          inFunds = inFunds.add(vinAmount.amount);
-      //       }
-      //       if (receivingAddress && vinAmount.address === receivingAddress) {
-      //          inFundsOfReceivingAddress = inFundsOfReceivingAddress.add(vinAmount.amount);
-      //       }
-      //       if (oneToOne && vinAmount.address != sourceAddress && vinAmount.address != receivingAddress) {
-      //          oneToOne = false;
-      //       }
-      //    }
-      //    for (const voutAmount of this.receivedAmounts) {
-      //       if (sourceAddress && voutAmount.address === sourceAddress) {
-      //          returnFunds = returnFunds.add(voutAmount.amount);
-      //       }
-      //       if (receivingAddress && voutAmount.address === receivingAddress) {
-      //          outFunds = outFunds.add(voutAmount.amount);
-      //       }
-      //       // Outputs without address do not break one-to-one condition
-      //       if (oneToOne && !voutAmount.address && voutAmount.amount.gt(toBN(0))) {
-      //          oneToOne = false;
-      //       }
-      //       if (oneToOne && voutAmount.address && voutAmount.address != sourceAddress && voutAmount.address != receivingAddress) {
-      //          oneToOne = false;
-      //       }
-      //    }
-      //    return {
-      //       isNativePayment: true,
-      //       sourceAddress,
-      //       receivingAddress,
-      //       spentAmount: inFunds.sub(returnFunds),
-      //       receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
-      //       paymentReference: this.stdPaymentReference,
-      //       oneToOne,
-      //       isFull,
-      //    };
-      // }
-      // const spentAmount = sourceAddress && vinIndex != null ? this.spentAmounts[vinIndex].amount : toBN(0);
-      // const receivedAmount = receivingAddress && voutIndex != null ? this.receivedAmounts[voutIndex].amount : toBN(0);
-      // oneToOne = false;
-      // return {
-      //    isNativePayment: true,
-      //    sourceAddress,
-      //    receivingAddress,
-      //    spentAmount,
-      //    receivedAmount,
-      //    paymentReference: this.stdPaymentReference,
-      //    oneToOne,
-      //    isFull,
-      // };
+      // We will update this once we iterate over inputs and outputs if we have full transaction
+      let oneToOne: boolean = true;
+      const isFull = this.type === "full_payment";
+
+      if (isFull) {
+         let inFunds = toBN(0);
+         let returnFunds = toBN(0);
+         let outFunds = toBN(0);
+         let inFundsOfReceivingAddress = toBN(0);
+
+         for (const vinAmount of this.spentAmounts) {
+            if (sourceAddress && vinAmount.address === sourceAddress) {
+               inFunds = inFunds.add(vinAmount.amount);
+            }
+            if (receivingAddress && vinAmount.address === receivingAddress) {
+               inFundsOfReceivingAddress = inFundsOfReceivingAddress.add(vinAmount.amount);
+            }
+            if (oneToOne && vinAmount.address != sourceAddress && vinAmount.address != receivingAddress) {
+               oneToOne = false;
+            }
+         }
+         for (const voutAmount of this.receivedAmounts) {
+            if (sourceAddress && voutAmount.address === sourceAddress) {
+               returnFunds = returnFunds.add(voutAmount.amount);
+            }
+            if (receivingAddress && voutAmount.address === receivingAddress) {
+               outFunds = outFunds.add(voutAmount.amount);
+            }
+            // Outputs without address do not break one-to-one condition
+            if (oneToOne && !voutAmount.address && voutAmount.amount.gt(toBN(0))) {
+               oneToOne = false;
+            }
+            if (oneToOne && voutAmount.address && voutAmount.address != sourceAddress && voutAmount.address != receivingAddress) {
+               oneToOne = false;
+            }
+         }
+         return {
+            status: "success",
+            response: {
+               isNativePayment: true,
+               blockTimestamp: this.unixTimestamp,
+               transactionHash: this.stdTxid,
+               sourceAddressHash: standardAddressHash(sourceAddress),
+               sourceAddress,
+               receivingAddress,
+               receivingAddressHash: standardAddressHash(receivingAddress),
+               spentAmount: inFunds.sub(returnFunds),
+               receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
+               paymentReference: this.stdPaymentReference,
+               oneToOne,
+               isFull,
+            },
+         };
+      } else {
+         // Since we don't have all inputs "decoded" we can't be sure that transaction is one-to-one
+         oneToOne = false;
+         const spentAmount = sourceAddress && inUtxo != null ? this.spentAmounts[inUtxo].amount : toBN(0);
+         const receivedAmount = receivingAddress && outUtxo != null ? this.receivedAmounts[outUtxo].amount : toBN(0);
+
+         return {
+            status: "successNotFull",
+            response: {
+               isNativePayment: true,
+               blockTimestamp: this.unixTimestamp,
+               transactionHash: this.stdTxid,
+               sourceAddress,
+               sourceAddressHash: standardAddressHash(sourceAddress),
+               receivingAddress,
+               receivingAddressHash: standardAddressHash(receivingAddress),
+               spentAmount,
+               receivedAmount,
+               paymentReference: this.stdPaymentReference,
+               oneToOne,
+               isFull,
+            },
+         };
+      }
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
