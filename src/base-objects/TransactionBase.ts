@@ -45,6 +45,8 @@ export enum BalanceDecreasingSummaryStatus {
    UnexpectedError = "unexpectedError",
    NoSpendAmounts = "noSpendAmounts",
    NoSourceAddress = "noSourceAddress",
+   NotValidSourceAddressFormat = "notValidSourceAddressFormat",
+   NoClient = "noClient",
 }
 
 interface SummaryObjectBase {

@@ -68,6 +68,14 @@
       {
          "type": "node",
          "request": "launch",
+         "name": "Test BTC balance decreasing",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/BTC/balanceDecreasing.test.ts"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
          "name": "---DOGE---",
          "runtimeExecutable": "echo",
          "runtimeArgs": ["DOGE tests separator"]

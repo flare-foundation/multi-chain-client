@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { isValidBytes32Hex, IUtxoGetTransactionRes, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x, ZERO_BYTES_32 } from "../..";
+import { isValidBytes32Hex, isValidHexString, IUtxoGetTransactionRes, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x, ZERO_BYTES_32 } from "../..";
 import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types";
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
@@ -10,6 +10,7 @@ import {
    AddressAmount,
    BalanceDecreasingProps,
    BalanceDecreasingSummaryResponse,
+   BalanceDecreasingSummaryStatus,
    PaymentSummaryProps,
    PaymentSummaryResponse,
    PaymentSummaryStatus,
@@ -314,8 +315,67 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   public balanceDecreasingSummary(props: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
-      throw new Error("Method not implemented.");
+   public async balanceDecreasingSummary({ sourceAddressIndicator, client }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
+      try {
+         // We expect sourceAddressIndicator to be utxo vin index (as hex string)
+         if (!isValidHexString(sourceAddressIndicator)) {
+            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
+         }
+         const vinIndex = parseInt(sourceAddressIndicator, 16);
+         this.assertValidVinIndex(vinIndex, true);
+         if (!(0 <= vinIndex && vinIndex < this.data.vin.length)) {
+            return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
+         }
+
+         if (!this.isValidAdditionalData()) {
+            const spendAmounts = this.spentAmounts;
+            const spendAmount = spendAmounts[vinIndex];
+            if (spendAmount.address) {
+               return {
+                  status: BalanceDecreasingSummaryStatus.Success,
+                  response: {
+                     blockTimestamp: this.unixTimestamp,
+                     transactionHash: this.stdTxid,
+                     sourceAddressIndicator: sourceAddressIndicator,
+                     sourceAddressHash: standardAddressHash(spendAmount.address),
+                     sourceAddress: spendAmount.address,
+                     spentAmount: spendAmount.amount,
+                     paymentReference: this.stdPaymentReference,
+                     isFull: true,
+                  },
+               };
+            }
+            return {
+               status: BalanceDecreasingSummaryStatus.NoSourceAddress,
+            };
+         }
+         if (!client) {
+            return { status: BalanceDecreasingSummaryStatus.NoClient };
+         }
+         // TODO how to make sure client you provided is BTC client
+         const vinVout = await this.extractVinVoutAt(vinIndex, client as MccUtxoClient);
+         if (vinVout) {
+            if (vinVout.vinvout && vinVout.vinvout.scriptPubKey.address) {
+               return {
+                  status: BalanceDecreasingSummaryStatus.Success,
+                  response: {
+                     blockTimestamp: this.unixTimestamp,
+                     transactionHash: this.stdTxid,
+                     sourceAddressIndicator: sourceAddressIndicator,
+                     sourceAddressHash: standardAddressHash(vinVout.vinvout.scriptPubKey.address),
+                     sourceAddress: vinVout.vinvout.scriptPubKey.address,
+                     spentAmount: toBN(Math.round((vinVout.vinvout.value || 0) * BTC_MDU).toFixed(0)),
+                     paymentReference: this.stdPaymentReference,
+                     isFull: false,
+                  },
+               };
+            }
+         }
+         // We didn't find the address we are looking for
+         return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
+      } catch (e) {
+         return { status: BalanceDecreasingSummaryStatus.UnexpectedError };
+      }
    }
 
    public async makeFull(client: MccClient): Promise<void> {
@@ -366,6 +426,20 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
             }
          });
       }
+   }
+
+   isValidAdditionalData(): boolean {
+      if (this.additionalData) {
+         if (this.additionalData.vinouts?.length !== this.data.vin.length) {
+            return false;
+         }
+         this.additionalData.vinouts.forEach((vinvout, ind) => {
+            if (vinvout && vinvout.index !== ind) {
+               return false;
+            }
+         });
+      }
+      return true;
    }
 
    synchronizeAdditionalData() {
