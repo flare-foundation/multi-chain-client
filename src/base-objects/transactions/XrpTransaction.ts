@@ -11,8 +11,10 @@ import {
    AddressAmount,
    BalanceDecreasingProps,
    BalanceDecreasingSummaryResponse,
+   BalanceDecreasingSummaryStatus,
    PaymentSummaryProps,
    PaymentSummaryResponse,
+   PaymentSummaryStatus,
    TransactionBase,
 } from "../TransactionBase";
 
@@ -307,23 +309,23 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             // Is native transfer
             if (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1) {
                return {
-                  status: "notOneToOne",
+                  status: PaymentSummaryStatus.NotOneToOne,
                };
             }
             const spendAmount = this.spentAmounts[0];
             const receiveAmount = this.receivedAmounts[0];
             if (!spendAmount.address) {
                return {
-                  status: "noSpendAmountAddress",
+                  status: PaymentSummaryStatus.NoSpendAmountAddress,
                };
             }
             if (!receiveAmount.address) {
                return {
-                  status: "noReceiveAmountAddress",
+                  status: PaymentSummaryStatus.NoReceiveAmountAddress,
                };
             }
             return {
-               status: "success",
+               status: PaymentSummaryStatus.Success,
                response: {
                   isNativePayment: true,
                   blockTimestamp: this.unixTimestamp,
@@ -342,11 +344,11 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             };
          }
          return {
-            status: "notNativePayment",
+            status: PaymentSummaryStatus.NotNativePayment,
          };
       } catch (e) {
          // TODO: analyze error
-         return { status: "unexpectedError" };
+         return { status: PaymentSummaryStatus.UnexpectedError };
       }
    }
 
@@ -358,7 +360,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             if (spendAmount.address && standardAddressHash(spendAmount.address) === sourceAddressIndicator) {
                // We found the address we are looking for
                return {
-                  status: "success",
+                  status: BalanceDecreasingSummaryStatus.Success,
                   response: {
                      blockTimestamp: this.unixTimestamp,
                      transactionHash: this.stdTxid,
@@ -373,11 +375,11 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             }
          }
          // We didn't find the address we are looking for
-         return { status: "noSourceAddress" };
+         return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
       } catch (e) {
          console.log(e);
          // TODO: analyze error
-         return { status: "unexpectedError" };
+         return { status: BalanceDecreasingSummaryStatus.UnexpectedError };
       }
    }
 

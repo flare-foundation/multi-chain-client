@@ -1,5 +1,15 @@
 import { expect } from "chai";
-import { BtcTransaction, MCC, standardAddressHash, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
+import {
+   BtcTransaction,
+   MCC,
+   PaymentSummaryStatus,
+   standardAddressHash,
+   toBN,
+   traceManager,
+   TransactionSuccessStatus,
+   UtxoMccCreate,
+   UtxoTransaction,
+} from "../../src";
 import { transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -259,7 +269,7 @@ describe("Transaction Btc base test ", function () {
          },
          makeFull: true,
          summary: {
-            status: "success",
+            status: PaymentSummaryStatus.Success,
             response: {
                isNativePayment: true,
                blockTimestamp: 1404107109,
@@ -321,7 +331,7 @@ describe("Transaction Btc base test ", function () {
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
          summary: {
-            status: "success",
+            status: PaymentSummaryStatus.Success,
             response: {
                isNativePayment: true,
                blockTimestamp: 1647547988,
@@ -382,7 +392,7 @@ describe("Transaction Btc base test ", function () {
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
          summary: {
-            status: "coinbase",
+            status: PaymentSummaryStatus.Coinbase,
          },
       },
    ];
@@ -507,7 +517,7 @@ describe("Transaction Btc base test ", function () {
          it("Should get payment summary", async function () {
             const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
 
-            if (summary.status === "success" || summary.status === "successNotFull") {
+            if (summary.status === PaymentSummaryStatus.Success) {
                console.dir(summary, { depth: null });
 
                console.log("prepeared (expected)");

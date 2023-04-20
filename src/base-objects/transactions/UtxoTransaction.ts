@@ -12,6 +12,7 @@ import {
    BalanceDecreasingSummaryResponse,
    PaymentSummaryProps,
    PaymentSummaryResponse,
+   PaymentSummaryStatus,
    TransactionBase,
 } from "../TransactionBase";
 
@@ -218,15 +219,15 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          await this.vinVoutAt(inUtxo, client as MccUtxoClient);
       }
       if (this.type === "coinbase") {
-         return { status: "coinbase" };
+         return { status: PaymentSummaryStatus.Coinbase };
       }
       const spendAmount = this.spentAmounts[inUtxo];
       if (!spendAmount.address) {
-         return { status: "noSpendAmountAddress" };
+         return { status: PaymentSummaryStatus.NoSpendAmountAddress };
       }
       const receiveAmount = this.receivedAmounts[outUtxo];
       if (!receiveAmount.address) {
-         return { status: "noReceiveAmountAddress" };
+         return { status: PaymentSummaryStatus.NoReceiveAmountAddress };
       }
 
       // Extract addresses from input and output fields
@@ -270,7 +271,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
             }
          }
          return {
-            status: "success",
+            status: PaymentSummaryStatus.Success,
             response: {
                isNativePayment: true,
                blockTimestamp: this.unixTimestamp,
@@ -293,7 +294,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          const receivedAmount = receivingAddress && outUtxo != null ? this.receivedAmounts[outUtxo].amount : toBN(0);
 
          return {
-            status: "success",
+            status: PaymentSummaryStatus.Success,
             response: {
                isNativePayment: true,
                blockTimestamp: this.unixTimestamp,

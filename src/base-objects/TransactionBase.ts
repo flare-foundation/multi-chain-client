@@ -24,22 +24,28 @@ export interface AddressAmount {
    utxo?: number;
 }
 
-type SummaryStatusBase = "success" | "unexpectedError";
 interface TransactionSummaryBase<ST, TO> {
    status: ST;
    response?: TO;
 }
 
-export type PaymentSummaryStatus =
-   | SummaryStatusBase
-   | "successNotFull"
-   | "coinbase"
-   | "notFull"
-   | "notNativePayment"
-   | "notOneToOne"
-   | "noSpendAmountAddress"
-   | "noReceiveAmountAddress";
-export type BalanceDecreasingSummaryStatus = SummaryStatusBase | "noSpendAmounts" | "noSourceAddress";
+export enum PaymentSummaryStatus {
+   Success = "success",
+   UnexpectedError = "unexpectedError",
+   Coinbase = "coinbase",
+   NotFull = "notFull",
+   NotNativePayment = "notNativePayment",
+   NotOneToOne = "notOneToOne",
+   NoSpendAmountAddress = "noSpendAmountAddress",
+   NoReceiveAmountAddress = "noReceiveAmountAddress",
+}
+
+export enum BalanceDecreasingSummaryStatus {
+   Success = "success",
+   UnexpectedError = "unexpectedError",
+   NoSpendAmounts = "noSpendAmounts",
+   NoSourceAddress = "noSourceAddress",
+}
 
 interface SummaryObjectBase {
    // blockNumber: number;
