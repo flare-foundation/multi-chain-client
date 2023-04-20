@@ -108,7 +108,8 @@ export interface transactionTestCases {
    description: string;
    txid: string;
    expect: expectTransactionTestCase;
-   summary?: PaymentSummaryResponse;
+   makeFull?: boolean;
+   summary: PaymentSummaryResponse;
 }
 
 export interface expectTransactionTestCase {

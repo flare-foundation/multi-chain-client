@@ -217,7 +217,9 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          }
          await this.vinVoutAt(inUtxo, client as MccUtxoClient);
       }
-
+      if (this.type === "coinbase") {
+         return { status: "coinbase" };
+      }
       const spendAmount = this.spentAmounts[inUtxo];
       if (!spendAmount.address) {
          return { status: "noSpendAmountAddress" };
@@ -291,7 +293,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          const receivedAmount = receivingAddress && outUtxo != null ? this.receivedAmounts[outUtxo].amount : toBN(0);
 
          return {
-            status: "successNotFull",
+            status: "success",
             response: {
                isNativePayment: true,
                blockTimestamp: this.unixTimestamp,

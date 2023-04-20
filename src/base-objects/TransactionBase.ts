@@ -33,6 +33,7 @@ interface TransactionSummaryBase<ST, TO> {
 export type PaymentSummaryStatus =
    | SummaryStatusBase
    | "successNotFull"
+   | "coinbase"
    | "notFull"
    | "notNativePayment"
    | "notOneToOne"
