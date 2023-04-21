@@ -42,10 +42,9 @@ export enum PaymentSummaryStatus {
 
 export enum BalanceDecreasingSummaryStatus {
    Success = "success",
-   NoSpendAmounts = "noSpendAmounts",
+   InvalidInUtxo = "invalidInUtxo",
    NoSourceAddress = "noSourceAddress",
    NotValidSourceAddressFormat = "notValidSourceAddressFormat",
-   NoClient = "noClient",
 }
 
 interface SummaryObjectBase {
@@ -168,6 +167,11 @@ export abstract class TransactionBase<T, AT> {
    public abstract get fee(): BN;
 
    /**
+    * Gets transaction fee in elementary units (e.g. satoshi, microalgo, ...) and the address that paid the fee.
+    */
+   public abstract get feeSignerTotalAmount(): AddressAmount;
+
+   /**
     * An array of spent amounts on transaction inputs.
     * In account-based chains only one amount is present, and includes total spent amount, including fees.
     * In UTXO chains the spent amounts on the corresponding inputs are given in the list.
@@ -228,8 +232,31 @@ export abstract class TransactionBase<T, AT> {
     */
    public abstract makeFull(client: MccClient): Promise<void>;
 
+   /**
+    * Provides payment summary for a given transaction.
+    * It can only do so for well structured "native" payments, that come form one address and goes to one address (utxo is a bit special).
+    * If payment can be successfully summarized, the response will contain a `PaymentSummaryObject`. and status of `PaymentSummaryStatus.Success`.
+    * If method throws exception only on critical occasions:
+    * - connection to node is not stable or provided
+    * - transaction data was corrupted when creating this object
+    * - unhandled errors (usually indicates bugs in either this library or the underlying chain)
+    * @param props.client : Initialized mcc client for the underlying chain
+    * @param props.inUtxo : Vin index for utxo chains and ignored on non utxo chains
+    * @param props.outUtxo : Vout index for utxo chains and ignored on non utxo chains
+    */
    public abstract paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse>;
 
+   /**
+    * Provides balance decreasing summary for a given transaction.
+    * Must be able to analyze any transaction, and provide a summary of the balance decreasing actions, that either reduce given address balance or are signed by given address.
+    * If balance decreasing can be successfully summarized, the response will contain a `BalanceDecreasingSummaryObject`. and status of `BalanceDecreasingSummaryStatus.Success`.
+    * If method throws exception only on critical occasions:
+    * - connection to node is not stable or provided
+    * - transaction data was corrupted when creating this object
+    * - unhandled errors (usually indicates bugs in either this library or the underlying chain)
+    * @param props.client : Initialized mcc client for the underlying chain
+    * @param props.sourceAddressIndicator : AddressIndicator (vin index on utxo chains and standardized address hash on non utxo chains)
+    */
    public abstract balanceDecreasingSummary(props: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse>;
 }
 

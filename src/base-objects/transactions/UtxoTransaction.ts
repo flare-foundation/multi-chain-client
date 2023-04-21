@@ -116,6 +116,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       throw new mccError(mccErrorCode.InvalidResponse, Error("fee can't be calculated for `payment` and `partial_payment` transaction types"));
    }
 
+   public get feeSignerTotalAmount(): AddressAmount {
+      throw new Error("Method not implemented.");
+   }
+
    public get spentAmounts(): AddressAmount[] {
       if (this.type === "coinbase") {
          // Coinbase transactions mint coins
@@ -219,9 +223,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          return { status: PaymentSummaryStatus.InvalidOutUtxo };
       }
 
-      if (!client) {
-         throw new Error("Client not provided");
-      }
       await this.vinVoutAt(inUtxo, client as MccUtxoClient);
 
       if (this.type === "coinbase") {
@@ -326,12 +327,15 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
       }
       const vinIndex = parseInt(sourceAddressIndicator, 16);
+      if (isNaN(vinIndex)) {
+         return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
+      }
       try {
          this.assertValidVinIndex(vinIndex);
       } catch (e) {
-         return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
+         return { status: BalanceDecreasingSummaryStatus.InvalidInUtxo };
       }
-      if (!this.isValidAdditionalData()) {
+      if (this.isValidAdditionalData()) {
          const spendAmounts = this.spentAmounts;
          const spendAmount = spendAmounts[vinIndex];
          if (spendAmount.address) {
@@ -350,32 +354,29 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
                },
             };
          }
-         return {
-            status: BalanceDecreasingSummaryStatus.NoSourceAddress,
-         };
+         // Else we have to extract vin
       }
       if (!client) {
-         return { status: BalanceDecreasingSummaryStatus.NoClient };
+         throw new Error("Client not provided");
       }
       // TODO how to make sure client you provided is BTC client
       const vinVout = await this.extractVinVoutAt(vinIndex, client as MccUtxoClient);
-      if (vinVout) {
-         if (vinVout.vinvout && vinVout.vinvout.scriptPubKey.address) {
-            return {
-               status: BalanceDecreasingSummaryStatus.Success,
-               response: {
-                  blockTimestamp: this.unixTimestamp,
-                  transactionHash: this.stdTxid,
-                  sourceAddressIndicator: sourceAddressIndicator,
-                  sourceAddressHash: standardAddressHash(vinVout.vinvout.scriptPubKey.address),
-                  sourceAddress: vinVout.vinvout.scriptPubKey.address,
-                  spentAmount: toBN(Math.round((vinVout.vinvout.value || 0) * BTC_MDU).toFixed(0)),
-                  transactionStatus: this.successStatus,
-                  paymentReference: this.stdPaymentReference,
-                  isFull: false,
-               },
-            };
-         }
+
+      if (vinVout?.vinvout?.scriptPubKey?.address) {
+         return {
+            status: BalanceDecreasingSummaryStatus.Success,
+            response: {
+               blockTimestamp: this.unixTimestamp,
+               transactionHash: this.stdTxid,
+               sourceAddressIndicator: sourceAddressIndicator,
+               sourceAddressHash: standardAddressHash(vinVout.vinvout.scriptPubKey.address),
+               sourceAddress: vinVout.vinvout.scriptPubKey.address,
+               spentAmount: toBN(Math.round((vinVout.vinvout.value || 0) * BTC_MDU).toFixed(0)),
+               transactionStatus: this.successStatus,
+               paymentReference: this.stdPaymentReference,
+               isFull: false,
+            },
+         };
       }
       // We didn't find the address we are looking for
       return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
@@ -435,8 +436,9 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
                return false;
             }
          });
+         return true;
       }
-      return true;
+      return false;
    }
 
    synchronizeAdditionalData() {
@@ -535,7 +537,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          return vinVout;
       }
       if (!client) {
-         throw new Error("Client is not provided");
+         throw new Error("Client not provided");
       }
       vinVout = await this.extractVinVoutAt(vinIndex, client);
       this.additionalData.vinouts[vinIndex] = vinVout;

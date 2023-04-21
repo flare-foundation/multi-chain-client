@@ -100,6 +100,33 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return toBN(this.data.result.Fee);
    }
 
+   public get feeSignerTotalAmount(): AddressAmount {
+      const spentAmounts = this.spentAmounts;
+      // Check if signer is already in source amounts
+      const feeSigner = this.data.result.Account;
+      for (const spentAmount of spentAmounts) {
+         if (spentAmount.address === feeSigner) {
+            return spentAmount;
+         }
+      }
+      // Check if singer got positive amount
+      const receivedAmounts = this.receivedAmounts;
+      for (const receivedAmount of receivedAmounts) {
+         if (receivedAmount.address === feeSigner) {
+            const { amount, ...rest } = receivedAmount;
+            return {
+               amount: amount.neg(),
+               ...rest,
+            };
+         }
+      }
+      // You cash a check for exactly fee amount
+      return {
+         amount: toBN(0),
+         address: feeSigner,
+      };
+   }
+
    public get spentAmounts(): AddressAmount[] {
       if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
          throw new Error("Transaction meta is not available thus spent amounts cannot be calculated");
@@ -160,30 +187,30 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             }
          }
       }
-      // Check if signer is already in source amounts
-      const feeSigner = this.data.result.Account;
-      for (const spendAmount of spendAmounts) {
-         if (spendAmount.address === feeSigner) {
-            return spendAmounts;
-         }
-      }
-      // Check if singer got positive amount
-      const receivedAmounts = this.receivedAmounts;
-      for (const receivedAmount of receivedAmounts) {
-         if (receivedAmount.address === feeSigner) {
-            const { amount, ...rest } = receivedAmount;
-            spendAmounts.push({
-               amount: amount.neg(),
-               ...rest,
-            });
-            return spendAmounts;
-         }
-      }
-      // You cash a check for exactly fee amount
-      spendAmounts.push({
-         amount: toBN(0),
-         address: feeSigner,
-      });
+      // // Check if signer is already in source amounts
+      // const feeSigner = this.data.result.Account;
+      // for (const spendAmount of spendAmounts) {
+      //    if (spendAmount.address === feeSigner) {
+      //       return spendAmounts;
+      //    }
+      // }
+      // // Check if singer got positive amount
+      // const receivedAmounts = this.receivedAmounts;
+      // for (const receivedAmount of receivedAmounts) {
+      //    if (receivedAmount.address === feeSigner) {
+      //       const { amount, ...rest } = receivedAmount;
+      //       spendAmounts.push({
+      //          amount: amount.neg(),
+      //          ...rest,
+      //       });
+      //       return spendAmounts;
+      //    }
+      // }
+      // // You cash a check for exactly fee amount
+      // spendAmounts.push({
+      //    amount: toBN(0),
+      //    address: feeSigner,
+      // });
       return spendAmounts;
    }
 
@@ -353,8 +380,8 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       if (!isValidBytes32Hex(sourceAddressIndicator)) {
          return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
       }
-      const spendAmounts = this.spentAmounts;
-      for (const spendAmount of spendAmounts) {
+      const spentAmounts = this.spentAmounts;
+      for (const spendAmount of spentAmounts) {
          if (spendAmount.address && standardAddressHash(spendAmount.address) === sourceAddressIndicator) {
             // We found the address we are looking for
             return {
@@ -372,6 +399,24 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                },
             };
          }
+      }
+      const feeSigner = this.feeSignerTotalAmount;
+      if (feeSigner.address && standardAddressHash(feeSigner.address) === sourceAddressIndicator) {
+         // We found the address we are looking for
+         return {
+            status: BalanceDecreasingSummaryStatus.Success,
+            response: {
+               blockTimestamp: this.unixTimestamp,
+               transactionHash: this.stdTxid,
+               sourceAddressIndicator: sourceAddressIndicator,
+               sourceAddressHash: standardAddressHash(feeSigner.address),
+               sourceAddress: feeSigner.address,
+               spentAmount: feeSigner.amount,
+               paymentReference: this.stdPaymentReference,
+               transactionStatus: this.successStatus,
+               isFull: true,
+            },
+         };
       }
       // We didn't find the address we are looking for
       return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };

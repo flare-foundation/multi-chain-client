@@ -120,6 +120,10 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
       return toBN(this.data.transaction.fee);
    }
 
+   public get feeSignerTotalAmount(): AddressAmount {
+      throw new Error("Method not implemented.");
+   }
+
    public get spentAmounts(): AddressAmount[] {
       if (this.data.transaction.txType === "pay" && this.data.transaction.paymentTransaction) {
          return [

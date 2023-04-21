@@ -73,7 +73,7 @@ describe("Chain tips test ", function () {
    it("Should detect balance decreasing for 2765f45b93095878a5b48f6726b13d622a7f6135aafdc34e88d05865cd60e68c", async function () {
       const transaction = await MccClient.getTransaction("2765f45b93095878a5b48f6726b13d622a7f6135aafdc34e88d05865cd60e68c");
       const dec = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: toHex32Bytes(2), client: MccClient });
-      expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.NoSourceAddress);
+      expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.InvalidInUtxo);
    });
 
    it("Should detect balance decreasing for 2765f45b93095878a5b48f6726b13d622a7f6135aafdc34e88d05865cd60e68c", async function () {

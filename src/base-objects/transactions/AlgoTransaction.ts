@@ -116,6 +116,10 @@ export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IA
       return toBN(this.data.fee || 0);
    }
 
+   public get feeSignerTotalAmount(): AddressAmount {
+      throw new Error("Method not implemented.");
+   }
+
    public get spentAmounts(): AddressAmount[] {
       // for transactions of type pay
       if (this.type === "pay" || this.type === "pay_close") {

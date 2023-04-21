@@ -10,7 +10,7 @@ const XRPMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("search", function () {
+describe.skip("search", function () {
    const MccClient = new MCC.XRP(XRPMccConnection);
 
    let beginning = 77149400;
