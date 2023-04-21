@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BalanceDecreasingSummaryStatus, MCC, PaymentSummaryStatus, UtxoMccCreate, ZERO_BYTES_32, standardAddressHash, toHex, toHex32Bytes } from "../../src";
+import { BalanceDecreasingSummaryStatus, MCC, UtxoMccCreate, ZERO_BYTES_32, standardAddressHash, toHex32Bytes, traceManager } from "../../src";
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",
@@ -12,6 +12,8 @@ describe("Chain tips test ", function () {
    let MccClient: MCC.BTC;
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
+      traceManager.displayStateOnException = false;
+      traceManager.displayRuntimeTrace = false;
    });
 
    it("Should detect balance decreasing for 8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684", async function () {

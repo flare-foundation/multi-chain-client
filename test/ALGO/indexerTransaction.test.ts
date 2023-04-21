@@ -85,10 +85,6 @@ describe(`Algo block processing`, async () => {
       expect(ITrans3.currencyName).to.eq("791265863");
    });
 
-   it("Should get payment summary ", async function () {
-      expect((await ITrans1.paymentSummary(MccClient)).isNativePayment).to.be.false;
-      expect((await ITrans2.paymentSummary(MccClient)).isNativePayment).to.be.true;
-   });
    it("Should get transaction receivingAddresses ", async function () {
       expect(ITrans1.receivingAddresses.length).to.eq(0);
       expect(ITrans2.receivingAddresses[0]).to.eq("XFYAYSEGQIY2J3DCGGXCPXY5FGHSVKM3V4WCNYCLKDLHB7RYDBU233QB5M");

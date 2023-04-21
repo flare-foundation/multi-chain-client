@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
 import { TransactionMetadata } from "xrpl";
-import { MCC, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { MCC, PaymentSummaryStatus, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
 import sinon from "sinon";
 import { getTestFile } from "../testUtils";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -97,8 +98,8 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
       });
 
       it("Should get payment summary ", async function () {
-         const summary = await transaction.paymentSummary(MccClient);
-         expect(summary).to.eql({ isNativePayment: false });
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+         expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
       });
 
       it("Should spend amount ", async function () {
@@ -187,17 +188,17 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
       });
 
       it.skip("Should get payment summary ", async function () {
-         const summary = await transaction.paymentSummary(MccClient);
-         // expect(summary.isNativePayment).to.eq(false);
-         // expect(summary.sourceAddress).to.eq("rBy7gEjA6AJytwZAUKYfXvGAf5Y1koFCX1");
-         // expect(summary.receivingAddress).to.eq(undefined);
-         // expect(summary.spentAmount?.toNumber()).to.eq(20);
-         // expect(summary.receivedAmount?.toNumber()).to.eq(undefined);
-         // expect(summary.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-         // expect(summary.tokenElementaryUnits?.toNumber()).to.eq(1);
-         // expect(summary.receivedTokenAmount?.toNumber()).to.eq(10);
-         // expect(summary.oneToOne).to.eq(true);
-         // expect(summary.isFull).to.eq(true);
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+         expect(summary.response).to.exist;
+
+         expect(summary.response!.sourceAddress).to.eq("rBy7gEjA6AJytwZAUKYfXvGAf5Y1koFCX1");
+         expect(summary.response!.receivingAddress).to.eq(undefined);
+         expect(summary.response!.spentAmount.toNumber()).to.eq(20);
+         expect(summary.response!.receivedAmount.toNumber()).to.eq(undefined);
+         expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+         expect(summary.response!.oneToOne).to.eq(true);
+         expect(summary.response!.isFull).to.eq(true);
       });
    });
 
@@ -284,17 +285,16 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
       });
 
       it.skip("Should get payment summary ", async function () {
-         const summary = await transaction.paymentSummary(MccClient);
-         // expect(summary.isNativePayment).to.eq(true);
-         // expect(summary.sourceAddress).to.eq("r3zUhJWabAMMLT5n631r2wDh9RP3dN1bRy");
-         // expect(summary.receivingAddress).to.eq("rpE6gE8jEN1trDwQwe47VmgDL5y6m3XX2n");
-         // expect(summary.spentAmount?.toNumber()).to.eq(342390045);
-         // expect(summary.receivedAmount?.toNumber()).to.eq(342390000);
-         // expect(summary.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-         // expect(summary.tokenElementaryUnits?.toNumber()).to.eq(undefined);
-         // expect(summary.receivedTokenAmount?.toNumber()).to.eq(undefined);
-         // expect(summary.oneToOne).to.eq(true);
-         // expect(summary.isFull).to.eq(true);
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+         expect(summary.response).to.exist;
+         expect(summary.response!.sourceAddress).to.eq("r3zUhJWabAMMLT5n631r2wDh9RP3dN1bRy");
+         expect(summary.response!.receivingAddress).to.eq("rpE6gE8jEN1trDwQwe47VmgDL5y6m3XX2n");
+         expect(summary.response!.spentAmount?.toNumber()).to.eq(342390045);
+         expect(summary.response!.receivedAmount?.toNumber()).to.eq(342390000);
+         expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+         expect(summary.response!.oneToOne).to.eq(true);
+         expect(summary.response!.isFull).to.eq(true);
       });
    });
 
@@ -378,17 +378,16 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
       });
 
       it.skip("Should get payment summary ", async function () {
-         const summary = await transaction.paymentSummary(MccClient);
-         // expect(summary.isNativePayment).to.eq(false);
-         // expect(summary.sourceAddress).to.eq("rP6JLXtRNs3tjeYnn7zUHpbfLjuyBXqhwF");
-         // expect(summary.receivingAddress).to.eq(undefined);
-         // expect(summary.spentAmount?.toNumber()).to.eq(10);
-         // expect(summary.receivedAmount?.toNumber()).to.eq(undefined);
-         // expect(summary.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-         // expect(summary.tokenElementaryUnits?.toNumber()).to.eq(1);
-         // expect(summary.receivedTokenAmount?.toNumber()).to.eq(400000);
-         // expect(summary.oneToOne).to.eq(true);
-         // expect(summary.isFull).to.eq(true);
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+         expect(summary.response).to.exist;
+         expect(summary.response!.sourceAddress).to.eq("rP6JLXtRNs3tjeYnn7zUHpbfLjuyBXqhwF");
+         expect(summary.response!.receivingAddress).to.eq(undefined);
+         expect(summary.response!.spentAmount?.toNumber()).to.eq(10);
+         expect(summary.response!.receivedAmount?.toNumber()).to.eq(undefined);
+         expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+         expect(summary.response!.oneToOne).to.eq(true);
+         expect(summary.response!.isFull).to.eq(true);
       });
 
       it("Should received amount 2 ", async function () {
@@ -470,17 +469,16 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             return transaction2.successStatus;
          };
          expect(fn).to.throw("OutsideError");
-         // await expect( fn ).to.be.rejectedWith("OutsideError");
       });
 
       it("Should get payment summary ", async function () {
-         const summary1 = await transaction1.paymentSummary(MccClient);
-         const summary2 = await transaction2.paymentSummary(MccClient);
-         const summary3 = await transaction3.paymentSummary(MccClient);
-         // expect(summary1.isNativePayment).to.be.false;
-         // expect(summary2.isNativePayment).to.be.false;
-         // expect(summary3.isNativePayment).to.be.true;
-         // expect(summary3.receivedAmount?.toNumber()).to.eq(0);
+         const summary1 = await transaction1.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+         const summary2 = await transaction2.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+         const summary3 = await transaction3.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+         expect(summary1.status).to.eq(PaymentSummaryStatus.NotNativePayment);
+         expect(summary2.status).to.eq(PaymentSummaryStatus.NotNativePayment);
+         // Transaction failed
+         expect(summary3.status).to.eq(PaymentSummaryStatus.UnexpectedNumberOfParticipants);
       });
    });
 

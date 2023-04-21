@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
-import { BtcTransaction, MCC, UtxoMccCreate } from "../../src";
+import { BtcTransaction, MCC, PaymentSummaryStatus, UtxoMccCreate } from "../../src";
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",
@@ -106,55 +107,61 @@ describe("Transaction Btc test ", function () {
       });
 
       it("Should get payment summary from utxo 0 to utxo 0", async function () {
-         const summary = await transaction.paymentSummary(MccClient, 0, 0, false);
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
 
-         expect(summary.isNativePayment).to.eq(true);
-         expect(summary.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
-         expect(summary.receivingAddress).to.eq("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
-         expect(summary.spentAmount?.toNumber()).to.eq(800000000);
-         expect(summary.receivedAmount?.toNumber()).to.eq(494000000);
-         expect(summary.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-         expect(summary.oneToOne).to.eq(false);
-         expect(summary.isFull).to.eq(true);
+         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+         expect(summary.response).to.exist;
+
+         expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
+         expect(summary.response!.receivingAddress).to.eq("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
+         expect(summary.response!.spentAmount?.toNumber()).to.eq(800000000);
+         expect(summary.response!.receivedAmount?.toNumber()).to.eq(494000000);
+         expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+         expect(summary.response!.oneToOne).to.eq(false);
+         expect(summary.response!.isFull).to.eq(true);
       });
 
       it("Should get payment summary from utxo 0 to utxo 1", async function () {
-         const summary = await transaction.paymentSummary(MccClient, 0, 1, false);
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 1 });
 
-         expect(summary.isNativePayment).to.eq(true);
-         expect(summary.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
-         expect(summary.receivingAddress).to.eq("bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej");
-         expect(summary.spentAmount?.toNumber()).to.eq(800000000);
-         expect(summary.receivedAmount?.toNumber()).to.eq(305960000);
-         expect(summary.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-         expect(summary.oneToOne).to.eq(false);
-         expect(summary.isFull).to.eq(true);
+         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+         expect(summary.response).to.exist;
+
+         expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
+         expect(summary.response!.receivingAddress).to.eq("bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej");
+         expect(summary.response!.spentAmount?.toNumber()).to.eq(800000000);
+         expect(summary.response!.receivedAmount?.toNumber()).to.eq(305960000);
+         expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+         expect(summary.response!.oneToOne).to.eq(false);
+         expect(summary.response!.isFull).to.eq(true);
       });
 
       it("Should get payment summary from utxo 1 to utxo 0", async function () {
-         const summary = await transaction.paymentSummary(MccClient, 1, 0, false);
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 1, outUtxo: 0 });
+         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+         expect(summary.response).to.exist;
 
-         expect(summary.isNativePayment).to.eq(true);
-         expect(summary.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
-         expect(summary.receivingAddress).to.eq("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
-         expect(summary.spentAmount?.toNumber()).to.eq(800000000);
-         expect(summary.receivedAmount?.toNumber()).to.eq(494000000);
-         expect(summary.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-         expect(summary.oneToOne).to.eq(false);
-         expect(summary.isFull).to.eq(true);
+         expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
+         expect(summary.response!.receivingAddress).to.eq("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
+         expect(summary.response!.spentAmount?.toNumber()).to.eq(800000000);
+         expect(summary.response!.receivedAmount?.toNumber()).to.eq(494000000);
+         expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+         expect(summary.response!.oneToOne).to.eq(false);
+         expect(summary.response!.isFull).to.eq(true);
       });
 
       it("Should get payment summary from utxo 1 to utxo 1", async function () {
-         const summary = await transaction.paymentSummary(MccClient, 1, 1, false);
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 1, outUtxo: 1 });
+         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+         expect(summary.response).to.exist;
 
-         expect(summary.isNativePayment).to.eq(true);
-         expect(summary.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
-         expect(summary.receivingAddress).to.eq("bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej");
-         expect(summary.spentAmount?.toNumber()).to.eq(800000000);
-         expect(summary.receivedAmount?.toNumber()).to.eq(305960000);
-         expect(summary.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-         expect(summary.oneToOne).to.eq(false);
-         expect(summary.isFull).to.eq(true);
+         expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
+         expect(summary.response!.receivingAddress).to.eq("bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej");
+         expect(summary.response!.spentAmount?.toNumber()).to.eq(800000000);
+         expect(summary.response!.receivedAmount?.toNumber()).to.eq(305960000);
+         expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+         expect(summary.response!.oneToOne).to.eq(false);
+         expect(summary.response!.isFull).to.eq(true);
       });
    });
 });

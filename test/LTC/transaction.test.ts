@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BtcTransaction, MCC, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { BtcTransaction, MCC, PaymentSummaryStatus, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -183,6 +183,9 @@ describe("Transaction Ltc base test ", function () {
             elementaryUnits: "100000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
+         summary: {
+            status: PaymentSummaryStatus.Success,
+         },
       },
       {
          description: "Coinbase Transaction",
@@ -219,6 +222,9 @@ describe("Transaction Ltc base test ", function () {
             currencyName: "LTC",
             elementaryUnits: "100000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
+         },
+         summary: {
+            status: PaymentSummaryStatus.Success,
          },
       },
    ];

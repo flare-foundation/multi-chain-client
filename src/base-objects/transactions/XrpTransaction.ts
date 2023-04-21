@@ -268,6 +268,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       }
       const result = this.data.result.meta.TransactionResult;
       const prefix = result.slice(0, 3) as XrpTransactionStatusPrefixes;
+      // TODO: update
       // about statuses https://xrpl.org/transaction-results.html
       switch (prefix) {
          case "tes": // SUCCESS - Transaction was applied. Only final in a validated ledger.
@@ -304,86 +305,76 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
    public async paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
-      try {
-         if (this.type === "Payment" && this.isNativePayment) {
-            // Is native transfer
-            if (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1) {
-               return {
-                  status: PaymentSummaryStatus.NotOneToOne,
-               };
-            }
-            const spendAmount = this.spentAmounts[0];
-            const receiveAmount = this.receivedAmounts[0];
-            if (!spendAmount.address) {
-               return {
-                  status: PaymentSummaryStatus.NoSpendAmountAddress,
-               };
-            }
-            if (!receiveAmount.address) {
-               return {
-                  status: PaymentSummaryStatus.NoReceiveAmountAddress,
-               };
-            }
+      if (this.type === "Payment" && this.isNativePayment) {
+         // Is native transfer
+         if (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1) {
             return {
-               status: PaymentSummaryStatus.Success,
-               response: {
-                  isNativePayment: true,
-                  blockTimestamp: this.unixTimestamp,
-                  transactionHash: this.stdTxid,
-                  sourceAddress: spendAmount.address,
-                  sourceAddressHash: standardAddressHash(spendAmount.address),
-                  receivingAddressHash: standardAddressHash(receiveAmount.address),
-                  receivingAddress: receiveAmount.address,
-                  spentAmount: spendAmount.amount,
-                  // TODO: Check if intended sent value can be set
-                  receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : toBN(0),
-                  oneToOne: true,
-                  paymentReference: this.stdPaymentReference,
-                  isFull: true,
-               },
+               status: PaymentSummaryStatus.UnexpectedNumberOfParticipants,
+            };
+         }
+         const spendAmount = this.spentAmounts[0];
+         const receiveAmount = this.receivedAmounts[0];
+         if (!spendAmount.address) {
+            return {
+               status: PaymentSummaryStatus.NoSpendAmountAddress,
+            };
+         }
+         if (!receiveAmount.address) {
+            return {
+               status: PaymentSummaryStatus.NoReceiveAmountAddress,
             };
          }
          return {
-            status: PaymentSummaryStatus.NotNativePayment,
+            status: PaymentSummaryStatus.Success,
+            response: {
+               blockTimestamp: this.unixTimestamp,
+               transactionHash: this.stdTxid,
+               sourceAddress: spendAmount.address,
+               sourceAddressHash: standardAddressHash(spendAmount.address),
+               receivingAddressHash: standardAddressHash(receiveAmount.address),
+               receivingAddress: receiveAmount.address,
+               spentAmount: spendAmount.amount,
+               // TODO: Check if intended sent value can be set
+               receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : toBN(0),
+               transactionStatus: this.successStatus,
+               oneToOne: true,
+               paymentReference: this.stdPaymentReference,
+               isFull: true,
+            },
          };
-      } catch (e) {
-         // TODO: analyze error
-         return { status: PaymentSummaryStatus.UnexpectedError };
       }
+      return {
+         status: PaymentSummaryStatus.NotNativePayment,
+      };
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
    public async balanceDecreasingSummary({ sourceAddressIndicator, client }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
-      try {
-         if (!isValidBytes32Hex(sourceAddressIndicator)) {
-            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
-         }
-         const spendAmounts = this.spentAmounts;
-         for (const spendAmount of spendAmounts) {
-            if (spendAmount.address && standardAddressHash(spendAmount.address) === sourceAddressIndicator) {
-               // We found the address we are looking for
-               return {
-                  status: BalanceDecreasingSummaryStatus.Success,
-                  response: {
-                     blockTimestamp: this.unixTimestamp,
-                     transactionHash: this.stdTxid,
-                     sourceAddressIndicator: sourceAddressIndicator,
-                     sourceAddressHash: standardAddressHash(spendAmount.address),
-                     sourceAddress: spendAmount.address,
-                     spentAmount: spendAmount.amount,
-                     paymentReference: this.stdPaymentReference,
-                     isFull: true,
-                  },
-               };
-            }
-         }
-         // We didn't find the address we are looking for
-         return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
-      } catch (e) {
-         console.log(e);
-         // TODO: analyze error
-         return { status: BalanceDecreasingSummaryStatus.UnexpectedError };
+      if (!isValidBytes32Hex(sourceAddressIndicator)) {
+         return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
       }
+      const spendAmounts = this.spentAmounts;
+      for (const spendAmount of spendAmounts) {
+         if (spendAmount.address && standardAddressHash(spendAmount.address) === sourceAddressIndicator) {
+            // We found the address we are looking for
+            return {
+               status: BalanceDecreasingSummaryStatus.Success,
+               response: {
+                  blockTimestamp: this.unixTimestamp,
+                  transactionHash: this.stdTxid,
+                  sourceAddressIndicator: sourceAddressIndicator,
+                  sourceAddressHash: standardAddressHash(spendAmount.address),
+                  sourceAddress: spendAmount.address,
+                  spentAmount: spendAmount.amount,
+                  paymentReference: this.stdPaymentReference,
+                  transactionStatus: this.successStatus,
+                  isFull: true,
+               },
+            };
+         }
+      }
+      // We didn't find the address we are looking for
+      return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars

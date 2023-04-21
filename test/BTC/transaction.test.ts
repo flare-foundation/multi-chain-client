@@ -271,7 +271,6 @@ describe("Transaction Btc base test ", function () {
          summary: {
             status: PaymentSummaryStatus.Success,
             response: {
-               isNativePayment: true,
                blockTimestamp: 1404107109,
                transactionHash: "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684",
                sourceAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
@@ -283,6 +282,7 @@ describe("Transaction Btc base test ", function () {
                paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
                oneToOne: false,
                isFull: true,
+               transactionStatus: TransactionSuccessStatus.SUCCESS,
             },
          },
       },
@@ -333,7 +333,7 @@ describe("Transaction Btc base test ", function () {
          summary: {
             status: PaymentSummaryStatus.Success,
             response: {
-               isNativePayment: true,
+               transactionStatus: TransactionSuccessStatus.SUCCESS,
                blockTimestamp: 1647547988,
                transactionHash: "16920c5619b4c43fd5c9c0fc594153f2bf1a80c930238a8ee870aece0bc7cc59",
                sourceAddress: "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
@@ -535,7 +535,7 @@ describe("Transaction Btc base test ", function () {
                   expect(summary.response.transactionHash).to.eq(transData.summary.response.transactionHash);
                   expect(summary.response.sourceAddressHash).to.eq(transData.summary.response.sourceAddressHash);
                   expect(summary.response.receivingAddressHash).to.eq(transData.summary.response.receivingAddressHash);
-                  expect(summary.response.isNativePayment).to.eq(transData.summary.response.isNativePayment);
+                  expect(summary.response.transactionStatus).to.eq(transData.summary.response.transactionStatus);
                }
             }
          });

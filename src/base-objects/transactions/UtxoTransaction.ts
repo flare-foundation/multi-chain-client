@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { isValidBytes32Hex, isValidHexString, IUtxoGetTransactionRes, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x, ZERO_BYTES_32 } from "../..";
+import { isValidBytes32Hex, IUtxoGetTransactionRes, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x, ZERO_BYTES_32 } from "../..";
 import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types";
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
@@ -207,18 +207,23 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       return TransactionSuccessStatus.SUCCESS;
    }
 
-   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    public async paymentSummary({ client, inUtxo, outUtxo }: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
-      this.assertValidVinIndex(inUtxo, true);
-      this.assertValidVoutIndex(outUtxo, true);
-
-      // If vinIndex is not defined or null, then we do not need the input
-      if (inUtxo != null) {
-         if (!client) {
-            throw new Error(`Client is not defined`);
-         }
-         await this.vinVoutAt(inUtxo, client as MccUtxoClient);
+      try {
+         this.assertValidVinIndex(inUtxo);
+      } catch (e) {
+         return { status: PaymentSummaryStatus.InvalidInUtxo };
       }
+      try {
+         this.assertValidVoutIndex(outUtxo);
+      } catch (e) {
+         return { status: PaymentSummaryStatus.InvalidOutUtxo };
+      }
+
+      if (!client) {
+         throw new Error("Client not provided");
+      }
+      await this.vinVoutAt(inUtxo, client as MccUtxoClient);
+
       if (this.type === "coinbase") {
          return { status: PaymentSummaryStatus.Coinbase };
       }
@@ -274,7 +279,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          return {
             status: PaymentSummaryStatus.Success,
             response: {
-               isNativePayment: true,
                blockTimestamp: this.unixTimestamp,
                transactionHash: this.stdTxid,
                sourceAddressHash: standardAddressHash(sourceAddress),
@@ -283,6 +287,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
                receivingAddressHash: standardAddressHash(receivingAddress),
                spentAmount: inFunds.sub(returnFunds),
                receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
+               transactionStatus: this.successStatus,
                paymentReference: this.stdPaymentReference,
                oneToOne,
                isFull,
@@ -297,7 +302,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          return {
             status: PaymentSummaryStatus.Success,
             response: {
-               isNativePayment: true,
                blockTimestamp: this.unixTimestamp,
                transactionHash: this.stdTxid,
                sourceAddress,
@@ -307,6 +311,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
                spentAmount,
                receivedAmount,
                paymentReference: this.stdPaymentReference,
+               transactionStatus: this.successStatus,
                oneToOne,
                isFull,
             },
@@ -316,64 +321,64 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
    public async balanceDecreasingSummary({ sourceAddressIndicator, client }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
+      // We expect sourceAddressIndicator to be utxo vin index (as hex string)
+      if (!isValidBytes32Hex(sourceAddressIndicator)) {
+         return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
+      }
+      const vinIndex = parseInt(sourceAddressIndicator, 16);
       try {
-         // We expect sourceAddressIndicator to be utxo vin index (as hex string)
-         if (!isValidBytes32Hex(sourceAddressIndicator)) {
-            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
-         }
-         const vinIndex = parseInt(sourceAddressIndicator, 16);
-         if (!this.isValidVinIndex(vinIndex)) {
-            return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
-         }
-         if (!this.isValidAdditionalData()) {
-            const spendAmounts = this.spentAmounts;
-            const spendAmount = spendAmounts[vinIndex];
-            if (spendAmount.address) {
-               return {
-                  status: BalanceDecreasingSummaryStatus.Success,
-                  response: {
-                     blockTimestamp: this.unixTimestamp,
-                     transactionHash: this.stdTxid,
-                     sourceAddressIndicator: sourceAddressIndicator,
-                     sourceAddressHash: standardAddressHash(spendAmount.address),
-                     sourceAddress: spendAmount.address,
-                     spentAmount: spendAmount.amount,
-                     paymentReference: this.stdPaymentReference,
-                     isFull: true,
-                  },
-               };
-            }
+         this.assertValidVinIndex(vinIndex);
+      } catch (e) {
+         return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
+      }
+      if (!this.isValidAdditionalData()) {
+         const spendAmounts = this.spentAmounts;
+         const spendAmount = spendAmounts[vinIndex];
+         if (spendAmount.address) {
             return {
-               status: BalanceDecreasingSummaryStatus.NoSourceAddress,
+               status: BalanceDecreasingSummaryStatus.Success,
+               response: {
+                  blockTimestamp: this.unixTimestamp,
+                  transactionHash: this.stdTxid,
+                  sourceAddressIndicator: sourceAddressIndicator,
+                  sourceAddressHash: standardAddressHash(spendAmount.address),
+                  sourceAddress: spendAmount.address,
+                  spentAmount: spendAmount.amount,
+                  transactionStatus: this.successStatus,
+                  paymentReference: this.stdPaymentReference,
+                  isFull: true,
+               },
             };
          }
-         if (!client) {
-            return { status: BalanceDecreasingSummaryStatus.NoClient };
-         }
-         // TODO how to make sure client you provided is BTC client
-         const vinVout = await this.extractVinVoutAt(vinIndex, client as MccUtxoClient);
-         if (vinVout) {
-            if (vinVout.vinvout && vinVout.vinvout.scriptPubKey.address) {
-               return {
-                  status: BalanceDecreasingSummaryStatus.Success,
-                  response: {
-                     blockTimestamp: this.unixTimestamp,
-                     transactionHash: this.stdTxid,
-                     sourceAddressIndicator: sourceAddressIndicator,
-                     sourceAddressHash: standardAddressHash(vinVout.vinvout.scriptPubKey.address),
-                     sourceAddress: vinVout.vinvout.scriptPubKey.address,
-                     spentAmount: toBN(Math.round((vinVout.vinvout.value || 0) * BTC_MDU).toFixed(0)),
-                     paymentReference: this.stdPaymentReference,
-                     isFull: false,
-                  },
-               };
-            }
-         }
-         // We didn't find the address we are looking for
-         return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
-      } catch (e) {
-         return { status: BalanceDecreasingSummaryStatus.UnexpectedError };
+         return {
+            status: BalanceDecreasingSummaryStatus.NoSourceAddress,
+         };
       }
+      if (!client) {
+         return { status: BalanceDecreasingSummaryStatus.NoClient };
+      }
+      // TODO how to make sure client you provided is BTC client
+      const vinVout = await this.extractVinVoutAt(vinIndex, client as MccUtxoClient);
+      if (vinVout) {
+         if (vinVout.vinvout && vinVout.vinvout.scriptPubKey.address) {
+            return {
+               status: BalanceDecreasingSummaryStatus.Success,
+               response: {
+                  blockTimestamp: this.unixTimestamp,
+                  transactionHash: this.stdTxid,
+                  sourceAddressIndicator: sourceAddressIndicator,
+                  sourceAddressHash: standardAddressHash(vinVout.vinvout.scriptPubKey.address),
+                  sourceAddress: vinVout.vinvout.scriptPubKey.address,
+                  spentAmount: toBN(Math.round((vinVout.vinvout.value || 0) * BTC_MDU).toFixed(0)),
+                  transactionStatus: this.successStatus,
+                  paymentReference: this.stdPaymentReference,
+                  isFull: false,
+               },
+            };
+         }
+      }
+      // We didn't find the address we are looking for
+      return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
    }
 
    public async makeFull(client: MccClient): Promise<void> {
@@ -388,31 +393,18 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
     * Asserts whether the vin index is in valid range. If not, exception is thrown.
     * @param vinIndex vin index
     */
-   assertValidVinIndex(vinIndex?: number, canBeNull = false) {
-      if (!this.isValidVinIndex(vinIndex, canBeNull)) {
+   assertValidVinIndex(vinIndex: number) {
+      if (vinIndex < 0 || vinIndex >= this.sourceAddresses.length) {
          throw new mccError(mccErrorCode.InvalidParameter, Error("Invalid vin index"));
       }
-   }
-
-   isValidVinIndex(vinIndex?: number, canBeNull = false): boolean {
-      if (canBeNull && vinIndex == null) {
-         return true;
-      }
-      if (vinIndex == null || vinIndex < 0 || vinIndex >= this.sourceAddresses.length) {
-         return false;
-      }
-      return true;
    }
 
    /**
     * Asserts whether the vout index is in valid range. If not, exception is thrown.
     * @param voutIndex vout index
     */
-   assertValidVoutIndex(voutIndex?: number, canBeNull = false) {
-      if (canBeNull && voutIndex == null) {
-         return;
-      }
-      if (voutIndex == null || voutIndex < 0 || voutIndex >= this.receivingAddresses.length) {
+   assertValidVoutIndex(voutIndex: number) {
+      if (voutIndex < 0 || voutIndex >= this.receivingAddresses.length) {
          throw new mccError(mccErrorCode.InvalidParameter, Error("Invalid vout index"));
       }
    }
@@ -543,7 +535,7 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          return vinVout;
       }
       if (!client) {
-         throw new Error("MCC Client required.");
+         throw new Error("Client is not provided");
       }
       vinVout = await this.extractVinVoutAt(vinIndex, client);
       this.additionalData.vinouts[vinIndex] = vinVout;
@@ -572,10 +564,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
          promises.push(this.vinVoutAt(i, client as MccUtxoClient));
       }
       await Promise.all(promises);
-      // console.log(this.additionalData);
-      // for (let i = 0; i < (this.additionalData?.vinouts?.length || 0); i++) {
-      //    // console.log(this.additionalData?.vinouts![i]);
-      // }
    }
 
    private processOutput(vout: IUtxoVoutTransaction | undefined) {

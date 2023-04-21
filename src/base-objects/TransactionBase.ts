@@ -31,18 +31,17 @@ interface TransactionSummaryBase<ST, TO> {
 
 export enum PaymentSummaryStatus {
    Success = "success",
-   UnexpectedError = "unexpectedError",
    Coinbase = "coinbase",
-   NotFull = "notFull",
    NotNativePayment = "notNativePayment",
-   NotOneToOne = "notOneToOne",
+   UnexpectedNumberOfParticipants = "unexpectedNumberOfParticipants",
+   InvalidInUtxo = "invalidInUtxo",
+   InvalidOutUtxo = "invalidOutUtxo",
    NoSpendAmountAddress = "noSpendAmountAddress",
    NoReceiveAmountAddress = "noReceiveAmountAddress",
 }
 
 export enum BalanceDecreasingSummaryStatus {
    Success = "success",
-   UnexpectedError = "unexpectedError",
    NoSpendAmounts = "noSpendAmounts",
    NoSourceAddress = "noSourceAddress",
    NotValidSourceAddressFormat = "notValidSourceAddressFormat",
@@ -57,10 +56,10 @@ interface SummaryObjectBase {
    sourceAddress: string;
    spentAmount: BN;
    paymentReference: string;
+   transactionStatus: TransactionSuccessStatus;
 }
 
 export interface PaymentSummaryObject extends SummaryObjectBase {
-   isNativePayment: boolean;
    receivingAddressHash: string;
    receivingAddress: string;
    receivedAmount: BN;

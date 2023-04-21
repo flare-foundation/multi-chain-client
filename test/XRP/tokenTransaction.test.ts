@@ -1,4 +1,4 @@
-import { MCC, toBN, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { MCC, PaymentSummaryStatus, toBN, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -53,6 +53,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             elementaryUnits: "1000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
+         summary: {
+            status: PaymentSummaryStatus.Success,
+         },
       },
       {
          description: "Token LOVE",
@@ -80,6 +83,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             currencyName: "4C4F564500000000000000000000000000000000",
             elementaryUnits: "1000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
+         },
+         summary: {
+            status: PaymentSummaryStatus.Success,
          },
       },
       {
@@ -109,6 +115,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             elementaryUnits: "1000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
+         summary: {
+            status: PaymentSummaryStatus.Success,
+         },
       },
       {
          description: "Token Blessed",
@@ -136,6 +145,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             currencyName: "426C657373656400000000000000000000000000",
             elementaryUnits: "1000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
+         },
+         summary: {
+            status: PaymentSummaryStatus.Success,
          },
       },
    ];
