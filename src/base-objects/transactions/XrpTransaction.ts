@@ -355,6 +355,9 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
    public async balanceDecreasingSummary({ sourceAddressIndicator, client }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
       try {
+         if (!isValidBytes32Hex(sourceAddressIndicator)) {
+            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
+         }
          const spendAmounts = this.spentAmounts;
          for (const spendAmount of spendAmounts) {
             if (spendAmount.address && standardAddressHash(spendAmount.address) === sourceAddressIndicator) {

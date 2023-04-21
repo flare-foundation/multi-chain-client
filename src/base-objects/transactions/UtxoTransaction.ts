@@ -318,15 +318,13 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    public async balanceDecreasingSummary({ sourceAddressIndicator, client }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
       try {
          // We expect sourceAddressIndicator to be utxo vin index (as hex string)
-         if (!isValidHexString(sourceAddressIndicator)) {
+         if (!isValidBytes32Hex(sourceAddressIndicator)) {
             return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
          }
          const vinIndex = parseInt(sourceAddressIndicator, 16);
-         this.assertValidVinIndex(vinIndex, true);
-         if (!(0 <= vinIndex && vinIndex < this.data.vin.length)) {
+         if (!this.isValidVinIndex(vinIndex)) {
             return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
          }
-
          if (!this.isValidAdditionalData()) {
             const spendAmounts = this.spentAmounts;
             const spendAmount = spendAmounts[vinIndex];
@@ -391,12 +389,19 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
     * @param vinIndex vin index
     */
    assertValidVinIndex(vinIndex?: number, canBeNull = false) {
-      if (canBeNull && vinIndex == null) {
-         return;
-      }
-      if (vinIndex == null || vinIndex < 0 || vinIndex >= this.sourceAddresses.length) {
+      if (!this.isValidVinIndex(vinIndex, canBeNull)) {
          throw new mccError(mccErrorCode.InvalidParameter, Error("Invalid vin index"));
       }
+   }
+
+   isValidVinIndex(vinIndex?: number, canBeNull = false): boolean {
+      if (canBeNull && vinIndex == null) {
+         return true;
+      }
+      if (vinIndex == null || vinIndex < 0 || vinIndex >= this.sourceAddresses.length) {
+         return false;
+      }
+      return true;
    }
 
    /**
