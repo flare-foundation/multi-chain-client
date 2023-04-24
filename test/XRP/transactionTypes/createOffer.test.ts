@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { AddressAmount, MCC, XrpTransaction, toBN, traceManager } from "../../../src";
-import { AddressAmountEqual } from "../../testUtils";
+import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
+import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "https://xrplcluster.com",
@@ -11,7 +11,7 @@ const XRPMccConnection = {
 
 // Find offerCreate where offer is actually accepted.
 
-describe("createOffer type", function () {
+describe(`createOffer type (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
@@ -43,6 +43,12 @@ describe("createOffer type", function () {
       it("should correctly parse receivedAmounts", async function () {
          const expected: AddressAmount[] = [];
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
+      });
+
+      it("should get balanceDecreasingSummary", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("rJkg989h7fPaJLm9CEyAsdvwgZYtKs2zzz") });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq("12");
       });
 
       // Token transfers

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, XrpTransaction, toBN, traceManager } from "../../../src";
+import { BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
 import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -58,6 +58,18 @@ describe(`NFTokens types (${getTestFile(__filename)})`, function () {
             { address: addressSell, amount: toBN(value).sub(toBN(fee)).sub(toBN(minterFee)) },
          ];
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
+      });
+
+      it("should get balanceDecreasingSummary #1", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressSell) });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).sub(toBN(value)).add(toBN(minterFee)));
+      });
+
+      it("should get balanceDecreasingSummary #2", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressBuy) });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN(value));
       });
 
       // Token transfers

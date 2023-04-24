@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, MCC, XrpTransaction, toBN, traceManager } from "../../../src";
+import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
 import { AddressAmountEqual, getTestFile, singleAddressAmountEqual } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -51,6 +51,12 @@ describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
       });
 
+      it("should get balanceDecreasingSummary", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressPay) });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).add(toBN(value)).toString());
+      });
+
       // Token transfers
       it.skip("should correctly parse assetSourceAddresses", async function () {
          expect(transaction.assetSourceAddresses).to.deep.equal([]);
@@ -97,6 +103,12 @@ describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
       it("should correctly parse receivedAmounts", async function () {
          const expected: AddressAmount[] = [];
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
+      });
+
+      it("should get balanceDecreasingSummary", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressPay) });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).add(toBN(value)).toString());
       });
 
       // Token transfers
@@ -150,6 +162,12 @@ describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
       it("should correctly parse receivedAmounts", async function () {
          const expected = [{ address: addressRec, amount: toBN(value).sub(toBN(fee)) }];
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
+      });
+
+      it("should get balanceDecreasingSummary", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressRec) });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).sub(toBN(value)).toString());
       });
 
       // Token transfers

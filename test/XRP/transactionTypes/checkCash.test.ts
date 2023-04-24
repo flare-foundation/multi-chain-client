@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { AddressAmount, MCC, XrpTransaction, toBN, traceManager } from "../../../src";
-import { AddressAmountEqual } from "../../testUtils";
+import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
+import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "https://xrplcluster.com",
@@ -9,7 +9,7 @@ const XRPMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("CheckCash type", function () {
+describe(`CheckCash type (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
@@ -43,6 +43,12 @@ describe("CheckCash type", function () {
       it("should correctly parse receivedAmounts", async function () {
          const expected: AddressAmount[] = [];
          expect(AddressAmountEqual(transaction.receivedAmounts, expected), "No one receives any xrp").to.be.true;
+      });
+
+      it("should get balanceDecreasingSummary", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am") });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq("12");
       });
 
       // Token transfers
