@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, MCC, XrpTransaction, toBN, traceManager } from "../../../src";
+import { MCC, XrpTransaction, toBN, traceManager } from "../../../src";
 import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
