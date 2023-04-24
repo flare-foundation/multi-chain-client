@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { MCC, PaymentSummaryStatus, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -69,6 +69,9 @@ describe("Transaction DOGE base test ", function () {
             elementaryUnits: "100000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
+         summary: {
+            status: PaymentSummaryStatus.Success,
+         },
       },
       {
          description: "Coinbase Transaction",
@@ -101,6 +104,9 @@ describe("Transaction DOGE base test ", function () {
             currencyName: "DOGE",
             elementaryUnits: "100000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
+         },
+         summary: {
+            status: PaymentSummaryStatus.Success,
          },
       },
    ];

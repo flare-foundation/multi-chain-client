@@ -6,8 +6,17 @@ import { MccClient, TransactionSuccessStatus } from "../../types";
 import { IXrpGetTransactionRes, XrpTransactionStatusPrefixes, XrpTransactionTypeUnion } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
-import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, toBN } from "../../utils/utils";
-import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
+import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash, toBN } from "../../utils/utils";
+import {
+   AddressAmount,
+   BalanceDecreasingProps,
+   BalanceDecreasingSummaryResponse,
+   BalanceDecreasingSummaryStatus,
+   PaymentSummaryProps,
+   PaymentSummaryResponse,
+   PaymentSummaryStatus,
+   TransactionBase,
+} from "../TransactionBase";
 
 @Managed()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,6 +100,33 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return toBN(this.data.result.Fee);
    }
 
+   public get feeSignerTotalAmount(): AddressAmount {
+      const spentAmounts = this.spentAmounts;
+      // Check if signer is already in source amounts
+      const feeSigner = this.data.result.Account;
+      for (const spentAmount of spentAmounts) {
+         if (spentAmount.address === feeSigner) {
+            return spentAmount;
+         }
+      }
+      // Check if singer got positive amount
+      const receivedAmounts = this.receivedAmounts;
+      for (const receivedAmount of receivedAmounts) {
+         if (receivedAmount.address === feeSigner) {
+            const { amount, ...rest } = receivedAmount;
+            return {
+               amount: amount.neg(),
+               ...rest,
+            };
+         }
+      }
+      // You cash a check for exactly fee amount
+      return {
+         amount: toBN(0),
+         address: feeSigner,
+      };
+   }
+
    public get spentAmounts(): AddressAmount[] {
       if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
          throw new Error("Transaction meta is not available thus spent amounts cannot be calculated");
@@ -151,30 +187,30 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             }
          }
       }
-      // Check if signer is already in source amounts
-      const feeSigner = this.data.result.Account;
-      for (const spendAmount of spendAmounts) {
-         if (spendAmount.address === feeSigner) {
-            return spendAmounts;
-         }
-      }
-      // Check if singer got positive amount
-      const receivedAmounts = this.receivedAmounts;
-      for (const receivedAmount of receivedAmounts) {
-         if (receivedAmount.address === feeSigner) {
-            const { amount, ...rest } = receivedAmount;
-            spendAmounts.push({
-               amount: amount.neg(),
-               ...rest,
-            });
-            return spendAmounts;
-         }
-      }
-      // You cash a check for exactly fee amount
-      spendAmounts.push({
-         amount: toBN(0),
-         address: feeSigner,
-      });
+      // // Check if signer is already in source amounts
+      // const feeSigner = this.data.result.Account;
+      // for (const spendAmount of spendAmounts) {
+      //    if (spendAmount.address === feeSigner) {
+      //       return spendAmounts;
+      //    }
+      // }
+      // // Check if singer got positive amount
+      // const receivedAmounts = this.receivedAmounts;
+      // for (const receivedAmount of receivedAmounts) {
+      //    if (receivedAmount.address === feeSigner) {
+      //       const { amount, ...rest } = receivedAmount;
+      //       spendAmounts.push({
+      //          amount: amount.neg(),
+      //          ...rest,
+      //       });
+      //       return spendAmounts;
+      //    }
+      // }
+      // // You cash a check for exactly fee amount
+      // spendAmounts.push({
+      //    amount: toBN(0),
+      //    address: feeSigner,
+      // });
       return spendAmounts;
    }
 
@@ -259,6 +295,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       }
       const result = this.data.result.meta.TransactionResult;
       const prefix = result.slice(0, 3) as XrpTransactionStatusPrefixes;
+      // TODO: update
       // about statuses https://xrpl.org/transaction-results.html
       switch (prefix) {
          case "tes": // SUCCESS - Transaction was applied. Only final in a validated ledger.
@@ -294,44 +331,95 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   public async paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
-      if (!this.isNativePayment) {
-         if (this.type === "Payment") {
-            // token transfer
-            const value = ((this.data.result as Payment).Amount as IssuedCurrencyAmount).value;
-            const valueSplit = value.split(".");
-            let eleUnits = 1;
-            if (valueSplit.length === 2) {
-               eleUnits = Math.pow(10, valueSplit[1].length);
-            }
+   public async paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
+      if (this.type === "Payment" && this.isNativePayment) {
+         // Is native transfer
+         if (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1) {
             return {
-               isNativePayment: false,
-               isTokenTransfer: true,
-               tokenElementaryUnits: toBN(eleUnits),
-               receivedTokenAmount: toBN(valueSplit.join("")),
-               sourceAddress: this.sourceAddresses[0],
-               receivingAddress: this.receivingAddresses[0],
-               spentAmount: this.spentAmounts[0].amount, // We still spend fee
-               paymentReference: this.stdPaymentReference,
-               tokenName: this.currencyName,
-               oneToOne: true,
-               isFull: true,
+               status: PaymentSummaryStatus.UnexpectedNumberOfParticipants,
             };
-         } else {
-            return { isNativePayment: false };
          }
+         const spendAmount = this.spentAmounts[0];
+         const receiveAmount = this.receivedAmounts[0];
+         if (!spendAmount.address) {
+            return {
+               status: PaymentSummaryStatus.NoSpendAmountAddress,
+            };
+         }
+         if (!receiveAmount.address) {
+            return {
+               status: PaymentSummaryStatus.NoReceiveAmountAddress,
+            };
+         }
+         return {
+            status: PaymentSummaryStatus.Success,
+            response: {
+               blockTimestamp: this.unixTimestamp,
+               transactionHash: this.stdTxid,
+               sourceAddress: spendAmount.address,
+               sourceAddressHash: standardAddressHash(spendAmount.address),
+               receivingAddressHash: standardAddressHash(receiveAmount.address),
+               receivingAddress: receiveAmount.address,
+               spentAmount: spendAmount.amount,
+               // TODO: Check if intended sent value can be set
+               receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : toBN(0),
+               transactionStatus: this.successStatus,
+               oneToOne: true,
+               paymentReference: this.stdPaymentReference,
+               isFull: true,
+            },
+         };
       }
       return {
-         isNativePayment: true,
-         sourceAddress: this.sourceAddresses[0],
-         receivingAddress: this.receivingAddresses[0],
-         spentAmount: this.spentAmounts[0].amount,
-         // TODO: Check if intended sent value can be set
-         receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? this.receivedAmounts[0].amount : toBN(0),
-         oneToOne: true,
-         paymentReference: this.stdPaymentReference,
-         isFull: true,
+         status: PaymentSummaryStatus.NotNativePayment,
       };
+   }
+
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   public async balanceDecreasingSummary({ sourceAddressIndicator, client }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
+      if (!isValidBytes32Hex(sourceAddressIndicator)) {
+         return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
+      }
+      const spentAmounts = this.spentAmounts;
+      for (const spendAmount of spentAmounts) {
+         if (spendAmount.address && standardAddressHash(spendAmount.address) === sourceAddressIndicator) {
+            // We found the address we are looking for
+            return {
+               status: BalanceDecreasingSummaryStatus.Success,
+               response: {
+                  blockTimestamp: this.unixTimestamp,
+                  transactionHash: this.stdTxid,
+                  sourceAddressIndicator: sourceAddressIndicator,
+                  sourceAddressHash: standardAddressHash(spendAmount.address),
+                  sourceAddress: spendAmount.address,
+                  spentAmount: spendAmount.amount,
+                  paymentReference: this.stdPaymentReference,
+                  transactionStatus: this.successStatus,
+                  isFull: true,
+               },
+            };
+         }
+      }
+      const feeSigner = this.feeSignerTotalAmount;
+      if (feeSigner.address && standardAddressHash(feeSigner.address) === sourceAddressIndicator) {
+         // We found the address we are looking for
+         return {
+            status: BalanceDecreasingSummaryStatus.Success,
+            response: {
+               blockTimestamp: this.unixTimestamp,
+               transactionHash: this.stdTxid,
+               sourceAddressIndicator: sourceAddressIndicator,
+               sourceAddressHash: standardAddressHash(feeSigner.address),
+               sourceAddress: feeSigner.address,
+               spentAmount: feeSigner.amount,
+               paymentReference: this.stdPaymentReference,
+               transactionStatus: this.successStatus,
+               isFull: true,
+            },
+         };
+      }
+      // We didn't find the address we are looking for
+      return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars

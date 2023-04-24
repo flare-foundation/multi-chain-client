@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, PaymentSummary, unPrefix0x } from "../src";
+import { AddressAmount, PaymentSummaryResponse, unPrefix0x } from "../src";
 import { IIUtxoVout, TransactionSuccessStatus } from "../src/types";
 import { addressToHex, hexToBytes } from "../src/utils/algoUtils";
 
@@ -72,6 +72,10 @@ export function addressToBtyeAddress(address: string): Uint8Array {
    return hexToBytes(unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum));
 }
 
+export function singleAddressAmountEqual(a: AddressAmount, b: AddressAmount) {
+   return a.address == b.address && a.amount.toString() == b.amount.toString() && a.elementaryUnits == b.elementaryUnits && a.utxo == b.utxo;
+}
+
 export function AddressAmountEqual(a: AddressAmount[], b: AddressAmount[]) {
    if (a.length != b.length) {
       return false;
@@ -88,12 +92,7 @@ export function AddressAmountEqual(a: AddressAmount[], b: AddressAmount[]) {
    b.sort(sortParam);
 
    for (let i = 0; i < a.length; i++) {
-      if (
-         a[i].address != b[i].address ||
-         a[i].amount.toString() != b[i].amount.toString() ||
-         a[i].elementaryUnits != b[i].elementaryUnits ||
-         a[i].utxo != b[i].utxo
-      ) {
+      if (singleAddressAmountEqual(a[i], b[i]) == false) {
          return false;
       }
    }
@@ -108,7 +107,8 @@ export interface transactionTestCases {
    description: string;
    txid: string;
    expect: expectTransactionTestCase;
-   summary?: PaymentSummary;
+   makeFull?: boolean;
+   summary: PaymentSummaryResponse;
 }
 
 export interface expectTransactionTestCase {

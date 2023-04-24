@@ -11,7 +11,7 @@ const XRPMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("search", function () {
+describe.skip("search", function () {
    let beginning = 78637600;
    const output = fs.createWriteStream(`./test/XRP/transactionTypes/log/example${beginning}.log`);
 

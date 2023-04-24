@@ -53,6 +53,10 @@ export function toHex(x: string | number | BN): string {
    return Web3.utils.toHex(x);
 }
 
+export function toHex32Bytes(x: string | number | BN): string {
+   return Web3.utils.padLeft(toHex(x), 64);
+}
+
 export function toBN(x: string | number | BN, toZeroIfFails = false) {
    if (x && x.constructor && x.constructor.name === "BN") return x as BN;
    try {
@@ -102,7 +106,7 @@ export function toSnakeCase(obj: object, splitWith: string = "-"): object {
 }
 
 export function isValidBytes32Hex(address: string) {
-   return /^0x[0-9a-fA-F]{64}$/i.test(address);
+   return /^(0x|0X)?[0-9a-fA-F]{64}$/i.test(address);
 }
 
 export function isValidBytes32HexPrefix(address: string) {
@@ -183,4 +187,12 @@ export function fillWithDefault(partialMccLogging: MccLoggingOptions): MccLoggin
       warningCallback: partialMccLogging.warningCallback ? partialMccLogging.warningCallback : defaultWarningCallback,
       exceptionCallback: partialMccLogging.exceptionCallback ? partialMccLogging.exceptionCallback : defaultExceptionCallback,
    };
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////// Standard address Hash ///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export function standardAddressHash(address: string): string {
+   return Web3.utils.keccak256(address);
 }

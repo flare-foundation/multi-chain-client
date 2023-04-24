@@ -4,6 +4,19 @@ import { MccClient, TransactionSuccessStatus } from "../types";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ITransaction = TransactionBase<any, any>;
 
+type SummaryBaseProps = {
+   client?: MccClient;
+};
+
+export type BalanceDecreasingProps = SummaryBaseProps & {
+   sourceAddressIndicator: string;
+};
+
+export type PaymentSummaryProps = SummaryBaseProps & {
+   inUtxo: number;
+   outUtxo: number;
+};
+
 export interface AddressAmount {
    address?: string;
    amount: BN;
@@ -11,20 +24,55 @@ export interface AddressAmount {
    utxo?: number;
 }
 
-export interface PaymentSummary {
-   isNativePayment: boolean;
-   isTokenTransfer?: boolean; // sometimes even no native payments can still be token transfers
-   tokenElementaryUnits?: BN; // if it is a token transfer // not the same for all transactions with this token
-   receivedTokenAmount?: BN; // only if token transfer
-   tokenName?: string; // only if token transfer
-   sourceAddress?: string;
-   receivingAddress?: string;
-   spentAmount?: BN;
-   receivedAmount?: BN;
-   paymentReference?: string; // standardized payment reference, if it exists
-   oneToOne?: boolean;
-   isFull?: boolean;
+interface TransactionSummaryBase<ST, TO> {
+   status: ST;
+   response?: TO;
 }
+
+export enum PaymentSummaryStatus {
+   Success = "success",
+   Coinbase = "coinbase",
+   NotNativePayment = "notNativePayment",
+   UnexpectedNumberOfParticipants = "unexpectedNumberOfParticipants",
+   InvalidInUtxo = "invalidInUtxo",
+   InvalidOutUtxo = "invalidOutUtxo",
+   NoSpendAmountAddress = "noSpendAmountAddress",
+   NoReceiveAmountAddress = "noReceiveAmountAddress",
+}
+
+export enum BalanceDecreasingSummaryStatus {
+   Success = "success",
+   InvalidInUtxo = "invalidInUtxo",
+   NoSourceAddress = "noSourceAddress",
+   NotValidSourceAddressFormat = "notValidSourceAddressFormat",
+}
+
+interface SummaryObjectBase {
+   // blockNumber: number;
+   blockTimestamp: number;
+   transactionHash: string;
+   sourceAddressHash: string;
+   sourceAddress: string;
+   spentAmount: BN;
+   paymentReference: string;
+   transactionStatus: TransactionSuccessStatus;
+}
+
+export interface PaymentSummaryObject extends SummaryObjectBase {
+   receivingAddressHash: string;
+   receivingAddress: string;
+   receivedAmount: BN;
+   oneToOne: boolean;
+   isFull: boolean;
+}
+
+export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
+   sourceAddressIndicator: string;
+   isFull: boolean;
+}
+
+export type BalanceDecreasingSummaryResponse = TransactionSummaryBase<BalanceDecreasingSummaryStatus, BalanceDecreasingSummaryObject>;
+export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus, PaymentSummaryObject>;
 
 export abstract class TransactionBase<T, AT> {
    data: T;
@@ -73,21 +121,21 @@ export abstract class TransactionBase<T, AT> {
    public abstract get unixTimestamp(): number;
 
    /**
-    Returns a array of all source addresses that are a source of native tokens.
+    Returns an array of all source addresses that are a source of native tokens.
 
     One or more of so returned addresses pay the fee
 
-    * In account-based chains only one address is present.
-    * In UTXO chains addresses indicate the addresses on relevant inputs.  
+    * In account-based chains, only one address is present.
+    * In UTXO chains, addresses indicate the addresses on relevant inputs.  
    
     Some addresses may be undefined, either due to non-existence on specific inputs or due to not being fetched from the outputs of the corresponding input transactions.
     */
    public abstract get sourceAddresses(): (string | undefined)[];
 
    /**
-    Returns a array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP). 
+    Returns an array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP). 
     * In account-based chains only one address is present.
-    * In UTXO chains this feature is not supported
+    * In UTXO chains this feature is not supported.
 
     WIP / TODO
     */
@@ -95,7 +143,7 @@ export abstract class TransactionBase<T, AT> {
 
    /**
     * Array of a receiving addresses. In account-based chains only one address in present.
-    * In UTXO chains the list indicates the addresses on the corresponding transaction outputs.
+    * In UTXO chains, the list indicates the addresses on the corresponding transaction outputs.
     * Some may be undefined since outputs may not have addresses defined.
     */
    public abstract get receivingAddresses(): (string | undefined)[];
@@ -103,9 +151,9 @@ export abstract class TransactionBase<T, AT> {
    /*
     Array of a receiving addresses that receive build in assets tokens.
 
-    * In account-based chains only one address in present
+    * In account-based chains, only one address in present
       * Algo transactions that close to certain address list both receiving address and close address.
-    * In UTXO chains this feature is not supported
+    * In UTXO chains, this feature is not supported
     
     WIP / TODO
 
@@ -119,9 +167,14 @@ export abstract class TransactionBase<T, AT> {
    public abstract get fee(): BN;
 
    /**
+    * Gets transaction fee in elementary units (e.g. satoshi, microalgo, ...) and the address that paid the fee.
+    */
+   public abstract get feeSignerTotalAmount(): AddressAmount;
+
+   /**
     * An array of spent amounts on transaction inputs.
-    * In account-based chains only one amount is present, and includes total spent amount, including fees.
-    * In UTXO chains the spent amounts on the corresponding inputs are given in the list.
+    * In account-based chains, only one amount is present, and includes total spent amount, including fees.
+    * In UTXO chains, the spent amounts on the corresponding inputs are given in the list.
     * If the corresponding addresses are undefined and not fetched (in `sourceAddresses`), the
     * corresponding spent amounts are 0.
     * The amounts are in basic units (e.g. satoshi, microalgo, ...)
@@ -135,8 +188,8 @@ export abstract class TransactionBase<T, AT> {
 
    /**
     * An array of received amounts on transaction outputs.
-    * In account based chains only one input and output exist.
-    * In UTXO chains the received amounts correspond to the amounts on outputs.
+    * In account based chains, only one input and output exist.
+    * In UTXO chains ,the received amounts correspond to the amounts on outputs.
     */
    public abstract get receivedAmounts(): AddressAmount[];
 
@@ -179,7 +232,32 @@ export abstract class TransactionBase<T, AT> {
     */
    public abstract makeFull(client: MccClient): Promise<void>;
 
-   public abstract paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary>;
+   /**
+    * Provides payment summary for a given transaction.
+    * It can only do so for well structured "native" payments, that come from one address and goes to one address (utxo is a bit special).
+    * If payment can be successfully summarized, the response will contain a `PaymentSummaryObject`. and status of `PaymentSummaryStatus.Success`.
+    * If method throws exception only on critical occasions:
+    * - connection to node is not stable or provided
+    * - transaction data was corrupted when creating this object
+    * - unhandled errors (usually indicates bugs in either this library or the underlying chain)
+    * @param props.client : Initialized mcc client for the underlying chain
+    * @param props.inUtxo : Vin index for utxo chains and ignored on non utxo chains
+    * @param props.outUtxo : Vout index for utxo chains and ignored on non utxo chains
+    */
+   public abstract paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse>;
+
+   /**
+    * Provides balance decreasing summary for a given transaction.
+    * Must be able to analyze any transaction, and provide a summary of the balance decreasing actions, that either reduce the given address balance or are signed by the given address.
+    * If balance decreasing can be successfully summarized, the response will contain a `BalanceDecreasingSummaryObject` and status of `BalanceDecreasingSummaryStatus.Success`.
+    * Method throws exception only on critical occasions if:
+    * - connection to node is not stable or provided
+    * - transaction data was corrupted when creating this object
+    * - unhandled errors (usually indicates bugs in either this library or the underlying chain)
+    * @param props.client : Initialized mcc client for the underlying chain
+    * @param props.sourceAddressIndicator : AddressIndicator (vin index on utxo chains and standardized address hash on non utxo chains)
+    */
+   public abstract balanceDecreasingSummary(props: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse>;
 }
 
 export { AlgoTransaction } from "./transactions/AlgoTransaction";

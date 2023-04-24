@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { AddressAmount, MCC, XrpTransaction, toBN, traceManager } from "../../../src";
-import { AddressAmountEqual, getTestFile } from "../../testUtils";
+import { AddressAmountEqual, getTestFile, singleAddressAmountEqual } from "../../testUtils";
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "https://xrplcluster.com",
@@ -130,7 +130,12 @@ describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
       });
 
       it("should correctly parse sourceAddresses", async function () {
-         expect(transaction.sourceAddresses).to.deep.equal([addressRec]);
+         expect(transaction.sourceAddresses).to.deep.equal([]);
+      });
+
+      it("should correctly parse feeSignerTotalAmount address amount", async function () {
+         const expected = { address: addressRec, amount: toBN(fee).sub(toBN(value)) };
+         expect(singleAddressAmountEqual(transaction.feeSignerTotalAmount, expected)).to.be.true;
       });
 
       it("should correctly parse receivingAddresses", async function () {
@@ -138,7 +143,7 @@ describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
       });
 
       it("should correctly parse spentAmounts", async function () {
-         const expected: AddressAmount[] = [{ address: addressRec, amount: toBN(fee).sub(toBN(value)) }];
+         const expected: AddressAmount[] = [];
          expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
       });
 
