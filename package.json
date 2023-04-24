@@ -41,7 +41,8 @@
       "report-dir": "coverage"
    },
    "files": [
-      "/dist"
+      "/dist",
+      "/src"
    ],
    "scripts": {
       "----------PREBUILD-HEALTH-CHECKS----------": "----------PREBUILD-HEALTH-CHECKS----------",

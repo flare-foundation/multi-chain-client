@@ -1,8 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { AccountInfoResponse, AccountTxResponse, LedgerResponse, ServerStateResponse } from "xrpl";
-import { XrpBlock, XrpTransaction } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { IBlockTip, IFullBlock } from "../base-objects/BlockBase";
+import { IBlockTip, IFullBlock, XrpBlock } from "../base-objects/BlockBase";
 import { XrpNodeStatus } from "../base-objects/StatusBase";
 import { XrpFullBlock } from "../base-objects/fullBlocks/XrpFullBlock";
 import { mccSettings } from "../global-settings/globalSettings";
@@ -18,9 +17,10 @@ import {
 } from "../types";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
-import { Managed } from "../utils/managed";
 import { mccJsonStringify, unPrefix0x } from "../utils/utils";
 import { xrp_ensure_data } from "../utils/xrpUtils";
+import { XrpTransaction } from "../base-objects/TransactionBase";
+import { Managed } from "../utils/managed";
 
 const DEFAULT_TIMEOUT = 15000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
