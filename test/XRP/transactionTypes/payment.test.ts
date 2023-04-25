@@ -2,6 +2,7 @@
 
 import { expect, assert } from "chai";
 import {
+   AddressAmount,
    BalanceDecreasingSummaryStatus,
    MCC,
    PaymentSummaryStatus,
@@ -50,6 +51,18 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
 
       it("should correctly parse receivedAmounts", async function () {
          expect(transaction.receivedAmounts).to.deep.equal([]);
+      });
+
+      it("should get intendant spent amount", function () {
+         const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("10") }];
+         const intSpnAmt = transaction.intendedSpendAmounts;
+         assert(AddressAmountEqual(intSpnAmt, expected));
+      });
+
+      it("should get intendant received amount", function () {
+         const expected: AddressAmount[] = [];
+         const intRecAmt = transaction.intendedReceivedAmounts;
+         assert(AddressAmountEqual(intRecAmt, expected));
       });
 
       it("should get payment summary", async function () {
@@ -115,6 +128,18 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
       });
 
+      it("should get intendant spent amount", function () {
+         const expected = [{ address: "rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5", amount: toBN("1400000010") }];
+         const intSpnAmt = transaction.intendedSpendAmounts;
+         assert(AddressAmountEqual(intSpnAmt, expected));
+      });
+
+      it("should get intendant received amount", function () {
+         const expected = [{ address: "r14f8Luu4dYKzNEwFYV2KfA74YZcWVS5F", amount: toBN("1400000000") }];
+         const intRecAmt = transaction.intendedReceivedAmounts;
+         assert(AddressAmountEqual(intRecAmt, expected));
+      });
+
       it("should get payment summary", async function () {
          const summary = await transaction.paymentSummary();
          expect(summary.status).to.eq(PaymentSummaryStatus.Success);
@@ -155,6 +180,18 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
       it("should correctly parse receivedAmounts", async function () {
          const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("27") }];
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
+      });
+
+      it("should get intendant spent amount", function () {
+         const expected = [{ address: "rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p", amount: toBN("39") }];
+         const intSpnAmt = transaction.intendedSpendAmounts;
+         assert(AddressAmountEqual(intSpnAmt, expected));
+      });
+
+      it("should get intendant received amount", function () {
+         const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("27") }];
+         const intRecAmt = transaction.intendedReceivedAmounts;
+         assert(AddressAmountEqual(intRecAmt, expected));
       });
 
       it("should get payment summary", async function () {
@@ -244,6 +281,18 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
          assert(!receivedAmounts, "No xrp was transferred");
       });
 
+      it("should get intendant spent amount", function () {
+         const expected = [{ address: "r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB", amount: toBN(10) }];
+         const intSpnAmt = transaction.intendedSpendAmounts;
+         assert(AddressAmountEqual(intSpnAmt, expected));
+      });
+
+      it("should get intendant received amount", function () {
+         const expected: AddressAmount[] = [];
+         const intRecAmt = transaction.intendedReceivedAmounts;
+         assert(AddressAmountEqual(intRecAmt, expected));
+      });
+
       it("should get payment summary", async function () {
          const summary = await transaction.paymentSummary();
          expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
@@ -324,6 +373,18 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
       it("Should get receivedAmounts", function () {
          const receivedAmounts = transaction.receivedAmounts[0];
          assert(!receivedAmounts, "No xrp was transferred");
+      });
+
+      it("should get intendant spent amount", function () {
+         const expected = [{ address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2", amount: toBN(22) }];
+         const intSpnAmt = transaction.intendedSpendAmounts;
+         assert(AddressAmountEqual(intSpnAmt, expected));
+      });
+
+      it("should get intendant received amount", function () {
+         const expected = [{ address: "rLCq1KvoCYeMj4H8hsRFrfPYHCRLLYDHdU", amount: toBN(12) }];
+         const intRecAmt = transaction.intendedReceivedAmounts;
+         assert(AddressAmountEqual(intRecAmt, expected));
       });
 
       it("should get payment summary", async function () {
