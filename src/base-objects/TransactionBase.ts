@@ -184,6 +184,7 @@ export abstract class TransactionBase<T, AT> {
    /**
     * On transactions that were successfully this is the same as `spentAmounts`.
     * On some chains transaction can be in block and fail, intended spend amount represents the amounts that were intended to be spent by each address.
+    * Note: We only extract intended spend amounts for "nice" payment transactions that intend to transfer native tokens.
     */
    public abstract get intendedSpendAmounts(): AddressAmount[];
 
@@ -202,6 +203,7 @@ export abstract class TransactionBase<T, AT> {
    /**
     * On transactions that were successfully this is the same as `receivedAmounts`.
     * On some chains transaction can be in block and fail, intended received amount represents the amounts that were intended to be received by each address.
+    * Note: We only extract intended received amounts for "nice" payment transactions that intend to transfer native tokens.
     */
    public abstract get intendedReceivedAmounts(): AddressAmount[];
 
