@@ -147,6 +147,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
       });
    }
 
+   public get intendedSpendAmounts(): AddressAmount[] {
+      return this.spentAmounts;
+   }
+
    public get assetSpentAmounts(): AddressAmount[] {
       throw new mccError(mccErrorCode.InvalidResponse, Error(`There are no build-in assets on ${this.currencyName} chain`));
    }
@@ -159,6 +163,10 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
             utxo: vout.n,
          } as AddressAmount;
       });
+   }
+
+   public get intendedReceivedAmounts(): AddressAmount[] {
+      return this.receivedAmounts;
    }
 
    public get assetReceivedAmounts(): AddressAmount[] {

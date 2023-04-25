@@ -182,6 +182,12 @@ export abstract class TransactionBase<T, AT> {
    public abstract get spentAmounts(): AddressAmount[];
 
    /**
+    * On transactions that were successfully this is the same as `spentAmounts`.
+    * On some chains transaction can be in block and fail, intended spend amount represents the amounts that were intended to be spent by each address.
+    */
+   public abstract get intendedSpendAmounts(): AddressAmount[];
+
+   /**
     * An array of spent amounts in build-in assets tokens on transaction inputs.
     */
    public abstract get assetSpentAmounts(): AddressAmount[];
@@ -192,6 +198,12 @@ export abstract class TransactionBase<T, AT> {
     * In UTXO chains ,the received amounts correspond to the amounts on outputs.
     */
    public abstract get receivedAmounts(): AddressAmount[];
+
+   /**
+    * On transactions that were successfully this is the same as `receivedAmounts`.
+    * On some chains transaction can be in block and fail, intended received amount represents the amounts that were intended to be received by each address.
+    */
+   public abstract get intendedReceivedAmounts(): AddressAmount[];
 
    /**
     * An array of received amounts in build-in tokens on transaction outputs.

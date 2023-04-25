@@ -177,5 +177,13 @@
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/XRP/transactionTypes/**/*.test.ts"]
       },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Test XRP intedned Amounts",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/XRP/intededAmounts.test.ts"]
+      },
    ]
 }

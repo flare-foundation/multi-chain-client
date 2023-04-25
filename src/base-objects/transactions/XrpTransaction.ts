@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { Payment, TransactionMetadata } from "xrpl";
+import { Payment, Transaction, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { MccClient, TransactionSuccessStatus } from "../../types";
@@ -214,6 +214,52 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return spendAmounts;
    }
 
+   public get intendedSpendAmounts(): AddressAmount[] {
+      if (this.successStatus === TransactionSuccessStatus.SUCCESS) {
+         return this.spentAmounts;
+      }
+      switch (this.type) {
+         case "Payment": {
+            const payment = this.data.result as Payment;
+            if (this.isNativePayment) {
+               if (typeof payment.Amount === "string") {
+                  return [
+                     {
+                        address: payment.Account,
+                        amount: toBN(payment.Amount).add(this.fee),
+                     },
+                  ];
+               } // Token transfer since Amount is IssuedCurrencyAmount
+               else {
+                  return [
+                     {
+                        address: payment.Account,
+                        amount: this.fee,
+                     },
+                  ];
+               }
+            } else {
+               // Token transfer
+               return [
+                  {
+                     address: payment.Account,
+                     amount: this.fee,
+                  },
+               ];
+            }
+         }
+         default:
+            // TODO: what should be returned here?
+            throw new Error(`Intended spend amounts for transaction type ${this.type} are not implemented`);
+         // return [
+         //    {
+         //       address: this.sourceAddresses[0],
+         //       amount: toBN(this.fee),
+         //    },
+         // ];
+      }
+   }
+
    public get assetSpentAmounts(): AddressAmount[] {
       throw new Error("Method not implemented.");
    }
@@ -257,6 +303,32 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          }
       }
       return receivedAmounts;
+   }
+
+   public get intendedReceivedAmounts(): AddressAmount[] {
+      if (this.successStatus === TransactionSuccessStatus.SUCCESS) {
+         return this.receivedAmounts;
+      }
+      switch (this.type) {
+         case "Payment": {
+            const payment = this.data.result as Payment;
+
+            if (this.isNativePayment) {
+               if (typeof payment.Amount === "string") {
+                  return [
+                     {
+                        address: payment.Destination,
+                        amount: toBN(payment.Amount),
+                     },
+                  ];
+               }
+            }
+            // Token transfer was intended
+            return [];
+         }
+         default:
+            throw new Error(`Intended received amounts for transaction type ${this.type} are not implemented`);
+      }
    }
 
    public get assetReceivedAmounts(): AddressAmount[] {
@@ -430,6 +502,32 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    //////////////////////////////
    //// Xrp specific methods ////
    //////////////////////////////
+
+   private get metaObject(): TransactionMetadata {
+      const noMetaError = new Error("Transaction meta is not available");
+      if (this.data.result.meta) {
+         if (typeof this.data.result.meta === "string") {
+            throw noMetaError;
+         } else {
+            return this.data.result.meta as TransactionMetadata;
+         }
+      }
+      // We handle this in the client, but transaction metadata is provided as different named properties depending if getting transactions from block or directly from transaction hash
+      if (
+         (
+            this.data.result as Transaction & {
+               metaData?: TransactionMetadata;
+            }
+         ).metaData
+      ) {
+         return (
+            this.data.result as Transaction & {
+               metaData?: TransactionMetadata;
+            }
+         ).metaData as TransactionMetadata;
+      }
+      throw noMetaError;
+   }
 
    public get isAccountCreate(): boolean {
       if (this.type === "Payment") {
