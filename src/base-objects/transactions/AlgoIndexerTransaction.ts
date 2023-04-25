@@ -20,6 +20,12 @@ const web3 = require("web3");
 
 @Managed()
 export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionRes, IAlgoIndexerAdditionalData> {
+   public get intendedSpendAmounts(): AddressAmount[] {
+      throw new Error("Method not implemented.");
+   }
+   public get intendedReceivedAmounts(): AddressAmount[] {
+      throw new Error("Method not implemented.");
+   }
    public async makeFull(client: MCC.ALGO): Promise<void> {
       if (!this.additionalData) {
          this.additionalData = {};

@@ -22,6 +22,12 @@ const web3 = require("web3");
 
 @Managed()
 export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IAlgoAdditionalData> {
+   public get intendedSpendAmounts(): AddressAmount[] {
+      throw new Error("Method not implemented.");
+   }
+   public get intendedReceivedAmounts(): AddressAmount[] {
+      throw new Error("Method not implemented.");
+   }
    public get txid(): string {
       return this.data.txid;
    }
