@@ -57,22 +57,22 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
          expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).add(toBN(value)).toString());
       });
 
-      // Token transfers
-      it.skip("should correctly parse assetSourceAddresses", async function () {
-         expect(transaction.assetSourceAddresses).to.deep.equal([]);
-      });
+      // // Token transfers
+      // it.skip("should correctly parse assetSourceAddresses", async function () {
+      //    expect(transaction.assetSourceAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivingAddresses", async function () {
-         expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivingAddresses", async function () {
+      //    expect(transaction.assetReceivingAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetSpentAmounts", async function () {
-         expect(transaction.assetSpentAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetSpentAmounts", async function () {
+      //    expect(transaction.assetSpentAmounts).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivedAmounts", async function () {
-         expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivedAmounts", async function () {
+      //    expect(transaction.assetReceivedAmounts).to.deep.equal([]);
+      // });
    });
 
    describe("EscrowCancel", function () {
@@ -116,22 +116,22 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
          expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).sub(toBN(value)).toString());
       });
 
-      // Token transfers
-      it.skip("should correctly parse assetSourceAddresses", async function () {
-         expect(transaction.assetSourceAddresses).to.deep.equal([]);
-      });
+      // // Token transfers
+      // it.skip("should correctly parse assetSourceAddresses", async function () {
+      //    expect(transaction.assetSourceAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivingAddresses", async function () {
-         expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivingAddresses", async function () {
+      //    expect(transaction.assetReceivingAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetSpentAmounts", async function () {
-         expect(transaction.assetSpentAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetSpentAmounts", async function () {
+      //    expect(transaction.assetSpentAmounts).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivedAmounts", async function () {
-         expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivedAmounts", async function () {
+      //    expect(transaction.assetReceivedAmounts).to.deep.equal([]);
+      // });
    });
 
    describe("EscrowFinish", function () {
@@ -176,21 +176,21 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
          expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.NoSourceAddress);
       });
 
-      // Token transfers
-      it.skip("should correctly parse assetSourceAddresses", async function () {
-         expect(transaction.assetSourceAddresses).to.deep.equal([]);
-      });
+      // // Token transfers
+      // it.skip("should correctly parse assetSourceAddresses", async function () {
+      //    expect(transaction.assetSourceAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivingAddresses", async function () {
-         expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivingAddresses", async function () {
+      //    expect(transaction.assetReceivingAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetSpentAmounts", async function () {
-         expect(transaction.assetSpentAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetSpentAmounts", async function () {
+      //    expect(transaction.assetSpentAmounts).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivedAmounts", async function () {
-         expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivedAmounts", async function () {
+      //    expect(transaction.assetReceivedAmounts).to.deep.equal([]);
+      // });
    });
 });

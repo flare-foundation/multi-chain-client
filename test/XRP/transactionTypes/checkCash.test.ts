@@ -51,21 +51,21 @@ describe(`CheckCash type (${getTestFile(__filename)})`, function () {
          expect(summary.response!.spentAmount.toString()).to.eq("12");
       });
 
-      // Token transfers
-      it.skip("should correctly parse assetSourceAddresses", async function () {
-         return;
-      });
+      // // Token transfers
+      // it.skip("should correctly parse assetSourceAddresses", async function () {
+      //    return;
+      // });
 
-      it.skip("should correctly parse assetReceivingAddresses", async function () {
-         return;
-      });
+      // it.skip("should correctly parse assetReceivingAddresses", async function () {
+      //    return;
+      // });
 
-      it.skip("should correctly parse assetSpentAmounts", async function () {
-         return;
-      });
+      // it.skip("should correctly parse assetSpentAmounts", async function () {
+      //    return;
+      // });
 
-      it.skip("should correctly parse assetReceivedAmounts", async function () {
-         return;
-      });
+      // it.skip("should correctly parse assetReceivedAmounts", async function () {
+      //    return;
+      // });
    });
 });

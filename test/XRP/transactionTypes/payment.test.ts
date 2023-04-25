@@ -85,22 +85,22 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
          const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: "12" });
          expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat);
       });
-      // Token transfers
-      it.skip("should correctly parse assetSourceAddresses", async function () {
-         expect(transaction.sourceAddresses).to.deep.equal(["rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"]);
-      });
+      // // Token transfers
+      // it.skip("should correctly parse assetSourceAddresses", async function () {
+      //    expect(transaction.sourceAddresses).to.deep.equal(["rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"]);
+      // });
 
-      it.skip("should correctly parse assetReceivingAddresses", async function () {
-         expect(transaction.receivingAddresses).to.deep.equal(["ra5nK24KXen9AHvsdFTKHSANinZseWnPcX"]);
-      });
+      // it.skip("should correctly parse assetReceivingAddresses", async function () {
+      //    expect(transaction.receivingAddresses).to.deep.equal(["ra5nK24KXen9AHvsdFTKHSANinZseWnPcX"]);
+      // });
 
-      it.skip("should correctly parse assetSpentAmounts", async function () {
-         expect(transaction.assetSpentAmounts).to.deep.equal([{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("1") }]);
-      });
+      // it.skip("should correctly parse assetSpentAmounts", async function () {
+      //    expect(transaction.assetSpentAmounts).to.deep.equal([{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("1") }]);
+      // });
 
-      it.skip("should correctly parse assetReceivedAmounts", async function () {
-         expect(transaction.assetReceivedAmounts).to.deep.equal([{ address: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX", amount: toBN("1") }]);
-      });
+      // it.skip("should correctly parse assetReceivedAmounts", async function () {
+      //    expect(transaction.assetReceivedAmounts).to.deep.equal([{ address: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX", amount: toBN("1") }]);
+      // });
    });
 
    describe("Payment Founding address example", function () {
@@ -212,22 +212,22 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
          expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
       });
 
-      // Token transfers
-      it.skip("should correctly parse assetSourceAddresses", async function () {
-         expect(transaction.sourceAddresses).to.deep.equal([]);
-      });
+      // // Token transfers
+      // it.skip("should correctly parse assetSourceAddresses", async function () {
+      //    expect(transaction.sourceAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivingAddresses", async function () {
-         expect(transaction.receivingAddresses).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivingAddresses", async function () {
+      //    expect(transaction.receivingAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetSpentAmounts", async function () {
-         expect(transaction.assetSpentAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetSpentAmounts", async function () {
+      //    expect(transaction.assetSpentAmounts).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivedAmounts", async function () {
-         expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivedAmounts", async function () {
+      //    expect(transaction.assetReceivedAmounts).to.deep.equal([]);
+      // });
    });
 
    //TODO: find a failed transaction, where it is receiver's fault
@@ -305,27 +305,27 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
          expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
       });
 
-      // Token transfers
+      // // Token transfers
 
-      it.skip("Should get assetSpentAmounts", function () {
-         const assetSpentAmount = transaction.assetSpentAmounts[0];
-         assert(!assetSpentAmount, "No assets were transferred");
-      });
+      // it.skip("Should get assetSpentAmounts", function () {
+      //    const assetSpentAmount = transaction.assetSpentAmounts[0];
+      //    assert(!assetSpentAmount, "No assets were transferred");
+      // });
 
-      it.skip("Should get assetSourceAddresses", function () {
-         const assetSourceAddress = transaction.assetSourceAddresses[0];
-         assert(!assetSourceAddress, "No assets were transferred");
-      });
+      // it.skip("Should get assetSourceAddresses", function () {
+      //    const assetSourceAddress = transaction.assetSourceAddresses[0];
+      //    assert(!assetSourceAddress, "No assets were transferred");
+      // });
 
-      it.skip("Should get assetReceivingAddress", function () {
-         const assetReceivingAddress = transaction.assetReceivingAddresses[0];
-         assert(!assetReceivingAddress, "No assets were transferred");
-      });
+      // it.skip("Should get assetReceivingAddress", function () {
+      //    const assetReceivingAddress = transaction.assetReceivingAddresses[0];
+      //    assert(!assetReceivingAddress, "No assets were transferred");
+      // });
 
-      it.skip("Should get assetReceivingAddress", function () {
-         const assetReceivedAmount = transaction.assetSpentAmounts[0];
-         assert(!assetReceivedAmount, "No assets were transferred");
-      });
+      // it.skip("Should get assetReceivingAddress", function () {
+      //    const assetReceivedAmount = transaction.assetSpentAmounts[0];
+      //    assert(!assetReceivedAmount, "No assets were transferred");
+      // });
    });
 
    describe("Payment failed native", function () {
@@ -402,26 +402,27 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
          expect(summary.response!.spentAmount.toString()).to.eq("10");
          expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
       });
-      // Token transfers
 
-      it.skip("Should get assetSpentAmounts", function () {
-         const assetSpentAmount = transaction.assetSpentAmounts[0];
-         assert(!assetSpentAmount, "No assets were transferred");
-      });
+      // // Token transfers
 
-      it.skip("Should get assetSourceAddresses", function () {
-         const assetSourceAddress = transaction.assetSourceAddresses[0];
-         assert(!assetSourceAddress, "No assets were transferred");
-      });
+      // it.skip("Should get assetSpentAmounts", function () {
+      //    const assetSpentAmount = transaction.assetSpentAmounts[0];
+      //    assert(!assetSpentAmount, "No assets were transferred");
+      // });
 
-      it.skip("Should get assetReceivingAddress", function () {
-         const assetReceivingAddress = transaction.assetReceivingAddresses[0];
-         assert(!assetReceivingAddress, "No assets were transferred");
-      });
+      // it.skip("Should get assetSourceAddresses", function () {
+      //    const assetSourceAddress = transaction.assetSourceAddresses[0];
+      //    assert(!assetSourceAddress, "No assets were transferred");
+      // });
 
-      it.skip("Should get assetReceivingAddress", function () {
-         const assetReceivedAmount = transaction.assetSpentAmounts[0];
-         assert(!assetReceivedAmount, "No assets were transferred");
-      });
+      // it.skip("Should get assetReceivingAddress", function () {
+      //    const assetReceivingAddress = transaction.assetReceivingAddresses[0];
+      //    assert(!assetReceivingAddress, "No assets were transferred");
+      // });
+
+      // it.skip("Should get assetReceivingAddress", function () {
+      //    const assetReceivedAmount = transaction.assetSpentAmounts[0];
+      //    assert(!assetReceivedAmount, "No assets were transferred");
+      // });
    });
 });
