@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { MCC, XrpTransaction, toBN, traceManager } from "../../../src";
-import { AddressAmountEqual } from "../../testUtils";
+import { BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
+import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "https://xrplcluster.com",
@@ -9,7 +9,7 @@ const XRPMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("Account delete type", function () {
+describe(`Account delete type (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
@@ -41,6 +41,12 @@ describe("Account delete type", function () {
       it("should correctly parse receivedAmounts", async function () {
          const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("12665795") }];
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
+      });
+
+      it("should get balanceDecreasingSummary", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre") });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN("2000000").add(toBN("12665795")).toString());
       });
    });
 });

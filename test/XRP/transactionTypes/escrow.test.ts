@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, MCC, XrpTransaction, toBN, traceManager } from "../../../src";
+import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
 import { AddressAmountEqual, getTestFile, singleAddressAmountEqual } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -51,22 +51,28 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
       });
 
-      // Token transfers
-      it.skip("should correctly parse assetSourceAddresses", async function () {
-         expect(transaction.assetSourceAddresses).to.deep.equal([]);
+      it("should get balanceDecreasingSummary", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressPay) });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).add(toBN(value)).toString());
       });
 
-      it.skip("should correctly parse assetReceivingAddresses", async function () {
-         expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-      });
+      // // Token transfers
+      // it.skip("should correctly parse assetSourceAddresses", async function () {
+      //    expect(transaction.assetSourceAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetSpentAmounts", async function () {
-         expect(transaction.assetSpentAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivingAddresses", async function () {
+      //    expect(transaction.assetReceivingAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivedAmounts", async function () {
-         expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetSpentAmounts", async function () {
+      //    expect(transaction.assetSpentAmounts).to.deep.equal([]);
+      // });
+
+      // it.skip("should correctly parse assetReceivedAmounts", async function () {
+      //    expect(transaction.assetReceivedAmounts).to.deep.equal([]);
+      // });
    });
 
    describe("EscrowCancel", function () {
@@ -91,12 +97,11 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
       });
 
       it("should correctly parse spentAmounts", async function () {
-         const expected = [{ address: addressPay, amount: toBN(value).neg().add(toBN(fee)) }];
-         expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
+         expect(transaction.spentAmounts.length).to.eq(0);
       });
 
       it("should correctly parse feeSignerTotalAmount address amount", async function () {
-         const expected = { address: addressPay, amount: toBN(value).sub(toBN(fee)) };
+         const expected = { address: addressPay, amount: toBN(fee).sub(toBN(value)) };
          expect(singleAddressAmountEqual(transaction.feeSignerTotalAmount, expected)).to.be.true;
       });
 
@@ -105,22 +110,28 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
       });
 
-      // Token transfers
-      it.skip("should correctly parse assetSourceAddresses", async function () {
-         expect(transaction.assetSourceAddresses).to.deep.equal([]);
+      it("should get balanceDecreasingSummary", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressPay) });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).sub(toBN(value)).toString());
       });
 
-      it.skip("should correctly parse assetReceivingAddresses", async function () {
-         expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-      });
+      // // Token transfers
+      // it.skip("should correctly parse assetSourceAddresses", async function () {
+      //    expect(transaction.assetSourceAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetSpentAmounts", async function () {
-         expect(transaction.assetSpentAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivingAddresses", async function () {
+      //    expect(transaction.assetReceivingAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivedAmounts", async function () {
-         expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetSpentAmounts", async function () {
+      //    expect(transaction.assetSpentAmounts).to.deep.equal([]);
+      // });
+
+      // it.skip("should correctly parse assetReceivedAmounts", async function () {
+      //    expect(transaction.assetReceivedAmounts).to.deep.equal([]);
+      // });
    });
 
    describe("EscrowFinish", function () {
@@ -154,21 +165,32 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
          expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
       });
 
-      // Token transfers
-      it.skip("should correctly parse assetSourceAddresses", async function () {
-         expect(transaction.assetSourceAddresses).to.deep.equal([]);
+      it("should get balanceDecreasingSummary #1", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressPay) });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).toString());
       });
 
-      it.skip("should correctly parse assetReceivingAddresses", async function () {
-         expect(transaction.assetReceivingAddresses).to.deep.equal([]);
+      it("should get balanceDecreasingSummary #2", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressRec) });
+         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.NoSourceAddress);
       });
 
-      it.skip("should correctly parse assetSpentAmounts", async function () {
-         expect(transaction.assetSpentAmounts).to.deep.equal([]);
-      });
+      // // Token transfers
+      // it.skip("should correctly parse assetSourceAddresses", async function () {
+      //    expect(transaction.assetSourceAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivedAmounts", async function () {
-         expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivingAddresses", async function () {
+      //    expect(transaction.assetReceivingAddresses).to.deep.equal([]);
+      // });
+
+      // it.skip("should correctly parse assetSpentAmounts", async function () {
+      //    expect(transaction.assetSpentAmounts).to.deep.equal([]);
+      // });
+
+      // it.skip("should correctly parse assetReceivedAmounts", async function () {
+      //    expect(transaction.assetReceivedAmounts).to.deep.equal([]);
+      // });
    });
 });

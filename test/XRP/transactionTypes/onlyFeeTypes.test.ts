@@ -42,21 +42,21 @@ describe("Type where no xrp or assets are transferred", function () {
       });
 
       // Token transfers
-      it.skip("should correctly parse assetSourceAddresses", async function () {
-         expect(transaction.assetSourceAddresses).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetSourceAddresses", async function () {
+      //    expect(transaction.assetSourceAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivingAddresses", async function () {
-         expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivingAddresses", async function () {
+      //    expect(transaction.assetReceivingAddresses).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetSpentAmounts", async function () {
-         expect(transaction.assetSpentAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetSpentAmounts", async function () {
+      //    expect(transaction.assetSpentAmounts).to.deep.equal([]);
+      // });
 
-      it.skip("should correctly parse assetReceivedAmounts", async function () {
-         expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-      });
+      // it.skip("should correctly parse assetReceivedAmounts", async function () {
+      //    expect(transaction.assetReceivedAmounts).to.deep.equal([]);
+      // });
    });
 
    describe("CheckCancel", function () {

@@ -121,21 +121,21 @@ export abstract class TransactionBase<T, AT> {
    public abstract get unixTimestamp(): number;
 
    /**
-    Returns a array of all source addresses that are a source of native tokens.
+    Returns an array of all source addresses that are a source of native tokens.
 
     One or more of so returned addresses pay the fee
 
-    * In account-based chains only one address is present.
-    * In UTXO chains addresses indicate the addresses on relevant inputs.  
+    * In account-based chains, only one address is present.
+    * In UTXO chains, addresses indicate the addresses on relevant inputs.  
    
     Some addresses may be undefined, either due to non-existence on specific inputs or due to not being fetched from the outputs of the corresponding input transactions.
     */
    public abstract get sourceAddresses(): (string | undefined)[];
 
    /**
-    Returns a array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP). 
+    Returns an array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP). 
     * In account-based chains only one address is present.
-    * In UTXO chains this feature is not supported
+    * In UTXO chains this feature is not supported.
 
     WIP / TODO
     */
@@ -143,7 +143,7 @@ export abstract class TransactionBase<T, AT> {
 
    /**
     * Array of a receiving addresses. In account-based chains only one address in present.
-    * In UTXO chains the list indicates the addresses on the corresponding transaction outputs.
+    * In UTXO chains, the list indicates the addresses on the corresponding transaction outputs.
     * Some may be undefined since outputs may not have addresses defined.
     */
    public abstract get receivingAddresses(): (string | undefined)[];
@@ -151,9 +151,9 @@ export abstract class TransactionBase<T, AT> {
    /*
     Array of a receiving addresses that receive build in assets tokens.
 
-    * In account-based chains only one address in present
+    * In account-based chains, only one address in present
       * Algo transactions that close to certain address list both receiving address and close address.
-    * In UTXO chains this feature is not supported
+    * In UTXO chains, this feature is not supported
     
     WIP / TODO
 
@@ -173,8 +173,8 @@ export abstract class TransactionBase<T, AT> {
 
    /**
     * An array of spent amounts on transaction inputs.
-    * In account-based chains only one amount is present, and includes total spent amount, including fees.
-    * In UTXO chains the spent amounts on the corresponding inputs are given in the list.
+    * In account-based chains, only one amount is present, and includes total spent amount, including fees.
+    * In UTXO chains, the spent amounts on the corresponding inputs are given in the list.
     * If the corresponding addresses are undefined and not fetched (in `sourceAddresses`), the
     * corresponding spent amounts are 0.
     * The amounts are in basic units (e.g. satoshi, microalgo, ...)
@@ -195,8 +195,8 @@ export abstract class TransactionBase<T, AT> {
 
    /**
     * An array of received amounts on transaction outputs.
-    * In account based chains only one input and output exist.
-    * In UTXO chains the received amounts correspond to the amounts on outputs.
+    * In account based chains, only one input and output exist.
+    * In UTXO chains ,the received amounts correspond to the amounts on outputs.
     */
    public abstract get receivedAmounts(): AddressAmount[];
 
@@ -248,7 +248,7 @@ export abstract class TransactionBase<T, AT> {
 
    /**
     * Provides payment summary for a given transaction.
-    * It can only do so for well structured "native" payments, that come form one address and goes to one address (utxo is a bit special).
+    * It can only do so for well structured "native" payments, that come from one address and goes to one address (utxo is a bit special).
     * If payment can be successfully summarized, the response will contain a `PaymentSummaryObject`. and status of `PaymentSummaryStatus.Success`.
     * If method throws exception only on critical occasions:
     * - connection to node is not stable or provided
@@ -258,13 +258,13 @@ export abstract class TransactionBase<T, AT> {
     * @param props.inUtxo : Vin index for utxo chains and ignored on non utxo chains
     * @param props.outUtxo : Vout index for utxo chains and ignored on non utxo chains
     */
-   public abstract paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse>;
+   public abstract paymentSummary(props?: PaymentSummaryProps): Promise<PaymentSummaryResponse>;
 
    /**
     * Provides balance decreasing summary for a given transaction.
-    * Must be able to analyze any transaction, and provide a summary of the balance decreasing actions, that either reduce given address balance or are signed by given address.
-    * If balance decreasing can be successfully summarized, the response will contain a `BalanceDecreasingSummaryObject`. and status of `BalanceDecreasingSummaryStatus.Success`.
-    * If method throws exception only on critical occasions:
+    * Must be able to analyze any transaction, and provide a summary of the balance decreasing actions, that either reduce the given address balance or are signed by the given address.
+    * If balance decreasing can be successfully summarized, the response will contain a `BalanceDecreasingSummaryObject` and status of `BalanceDecreasingSummaryStatus.Success`.
+    * Method throws exception only on critical occasions if:
     * - connection to node is not stable or provided
     * - transaction data was corrupted when creating this object
     * - unhandled errors (usually indicates bugs in either this library or the underlying chain)

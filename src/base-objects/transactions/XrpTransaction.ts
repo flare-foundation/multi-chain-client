@@ -452,7 +452,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   public async paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
+   public async paymentSummary(): Promise<PaymentSummaryResponse> {
       if (this.type === "Payment" && this.isNativePayment) {
          // Is native transfer
          if (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1) {
@@ -497,7 +497,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   public async balanceDecreasingSummary({ sourceAddressIndicator, client }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
+   public async balanceDecreasingSummary({ sourceAddressIndicator }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
       if (!isValidBytes32Hex(sourceAddressIndicator)) {
          return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
       }
