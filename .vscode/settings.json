@@ -24,8 +24,12 @@
       "blockhash",
       "blockheight",
       "blocktime",
+      "CRYPTOCONDITION",
       "getblock",
+      "INSUF",
+      "INSUFF",
       "locktime",
+      "NFTOKEN",
       "vsize"
    ]
 }

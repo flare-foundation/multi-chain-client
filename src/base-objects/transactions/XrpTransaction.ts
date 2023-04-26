@@ -3,7 +3,7 @@ import { Payment, Transaction, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { MccClient, TransactionSuccessStatus } from "../../types";
-import { IXrpGetTransactionRes, XrpTransactionStatusPrefixes, XrpTransactionTypeUnion } from "../../types/xrpTypes";
+import { IXrpGetTransactionRes, XrpTransactionStatusPrefixes, XrpTransactionStatusTec, XrpTransactionTypeUnion } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { Managed } from "../../utils/managed";
 import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash, toBN } from "../../utils/utils";
@@ -372,16 +372,65 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       switch (prefix) {
          case "tes": // SUCCESS - Transaction was applied. Only final in a validated ledger.
             return TransactionSuccessStatus.SUCCESS;
-         case "tec": // FAILED - Transaction failed, and only the fee was charged. Only final in a validated ledger.
-            switch (result) {
+         case "tec": {
+            // FAILED - Transaction failed, and only the fee was charged. Only final in a validated ledger.
+            const resultTec = result as XrpTransactionStatusTec;
+            switch (resultTec) {
                case "tecDST_TAG_NEEDED":
                case "tecNO_DST":
                case "tecNO_DST_INSUF_XRP":
                case "tecNO_PERMISSION":
                   return TransactionSuccessStatus.RECEIVER_FAILURE;
-               default:
+               case "tecCANT_ACCEPT_OWN_NFTOKEN_OFFER":
+               case "tecCLAIM":
+               case "tecCRYPTOCONDITION_ERROR":
+               case "tecDIR_FULL":
+               case "tecDUPLICATE":
+               case "tecEXPIRED":
+               case "tecFAILED_PROCESSING":
+               case "tecFROZEN":
+               case "tecHAS_OBLIGATIONS":
+               case "tecINSUF_RESERVE_LINE":
+               case "tecINSUF_RESERVE_OFFER":
+               case "tecINSUFF_FEE":
+               case "tecINSUFFICIENT_FUNDS":
+               case "tecINSUFFICIENT_PAYMENT":
+               case "tecINSUFFICIENT_RESERVE":
+               case "tecINTERNAL":
+               case "tecINVARIANT_FAILED":
+               case "tecKILLED":
+               case "tecMAX_SEQUENCE_REACHED":
+               case "tecNEED_MASTER_KEY":
+               case "tecNFTOKEN_BUY_SELL_MISMATCH":
+               case "tecNFTOKEN_OFFER_TYPE_MISMATCH":
+               case "tecNO_ALTERNATIVE_KEY":
+               case "tecNO_AUTH":
+               case "tecNO_ENTRY":
+               case "tecNO_ISSUER":
+               case "tecNO_LINE":
+               case "tecNO_LINE_INSUF_RESERVE":
+               case "tecNO_LINE_REDUNDANT":
+               case "tecNO_REGULAR_KEY":
+               case "tecNO_SUITABLE_NFTOKEN_PAGE":
+               case "tecNO_TARGET":
+               case "tecOBJECT_NOT_FOUND":
+               case "tecOVERSIZE":
+               case "tecOWNERS":
+               case "tecPATH_DRY":
+               case "tecPATH_PARTIAL":
+               case "tecTOO_SOON":
+               case "tecUNFUNDED":
+               case "tecUNFUNDED_ADD":
+               case "tecUNFUNDED_PAYMENT":
+               case "tecUNFUNDED_OFFER":
                   return TransactionSuccessStatus.SENDER_FAILURE;
+               default:
+                  // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+                  // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+                  ((_: never): void => {})(resultTec);
             }
+            break;
+         }
          case "tef":
             // FAILED - The transaction cannot be applied to the server's current (in-progress) ledger or any later one. It may have already been applied, or the condition of the ledger makes it impossible to apply in the future.
             return TransactionSuccessStatus.SENDER_FAILURE;
