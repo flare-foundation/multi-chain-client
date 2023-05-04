@@ -66,7 +66,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
       });
 
       it("should get payment summary", async function () {
-         const summary = await transaction.paymentSummary();
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
          expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
       });
 
@@ -141,7 +141,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
       });
 
       it("should get payment summary", async function () {
-         const summary = await transaction.paymentSummary();
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
          expect(summary.status).to.eq(PaymentSummaryStatus.Success);
          expect(summary.response!.spentAmount.toString()).to.eq("1400000010");
          expect(summary.response!.sourceAddressHash).to.eq(standardAddressHash("rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5"));
@@ -195,7 +195,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
       });
 
       it("should get payment summary", async function () {
-         const summary = await transaction.paymentSummary();
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
          expect(summary.status).to.eq(PaymentSummaryStatus.Success);
          expect(summary.response!.spentAmount.toString()).to.eq("39");
          expect(summary.response!.sourceAddressHash).to.eq(standardAddressHash("rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p"));
@@ -294,7 +294,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
       });
 
       it("should get payment summary", async function () {
-         const summary = await transaction.paymentSummary();
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
          expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
       });
 
@@ -350,7 +350,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
          expect(reference).to.deep.eq([]);
       });
 
-      it("Should get currencyName", function () {});
+      // it("Should get currencyName", function () {});
 
       it("Should get fee", function () {
          const fee = transaction.fee;
@@ -388,7 +388,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
       });
 
       it("should get payment summary", async function () {
-         const summary = await transaction.paymentSummary();
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
          expect(summary.status).to.eq(PaymentSummaryStatus.UnexpectedNumberOfParticipants);
          // expect(summary.response!.spentAmount.toString()).to.eq("10");
          // expect(summary.response!.receivedAmount.toString()).to.eq("0");

@@ -84,6 +84,10 @@ export abstract class TransactionBase<T, AT> {
       this.additionalData = additionalData;
    }
 
+   // con(data: T, additionalData?: AT) {
+   //    return new this(data, additionalData);
+   // }
+
    // Getters //
 
    /**
@@ -258,7 +262,7 @@ export abstract class TransactionBase<T, AT> {
     * @param props.inUtxo : Vin index for utxo chains and ignored on non utxo chains
     * @param props.outUtxo : Vout index for utxo chains and ignored on non utxo chains
     */
-   public abstract paymentSummary(props?: PaymentSummaryProps): Promise<PaymentSummaryResponse>;
+   public abstract paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse>;
 
    /**
     * Provides balance decreasing summary for a given transaction.
@@ -275,8 +279,8 @@ export abstract class TransactionBase<T, AT> {
 }
 
 export { AlgoTransaction } from "./transactions/AlgoTransaction";
-export { XrpTransaction } from "./transactions/XrpTransaction";
-export { LtcTransaction } from "./transactions/LtcTransaction";
 export { BtcTransaction } from "./transactions/BtcTransaction";
 export { DogeTransaction } from "./transactions/DogeTransaction";
+export { LtcTransaction } from "./transactions/LtcTransaction";
 export { UtxoTransaction } from "./transactions/UtxoTransaction";
+export { XrpTransaction } from "./transactions/XrpTransaction";

@@ -88,6 +88,22 @@ export type IBlock = BlockBase<any>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type IFullBlock = FullBlockBase<any, any>;
 
+export function blockConstructor<A extends IBlock>(c: new () => A): A {
+   return new c();
+}
+
+export function blockHeaderConstructor<A extends IBlockHeader>(c: new () => A): A {
+   return new c();
+}
+
+export function blockTipConstructor<A extends IBlockTip>(c: new () => A): A {
+   return new c();
+}
+
+export function fullBlockConstructor<A extends IFullBlock>(c: new () => A): A {
+   return new c();
+}
+
 // Block Tips
 /**
  * Algo and Ripple (XRP) have no specific block header endpoint (liter block with limited data)

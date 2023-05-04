@@ -99,6 +99,45 @@ export function AddressAmountEqual(a: AddressAmount[], b: AddressAmount[]) {
    return true;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function throwOrReturnSameGetter<T extends object>(c1: T, c2: T, getter: string) {
+   let result1, result2;
+   // eslint-disable-next-line no-prototype-builtins
+   if (!(c1.hasOwnProperty(getter) && c2.hasOwnProperty(getter))) {
+      expect.fail(`Class of type ${typeof c1} does not have a getter named ${getter}`);
+   }
+   try {
+      // eslint-disable-next-line no-prototype-builtins
+      if (c1.hasOwnProperty(getter)) {
+         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+         // @ts-ignore
+         result1 = c1[getter];
+      }
+   } catch (error1) {
+      try {
+         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+         // @ts-ignore
+         c2[getter];
+      } catch (error2) {
+         // Test that both functions threw the same error
+         expect((error1 as any).message).to.equal((error2 as any).message);
+         return;
+      }
+      // If function2 didn't throw an error, fail the test
+      expect.fail("Function 1 threw an error but function 2 did not");
+   }
+   try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      result2 = c2[getter];
+   } catch (error2) {
+      // If function1 returned a value, fail the test
+      expect.fail("Function 1 returned a value but function 2 threw an error");
+   }
+   // Test that both functions returned the same value
+   expect(result1).to.deep.equal(result2);
+}
+
 export interface algoTransactionTestCases extends transactionTestCases {
    block: number;
 }
@@ -139,4 +178,8 @@ export interface expectTransactionTestCase {
  */
 export function getTestFile(myFile: string) {
    return myFile.slice(myFile.replace(/\\/g, "/").indexOf("test/"));
+}
+
+export function getRandomNumber(min: number, max: number): number {
+   return Math.floor(Math.random() * (max - min + 1) + min);
 }

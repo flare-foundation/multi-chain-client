@@ -4,7 +4,6 @@
    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
    "version": "0.2.0",
    "configurations": [
-
       {
          "type": "pwa-node",
          "request": "launch",
@@ -72,7 +71,13 @@
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/BTC/balanceDecreasing.test.ts"]
       },
-
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Test BTC block tx vx tx",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/BTC/transactionsVsTransactionsInBlock.test.ts"]
+      },
       {
          "type": "node",
          "request": "launch",
@@ -168,7 +173,7 @@
          "name": "Test Managed",
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/managedTest.test.ts"]
-      },  
+      },
 
       {
          "type": "node",
@@ -185,5 +190,13 @@
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/XRP/intededAmounts.test.ts"]
       },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Test XRP block tx vx tx",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/XRP/transactionsVsTransactionsInBlock.test.ts"]
+      }
    ]
 }

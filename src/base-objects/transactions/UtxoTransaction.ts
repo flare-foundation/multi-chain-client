@@ -24,7 +24,7 @@ export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payme
 // - partial_payment : transaction with some vout of vins added to additional data
 // - full_payment    : transaction with vouts for all vins added to additional data
 @Managed()
-export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUtxoTransactionAdditionalData> {
+export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUtxoTransactionAdditionalData> {
    constructor(data: IUtxoGetTransactionRes, additionalData?: IUtxoTransactionAdditionalData) {
       super(data, additionalData);
       this.data.vout.forEach((vout) => {
@@ -203,12 +203,6 @@ export class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUt
    public get isNativePayment(): boolean {
       // On these chains there are no other types of transactions
       return true;
-   }
-
-   /* istanbul ignore next */
-   public get currencyName(): string {
-      // This must be shadowed
-      throw new mccError(mccErrorCode.NotImplemented, Error(`Method must be implemented in different sub class`));
    }
 
    public get elementaryUnits(): BN {

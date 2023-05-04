@@ -4,7 +4,7 @@ import { prefix0x } from "../../utils/utils";
 import { BlockBase } from "../BlockBase";
 
 @Managed()
-export class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
+export abstract class UtxoBlock extends BlockBase<IUtxoGetBlockRes> {
    //
    public get number(): number {
       return this.data.height;
