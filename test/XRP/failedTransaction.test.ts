@@ -30,12 +30,12 @@ describe("Failed transactions", function () {
          expect(transaction.successStatus, "status").to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
       });
 
-      it("Should not get intendedSpentAmounts", function () {
+      it("Should get intendedSpentAmounts", function () {
          const expected: AddressAmount[] = [{ address: "rKbb74HAdKBWPyJC6Q7p8m2BMrBgRs5uWT", amount: toBN("142") }];
          assert(AddressAmountEqual(transaction.intendedSpendAmounts, expected));
       });
 
-      it("Should not get intendedReceivedAmounts", function () {
+      it("Should get intendedReceivedAmounts", function () {
          const expected: AddressAmount[] = [{ address: "rfLyN2k3KShu6kEuXgzQsmiK4xRLsaU8Ad", amount: toBN("42") }];
          assert(AddressAmountEqual(transaction.intendedReceivedAmounts, expected));
       });
