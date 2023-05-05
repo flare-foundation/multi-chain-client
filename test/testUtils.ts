@@ -275,5 +275,17 @@ export function getRandomNumber(min: number, max: number): number {
 
 export const GETTERS_XRP_AMOUNTS = ["spentAmounts", "intendedSpendAmounts", "receivedAmounts", "intendedReceivedAmounts"];
 export const GETTERS_XRP_LISTS = ["reference", "sourceAddresses", "receivingAddresses"];
-export const GETTERS_XRP_BASIC = ["txid", "stdTxid", "hash", "stdPaymentReference", "unixTimestamp", "feeSignerTotalAmount", "successStatus"];
+export const GETTERS_XRP_BASIC = [
+   "txid",
+   "stdTxid",
+   "hash",
+   "stdPaymentReference",
+   "unixTimestamp",
+   "feeSignerTotalAmount",
+   "successStatus",
+   "type",
+   "isNativePayment",
+   "currencyName",
+   "elementaryUnits",
+];
 export const GETTERS_XRP_BN = ["fee"];
