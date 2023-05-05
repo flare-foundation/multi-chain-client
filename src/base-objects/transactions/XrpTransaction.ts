@@ -376,35 +376,35 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             // FAILED - Transaction failed, and only the fee was charged. Only final in a validated ledger.
             const resultTec = result as XrpTransactionStatusTec;
             switch (resultTec) {
-               case "tecDST_TAG_NEEDED":
+               case "tecDST_TAG_NEEDED": //can be perceived as sender's fault if destination tag was specified
                case "tecNO_DST":
                case "tecNO_DST_INSUF_XRP":
-               case "tecNO_PERMISSION":
+               case "tecNO_PERMISSION": //can be perceived as sender's fault if DepositPreauth tag specifically required
                   return TransactionSuccessStatus.RECEIVER_FAILURE;
                case "tecCANT_ACCEPT_OWN_NFTOKEN_OFFER":
-               case "tecCLAIM":
+               case "tecCLAIM": //unsure
                case "tecCRYPTOCONDITION_ERROR":
-               case "tecDIR_FULL":
+               case "tecDIR_FULL": //technically receivers fault, but so far irrelevant
                case "tecDUPLICATE":
                case "tecEXPIRED":
-               case "tecFAILED_PROCESSING":
+               case "tecFAILED_PROCESSING": //unsure
                case "tecFROZEN":
                case "tecHAS_OBLIGATIONS":
                case "tecINSUF_RESERVE_LINE":
                case "tecINSUF_RESERVE_OFFER":
                case "tecINSUFF_FEE":
-               case "tecINSUFFICIENT_FUNDS":
+               case "tecINSUFFICIENT_FUNDS": //can be receivers fault, bu so far irrelevant
                case "tecINSUFFICIENT_PAYMENT":
                case "tecINSUFFICIENT_RESERVE":
-               case "tecINTERNAL":
-               case "tecINVARIANT_FAILED":
+               case "tecINTERNAL": //unsure
+               case "tecINVARIANT_FAILED": //unsure
                case "tecKILLED":
                case "tecMAX_SEQUENCE_REACHED":
                case "tecNEED_MASTER_KEY":
                case "tecNFTOKEN_BUY_SELL_MISMATCH":
                case "tecNFTOKEN_OFFER_TYPE_MISMATCH":
                case "tecNO_ALTERNATIVE_KEY":
-               case "tecNO_AUTH":
+               case "tecNO_AUTH": //can be receivers fault, but so far irrelevant
                case "tecNO_ENTRY":
                case "tecNO_ISSUER":
                case "tecNO_LINE":
@@ -414,9 +414,9 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                case "tecNO_SUITABLE_NFTOKEN_PAGE":
                case "tecNO_TARGET":
                case "tecOBJECT_NOT_FOUND":
-               case "tecOVERSIZE":
+               case "tecOVERSIZE": //unsure
                case "tecOWNERS":
-               case "tecPATH_DRY":
+               case "tecPATH_DRY": //can be receivers fault, but so far irrelevant
                case "tecPATH_PARTIAL":
                case "tecTOO_SOON":
                case "tecUNFUNDED":
