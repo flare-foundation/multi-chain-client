@@ -62,6 +62,15 @@ export interface PaymentSummaryObject extends SummaryObjectBase {
    receivingAddressHash: string;
    receivingAddress: string;
    receivedAmount: BN;
+
+   intendedSourceAddressHash: string;
+   intendedSourceAddress: string;
+   intendedSourceAmount: BN;
+
+   intendedReceivingAddressHash: string;
+   intendedReceivingAddress: string;
+   intendedReceivingAmount: BN;
+
    oneToOne: boolean;
    isFull: boolean;
 }
