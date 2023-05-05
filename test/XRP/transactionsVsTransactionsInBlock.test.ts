@@ -4,15 +4,14 @@ import { XrpFullBlock } from "../../src/base-objects/fullBlocks/XrpFullBlock";
 import { MCC, XrpBlock, XrpTransaction } from "../../src/index";
 import {
    AddressAmountEqual,
-   GETTERS_XRP_BASIC,
-   GETTERS_XRP_LISTS,
-   GETTERS_XRP_BN,
+   GETTERS_BASIC,
+   GETTERS_LISTS,
    getRandomNumber,
    getTestFile,
    throwOrReturnSameGetter,
    throwOrReturnSameGetterList,
    throwOrReturnSameGetterBN,
-   GETTERS_XRP_AMOUNTS,
+   GETTERS_AMOUNTS,
    throwOrReturnSameGetterAmounts,
 } from "../testUtils";
 
@@ -66,47 +65,17 @@ describe(`XRP transactions in full block vs transactions from getTransaction (${
                b1.increment();
                const transObject = await client.getTransaction(transaction.txid);
 
-               for (const getter of GETTERS_XRP_BASIC) {
+               for (const getter of GETTERS_BASIC) {
                   throwOrReturnSameGetter(transaction, transObject, getter);
                }
 
-               for (const getter of GETTERS_XRP_LISTS) {
+               for (const getter of GETTERS_LISTS) {
                   throwOrReturnSameGetterList(transaction, transObject, getter);
                }
 
-               for (const getter of GETTERS_XRP_BN) {
-                  throwOrReturnSameGetterBN(transaction, transObject, getter);
-               }
-
-               for (const getter of GETTERS_XRP_AMOUNTS) {
+               for (const getter of GETTERS_AMOUNTS) {
                   throwOrReturnSameGetterAmounts(transaction, transObject, getter);
                }
-
-               // expect(transaction.txid).to.eq(transObject.txid);
-               // expect(transaction.stdTxid).to.eq(transObject.stdTxid);
-               // expect(transaction.hash).to.eq(transObject.hash);
-               // expect(transaction.reference.sort()).to.deep.eq(transObject.reference.sort());
-               // expect(transaction.stdPaymentReference).to.eq(transObject.stdPaymentReference);
-               // expect(transaction.unixTimestamp).to.eq(transObject.unixTimestamp);
-               // expect(transaction.sourceAddresses.sort()).to.deep.eq(transObject.sourceAddresses.sort());
-               // expect(transaction.receivingAddresses.sort()).to.deep.eq(transObject.receivingAddresses.sort());
-               // // TODO: Uncomment when asset transactions are supported
-               // //  expect(transaction.assetSourceAddresses.sort()).to.deep.eq(transObject.sourceAddresses.sort());
-               // //  expect(transaction.assetReceivingAddresses.sort()).to.deep.eq(transObject.receivingAddresses.sort());
-               // expect(transaction.fee.toNumber()).to.eq(transObject.fee.toNumber());
-               // expect(AddressAmountEqual(transaction.spentAmounts, transObject.spentAmounts)).to.eq(true);
-               // expect(AddressAmountEqual(transaction.receivedAmounts, transObject.receivedAmounts)).to.eq(true);
-               // // expect(AddressAmountEqual(transaction.intendedReceivedAmounts, transObject.intendedReceivedAmounts)).to.eq(true);
-               // // expect(AddressAmountEqual(transaction.intendedSpendAmounts, transObject.intendedSpendAmounts)).to.eq(true);
-               // throwOrReturnSameGetter(transaction, transObject, "intendedReceivedAmounts");
-               // throwOrReturnSameGetter(transaction, transObject, "intendedSpendAmounts");
-               // // TODO: Uncomment when asset transactions are supported
-               // //  expect(AddressAmountEqual(transaction.assetSpentAmounts, transObject.assetSpentAmounts)).to.eq(true);
-               // //  expect(AddressAmountEqual(transaction.assetReceivedAmounts, transObject.assetReceivedAmounts)).to.eq(true);
-               // expect(transaction.type).to.eq(transObject.type);
-               // expect(transaction.isNativePayment).to.eq(transObject.isNativePayment);
-               // expect(transaction.currencyName).to.eq(transObject.currencyName);
-               // expect(transaction.elementaryUnits.toNumber()).to.eq(transObject.elementaryUnits.toNumber());
             }
             b1.stop();
          });

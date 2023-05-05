@@ -273,9 +273,9 @@ export function getRandomNumber(min: number, max: number): number {
    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export const GETTERS_XRP_AMOUNTS = ["spentAmounts", "intendedSpendAmounts", "receivedAmounts", "intendedReceivedAmounts"];
-export const GETTERS_XRP_LISTS = ["reference", "sourceAddresses", "receivingAddresses"];
-export const GETTERS_XRP_BASIC = [
+export const GETTERS_AMOUNTS = ["spentAmounts", "intendedSpendAmounts", "receivedAmounts", "intendedReceivedAmounts"];
+export const GETTERS_LISTS = ["reference", "sourceAddresses", "receivingAddresses"];
+export const GETTERS_BASIC = [
    "txid",
    "stdTxid",
    "hash",
@@ -288,4 +288,4 @@ export const GETTERS_XRP_BASIC = [
    "currencyName",
    "elementaryUnits",
 ];
-export const GETTERS_XRP_BN = ["fee"];
+export const GETTERS_PROBLEMATIC = ["fee", "feeSignerTotalAmount"];
