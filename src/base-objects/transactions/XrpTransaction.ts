@@ -472,6 +472,26 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                status: PaymentSummaryStatus.NoReceiveAmountAddress,
             };
          }
+         if (this.successStatus !== TransactionSuccessStatus.SUCCESS) {
+            if (this.intendedSpendAmounts.length !== 1 || this.intendedReceivedAmounts.length !== 1) {
+               return {
+                  status: PaymentSummaryStatus.UnexpectedNumberOfParticipants,
+               };
+            }
+         }
+         const intendedSpendAmounts = this.intendedSpendAmounts[0];
+         const intendedReceivedAmounts = this.intendedReceivedAmounts[0];
+         if (!intendedSpendAmounts.address) {
+            return {
+               status: PaymentSummaryStatus.NoIntendedSpendAmountAddress,
+            };
+         }
+         if (!intendedReceivedAmounts.address) {
+            return {
+               status: PaymentSummaryStatus.NoIntendedReceiveAmountAddress,
+            };
+         }
+
          return {
             status: PaymentSummaryStatus.Success,
             response: {
@@ -485,6 +505,15 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
                // TODO: Check if intended sent value can be set
                receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : toBN(0),
                transactionStatus: this.successStatus,
+               // For transactions that are not successful but still in block
+               intendedSourceAddressHash: standardAddressHash(intendedSpendAmounts.address),
+               intendedSourceAddress: intendedSpendAmounts.address,
+               intendedSourceAmount: toBN(intendedSpendAmounts.amount),
+
+               intendedReceivingAddressHash: standardAddressHash(intendedReceivedAmounts.address),
+               intendedReceivingAddress: intendedReceivedAmounts.address,
+               intendedReceivingAmount: toBN(intendedReceivedAmounts.amount),
+
                oneToOne: true,
                paymentReference: this.stdPaymentReference,
                isFull: true,

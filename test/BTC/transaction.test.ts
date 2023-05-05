@@ -280,6 +280,14 @@ describe("Transaction Btc base test ", function () {
                spentAmount: toBN(220000),
                receivedAmount: toBN(0),
                paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+
+               intendedSourceAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
+               intendedSourceAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
+               intendedSourceAmount: toBN(220000),
+
+               intendedReceivingAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
+               intendedReceivingAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
+               intendedReceivingAmount: toBN(0),
                oneToOne: false,
                isFull: true,
                transactionStatus: TransactionSuccessStatus.SUCCESS,
@@ -343,6 +351,13 @@ describe("Transaction Btc base test ", function () {
                spentAmount: toBN(3533),
                receivedAmount: toBN(2259),
                paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+               intendedSourceAddressHash: standardAddressHash("bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly"),
+               intendedSourceAddress: "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
+               intendedSourceAmount: toBN(3533),
+
+               intendedReceivingAddressHash: standardAddressHash("bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"),
+               intendedReceivingAddress: "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
+               intendedReceivingAmount: toBN(2259),
                oneToOne: false,
                isFull: false,
             },

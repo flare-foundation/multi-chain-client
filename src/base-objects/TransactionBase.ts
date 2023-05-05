@@ -38,6 +38,8 @@ export enum PaymentSummaryStatus {
    InvalidOutUtxo = "invalidOutUtxo",
    NoSpendAmountAddress = "noSpendAmountAddress",
    NoReceiveAmountAddress = "noReceiveAmountAddress",
+   NoIntendedSpendAmountAddress = "noIntendedSpendAmountAddress",
+   NoIntendedReceiveAmountAddress = "noIntendedReceiveAmountAddress",
 }
 
 export enum BalanceDecreasingSummaryStatus {

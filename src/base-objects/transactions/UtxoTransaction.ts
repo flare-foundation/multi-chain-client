@@ -292,6 +292,15 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
                transactionStatus: this.successStatus,
                paymentReference: this.stdPaymentReference,
+
+               // Intended and actual amounts are the same for utxo transactions
+               intendedSourceAddressHash: standardAddressHash(sourceAddress),
+               intendedSourceAddress: sourceAddress,
+               intendedSourceAmount: inFunds.sub(returnFunds),
+
+               intendedReceivingAddressHash: standardAddressHash(receivingAddress),
+               intendedReceivingAddress: receivingAddress,
+               intendedReceivingAmount: outFunds.sub(inFundsOfReceivingAddress),
                oneToOne,
                isFull,
             },
@@ -315,6 +324,14 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                receivedAmount,
                paymentReference: this.stdPaymentReference,
                transactionStatus: this.successStatus,
+               // Intended and actual amounts are the same for utxo transactions
+               intendedSourceAddressHash: standardAddressHash(sourceAddress),
+               intendedSourceAddress: sourceAddress,
+               intendedSourceAmount: spentAmount,
+
+               intendedReceivingAddressHash: standardAddressHash(receivingAddress),
+               intendedReceivingAddress: receivingAddress,
+               intendedReceivingAmount: receivedAmount,
                oneToOne,
                isFull,
             },
