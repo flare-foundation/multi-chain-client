@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { expect, assert } from "chai";
 import { AddressAmount, PaymentSummaryResponse, unPrefix0x } from "../src";
 import { IIUtxoVout, TransactionSuccessStatus } from "../src/types";
 import { addressToHex, hexToBytes } from "../src/utils/algoUtils";
@@ -131,6 +131,102 @@ export function throwOrReturnSameGetter<T extends object>(c1: T, c2: T, getter: 
    expect(result1).to.deep.equal(result2);
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function throwOrReturnSameGetterList<T extends object>(c1: T, c2: T, getter: string) {
+   let result1, result2;
+   try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      result1 = c1[getter];
+   } catch (error1) {
+      try {
+         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+         // @ts-ignore
+         c2[getter];
+      } catch (error2) {
+         // Test that both functions threw the same error
+         expect((error1 as any).message).to.equal((error2 as any).message);
+         return;
+      }
+      // If function2 didn't throw an error, fail the test
+      expect.fail("Function 1 threw an error but function 2 did not");
+   }
+   try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      result2 = c2[getter];
+   } catch (error2) {
+      // If function1 returned a value, fail the test
+      expect.fail("Function 1 returned a value but function 2 threw an error");
+   }
+   // Test that both functions returned the same value
+   expect(result1.sort()).to.deep.equal(result2.sort());
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function throwOrReturnSameGetterBN<T extends object>(c1: T, c2: T, getter: string) {
+   let result1, result2;
+   try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      result1 = c1[getter];
+   } catch (error1) {
+      try {
+         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+         // @ts-ignore
+         c2[getter];
+      } catch (error2) {
+         // Test that both functions threw the same error
+         expect((error1 as any).message).to.equal((error2 as any).message);
+         return;
+      }
+      // If function2 didn't throw an error, fail the test
+      expect.fail("Function 1 threw an error but function 2 did not");
+   }
+   try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      result2 = c2[getter];
+   } catch (error2) {
+      // If function1 returned a value, fail the test
+      expect.fail("Function 1 returned a value but function 2 threw an error");
+   }
+   // Test that both functions returned the same value
+   expect(result1.toString()).to.deep.equal(result2.toString());
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function throwOrReturnSameGetterAmounts<T extends object>(c1: T, c2: T, getter: string) {
+   let result1, result2;
+   try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      result1 = c1[getter];
+   } catch (error1) {
+      try {
+         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+         // @ts-ignore
+         c2[getter];
+      } catch (error2) {
+         // Test that both functions threw the same error
+         expect((error1 as any).message).to.equal((error2 as any).message);
+         return;
+      }
+      // If function2 didn't throw an error, fail the test
+      expect.fail("Function 1 threw an error but function 2 did not");
+   }
+   try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      result2 = c2[getter];
+   } catch (error2) {
+      // If function1 returned a value, fail the test
+      expect.fail("Function 1 returned a value but function 2 threw an error");
+   }
+   // Test that both functions returned the same value
+   assert(AddressAmountEqual(result1, result2));
+}
+
 export interface algoTransactionTestCases extends transactionTestCases {
    block: number;
 }
@@ -176,3 +272,8 @@ export function getTestFile(myFile: string) {
 export function getRandomNumber(min: number, max: number): number {
    return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+export const GETTERS_XRP_AMOUNTS = ["spentAmounts", "intendedSpendAmounts", "receivedAmounts", "intendedReceivedAmounts"];
+export const GETTERS_XRP_LISTS = ["reference", "sourceAddresses", "receivingAddresses"];
+export const GETTERS_XRP_BASIC = ["txid", "stdTxid", "hash", "stdPaymentReference", "unixTimestamp", "feeSignerTotalAmount", "successStatus"];
+export const GETTERS_XRP_BN = ["fee"];
