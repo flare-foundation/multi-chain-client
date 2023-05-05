@@ -102,17 +102,10 @@ export function AddressAmountEqual(a: AddressAmount[], b: AddressAmount[]) {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function throwOrReturnSameGetter<T extends object>(c1: T, c2: T, getter: string) {
    let result1, result2;
-   // eslint-disable-next-line no-prototype-builtins
-   if (!(c1.hasOwnProperty(getter) && c2.hasOwnProperty(getter))) {
-      expect.fail(`Class of type ${typeof c1} does not have a getter named ${getter}`);
-   }
    try {
-      // eslint-disable-next-line no-prototype-builtins
-      if (c1.hasOwnProperty(getter)) {
-         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-         // @ts-ignore
-         result1 = c1[getter];
-      }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      result1 = c1[getter];
    } catch (error1) {
       try {
          // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { SingleBar } from "cli-progress";
 import { XrpFullBlock } from "../../src/base-objects/fullBlocks/XrpFullBlock";
-import { MCC, XrpBlock } from "../../src/index";
+import { MCC, XrpBlock, XrpTransaction } from "../../src/index";
 import { AddressAmountEqual, getRandomNumber, getTestFile, throwOrReturnSameGetter } from "../testUtils";
 
 const XRPMccConnection = {
@@ -19,6 +19,7 @@ describe(`XRP transactions in full block vs transactions from getTransaction (${
          let client: MCC.XRP;
          let block: XrpBlock;
          let fullBlock: XrpFullBlock;
+
          before(async () => {
             client = new MCC.XRP(XRPMccConnection);
             block = await client.getBlock(blockNumber);
@@ -44,6 +45,7 @@ describe(`XRP transactions in full block vs transactions from getTransaction (${
             b1.start(transactions.length, 0);
             expect(transactions.length).to.be.greaterThan(0);
             let i = 0;
+
             for (const transaction of transactions) {
                i++;
                // if (i != 83) {
@@ -78,7 +80,8 @@ describe(`XRP transactions in full block vs transactions from getTransaction (${
                expect(transaction.currencyName).to.eq(transObject.currencyName);
                expect(transaction.elementaryUnits.toNumber()).to.eq(transObject.elementaryUnits.toNumber());
             }
-         }).timeout(1000 * 60 * 5);
+            b1.stop;
+         });
       });
    }
 });
