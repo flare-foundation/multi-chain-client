@@ -48,7 +48,6 @@ describe(`NFTokens types (${getTestFile(__filename)})`, function () {
             { address: addressBuy, amount: toBN(value) },
             { address: addressSell, amount: toBN(fee).sub(toBN(value)).add(toBN(minterFee)) },
          ];
-         console;
          expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
       });
 
@@ -63,13 +62,13 @@ describe(`NFTokens types (${getTestFile(__filename)})`, function () {
       it("should get balanceDecreasingSummary #1", async function () {
          const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressSell) });
          expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
-         expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).sub(toBN(value)).add(toBN(minterFee)));
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).sub(toBN(value)).add(toBN(minterFee)).toString());
       });
 
       it("should get balanceDecreasingSummary #2", async function () {
          const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressBuy) });
          expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
-         expect(summary.response!.spentAmount.toString()).to.eq(toBN(value));
+         expect(summary.response!.spentAmount.toString()).to.eq(toBN(value).toString());
       });
 
       // // Token transfers
