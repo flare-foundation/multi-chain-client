@@ -273,19 +273,21 @@ export function getRandomNumber(min: number, max: number): number {
    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export const GETTERS_AMOUNTS = ["spentAmounts", "intendedSpendAmounts", "receivedAmounts", "intendedReceivedAmounts"];
-export const GETTERS_LISTS = ["reference", "sourceAddresses", "receivingAddresses"];
+//Getters in transaction class
+export const GETTERS_AMOUNTS = ["spentAmounts", "intendedSpendAmounts", "receivedAmounts", "intendedReceivedAmounts"]; //getters with return type AddressAmount[]
+export const GETTERS_LISTS = ["reference", "sourceAddresses", "receivingAddresses"]; // getters with return type string[]
 export const GETTERS_BASIC = [
    "txid",
    "stdTxid",
    "hash",
    "stdPaymentReference",
    "unixTimestamp",
-   "feeSignerTotalAmount",
    "successStatus",
    "type",
    "isNativePayment",
    "currencyName",
    "elementaryUnits",
-];
-export const GETTERS_PROBLEMATIC = ["fee", "feeSignerTotalAmount"];
+   "feeSignerTotalAmount",
+]; // getters with return type string
+export const GETTERS_BN = ["fee"];
+export const GETTERS_PROBLEMATIC = ["feeSignerTotalAmount"]; //

@@ -13,6 +13,7 @@ import {
    throwOrReturnSameGetterBN,
    GETTERS_AMOUNTS,
    throwOrReturnSameGetterAmounts,
+   GETTERS_BN,
 } from "../testUtils";
 
 const XRPMccConnection = {
@@ -75,6 +76,10 @@ describe(`XRP transactions in full block vs transactions from getTransaction (${
 
                for (const getter of GETTERS_AMOUNTS) {
                   throwOrReturnSameGetterAmounts(transaction, transObject, getter);
+               }
+
+               for (const getter of GETTERS_BN) {
+                  throwOrReturnSameGetterBN(transaction, transObject, getter);
                }
             }
             b1.stop();

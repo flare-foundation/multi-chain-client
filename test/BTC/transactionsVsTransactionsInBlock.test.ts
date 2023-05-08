@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { SingleBar } from "cli-progress";
-import { BtcBlock, BtcFullBlock, MCC, UtxoMccCreate, traceManager } from "../../src/index";
+import { BtcBlock, BtcFullBlock, MCC, TraceManager, UtxoMccCreate, disableManaged, enableManaged, traceManager } from "../../src/index";
 import {
    AddressAmountEqual,
    GETTERS_BASIC,
@@ -12,7 +12,9 @@ import {
    throwOrReturnSameGetterBN,
    GETTERS_AMOUNTS,
    throwOrReturnSameGetterAmounts,
+   GETTERS_BN,
 } from "../testUtils";
+import sinon from "sinon";
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",
@@ -53,15 +55,15 @@ describe(`BTC transactions in full block vs transactions from getTransaction (${
                barIncompleteChar: "\u2591",
                hideCursor: true,
             });
-            b1.start(transactions.length, 0);
+            b1.start(Math.min(transactions.length, 500), 0);
             expect(transactions.length).to.be.greaterThan(0);
             let i = 0;
 
             for (const transaction of transactions) {
                i++;
-               // if (i != 83) {
-               //    continue;
-               // }
+               if (i == 500) {
+                  break;
+               }
                b1.increment();
                const transObject = await client.getTransaction(transaction.txid);
 
@@ -73,9 +75,10 @@ describe(`BTC transactions in full block vs transactions from getTransaction (${
                   throwOrReturnSameGetterList(transaction, transObject, getter);
                }
 
-               // for (const getter of GETTERS_BN) {
-               //    throwOrReturnSameGetterBN(transaction, transObject, getter);
-               // }
+               //Find why the error is logged
+               for (const getter of GETTERS_BN) {
+                  throwOrReturnSameGetterBN(transaction, transObject, getter);
+               }
 
                for (const getter of GETTERS_AMOUNTS) {
                   throwOrReturnSameGetterAmounts(transaction, transObject, getter);

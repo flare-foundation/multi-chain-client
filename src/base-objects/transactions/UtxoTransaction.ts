@@ -23,7 +23,7 @@ export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payme
 // - payment         : what you get from node
 // - partial_payment : transaction with some vout of vins added to additional data
 // - full_payment    : transaction with vouts for all vins added to additional data
-@Managed()
+//@Managed()
 export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUtxoTransactionAdditionalData> {
    constructor(data: IUtxoGetTransactionRes, additionalData?: IUtxoTransactionAdditionalData) {
       super(data, additionalData);
