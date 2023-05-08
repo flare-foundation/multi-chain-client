@@ -155,7 +155,7 @@ export abstract class UtxoCore<
       });
    }
 
-   async getFullBlock(blockNumberOrHash: string | number): Promise<IFullBlock> {
+   async getFullBlock(blockNumberOrHash: string | number): Promise<FBlockCon> {
       const res = await this.blockRequestBase(blockNumberOrHash, true);
       if (utxo_check_expect_block_out_of_range(res.data)) {
          throw new mccError(mccErrorCode.InvalidBlock);
@@ -170,7 +170,7 @@ export abstract class UtxoCore<
     * @returns All available block information
     */
    //
-   async getBlock(blockNumberOrHash: string | number): Promise<UtxoBlock> {
+   async getBlock(blockNumberOrHash: string | number): Promise<BlockCon> {
       const res = await this.blockRequestBase(blockNumberOrHash, true);
       if (utxo_check_expect_block_out_of_range(res.data)) {
          throw new mccError(mccErrorCode.InvalidBlock);
@@ -180,7 +180,7 @@ export abstract class UtxoCore<
    }
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   async getBlockHeader(blockNumberOrHash: number | string | any): Promise<UtxoBlockHeader> {
+   async getBlockHeader(blockNumberOrHash: number | string | any): Promise<BHeadCon> {
       const header = await this.getBlockHeaderBase(blockNumberOrHash);
       return new this.constructors.blockHeaderConstructor(header);
    }
@@ -280,7 +280,7 @@ export abstract class UtxoCore<
     * @param height_gte
     * @returns
     */
-   async getBlockTips(height_gte: number): Promise<UtxoBlockTip[]> {
+   async getBlockTips(height_gte: number): Promise<BTipCon[]> {
       return this.getBlockTipsHelper(height_gte);
    }
 
@@ -289,7 +289,7 @@ export abstract class UtxoCore<
     * @param branch_len the branch length indicating how long can branches be
     * @returns Array of LiteBlocks
     */
-   async getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<UtxoBlockTip[]> {
+   async getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<BTipCon[]> {
       const height = await this.getBlockHeight();
       let callBranchLength: undefined | number = undefined;
       if (read_main) {
@@ -380,7 +380,7 @@ export abstract class UtxoCore<
     * @returns
     */
 
-   private async getBlockTipsHelper(height_gte: number, mainBranchProcess?: number): Promise<UtxoBlockTip[]> {
+   private async getBlockTipsHelper(height_gte: number, mainBranchProcess?: number): Promise<BTipCon[]> {
       const tips = await this.getTopBlocks({ height_gte: height_gte, all_blocks: true });
       let mainBranchHashes: UtxoBlockTip[] = [];
       const activeTip = tips.filter((a) => a.status === "active")[0];
@@ -411,9 +411,9 @@ export abstract class UtxoCore<
          return tempTips;
       });
       // filter out duplicates
-      const reducedTips = allTips.reduce((acc: UtxoBlockTip[], nev: UtxoBlockTip[]) => acc.concat(nev), []).concat(mainBranchHashes);
+      const reducedTips = allTips.reduce((acc: BTipCon[], nev: BTipCon[]) => acc.concat(nev), []).concat(mainBranchHashes as BTipCon[]);
       const unique = new Set();
-      return reducedTips.filter((elem: UtxoBlockTip) => {
+      return reducedTips.filter((elem: BTipCon) => {
          const key = `${elem.number}_${elem.blockHash}`;
          if (unique.has(key)) {
             return false;
@@ -656,7 +656,7 @@ export abstract class UtxoCore<
       }
    }
 
-   async recursive_block_tip(tip: UtxoBlockTip, processHeight: number): Promise<UtxoBlockTip[]> {
+   async recursive_block_tip(tip: BTipCon, processHeight: number): Promise<BTipCon[]> {
       if (tip.stdBlockHash === "") {
          return [];
       }
