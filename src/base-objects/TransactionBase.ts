@@ -36,9 +36,9 @@ export enum PaymentSummaryStatus {
    UnexpectedNumberOfParticipants = "unexpectedNumberOfParticipants",
    InvalidInUtxo = "invalidInUtxo",
    InvalidOutUtxo = "invalidOutUtxo",
-   NoSpendAmountAddress = "noSpendAmountAddress",
+   NoSpentAmountAddress = "noSpentAmountAddress",
    NoReceiveAmountAddress = "noReceiveAmountAddress",
-   NoIntendedSpendAmountAddress = "noIntendedSpendAmountAddress",
+   NoIntendedSpentAmountAddress = "noIntendedSpentAmountAddress",
    NoIntendedReceiveAmountAddress = "noIntendedReceiveAmountAddress",
 }
 
@@ -198,10 +198,10 @@ export abstract class TransactionBase<T, AT> {
 
    /**
     * On transactions that were successfully this is the same as `spentAmounts`.
-    * On some chains transaction can be in block and fail, intended spend amount represents the amounts that were intended to be spent by each address.
-    * Note: We only extract intended spend amounts for "nice" payment transactions that intend to transfer native tokens.
+    * On some chains transaction can be in block and fail, intended spent amount represents the amounts that were intended to be spent by each address.
+    * Note: We only extract intended spent amounts for "nice" payment transactions that intend to transfer native tokens.
     */
-   public abstract get intendedSpendAmounts(): AddressAmount[];
+   public abstract get intendedSpentAmounts(): AddressAmount[];
 
    /**
     * An array of spent amounts in build-in assets tokens on transaction inputs.

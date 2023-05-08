@@ -55,7 +55,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
 
       it("should get intendant spent amount", function () {
          const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("10") }];
-         const intSpnAmt = transaction.intendedSpendAmounts;
+         const intSpnAmt = transaction.intendedSpentAmounts;
          assert(AddressAmountEqual(intSpnAmt, expected));
       });
 
@@ -130,7 +130,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
 
       it("should get intendant spent amount", function () {
          const expected = [{ address: "rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5", amount: toBN("1400000010") }];
-         const intSpnAmt = transaction.intendedSpendAmounts;
+         const intSpnAmt = transaction.intendedSpentAmounts;
          assert(AddressAmountEqual(intSpnAmt, expected));
       });
 
@@ -184,7 +184,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
 
       it("should get intendant spent amount", function () {
          const expected = [{ address: "rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p", amount: toBN("39") }];
-         const intSpnAmt = transaction.intendedSpendAmounts;
+         const intSpnAmt = transaction.intendedSpentAmounts;
          assert(AddressAmountEqual(intSpnAmt, expected));
       });
 
@@ -283,7 +283,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
 
       it("should get intendant spent amount", function () {
          const expected = [{ address: "r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB", amount: toBN(10) }];
-         const intSpnAmt = transaction.intendedSpendAmounts;
+         const intSpnAmt = transaction.intendedSpentAmounts;
          assert(AddressAmountEqual(intSpnAmt, expected));
       });
 
@@ -377,7 +377,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
 
       it("should get intendant spent amount", function () {
          const expected = [{ address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2", amount: toBN(22) }];
-         const intSpnAmt = transaction.intendedSpendAmounts;
+         const intSpnAmt = transaction.intendedSpentAmounts;
          assert(AddressAmountEqual(intSpnAmt, expected));
       });
 

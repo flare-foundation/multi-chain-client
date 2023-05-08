@@ -22,7 +22,7 @@ describe("Xrp bottom block ", function () {
    });
 
    it("Should get intended spend amounts", async function () {
-      const intendedSpendAmounts = transaction.intendedSpendAmounts;
+      const intendedSpendAmounts = transaction.intendedSpentAmounts;
       const expected = [
          {
             address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2",

@@ -214,7 +214,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
       return spendAmounts;
    }
 
-   public get intendedSpendAmounts(): AddressAmount[] {
+   public get intendedSpentAmounts(): AddressAmount[] {
       if (this.successStatus === TransactionSuccessStatus.SUCCESS) {
          return this.spentAmounts;
       }
@@ -464,7 +464,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
          const receiveAmount = this.receivedAmounts[0];
          if (!spendAmount.address) {
             return {
-               status: PaymentSummaryStatus.NoSpendAmountAddress,
+               status: PaymentSummaryStatus.NoSpentAmountAddress,
             };
          }
          if (!receiveAmount.address) {
@@ -473,17 +473,17 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> 
             };
          }
          if (this.successStatus !== TransactionSuccessStatus.SUCCESS) {
-            if (this.intendedSpendAmounts.length !== 1 || this.intendedReceivedAmounts.length !== 1) {
+            if (this.intendedSpentAmounts.length !== 1 || this.intendedReceivedAmounts.length !== 1) {
                return {
                   status: PaymentSummaryStatus.UnexpectedNumberOfParticipants,
                };
             }
          }
-         const intendedSpendAmounts = this.intendedSpendAmounts[0];
+         const intendedSpendAmounts = this.intendedSpentAmounts[0];
          const intendedReceivedAmounts = this.intendedReceivedAmounts[0];
          if (!intendedSpendAmounts.address) {
             return {
-               status: PaymentSummaryStatus.NoIntendedSpendAmountAddress,
+               status: PaymentSummaryStatus.NoIntendedSpentAmountAddress,
             };
          }
          if (!intendedReceivedAmounts.address) {

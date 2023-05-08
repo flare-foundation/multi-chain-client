@@ -147,7 +147,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
       });
    }
 
-   public get intendedSpendAmounts(): AddressAmount[] {
+   public get intendedSpentAmounts(): AddressAmount[] {
       return this.spentAmounts;
    }
 
@@ -230,9 +230,9 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
       if (this.type === "coinbase") {
          return { status: PaymentSummaryStatus.Coinbase };
       }
-      const spendAmount = this.spentAmounts[inUtxo];
-      if (!spendAmount.address) {
-         return { status: PaymentSummaryStatus.NoSpendAmountAddress };
+      const spentAmount = this.spentAmounts[inUtxo];
+      if (!spentAmount.address) {
+         return { status: PaymentSummaryStatus.NoSpentAmountAddress };
       }
       const receiveAmount = this.receivedAmounts[outUtxo];
       if (!receiveAmount.address) {
@@ -240,7 +240,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
       }
 
       // Extract addresses from input and output fields
-      const sourceAddress = spendAmount.address;
+      const sourceAddress = spentAmount.address;
       const receivingAddress = receiveAmount.address;
 
       // We will update this once we iterate over inputs and outputs if we have full transaction
@@ -355,18 +355,18 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
          return { status: BalanceDecreasingSummaryStatus.InvalidInUtxo };
       }
       if (this.isValidAdditionalData()) {
-         const spendAmounts = this.spentAmounts;
-         const spendAmount = spendAmounts[vinIndex];
-         if (spendAmount.address) {
+         const spentAmounts = this.spentAmounts;
+         const spentAmount = spentAmounts[vinIndex];
+         if (spentAmount.address) {
             return {
                status: BalanceDecreasingSummaryStatus.Success,
                response: {
                   blockTimestamp: this.unixTimestamp,
                   transactionHash: this.stdTxid,
                   sourceAddressIndicator: sourceAddressIndicator,
-                  sourceAddressHash: standardAddressHash(spendAmount.address),
-                  sourceAddress: spendAmount.address,
-                  spentAmount: spendAmount.amount,
+                  sourceAddressHash: standardAddressHash(spentAmount.address),
+                  sourceAddress: spentAmount.address,
+                  spentAmount: spentAmount.amount,
                   transactionStatus: this.successStatus,
                   paymentReference: this.stdPaymentReference,
                   isFull: true,

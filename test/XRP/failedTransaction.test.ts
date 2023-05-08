@@ -32,7 +32,7 @@ describe("Failed transactions", function () {
 
       it("Should get intendedSpentAmounts", function () {
          const expected: AddressAmount[] = [{ address: "rKbb74HAdKBWPyJC6Q7p8m2BMrBgRs5uWT", amount: toBN("142") }];
-         assert(AddressAmountEqual(transaction.intendedSpendAmounts, expected));
+         assert(AddressAmountEqual(transaction.intendedSpentAmounts, expected));
       });
 
       it("Should get intendedReceivedAmounts", function () {
@@ -60,7 +60,7 @@ describe("Failed transactions", function () {
 
       it("Should not get intendedSpentAmounts", function () {
          expect(() => {
-            transaction.intendedSpendAmounts;
+            transaction.intendedSpentAmounts;
          }).to.throw("Intended spend amounts for transaction type OfferCreate are not implemented");
       });
 
