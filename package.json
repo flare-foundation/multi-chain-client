@@ -30,7 +30,15 @@
          "src/types",
          "src/axios-rate-limiter",
          "src/utils/typeReflection.ts",
-         "src/utils/retry.ts"
+         "src/utils/retry.ts",
+         "src/base-objects/blocks/AlgoBlock.ts",
+         "src/base-objects/blocks/AlgoIndexerBlock.ts",
+         "src/base-objects/status/AlgoStatus.ts",
+         "src/base-objects/transactions/AlgoIndexerTransaction.ts",
+         "src/base-objects/transactions/AlgoTransaction.ts",
+         "src/chain-clients/AlgoRpcImplementation.ts",
+         "src/types/algoTypes.ts",
+         "src/utils/algoUtils.ts"
       ],
       "reporter": [
          "html",

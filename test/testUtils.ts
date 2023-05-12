@@ -290,4 +290,3 @@ export const GETTERS_BASIC = [
    "feeSignerTotalAmount",
 ]; // getters with return type string
 export const GETTERS_BN = ["fee"];
-export const GETTERS_PROBLEMATIC = ["feeSignerTotalAmount"]; //

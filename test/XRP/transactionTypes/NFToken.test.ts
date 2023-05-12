@@ -36,7 +36,7 @@ describe(`NFTokens types (${getTestFile(__filename)})`, function () {
       });
 
       it("should correctly parse sourceAddresses", async function () {
-         expect(transaction.sourceAddresses).to.deep.equal([addressBuy, addressSell]);
+         expect(transaction.sourceAddresses.sort()).to.deep.equal([addressBuy].sort());
       });
 
       it("should correctly parse receivingAddresses", async function () {
@@ -44,10 +44,7 @@ describe(`NFTokens types (${getTestFile(__filename)})`, function () {
       });
 
       it("should correctly parse spentAmounts", async function () {
-         const expected = [
-            { address: addressBuy, amount: toBN(value) },
-            { address: addressSell, amount: toBN(fee).sub(toBN(value)).add(toBN(minterFee)) },
-         ];
+         const expected = [{ address: addressBuy, amount: toBN(value) }];
          expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
       });
 

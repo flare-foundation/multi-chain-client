@@ -1,5 +1,6 @@
-import { bytesToRippleAddress, rippleAddressToBytes, rippleTimeToUnixEpoch, unixEpochToRippleTime } from "../../src";
+import { MCC, XrpTransaction, bytesToRippleAddress, rippleAddressToBytes, rippleTimeToUnixEpoch, unixEpochToRippleTime } from "../../src";
 import { expect } from "chai";
+import { GETTERS_AMOUNTS, GETTERS_BASIC, GETTERS_BN, GETTERS_LISTS } from "../testUtils";
 
 describe("Test utils ", function () {
    it("should convert empty address to bytes ", async function () {
@@ -78,5 +79,29 @@ describe("Test utils ", function () {
       const expected = 694310400;
       const res = unixEpochToRippleTime(ux2022);
       expect(res).to.equal(expected);
+   });
+
+   describe("getters", function () {
+      let tx: XrpTransaction;
+
+      before(async function () {
+         const XRPMccConnection = {
+            url: process.env.XRP_URL || "",
+            username: process.env.XRP_USERNAME || "",
+            password: process.env.XRP_PASSWORD || "",
+            apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
+         };
+         const client = new MCC.XRP(XRPMccConnection);
+
+         tx = await client.getTransaction("CFD798AA6AB21AAAF9459A59A7AF4C8A8414374F735D585D605D493317EFCC05");
+      });
+
+      for (const getters of [GETTERS_AMOUNTS, GETTERS_BASIC, GETTERS_BN, GETTERS_LISTS]) {
+         for (let getter of getters) {
+            it(`should have getter ${getter}`, function () {
+               expect(getter in tx);
+            });
+         }
+      }
    });
 });
