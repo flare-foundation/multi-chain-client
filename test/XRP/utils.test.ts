@@ -1,6 +1,7 @@
 import { MCC, XrpTransaction, bytesToRippleAddress, rippleAddressToBytes, rippleTimeToUnixEpoch, unixEpochToRippleTime } from "../../src";
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import { GETTERS_AMOUNTS, GETTERS_BASIC, GETTERS_BN, GETTERS_LISTS } from "../testUtils";
+import { checkTransactionTypes } from "./xrplJsTransactionTypesCheck";
 
 describe("Test utils ", function () {
    it("should convert empty address to bytes ", async function () {
@@ -79,6 +80,13 @@ describe("Test utils ", function () {
       const expected = 694310400;
       const res = unixEpochToRippleTime(ux2022);
       expect(res).to.equal(expected);
+   });
+
+   describe("transaction types", function () {
+      it("should match xrpl types", async function () {
+         const checkPassed = await checkTransactionTypes();
+         assert(checkPassed);
+      });
    });
 
    describe("getters", function () {

@@ -3,7 +3,7 @@ import * as path from "path";
 
 const HARDCODED_EXPECTED_TRANSACTIONS_COUNT = 24;
 
-async function checkTransactionTypes(): Promise<boolean> {
+export async function checkTransactionTypes(): Promise<boolean> {
    // Iterate over all files in folder that end with .d.ts
    const transactionTypes = [];
    // check if folder exists
@@ -82,15 +82,3 @@ async function checkTransactionTypes(): Promise<boolean> {
 
    return true;
 }
-
-checkTransactionTypes()
-   .then((res) => {
-      if (res) {
-         process.exit(0);
-      }
-      process.exit(1);
-   })
-   .catch((error) => {
-      console.error(error);
-      process.exit(1);
-   });
