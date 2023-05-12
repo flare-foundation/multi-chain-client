@@ -1,20 +1,18 @@
 import { expect } from "chai";
 import { SingleBar } from "cli-progress";
-import { BtcBlock, BtcFullBlock, MCC, TraceManager, UtxoMccCreate, disableManaged, enableManaged, traceManager } from "../../src/index";
+import { BtcBlock, BtcFullBlock, MCC, UtxoMccCreate, traceManager } from "../../src/index";
 import {
-   AddressAmountEqual,
+   GETTERS_AMOUNTS,
    GETTERS_BASIC,
+   GETTERS_BN,
    GETTERS_LISTS,
    getRandomNumber,
    getTestFile,
    throwOrReturnSameGetter,
-   throwOrReturnSameGetterList,
-   throwOrReturnSameGetterBN,
-   GETTERS_AMOUNTS,
    throwOrReturnSameGetterAmounts,
-   GETTERS_BN,
+   throwOrReturnSameGetterBN,
+   throwOrReturnSameGetterList,
 } from "../testUtils";
-import sinon from "sinon";
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",

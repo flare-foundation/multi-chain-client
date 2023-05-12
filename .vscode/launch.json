@@ -197,6 +197,22 @@
          "name": "Test XRP block tx vx tx",
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/XRP/transactionsVsTransactionsInBlock.test.ts"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "---XRP-LOGIC---",
+         "runtimeExecutable": "echo",
+         "runtimeArgs": ["XRP tests separator"]
+      },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "XRP Logic check 1",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["run_testnet_check"]
       }
    ]
 }
