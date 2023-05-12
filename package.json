@@ -63,8 +63,7 @@
       "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/[!ALGO]*/**/*.test.ts\" ",
       "test:coverage": "yarn nyc yarn test:all",
       "----------TESTNET-LOGIC-CHECK----------": "----------TESTNET-LOGIC-CHECK----------",
-      "run_function_test": "yarn ts-node -r dotenv/config",
-      "run_testnet_check": "yarn ts-node -r dotenv/config test/XRP/functionChecks/acountDisable.function.test.ts"
+      "run_test_chain": "yarn ts-node -r dotenv/config"
    },
    "dependencies": {
       "@msgpack/msgpack": "^2.8.0",

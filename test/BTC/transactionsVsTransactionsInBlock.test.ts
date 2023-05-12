@@ -47,6 +47,7 @@ describe(`BTC transactions in full block vs transactions from getTransaction (${
 
          it("Iterating over transactions", async () => {
             const transactions = fullBlock.transactions;
+            expect(transactions.length).to.be.greaterThan(0);
             const b1 = new SingleBar({
                format: `|| {bar} || Checking block || {percentage}% || {value}/{total} Transactions`,
                barCompleteChar: "\u2588",
@@ -54,7 +55,6 @@ describe(`BTC transactions in full block vs transactions from getTransaction (${
                hideCursor: true,
             });
             b1.start(Math.min(transactions.length, 500), 0);
-            expect(transactions.length).to.be.greaterThan(0);
             let i = 0;
 
             for (const transaction of transactions) {
