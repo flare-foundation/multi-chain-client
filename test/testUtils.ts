@@ -274,7 +274,7 @@ export function getRandomNumber(min: number, max: number): number {
 }
 
 //Getters in transaction class
-export const GETTERS_AMOUNTS = ["spentAmounts", "intendedSpendAmounts", "receivedAmounts", "intendedReceivedAmounts"]; //getters with return type AddressAmount[]
+export const GETTERS_AMOUNTS = ["spentAmounts", "intendedSpentAmounts", "receivedAmounts", "intendedReceivedAmounts"]; //getters with return type AddressAmount[]
 export const GETTERS_LISTS = ["reference", "sourceAddresses", "receivingAddresses"]; // getters with return type string[]
 export const GETTERS_BASIC = [
    "txid",
