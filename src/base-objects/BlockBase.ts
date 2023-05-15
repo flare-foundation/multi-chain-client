@@ -1,8 +1,12 @@
-export abstract class BlockTipBase<B> {
-   data: B;
+import { ITransaction } from "./TransactionBase";
 
-   constructor(data: B) {
-      this.data = data;
+export abstract class BlockTipBase {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   protected privateData: any;
+
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   constructor(data: any) {
+      this.privateData = data;
    }
 
    /**
@@ -28,7 +32,7 @@ export abstract class BlockTipBase<B> {
    }
 }
 
-export abstract class BlockHeaderBase<B> extends BlockTipBase<B> {
+export abstract class BlockHeaderBase extends BlockTipBase {
    /**
     * Previous block hash directly from underlying node
     */
@@ -49,7 +53,7 @@ export abstract class BlockHeaderBase<B> extends BlockTipBase<B> {
    public abstract get transactionCount(): number;
 }
 
-export abstract class BlockBase<B> extends BlockHeaderBase<B> {
+export abstract class BlockBase extends BlockHeaderBase {
    /**
     * Array of transaction ids of all transactions in block
     */
@@ -72,21 +76,18 @@ export abstract class BlockBase<B> extends BlockHeaderBase<B> {
 /**
  * Base class for blocks that also include all transactions (including information about the transaction)
  */
-export abstract class FullBlockBase<B, T> extends BlockBase<B> {
+export abstract class FullBlockBase<T extends ITransaction> extends BlockBase {
    /**
     * Array of transactions objects in block
     */
    public abstract get transactions(): T[];
 }
 
+export type IBlockTip = BlockTipBase;
+export type IBlockHeader = BlockHeaderBase;
+export type IBlock = BlockBase;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type IBlockTip = BlockTipBase<any>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type IBlockHeader = BlockHeaderBase<any>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type IBlock = BlockBase<any>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type IFullBlock = FullBlockBase<any, any>;
+export type IFullBlock = FullBlockBase<any>;
 
 export function blockConstructor<A extends IBlock>(c: new () => A): A {
    return new c();

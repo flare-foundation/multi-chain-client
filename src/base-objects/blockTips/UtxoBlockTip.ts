@@ -3,7 +3,11 @@ import { Managed } from "../../utils/managed";
 import { BlockTipBase } from "../BlockBase";
 
 @Managed()
-export abstract class UtxoBlockTip extends BlockTipBase<IUtxoChainTip> {
+export abstract class UtxoBlockTip extends BlockTipBase {
+   private get data(): IUtxoChainTip {
+      return this.privateData as IUtxoChainTip;
+   }
+
    public get number(): number {
       return this.data.height;
    }

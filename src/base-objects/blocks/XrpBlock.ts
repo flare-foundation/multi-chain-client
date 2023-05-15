@@ -5,7 +5,11 @@ import { Managed } from "../../utils/managed";
 import { BlockBase } from "../BlockBase";
 
 @Managed()
-export class XrpBlock extends BlockBase<IXrpGetBlockRes> {
+export class XrpBlock extends BlockBase {
+   private get data(): IXrpGetBlockRes {
+      return this.privateData as IXrpGetBlockRes;
+   }
+
    public get number(): number {
       return this.data.result.ledger_index;
    }
