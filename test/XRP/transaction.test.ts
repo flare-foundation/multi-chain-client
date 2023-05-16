@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
-import { MCC, PaymentSummaryStatus, traceManager, XrpTransaction } from "../../src";
+import { MCC, PaymentSummaryStatus, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
 import { getTestFile } from "../testUtils";
+import { TransactionMetadata } from "xrpl";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -388,44 +389,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
          expect(summary.response!.isFull).to.eq(true);
       });
 
-      it("Should received amount 2 ", async function () {
-         //  delete transaction.data.result.meta;
-         expect(transaction.receivedAmounts.length).to.eq(0);
-      });
-   });
-
-   describe("Account create tests", function () {
-      let transaction1: XrpTransaction;
-      let transaction2: XrpTransaction;
-      const txid1 = "84464F5001B9E7FD79C448B9C5F01085ACE56E94A1F6E2A737FDE9A993086F16";
-      const txid2 = "5439BB6872644CE74A09F4654CECFC5F443E9687AD5EF6D119E729898F41A8C5";
-      before(async function () {
-         transaction1 = await MccClient.getTransaction(txid1);
-         transaction2 = await MccClient.getTransaction(txid2);
-      });
-
-      // it("Should get account create ", async function () {
-      //    transaction1.data.result.meta = "metaData";
-      //    expect(transaction1.isAccountCreate).to.be.false;
-      //    delete transaction1.data.result.meta;
-      //    expect(transaction1.isAccountCreate).to.be.false;
-      // });
-
-      // //??What does this test??
-      // it.skip("Should get account create 2 ", async function () {
-      //    const Meta = transaction2.data.result.meta as TransactionMetadata;
-      //    for (const elem of Meta.AffectedNodes) {
-      //       if ("CreatedNode" in elem) {
-      //          elem.CreatedNode.NewFields.Account = "rDKsbvy9uaNpPtvVFraJyNGfjvTw8xivgK";
-      //       }
-      //    }
-      //    expect(transaction2.isAccountCreate).to.be.false;
-      //    for (const elem of Meta.AffectedNodes) {
-      //       if ("CreatedNode" in elem) {
-      //          delete elem.CreatedNode.NewFields.Account;
-      //       }
-      //    }
-      //    expect(transaction2.isAccountCreate).to.be.false;
+      // it("Should received amount 2 ", async function () {
+      //    //  delete transaction.data.result.meta;
+      //    expect(transaction.receivedAmounts.length).to.eq(0);
       // });
    });
 
@@ -447,27 +413,27 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
       //    sinon.restore();
       // });
 
-      // it(`Should get transaction status (${getTestFile(__filename)})`, async function () {
-      //    expect(transaction1.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
-      //    expect(transaction2.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
-      //    expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
-      //    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      //    const metaData: TransactionMetadata = transaction3.data.result.meta || (transaction3.data.result as any).metaData;
-      //    metaData.TransactionResult = "tecDST_TAG_NEEDED";
-      //    expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
-      //    metaData.TransactionResult = "tecNO_DST";
-      //    expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
-      //    metaData.TransactionResult = "tefALREADY";
-      //    expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
-      // });
+      it(`Should get transaction status (${getTestFile(__filename)})`, async function () {
+         expect(transaction1.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
+         expect(transaction2.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
+         expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const metaData: TransactionMetadata = transaction3._data.result.meta || (transaction3._data.result as any).metaData;
+         metaData.TransactionResult = "tecDST_TAG_NEEDED";
+         expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
+         metaData.TransactionResult = "tecNO_DST";
+         expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
+         metaData.TransactionResult = "tefALREADY";
+         expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
+      });
 
-      // it("Should not get transaction status ", async function () {
-      //    delete transaction2.data.result.meta;
-      //    const fn = () => {
-      //       return transaction2.successStatus;
-      //    };
-      //    expect(fn).to.throw("OutsideError");
-      // });
+      it.skip("Should not get transaction status ", async function () {
+         delete transaction2._data.result.meta;
+         const fn = () => {
+            return transaction2.successStatus;
+         };
+         expect(fn).to.throw("OutsideError");
+      });
 
       it("Should get payment summary ", async function () {
          const summary1 = await transaction1.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
@@ -480,21 +446,21 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
       });
    });
 
-   // describe("Reference tests ", function () {
-   //    let transaction: XrpTransaction;
-   //    const txid = "C32ACF8CCF4F48B7AE097873AA2B7672DC66E05D4F1B3133DA90D1F476B1EAC6";
-   //    before(async function () {
-   //       transaction = await MccClient.getTransaction(txid);
-   //    });
-   //    it("References ", async () => {
-   //       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-   //       transaction.data.result.Memos![0] = { Memo: { MemoType: "string" } };
-   //       expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-   //       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-   //       transaction.data.result.Memos![0] = { Memo: { MemoData: txid } };
-   //       expect(transaction.stdPaymentReference).to.eq("0x" + txid);
-   //    });
-   // });
+   describe.skip("Reference tests ", function () {
+      let transaction: XrpTransaction;
+      const txid = "C32ACF8CCF4F48B7AE097873AA2B7672DC66E05D4F1B3133DA90D1F476B1EAC6";
+      before(async function () {
+         transaction = await MccClient.getTransaction(txid);
+      });
+      it("References ", async () => {
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         transaction._data.result.Memos![0] = { Memo: { MemoType: "string" } };
+         expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         transaction._data.result.Memos![0] = { Memo: { MemoData: txid } };
+         expect(transaction.stdPaymentReference).to.eq("0x" + txid);
+      });
+   });
 
    describe("Transaction not found ", function () {
       it("Should not found", async () => {
