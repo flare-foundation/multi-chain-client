@@ -10,6 +10,13 @@ export abstract class BlockTipBase {
    }
 
    /**
+    * Exposing the private data for the derived classes (dev only/python like privatization)
+    */
+   public get _data() {
+      return this.privateData;
+   }
+
+   /**
     * Block number sometimes refers to as block height or ledger height (number of block in blockchain)
     */
    public abstract get number(): number;

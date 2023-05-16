@@ -100,6 +100,20 @@ export abstract class TransactionBase {
       console.dir(this.privateData, { depth: null });
    }
 
+   /**
+    * Exposing the private data for the derived classes (dev only/python like privatization)
+    */
+   public get _data() {
+      return this.privateData;
+   }
+
+   /**
+    * Exposing the private data for the derived classes (dev only/python like privatization)
+    */
+   public get _additionalData() {
+      return this.privateAdditionalData;
+   }
+
    // Getters //
 
    /**
