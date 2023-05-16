@@ -7,7 +7,7 @@ const chai = require("chai");
 chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
-   url: process.env.XRP_URL || "",
+   url: process.env.XRP_URL || "https://s1.ripple.com:51234",
    username: process.env.XRP_USERNAME || "",
    password: process.env.XRP_PASSWORD || "",
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
@@ -18,6 +18,7 @@ describe("XRP testnet client tests", () => {
 
    before(function () {
       traceManager.displayStateOnException = false;
+      traceManager.displayRuntimeTrace = false;
 
       client = new MCC.XRP(XRPMccConnection);
    });
@@ -39,7 +40,7 @@ describe("XRP testnet client tests", () => {
       });
 
       it("Should return InvalidBlock if block does not exist", async () => {
-         let n = 694537820;
+         let n = 85_000_000;
          let block = client.getBlock(n);
          await expect(block).to.be.rejectedWith("InvalidBlock");
          n *= 100;

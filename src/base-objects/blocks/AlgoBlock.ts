@@ -7,12 +7,16 @@ import { BlockBase } from "../BlockBase";
 import { AlgoTransaction } from "../TransactionBase";
 
 @Managed()
-export class AlgoBlock extends BlockBase<IAlgoBlockMsgPack> {
+export class AlgoBlock extends BlockBase {
    transactionObjects: AlgoTransaction[];
    constructor(data: IAlgoBlockMsgPack) {
       super(data);
       this.transactionObjects = [];
       this.processTransactions();
+   }
+
+   protected get data(): IAlgoBlockMsgPack {
+      return this.privateData as IAlgoBlockMsgPack;
    }
 
    public get number(): number {

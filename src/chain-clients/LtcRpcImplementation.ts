@@ -1,17 +1,21 @@
-import { LtcBlock, LtcBlockHeader, LtcBlockTip } from "../base-objects/BlockBase";
+import { LtcBlock, LtcBlockHeader, LtcBlockTip, LtcFullBlock } from "../base-objects/BlockBase";
 import { LtcTransaction } from "../base-objects/TransactionBase";
 import { ChainType, UtxoMccCreate, UtxoRpcInterface } from "../types";
 import { Managed } from "../utils/managed";
 import { UtxoCore } from "./UtxoCore";
 
+export const ltcObjectConstructors = {
+   transactionConstructor: LtcTransaction,
+   fullBlockConstructor: LtcFullBlock,
+   blockConstructor: LtcBlock,
+   blockHeaderConstructor: LtcBlockHeader,
+   blockTipConstructor: LtcBlockTip,
+};
+
 @Managed()
-export class LTCImplementation extends UtxoCore implements UtxoRpcInterface {
+export class LTCImplementation extends UtxoCore<LtcTransaction, LtcFullBlock, LtcBlock, LtcBlockHeader, LtcBlockTip> implements UtxoRpcInterface {
    constructor(options: UtxoMccCreate) {
-      super(options);
+      super(options, ltcObjectConstructors);
       this.chainType = ChainType.LTC;
-      this.transactionConstructor = LtcTransaction;
-      this.blockConstructor = LtcBlock;
-      this.blockHeaderConstructor = LtcBlockHeader;
-      this.blockTipConstructor = LtcBlockTip;
    }
 }

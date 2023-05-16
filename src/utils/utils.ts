@@ -3,6 +3,7 @@ import BN from "bn.js";
 import Web3 from "web3";
 import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { hexToBytes } from "./algoUtils";
+import { TextDecoder } from "util";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const camelCase = require("camelcase");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -50,6 +51,10 @@ export function isPrefixed0x(tx: string) {
 
 export function toHex(x: string | number | BN): string {
    return Web3.utils.toHex(x);
+}
+
+export function toHex32Bytes(x: string | number | BN): string {
+   return Web3.utils.padLeft(toHex(x), 64);
 }
 
 export function toBN(x: string | number | BN, toZeroIfFails = false) {
@@ -101,7 +106,7 @@ export function toSnakeCase(obj: object, splitWith: string = "-"): object {
 }
 
 export function isValidBytes32Hex(address: string) {
-   return /^0x[0-9a-fA-F]{64}$/i.test(address);
+   return /^(0x|0X)?[0-9a-fA-F]{64}$/i.test(address);
 }
 
 export function isValidBytes32HexPrefix(address: string) {
@@ -182,4 +187,12 @@ export function fillWithDefault(partialMccLogging: MccLoggingOptions): MccLoggin
       warningCallback: partialMccLogging.warningCallback ? partialMccLogging.warningCallback : defaultWarningCallback,
       exceptionCallback: partialMccLogging.exceptionCallback ? partialMccLogging.exceptionCallback : defaultExceptionCallback,
    };
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////// Standard address Hash ///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export function standardAddressHash(address: string): string {
+   return Web3.utils.keccak256(address);
 }

@@ -66,7 +66,7 @@ describe(`Algo block processing`, async () => {
       console.log(block);
    });
 
-   it.only("Should find my", async function () {
+   it.skip("Should find my", async function () {
       const MccClient = new MCC.ALGO(algoCreateConfig);
       const block = await MccClient.getBlock(25544560);
       console.log(block);

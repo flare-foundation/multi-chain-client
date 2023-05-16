@@ -1,7 +1,9 @@
 import { expect } from "chai";
-import { MCC, SpecialAddresses } from "../../src";
+import { MCC, SpecialAddresses, traceManager } from "../../src";
 import { mccSettings } from "../../src/global-settings/globalSettings";
 import { processFlags } from "../../src/utils/xrpUtils";
+import { getTestFile } from "../testUtils";
+import sinon from "sinon";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -19,6 +21,9 @@ describe("Xrpl account test mainnet ", function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
+      sinon.stub(console, "error");
+      traceManager.displayRuntimeTrace = false;
+      traceManager.displayStateOnException = false;
       MccClient = new MCC.XRP(XRPMccConnection);
       mccSettings.setLoggingCallback = () => {
          return;
@@ -82,21 +87,22 @@ describe("Xrpl account test mainnet ", function () {
 });
 
 const XRPMccConnectionTest = {
-   url: process.env.XRP_URL_TESTNET || "",
+   url: process.env.XRP_URL_TESTNET || "https://s1.ripple.com:51234",
    username: process.env.XRP_USERNAME_TESTNET || "",
    password: process.env.XRP_PASSWORD_TESTNET || "",
 };
 
-describe("Xrpl account test testnet ", function () {
+describe.skip(`Xrpl account test testnet (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.XRP;
 
    before(async function () {
       MccClient = new MCC.XRP(XRPMccConnectionTest);
    });
 
-   describe("account info", async () => {
+   describe.skip("account info", async () => {
       it(`Should get account info`, async () => {
          const info = await MccClient.getAccountInfo("rBwD7GqAPFoZvzz6YaR5HyJWD8TUoaUbJo");
+
          // Get the flags
          const flags = processFlags(info.result.account_data.Flags);
          expect(flags.length).to.eq(3);

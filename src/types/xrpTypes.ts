@@ -1,4 +1,4 @@
-import { AccountInfoRequest, AccountTxRequest, LedgerResponse, TxResponse } from "xrpl";
+import { AccountInfoRequest, AccountTxRequest, LedgerRequest, LedgerResponse, TxResponse } from "xrpl";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
 import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions } from "./genericMccTypes";
@@ -28,6 +28,83 @@ export interface IXrpGetBlockHeaderRes extends LedgerResponse, IIGetBlockRes {}
 ////
 // CONSTANTS
 ////
+
+export type XrpTransactionStatusPrefixes = "tes" | "ter" | "tem" | "tel" | "tef" | "tec";
+
+// According to https://xrpl.org/tec-codes.html
+export type XrpTransactionStatusTec =
+   | "tecCANT_ACCEPT_OWN_NFTOKEN_OFFER"
+   | "tecCLAIM"
+   | "tecCRYPTOCONDITION_ERROR"
+   | "tecDIR_FULL"
+   | "tecDUPLICATE"
+   | "tecDST_TAG_NEEDED"
+   | "tecEXPIRED"
+   | "tecFAILED_PROCESSING"
+   | "tecFROZEN"
+   | "tecHAS_OBLIGATIONS"
+   | "tecINSUF_RESERVE_LINE"
+   | "tecINSUF_RESERVE_OFFER"
+   | "tecINSUFF_FEE"
+   | "tecINSUFFICIENT_FUNDS"
+   | "tecINSUFFICIENT_PAYMENT"
+   | "tecINSUFFICIENT_RESERVE"
+   | "tecINTERNAL"
+   | "tecINVARIANT_FAILED"
+   | "tecKILLED"
+   | "tecMAX_SEQUENCE_REACHED"
+   | "tecNEED_MASTER_KEY"
+   | "tecNFTOKEN_BUY_SELL_MISMATCH"
+   | "tecNFTOKEN_OFFER_TYPE_MISMATCH"
+   | "tecNO_ALTERNATIVE_KEY"
+   | "tecNO_AUTH"
+   | "tecNO_DST"
+   | "tecNO_DST_INSUF_XRP"
+   | "tecNO_ENTRY"
+   | "tecNO_ISSUER"
+   | "tecNO_LINE"
+   | "tecNO_LINE_INSUF_RESERVE"
+   | "tecNO_LINE_REDUNDANT"
+   | "tecNO_PERMISSION"
+   | "tecNO_REGULAR_KEY"
+   | "tecNO_SUITABLE_NFTOKEN_PAGE"
+   | "tecNO_TARGET"
+   | "tecOBJECT_NOT_FOUND"
+   | "tecOVERSIZE"
+   | "tecOWNERS"
+   | "tecPATH_DRY"
+   | "tecPATH_PARTIAL"
+   | "tecTOO_SOON"
+   | "tecUNFUNDED"
+   | "tecUNFUNDED_ADD"
+   | "tecUNFUNDED_PAYMENT"
+   | "tecUNFUNDED_OFFER";
+
+export type XrpTransactionTypeUnion =
+   | "NFTokenAcceptOffer"
+   | "NFTokenBurn"
+   | "NFTokenCancelOffer"
+   | "NFTokenCreateOffer"
+   | "NFTokenMint"
+   | "AccountDelete"
+   | "AccountSet"
+   | "CheckCancel"
+   | "CheckCash"
+   | "CheckCreate"
+   | "DepositPreauth"
+   | "EscrowCancel"
+   | "EscrowCreate"
+   | "EscrowFinish"
+   | "OfferCancel"
+   | "OfferCreate"
+   | "Payment"
+   | "PaymentChannelClaim"
+   | "PaymentChannelCreate"
+   | "PaymentChannelFund"
+   | "SetRegularKey"
+   | "SignerListSet"
+   | "TicketCreate"
+   | "TrustSet";
 
 // Flags
 // maybe one day https://github.com/ripple/rippled/issues/2457
@@ -109,6 +186,8 @@ export const SpecialAddresses = {
 ////
 // INTERNAL USE
 ////
+
+export type XrpBlockReqParams = Omit<LedgerRequest, "command">;
 
 //// Params data for methods (internal use)
 export type IAccountInfoRequest = Omit<AccountInfoRequest, "command">;

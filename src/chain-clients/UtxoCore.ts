@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { UtxoBlock } from "../base-objects/BlockBase";
+import { FullBlockBase, UtxoBlock } from "../base-objects/BlockBase";
 import { UtxoBlockHeader } from "../base-objects/blockHeaders/UtxoBlockHeader";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
 import { UtxoNodeStatus } from "../base-objects/StatusBase";
@@ -17,33 +17,56 @@ import {
    UtxoMccCreate,
 } from "../types";
 import { ChainType, ReadRpcInterface } from "../types/genericMccTypes";
-import { IUtxoChainTip, IUtxoGetAlternativeBlocksOptions, IUtxoGetAlternativeBlocksRes, IUtxoGetBlockHeaderRes, IUtxoNodeStatus } from "../types/utxoTypes";
+import {
+   IUtxoChainTip,
+   IUtxoGetAlternativeBlocksOptions,
+   IUtxoGetAlternativeBlocksRes,
+   IUtxoGetBlockHeaderRes,
+   IUtxoGetBlockRes,
+   IUtxoGetTransactionRes,
+   IUtxoNodeStatus,
+   IUtxoTransactionAdditionalData,
+} from "../types/utxoTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { mccError, mccErrorCode } from "../utils/errors";
-import { Managed } from "../utils/managed";
 import { sleepMs, unPrefix0x } from "../utils/utils";
-import { recursive_block_hash, recursive_block_tip, utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
+import { utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
    maxRPS: 5,
 };
 
-@Managed()
-export class UtxoCore implements ReadRpcInterface {
+interface objectConstructors<
+   TranCon extends UtxoTransaction,
+   FBlockCon extends FullBlockBase<UtxoTransaction>,
+   BlockCon extends UtxoBlock,
+   BHeadCon extends UtxoBlockHeader,
+   BTipCon extends UtxoBlockTip
+> {
+   transactionConstructor: new (d: IUtxoGetTransactionRes, a?: IUtxoTransactionAdditionalData) => TranCon;
+   fullBlockConstructor: new (d: IUtxoGetBlockRes) => FBlockCon;
+   blockConstructor: new (d: IUtxoGetBlockRes) => BlockCon;
+   blockHeaderConstructor: new (d: IUtxoGetBlockHeaderRes) => BHeadCon;
+   blockTipConstructor: new (d: IUtxoChainTip) => BTipCon;
+}
+
+// @Managed()
+export abstract class UtxoCore<
+   TranCon extends UtxoTransaction,
+   FBlockCon extends FullBlockBase<UtxoTransaction>,
+   BlockCon extends UtxoBlock,
+   BHeadCon extends UtxoBlockHeader,
+   BTipCon extends UtxoBlockTip
+> implements ReadRpcInterface
+{
    client: AxiosInstance;
    inRegTest: boolean;
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   transactionConstructor: any;
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   blockConstructor: any;
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   blockHeaderConstructor: any;
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   blockTipConstructor: any;
+   // eslint-disable-next-line prettier/prettier
+   constructors: objectConstructors<TranCon, FBlockCon, BlockCon, BHeadCon, BTipCon>;
    chainType: ChainType;
 
-   constructor(createConfig: UtxoMccCreate) {
+   constructor(createConfig: UtxoMccCreate, constructors: objectConstructors<TranCon, FBlockCon, BlockCon, BHeadCon, BTipCon>) {
       const client = axios.create({
          baseURL: createConfig.url,
          timeout: createConfig.rateLimitOptions?.timeoutMs || DEFAULT_TIMEOUT,
@@ -66,10 +89,7 @@ export class UtxoCore implements ReadRpcInterface {
       this.inRegTest = createConfig.inRegTest || false;
 
       // This has to be shadowed
-      this.transactionConstructor = UtxoTransaction;
-      this.blockConstructor = UtxoBlock;
-      this.blockHeaderConstructor = UtxoBlockHeader;
-      this.blockTipConstructor = UtxoBlockTip;
+      this.constructors = constructors;
       this.chainType = ChainType.BTC;
    }
 
@@ -108,46 +128,61 @@ export class UtxoCore implements ReadRpcInterface {
    // Block methods //////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
+   private async blockRequestBase(blockNumberOrHash: string | number, full: boolean) {
+      let blockHash: string;
+      if (typeof blockNumberOrHash === "string") {
+         blockHash = blockNumberOrHash as string;
+      } else if (typeof blockNumberOrHash === "number") {
+         try {
+            blockHash = await this.getBlockHashFromHeight(blockNumberOrHash as number);
+         } catch (e) {
+            throw new mccError(mccErrorCode.InvalidParameter);
+         }
+      } else {
+         // This type is not supported
+         throw new mccError(mccErrorCode.InvalidParameter);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let params: any[] = [blockHash, full ? 2 : 1];
+      if (this.chainType === ChainType.DOGE) {
+         params = [blockHash, true];
+      }
+      return await this.client.post("", {
+         jsonrpc: "1.0",
+         id: "rpc",
+         method: "getblock",
+         params: params,
+      });
+   }
+
+   async getFullBlock(blockNumberOrHash: string | number): Promise<FBlockCon> {
+      const res = await this.blockRequestBase(blockNumberOrHash, true);
+      if (utxo_check_expect_block_out_of_range(res.data)) {
+         throw new mccError(mccErrorCode.InvalidBlock);
+      }
+      utxo_ensure_data(res.data);
+      return new this.constructors.fullBlockConstructor(res.data.result);
+   }
+
    /**
     * Returns the block information
     * @param blockHashOrHeight Provide either block hash or height of the block
     * @returns All available block information
     */
    //
-   async getBlock(blockHashOrHeight: string | number): Promise<UtxoBlock> {
-      let blockHash: string | null = null;
-      if (typeof blockHashOrHeight === "string") {
-         blockHash = blockHashOrHeight as string;
-      }
-      if (typeof blockHashOrHeight === "number") {
-         try {
-            blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
-         } catch (e) {
-            throw new mccError(mccErrorCode.InvalidParameter);
-         }
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let params: any[] = [blockHash, 2];
-      if (this.chainType === ChainType.DOGE) {
-         params = [blockHash, true];
-      }
-      const res = await this.client.post("", {
-         jsonrpc: "1.0",
-         id: "rpc",
-         method: "getblock",
-         params: params,
-      });
+   async getBlock(blockNumberOrHash: string | number): Promise<BlockCon> {
+      const res = await this.blockRequestBase(blockNumberOrHash, true);
       if (utxo_check_expect_block_out_of_range(res.data)) {
          throw new mccError(mccErrorCode.InvalidBlock);
       }
       utxo_ensure_data(res.data);
-      return new this.blockConstructor(res.data.result);
+      return new this.constructors.blockConstructor(res.data.result);
    }
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   async getBlockHeader(blockNumberOrHash: number | string | any): Promise<UtxoBlockHeader> {
+   async getBlockHeader(blockNumberOrHash: number | string | any): Promise<BHeadCon> {
       const header = await this.getBlockHeaderBase(blockNumberOrHash);
-      return new this.blockHeaderConstructor(header);
+      return new this.constructors.blockHeaderConstructor(header);
    }
 
    /**
@@ -178,7 +213,7 @@ export class UtxoCore implements ReadRpcInterface {
     */
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   async getTransaction(txId: string, options?: getTransactionOptions): Promise<UtxoTransaction> {
+   async getTransaction(txId: string, options?: getTransactionOptions): Promise<TranCon> {
       if (PREFIXED_STD_TXID_REGEX.test(txId)) {
          txId = unPrefix0x(txId);
       }
@@ -201,7 +236,8 @@ export class UtxoCore implements ReadRpcInterface {
          throw new mccError(mccErrorCode.InvalidTransaction);
       }
       utxo_ensure_data(res.data);
-      return new this.transactionConstructor(res.data.result);
+
+      return new this.constructors.transactionConstructor(res.data.result);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////
@@ -244,7 +280,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param height_gte
     * @returns
     */
-   async getBlockTips(height_gte: number): Promise<UtxoBlockTip[]> {
+   async getBlockTips(height_gte: number): Promise<BTipCon[]> {
       return this.getBlockTipsHelper(height_gte);
    }
 
@@ -253,7 +289,7 @@ export class UtxoCore implements ReadRpcInterface {
     * @param branch_len the branch length indicating how long can branches be
     * @returns Array of LiteBlocks
     */
-   async getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<UtxoBlockTip[]> {
+   async getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<BTipCon[]> {
       const height = await this.getBlockHeight();
       let callBranchLength: undefined | number = undefined;
       if (read_main) {
@@ -282,7 +318,7 @@ export class UtxoCore implements ReadRpcInterface {
 
       if (option !== undefined) {
          if (option.all_blocks !== undefined) {
-            let extended = response.map((el: IUtxoChainTip) => recursive_block_hash(this, el.hash, el.branchlen));
+            let extended = response.map((el: IUtxoChainTip) => this.recursive_block_hash(el.hash, el.branchlen));
             extended = await Promise.all(extended);
             for (let i = 0; i < response.length; i++) {
                response[i].all_block_hashes = extended[i];
@@ -344,13 +380,18 @@ export class UtxoCore implements ReadRpcInterface {
     * @returns
     */
 
-   private async getBlockTipsHelper(height_gte: number, mainBranchProcess?: number): Promise<UtxoBlockTip[]> {
+   private async getBlockTipsHelper(height_gte: number, mainBranchProcess?: number): Promise<BTipCon[]> {
       const tips = await this.getTopBlocks({ height_gte: height_gte, all_blocks: true });
       let mainBranchHashes: UtxoBlockTip[] = [];
       const activeTip = tips.filter((a) => a.status === "active")[0];
-      const ActiveTip = new UtxoBlockTip({ hash: activeTip.hash, height: activeTip.height, branchlen: activeTip.branchlen, status: activeTip.status });
+      const ActiveTip = new this.constructors.blockTipConstructor({
+         hash: activeTip.hash,
+         height: activeTip.height,
+         branchlen: activeTip.branchlen,
+         status: activeTip.status,
+      });
       if (mainBranchProcess !== undefined) {
-         mainBranchHashes = await recursive_block_tip(this, ActiveTip, mainBranchProcess);
+         mainBranchHashes = await this.recursive_block_tip(ActiveTip, mainBranchProcess);
       }
       const allTips = tips.map((UtxoTip: IUtxoChainTip) => {
          const tempTips = [];
@@ -358,7 +399,7 @@ export class UtxoCore implements ReadRpcInterface {
          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
          for (let hashIndex = 0; hashIndex < UtxoTip!.all_block_hashes!.length; hashIndex++) {
             tempTips.push(
-               new UtxoBlockTip({
+               new this.constructors.blockTipConstructor({
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   hash: UtxoTip!.all_block_hashes![hashIndex],
                   height: UtxoTip.height - hashIndex,
@@ -370,9 +411,9 @@ export class UtxoCore implements ReadRpcInterface {
          return tempTips;
       });
       // filter out duplicates
-      const reducedTips = allTips.reduce((acc: UtxoBlockTip[], nev: UtxoBlockTip[]) => acc.concat(nev), []).concat(mainBranchHashes);
+      const reducedTips = allTips.reduce((acc: BTipCon[], nev: BTipCon[]) => acc.concat(nev), []).concat(mainBranchHashes as BTipCon[]);
       const unique = new Set();
-      return reducedTips.filter((elem: UtxoBlockTip) => {
+      return reducedTips.filter((elem: BTipCon) => {
          const key = `${elem.number}_${elem.blockHash}`;
          if (unique.has(key)) {
             return false;
@@ -572,7 +613,7 @@ export class UtxoCore implements ReadRpcInterface {
       });
       utxo_ensure_data(res.data);
       let tx = await this.getTransaction(res.data.result);
-      while (tx?.data.blockhash) {
+      while (res.data.blockhash) {
          await sleepMs(3000);
          tx = await this.getTransaction(res.data.result);
       }
@@ -596,6 +637,53 @@ export class UtxoCore implements ReadRpcInterface {
       });
       utxo_ensure_data(res.data);
       return res.data.result;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////////
+   // Block tip recursive class methods //////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////////
+
+   async recursive_block_hash(hash: string, processHeight: number): Promise<string[]> {
+      if (hash === "") {
+         return [];
+      }
+      if (processHeight <= 1) {
+         return [hash];
+      } else {
+         const Cblock = await this.getBlockHeader(hash);
+         const hs = Cblock.previousBlockHash;
+         return (await this.recursive_block_hash(hs, processHeight - 1)).concat([hash]);
+      }
+   }
+
+   async recursive_block_tip(tip: BTipCon, processHeight: number): Promise<BTipCon[]> {
+      if (tip.stdBlockHash === "") {
+         return [];
+      }
+      const tempTip = new this.constructors.blockTipConstructor({
+         hash: tip.stdBlockHash,
+         height: tip.number,
+         branchlen: tip.branchLen,
+         status: tip.chainTipStatus,
+      });
+      if (processHeight <= 1) {
+         return [tempTip];
+      } else {
+         const CurrBlock = await this.getBlockHeader(tip.stdBlockHash);
+         const previousHash = CurrBlock.previousBlockHash;
+         const previousHeight = CurrBlock.number - 1;
+         return (
+            await this.recursive_block_tip(
+               new this.constructors.blockTipConstructor({
+                  hash: previousHash,
+                  height: previousHeight,
+                  branchlen: tip.branchLen,
+                  status: tip.chainTipStatus,
+               }),
+               processHeight - 1
+            )
+         ).concat([tempTip]);
+      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////

@@ -3,7 +3,11 @@ import { Managed } from "../../utils/managed";
 import { BlockHeaderBase } from "../BlockBase";
 
 @Managed()
-export class UtxoBlockHeader extends BlockHeaderBase<IUtxoGetBlockHeaderRes> {
+export abstract class UtxoBlockHeader extends BlockHeaderBase {
+   protected get data(): IUtxoGetBlockHeaderRes {
+      return this.privateData as IUtxoGetBlockHeaderRes;
+   }
+
    public get previousBlockHash(): string {
       return this.data.previousblockhash;
    }

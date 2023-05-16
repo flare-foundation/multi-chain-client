@@ -1,16 +1,26 @@
-import axios, { AxiosRequestConfig } from "axios";
-import { AccountInfoResponse, AccountTxResponse, ServerStateResponse } from "xrpl";
-import { XrpBlock, XrpTransaction } from "..";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import { AccountInfoResponse, AccountTxResponse, LedgerResponse, ServerStateResponse } from "xrpl";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { IBlockTip } from "../base-objects/BlockBase";
+import { BlockTipBase, XrpBlock } from "../base-objects/BlockBase";
 import { XrpNodeStatus } from "../base-objects/StatusBase";
+import { XrpFullBlock } from "../base-objects/fullBlocks/XrpFullBlock";
 import { mccSettings } from "../global-settings/globalSettings";
-import { ChainType, getTransactionOptions, IAccountInfoRequest, IAccountTxRequest, RateLimitOptions, ReadRpcInterface, XrpMccCreate } from "../types";
+import {
+   ChainType,
+   IAccountInfoRequest,
+   IAccountTxRequest,
+   RateLimitOptions,
+   ReadRpcInterface,
+   XrpBlockReqParams,
+   XrpMccCreate,
+   getTransactionOptions,
+} from "../types";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
-import { Managed } from "../utils/managed";
 import { mccJsonStringify, unPrefix0x } from "../utils/utils";
 import { xrp_ensure_data } from "../utils/xrpUtils";
+import { XrpTransaction } from "../base-objects/TransactionBase";
+import { Managed } from "../utils/managed";
 
 const DEFAULT_TIMEOUT = 15000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
@@ -19,10 +29,7 @@ const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
 
 @Managed()
 export class XRPImplementation implements ReadRpcInterface {
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   rippleApi: any;
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   client: any;
+   client: AxiosInstance;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    inRegTest: any;
    chainType: ChainType;
@@ -52,12 +59,12 @@ export class XRPImplementation implements ReadRpcInterface {
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   getBlockTips?(height_gte: number): Promise<IBlockTip[]> {
+   getBlockTips?(height_gte: number): Promise<BlockTipBase[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<IBlockTip[]> {
+   getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<BlockTipBase[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
 
@@ -103,18 +110,12 @@ export class XRPImplementation implements ReadRpcInterface {
    // Block methods //////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////////////
 
-   async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock> {
-      interface XrpBlockParams {
-         transactions: boolean;
-         expand: boolean;
-         binary: boolean;
-         ledger_hash?: string;
-         ledger_index?: number;
-      }
-      const params: XrpBlockParams = {
+   private async blockRequestBase(blockNumberOrHash: string | number, full: boolean) {
+      const params: XrpBlockReqParams = {
          transactions: true,
-         expand: true,
+         expand: full,
          binary: false,
+         owner_funds: full,
       };
       if (typeof blockNumberOrHash === "string") {
          if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockNumberOrHash)) {
@@ -124,17 +125,39 @@ export class XRPImplementation implements ReadRpcInterface {
       } else {
          params.ledger_index = blockNumberOrHash;
       }
-      try {
-         mccSettings.loggingCallback(`block number: ${blockNumberOrHash} `);
+      mccSettings.loggingCallback(`block number: ${blockNumberOrHash} `);
 
-         const res = await this.client.post("", {
-            method: "ledger",
-            params: [params],
-         });
+      return await this.client.post<LedgerResponse>("", {
+         method: "ledger",
+         params: [params],
+      });
+   }
+
+   async getFullBlock(blockNumberOrHash: string | number): Promise<XrpFullBlock> {
+      try {
+         const res = await this.blockRequestBase(blockNumberOrHash, true);
+         xrp_ensure_data(res.data);
+         return new XrpFullBlock(res.data);
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (e: any) {
+         // TODO: Invalid block error message (unify errors)
+         throw new mccError(mccErrorCode.InvalidBlock);
+         if (e.response?.status === 400) {
+            throw new mccError(mccErrorCode.InvalidBlock);
+         }
+         throw e;
+      }
+   }
+
+   async getBlock(blockNumberOrHash: number | string): Promise<XrpBlock> {
+      try {
+         const res = await this.blockRequestBase(blockNumberOrHash, false);
          xrp_ensure_data(res.data);
          return new XrpBlock(res.data);
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
+         // TODO: Invalid block error message (unify errors)
+         throw new mccError(mccErrorCode.InvalidBlock);
          if (e.response?.status === 400) {
             throw new mccError(mccErrorCode.InvalidBlock);
          }
@@ -147,9 +170,13 @@ export class XRPImplementation implements ReadRpcInterface {
    }
 
    async getBlockHeight(): Promise<number> {
-      const res = await this.client.post("", {
-         method: "ledger_closed",
-         params: [{}],
+      // according to https://xrpl.org/basic-data-types.html#specifying-ledgers we must set ledger_index to "validated"
+      const params: XrpBlockReqParams = {
+         ledger_index: "validated",
+      };
+      const res = await this.client.post<LedgerResponse>("", {
+         method: "ledger",
+         params: [params],
       });
       xrp_ensure_data(res.data);
       return res.data.result.ledger_index;

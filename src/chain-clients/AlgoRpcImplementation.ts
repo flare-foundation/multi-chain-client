@@ -2,7 +2,7 @@ import * as msgpack from "algo-msgpack-with-bigint";
 import axios, { AxiosInstance } from "axios";
 import { AlgoBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { IBlockTip } from "../base-objects/BlockBase";
+import { BlockTipBase, FullBlockBase } from "../base-objects/BlockBase";
 import { AlgoIndexerBlock } from "../base-objects/blocks/AlgoIndexerBlock";
 import { AlgoNodeStatus } from "../base-objects/StatusBase";
 import { AlgoTransaction } from "../base-objects/TransactionBase";
@@ -91,14 +91,17 @@ export class ALGOImplementation implements ReadRpcInterface {
       }
       this.chainType = ChainType.ALGO;
    }
+   getFullBlock(blockNumberOrHash: string | number): Promise<FullBlockBase<any>> {
+      throw new Error("Method not implemented.");
+   }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   getBlockTips?(height_gte: number): Promise<IBlockTip[]> {
+   getBlockTips?(height_gte: number): Promise<BlockTipBase[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
 
    // eslint-disable-next-line @typescript-eslint/no-inferrable-types, @typescript-eslint/no-unused-vars
-   getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<IBlockTip[]> {
+   getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<BlockTipBase[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
 

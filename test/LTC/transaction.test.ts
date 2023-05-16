@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BtcTransaction, MCC, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { BtcTransaction, MCC, PaymentSummaryStatus, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -35,11 +35,8 @@ describe("Transaction Ltc base test ", function () {
       let transaction: BtcTransaction;
 
       before(async () => {
-         const fullTrans = await MccClient.getTransaction(txid);
-         if (fullTrans) {
-            transaction = new BtcTransaction(fullTrans.data);
-            await transaction.makeFullPayment(MccClient);
-         }
+         transaction = await MccClient.getTransaction(txid);
+         await transaction.makeFullPayment(MccClient);
       });
 
       it("Should find transaction in block ", function () {
@@ -183,6 +180,9 @@ describe("Transaction Ltc base test ", function () {
             elementaryUnits: "100000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
          },
+         summary: {
+            status: PaymentSummaryStatus.Success,
+         },
       },
       {
          description: "Coinbase Transaction",
@@ -219,6 +219,9 @@ describe("Transaction Ltc base test ", function () {
             currencyName: "LTC",
             elementaryUnits: "100000000", // number as string
             successStatus: TransactionSuccessStatus.SUCCESS,
+         },
+         summary: {
+            status: PaymentSummaryStatus.Success,
          },
       },
    ];

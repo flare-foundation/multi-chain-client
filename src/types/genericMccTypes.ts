@@ -1,6 +1,6 @@
-import { IBlock, IBlockHeader, IBlockTip } from "../base-objects/BlockBase";
+import { BlockBase, BlockHeaderBase, BlockTipBase, FullBlockBase } from "../base-objects/BlockBase";
 import { INodeStatus } from "../base-objects/StatusBase";
-import { ITransaction } from "../base-objects/TransactionBase";
+import { TransactionBase } from "../base-objects/TransactionBase";
 
 interface BaseRpcInterface {
    chainType: ChainType;
@@ -16,17 +16,19 @@ export interface ReadRpcInterface extends BaseRpcInterface {
 
    // Block data
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   getBlockHeader(blockNumberOrHash: number | string | any): Promise<IBlockHeader>;
+   getBlockHeader(blockNumberOrHash: number | string | any): Promise<BlockHeaderBase>;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   getBlock(blockNumberOrHash: number | string | any): Promise<IBlock>;
+   getBlock(blockNumberOrHash: number | string | any): Promise<BlockBase>;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   getFullBlock(blockNumberOrHash: number | string): Promise<FullBlockBase<any>>;
    getBlockHeight(): Promise<number>;
 
    // To be used with chain tip indexer processing
-   getBlockTips?(height_gte: number): Promise<IBlockTip[]>;
-   getTopLiteBlocks(branch_len: number, read_main?: boolean): Promise<IBlockTip[]>;
+   getBlockTips?(height_gte: number): Promise<BlockTipBase[]>;
+   getTopLiteBlocks(branch_len: number, read_main?: boolean): Promise<BlockTipBase[]>;
 
    // Transaction data
-   getTransaction(txId: string, metaData?: getTransactionOptions): Promise<ITransaction>;
+   getTransaction(txId: string, metaData?: getTransactionOptions): Promise<TransactionBase>;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    listTransactions?(options?: any): any;
 

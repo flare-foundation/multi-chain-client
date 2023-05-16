@@ -1,18 +1,43 @@
 import BN from "bn.js";
 import { MCC } from "../..";
-import { MccClient, TransactionSuccessStatus } from "../../types";
+import { TransactionSuccessStatus } from "../../types";
 import { AlgoTransactionTypeOptions, IAlgoGetTransactionRes, IAlgoIndexerAdditionalData } from "../../types/algoTypes";
 import { base64ToHex, txIdToHexNo0x } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
-import { Managed } from "../../utils/managed";
-import { isValidBytes32Hex, prefix0x, toBN, ZERO_BYTES_32 } from "../../utils/utils";
-import { AddressAmount, PaymentSummary, TransactionBase } from "../TransactionBase";
 import { mccError, mccErrorCode } from "../../utils/errors";
+import { Managed } from "../../utils/managed";
+import { ZERO_BYTES_32, isValidBytes32Hex, prefix0x, toBN } from "../../utils/utils";
+import {
+   AddressAmount,
+   BalanceDecreasingProps,
+   BalanceDecreasingSummaryResponse,
+   PaymentSummaryProps,
+   PaymentSummaryResponse,
+   TransactionBase,
+} from "../TransactionBase";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const web3 = require("web3");
 
 @Managed()
-export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionRes, IAlgoIndexerAdditionalData> {
+export class AlgoIndexerTransaction extends TransactionBase {
+   protected get data(): IAlgoGetTransactionRes {
+      return this.privateData as IAlgoGetTransactionRes;
+   }
+
+   protected get additionalData(): IAlgoIndexerAdditionalData | undefined {
+      return this.privateAdditionalData as IAlgoIndexerAdditionalData | undefined;
+   }
+
+   protected set additionalData(data: IAlgoIndexerAdditionalData | undefined) {
+      this.privateAdditionalData = data;
+   }
+
+   public get intendedSpentAmounts(): AddressAmount[] {
+      throw new Error("Method not implemented.");
+   }
+   public get intendedReceivedAmounts(): AddressAmount[] {
+      throw new Error("Method not implemented.");
+   }
    public async makeFull(client: MCC.ALGO): Promise<void> {
       if (!this.additionalData) {
          this.additionalData = {};
@@ -111,6 +136,10 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
 
    public get fee(): BN {
       return toBN(this.data.transaction.fee);
+   }
+
+   public get feeSignerTotalAmount(): AddressAmount {
+      throw new Error("Method not implemented.");
    }
 
    public get spentAmounts(): AddressAmount[] {
@@ -232,19 +261,25 @@ export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionR
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   public async paymentSummary(client?: MccClient, inUtxo?: number, utxo?: number, makeFullPayment?: boolean): Promise<PaymentSummary> {
-      if (!this.isNativePayment) {
-         return { isNativePayment: false };
-      }
-      return {
-         isNativePayment: true,
-         sourceAddress: this.sourceAddresses[0],
-         receivingAddress: this.receivingAddresses[0],
-         spentAmount: this.spentAmounts[0].amount,
-         receivedAmount: this.receivedAmounts[0].amount,
-         paymentReference: this.stdPaymentReference,
-         oneToOne: true,
-         isFull: true,
-      };
+   public async paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
+      throw new Error("Method not implemented.");
+      // if (!this.isNativePayment) {
+      //    return { isNativePayment: false };
+      // }
+      // return {
+      //    isNativePayment: true,
+      //    sourceAddress: this.sourceAddresses[0],
+      //    receivingAddress: this.receivingAddresses[0],
+      //    spentAmount: this.spentAmounts[0].amount,
+      //    receivedAmount: this.receivedAmounts[0].amount,
+      //    paymentReference: this.stdPaymentReference,
+      //    oneToOne: true,
+      //    isFull: true,
+      // };
+   }
+
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   public balanceDecreasingSummary(props: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
+      throw new Error("Method not implemented.");
    }
 }
