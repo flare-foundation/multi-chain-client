@@ -1,10 +1,10 @@
 import { IUtxoGetBlockRes } from "../../types";
 import { Managed } from "../../utils/managed";
 import { FullBlockBase, UtxoBlock } from "../BlockBase";
-import { UtxoTransaction } from "../TransactionBase";
+import { TransactionBase, UtxoTransaction } from "../TransactionBase";
 
 @Managed()
-export class UtxoFullBlock<T> extends UtxoBlock implements FullBlockBase<IUtxoGetBlockRes, T> {
+export class UtxoFullBlock<T extends TransactionBase> extends UtxoBlock implements FullBlockBase<T> {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    transactionConstructor: any;
    constructor(data: IUtxoGetBlockRes) {

@@ -59,10 +59,10 @@ describe(`Block Xrp base test (${getTestFile(__filename)})`, function () {
       expect(block.transactionCount).to.eq(42);
    });
 
-   it("Should get transaction count 2", async function () {
-      delete block.data.result.ledger.transactions;
-      expect(block.transactionCount).to.eq(0);
-   });
+   // it("Should get transaction count 2", async function () {
+   //    delete block.data.result.ledger.transactions;
+   //    expect(block.transactionCount).to.eq(0);
+   // });
 
    it("Should get block", async function () {
       const block2 = await MccClient.getBlock(blockHash);

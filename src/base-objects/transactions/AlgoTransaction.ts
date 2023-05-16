@@ -21,7 +21,19 @@ const web3 = require("web3");
  */
 
 @Managed()
-export class AlgoTransaction extends TransactionBase<IAlgoTransactionMsgPack, IAlgoAdditionalData> {
+export class AlgoTransaction extends TransactionBase {
+   protected get data(): IAlgoTransactionMsgPack {
+      return this.privateData as IAlgoTransactionMsgPack;
+   }
+
+   protected get additionalData(): IAlgoAdditionalData | undefined {
+      return this.privateAdditionalData as IAlgoAdditionalData | undefined;
+   }
+
+   protected set additionalData(data: IAlgoAdditionalData | undefined) {
+      this.privateAdditionalData = data;
+   }
+
    public get intendedSpentAmounts(): AddressAmount[] {
       throw new Error("Method not implemented.");
    }

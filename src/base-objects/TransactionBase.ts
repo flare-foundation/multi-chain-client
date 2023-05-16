@@ -1,9 +1,6 @@
 import BN from "bn.js";
 import { MccClient, TransactionSuccessStatus } from "../types";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ITransaction = TransactionBase<any, any>;
-
 type SummaryBaseProps = {
    client?: MccClient;
 };
@@ -85,19 +82,23 @@ export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
 export type BalanceDecreasingSummaryResponse = TransactionSummaryBase<BalanceDecreasingSummaryStatus, BalanceDecreasingSummaryObject>;
 export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus, PaymentSummaryObject>;
 
-export abstract class TransactionBase<T, AT> {
-   data: T;
+export abstract class TransactionBase {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   protected privateData: any;
    // we can add additional data about transaction to this object
-   additionalData?: AT;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   protected privateAdditionalData: any;
 
-   constructor(data: T, additionalData?: AT) {
-      this.data = data;
-      this.additionalData = additionalData;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   constructor(data: any, additionalData?: any) {
+      this.privateData = data;
+      this.privateAdditionalData = additionalData;
    }
 
-   // con(data: T, additionalData?: AT) {
-   //    return new this(data, additionalData);
-   // }
+   // Debug output (dev only method)
+   public consoleDataDump(): void {
+      console.dir(this.privateData, { depth: null });
+   }
 
    // Getters //
 

@@ -12,7 +12,11 @@ function filterHashesIndexer(trans: IAlgoTransaction) {
 }
 
 @Managed()
-export class AlgoIndexerBlock extends BlockBase<IAlgoGetIndexerBlockRes> {
+export class AlgoIndexerBlock extends BlockBase {
+   protected get data(): IAlgoGetIndexerBlockRes {
+      return this.privateData as IAlgoGetIndexerBlockRes;
+   }
+
    public get number(): number {
       return this.data.round;
    }

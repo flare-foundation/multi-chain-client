@@ -71,19 +71,19 @@ async function main() {
 
    // 8. Check the new transaction status from mcc client
    let txNew = await MccXrp.getTransaction(hash2);
-   console.dir(txNew.data, { depth: null });
+   txNew.consoleDataDump();
 
    // wait for validation:
    await new Promise((resolve) => setTimeout(resolve, 30 * 1000));
    txNew = await MccXrp.getTransaction(hash2);
-   console.dir(txNew.data, { depth: null });
+   txNew.consoleDataDump();
 }
 
 async function main2() {
    const hh = "819A48989286D6DDF445A64B060A51B87187317169A95D4918C01B86467BF34A";
    const MccXrp = new MCC.XRP(XRPMccConnection);
    const txNew = await MccXrp.getTransaction(hh);
-   console.dir(txNew.data, { depth: null });
+   txNew.consoleDataDump();
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

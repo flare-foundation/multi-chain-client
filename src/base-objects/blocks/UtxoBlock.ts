@@ -5,7 +5,7 @@ import { BlockBase } from "../BlockBase";
 
 @Managed()
 export abstract class UtxoBlock extends BlockBase {
-   private get data(): IUtxoGetBlockRes {
+   protected get data(): IUtxoGetBlockRes {
       return this.privateData as IUtxoGetBlockRes;
    }
    //

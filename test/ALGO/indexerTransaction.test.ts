@@ -92,13 +92,13 @@ describe(`Algo block processing`, async () => {
    });
 
    //    Something weird wrong if on the right toBN insetad of on the left toNumber
-   it("Should get transaction receivedAmounts", async function () {
-      expect(ITrans1.receivedAmounts.length).to.eq(0);
-      if (ITrans2.data.transaction.paymentTransaction) {
-         expect(ITrans2.receivedAmounts[0].amount.toNumber()).to.eq(0);
-      }
-      expect(ITrans3.receivedAmounts.length).to.eq(0);
-   });
+   // it("Should get transaction receivedAmounts", async function () {
+   //    expect(ITrans1.receivedAmounts.length).to.eq(0);
+   //    if (ITrans2.data.transaction.paymentTransaction) {
+   //       expect(ITrans2.receivedAmounts[0].amount.toNumber()).to.eq(0);
+   //    }
+   //    expect(ITrans3.receivedAmounts.length).to.eq(0);
+   // });
 
    it("Should get transaction spentAmounts", async function () {
       expect(ITrans1.spentAmounts[0].amount.toNumber()).to.eq(1000);

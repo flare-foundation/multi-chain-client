@@ -24,7 +24,19 @@ export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payme
 // - partial_payment : transaction with some vout of vins added to additional data
 // - full_payment    : transaction with vouts for all vins added to additional data
 //@Managed()
-export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes, IUtxoTransactionAdditionalData> {
+export abstract class UtxoTransaction extends TransactionBase {
+   protected get data(): IUtxoGetTransactionRes {
+      return this.privateData as IUtxoGetTransactionRes;
+   }
+
+   protected get additionalData(): IUtxoTransactionAdditionalData | undefined {
+      return this.privateAdditionalData as IUtxoTransactionAdditionalData | undefined;
+   }
+
+   protected set additionalData(data: IUtxoTransactionAdditionalData | undefined) {
+      this.privateAdditionalData = data;
+   }
+
    constructor(data: IUtxoGetTransactionRes, additionalData?: IUtxoTransactionAdditionalData) {
       super(data, additionalData);
       this.data.vout.forEach((vout) => {

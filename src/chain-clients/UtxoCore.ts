@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { FullBlockBase, IFullBlock, UtxoBlock } from "../base-objects/BlockBase";
+import { FullBlockBase, UtxoBlock } from "../base-objects/BlockBase";
 import { UtxoBlockHeader } from "../base-objects/blockHeaders/UtxoBlockHeader";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
 import { UtxoNodeStatus } from "../base-objects/StatusBase";
@@ -39,7 +39,7 @@ const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
 
 interface objectConstructors<
    TranCon extends UtxoTransaction,
-   FBlockCon extends FullBlockBase<IUtxoGetBlockRes, UtxoTransaction>,
+   FBlockCon extends FullBlockBase<UtxoTransaction>,
    BlockCon extends UtxoBlock,
    BHeadCon extends UtxoBlockHeader,
    BTipCon extends UtxoBlockTip
@@ -54,7 +54,7 @@ interface objectConstructors<
 // @Managed()
 export abstract class UtxoCore<
    TranCon extends UtxoTransaction,
-   FBlockCon extends FullBlockBase<IUtxoGetBlockRes, UtxoTransaction>,
+   FBlockCon extends FullBlockBase<UtxoTransaction>,
    BlockCon extends UtxoBlock,
    BHeadCon extends UtxoBlockHeader,
    BTipCon extends UtxoBlockTip
@@ -613,7 +613,7 @@ export abstract class UtxoCore<
       });
       utxo_ensure_data(res.data);
       let tx = await this.getTransaction(res.data.result);
-      while (tx?.data.blockhash) {
+      while (res.data.blockhash) {
          await sleepMs(3000);
          tx = await this.getTransaction(res.data.result);
       }
@@ -663,8 +663,8 @@ export abstract class UtxoCore<
       const tempTip = new this.constructors.blockTipConstructor({
          hash: tip.stdBlockHash,
          height: tip.number,
-         branchlen: tip.data.branchlen,
-         status: tip.data.status,
+         branchlen: tip.branchLen,
+         status: tip.chainTipStatus,
       });
       if (processHeight <= 1) {
          return [tempTip];
@@ -677,7 +677,7 @@ export abstract class UtxoCore<
                new this.constructors.blockTipConstructor({
                   hash: previousHash,
                   height: previousHeight,
-                  branchlen: tip.data.branchlen,
+                  branchlen: tip.branchLen,
                   status: tip.chainTipStatus,
                }),
                processHeight - 1

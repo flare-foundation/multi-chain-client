@@ -4,7 +4,7 @@ import { FullBlockBase, XrpBlock } from "../BlockBase";
 import { XrpTransaction } from "../TransactionBase";
 
 @Managed()
-export class XrpFullBlock extends XrpBlock implements FullBlockBase<IXrpGetBlockRes, XrpTransaction> {
+export class XrpFullBlock extends XrpBlock implements FullBlockBase<XrpTransaction> {
    public get transactions(): XrpTransaction[] {
       if (!this.data.result.ledger.transactions) return [];
       const transactions: XrpTransaction[] = [];

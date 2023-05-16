@@ -21,12 +21,9 @@ describe("Transaction Btc test ", function () {
       let transaction: BtcTransaction;
 
       before(async () => {
-         const fullTrans = await MccClient.getTransaction(txid);
+         transaction = await MccClient.getTransaction(txid);
 
-         if (fullTrans) {
-            transaction = new BtcTransaction(fullTrans.data);
-            await transaction.makeFullPayment(MccClient);
-         }
+         await transaction.makeFullPayment(MccClient);
       });
 
       it("Should get transaction txid ", async function () {

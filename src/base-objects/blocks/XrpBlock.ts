@@ -6,7 +6,7 @@ import { BlockBase } from "../BlockBase";
 
 @Managed()
 export class XrpBlock extends BlockBase {
-   private get data(): IXrpGetBlockRes {
+   protected get data(): IXrpGetBlockRes {
       return this.privateData as IXrpGetBlockRes;
    }
 

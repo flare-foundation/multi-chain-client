@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { AccountInfoResponse, AccountTxResponse, LedgerResponse, ServerStateResponse } from "xrpl";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { IBlockTip, IFullBlock, XrpBlock } from "../base-objects/BlockBase";
+import { BlockTipBase, XrpBlock } from "../base-objects/BlockBase";
 import { XrpNodeStatus } from "../base-objects/StatusBase";
 import { XrpFullBlock } from "../base-objects/fullBlocks/XrpFullBlock";
 import { mccSettings } from "../global-settings/globalSettings";
@@ -59,12 +59,12 @@ export class XRPImplementation implements ReadRpcInterface {
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   getBlockTips?(height_gte: number): Promise<IBlockTip[]> {
+   getBlockTips?(height_gte: number): Promise<BlockTipBase[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<IBlockTip[]> {
+   getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<BlockTipBase[]> {
       throw new mccError(mccErrorCode.NotImplemented);
    }
 
@@ -133,7 +133,7 @@ export class XRPImplementation implements ReadRpcInterface {
       });
    }
 
-   async getFullBlock(blockNumberOrHash: string | number): Promise<IFullBlock> {
+   async getFullBlock(blockNumberOrHash: string | number): Promise<XrpFullBlock> {
       try {
          const res = await this.blockRequestBase(blockNumberOrHash, true);
          xrp_ensure_data(res.data);

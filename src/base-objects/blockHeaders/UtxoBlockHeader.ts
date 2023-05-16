@@ -4,7 +4,7 @@ import { BlockHeaderBase } from "../BlockBase";
 
 @Managed()
 export abstract class UtxoBlockHeader extends BlockHeaderBase {
-   private get data(): IUtxoGetBlockHeaderRes {
+   protected get data(): IUtxoGetBlockHeaderRes {
       return this.privateData as IUtxoGetBlockHeaderRes;
    }
 

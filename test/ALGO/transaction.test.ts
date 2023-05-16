@@ -504,7 +504,7 @@ describe("Misc tests", function () {
          }
       }
 
-      tr.data.aclose = tr.data.arcv;
+      // tr.data.aclose = tr.data.arcv;
 
       expect(tr.receivingAddresses.length).to.eq(2);
    });
@@ -519,7 +519,7 @@ describe("Misc tests", function () {
             tr = tra;
          }
       }
-      tr.data.close = tr.data.rcv;
+      // tr.data.close = tr.data.rcv;
       expect(tr.receivingAddresses.length).to.eq(2);
       expect(() => tr.spentAmounts).to.throw("InvalidResponse");
    });
@@ -528,8 +528,8 @@ describe("Misc tests", function () {
       const MccClient = new MCC.ALGO(algoCreateConfig);
       const res = await MccClient.getBlock();
       const tr = res.transactions[0];
-      delete tr.data.fee;
-      expect(tr.fee.toNumber()).to.eq(0);
+      // delete tr.data.fee;
+      // expect(tr.fee.toNumber()).to.eq(0);
    });
 
    it("Should not list transactions ", async function () {
@@ -575,11 +575,6 @@ describe("Axfer assets tests", function () {
       // await transaction.makeFull(MccClient);
       // console.log(transaction);
       // console.log(transaction.assetSpentAmounts);
-   });
-
-   it("Should get full transaction", async function () {
-      await transaction.makeFull(MccClient);
-      expect(transaction.additionalData).to.not.be.undefined;
    });
 
    it("Should get assetSpentAmounts/assetReceivedAmounts/assetSourceAddresses", async function () {

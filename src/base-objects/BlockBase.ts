@@ -1,4 +1,4 @@
-import { ITransaction } from "./TransactionBase";
+import { TransactionBase } from "./TransactionBase";
 
 export abstract class BlockTipBase {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,32 +76,27 @@ export abstract class BlockBase extends BlockHeaderBase {
 /**
  * Base class for blocks that also include all transactions (including information about the transaction)
  */
-export abstract class FullBlockBase<T extends ITransaction> extends BlockBase {
+export abstract class FullBlockBase<T extends TransactionBase> extends BlockBase {
    /**
     * Array of transactions objects in block
     */
    public abstract get transactions(): T[];
 }
 
-export type IBlockTip = BlockTipBase;
-export type IBlockHeader = BlockHeaderBase;
-export type IBlock = BlockBase;
+export function blockConstructor<A extends BlockBase>(c: new () => A): A {
+   return new c();
+}
+
+export function blockHeaderConstructor<A extends BlockHeaderBase>(c: new () => A): A {
+   return new c();
+}
+
+export function blockTipConstructor<A extends BlockTipBase>(c: new () => A): A {
+   return new c();
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type IFullBlock = FullBlockBase<any>;
-
-export function blockConstructor<A extends IBlock>(c: new () => A): A {
-   return new c();
-}
-
-export function blockHeaderConstructor<A extends IBlockHeader>(c: new () => A): A {
-   return new c();
-}
-
-export function blockTipConstructor<A extends IBlockTip>(c: new () => A): A {
-   return new c();
-}
-
-export function fullBlockConstructor<A extends IFullBlock>(c: new () => A): A {
+export function fullBlockConstructor<A extends FullBlockBase<any>>(c: new () => A): A {
    return new c();
 }
 
@@ -114,6 +109,10 @@ export { BtcBlockHeader } from "./blockHeaders/BtcBlockHeader";
 export { DogeBlockHeader } from "./blockHeaders/DogeBlockHeader";
 export { LtcBlockHeader } from "./blockHeaders/LtcBlockHeader";
 export { UtxoBlockHeader } from "./blockHeaders/UtxoBlockHeader";
+export { BtcBlockTip } from "./blockTips/BtcBlockTip";
+export { DogeBlockTip } from "./blockTips/DogeBlockTip";
+export { LtcBlockTip } from "./blockTips/LtcBlockTip";
+export { UtxoBlockTip } from "./blockTips/UtxoBlockTip";
 // Blocks
 export { AlgoBlock } from "./blocks/AlgoBlock";
 export { BtcBlock } from "./blocks/BtcBlock";
@@ -121,10 +120,6 @@ export { DogeBlock } from "./blocks/DogeBlock";
 export { LtcBlock } from "./blocks/LtcBlock";
 export { UtxoBlock } from "./blocks/UtxoBlock";
 export { XrpBlock } from "./blocks/XrpBlock";
-export { BtcBlockTip } from "./blockTips/BtcBlockTip";
-export { DogeBlockTip } from "./blockTips/DogeBlockTip";
-export { LtcBlockTip } from "./blockTips/LtcBlockTip";
-export { UtxoBlockTip } from "./blockTips/UtxoBlockTip";
 // Full blocks
 export { BtcFullBlock } from "./fullBlocks/BtcFullBlock";
 export { DogeFullBlock } from "./fullBlocks/DogeFullBlock";

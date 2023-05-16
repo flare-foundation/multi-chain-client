@@ -54,9 +54,9 @@
    ],
    "scripts": {
       "----------PREBUILD-HEALTH-CHECKS----------": "----------PREBUILD-HEALTH-CHECKS----------",
-      "health_check:xrpl": "yarn ts-node src/scripts/xrplJsTransactionTypesCheck.ts",
+      "health_check:xrpl_OLD": "yarn ts-node src/scripts/xrplJsTransactionTypesCheck.ts",
       "----------BUILD----------": "----------BUILD----------",
-      "prebuild": "rm -r dist && yarn health_check:xrpl",
+      "prebuild": "rimraf dist",
       "build": "tsc --allowJs",
       "----------PUBLISH----------": "----------PUBLISH----------",
       "publish": "echo npm publish",

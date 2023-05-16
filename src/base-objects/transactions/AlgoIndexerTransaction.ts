@@ -19,7 +19,19 @@ import {
 const web3 = require("web3");
 
 @Managed()
-export class AlgoIndexerTransaction extends TransactionBase<IAlgoGetTransactionRes, IAlgoIndexerAdditionalData> {
+export class AlgoIndexerTransaction extends TransactionBase {
+   protected get data(): IAlgoGetTransactionRes {
+      return this.privateData as IAlgoGetTransactionRes;
+   }
+
+   protected get additionalData(): IAlgoIndexerAdditionalData | undefined {
+      return this.privateAdditionalData as IAlgoIndexerAdditionalData | undefined;
+   }
+
+   protected set additionalData(data: IAlgoIndexerAdditionalData | undefined) {
+      this.privateAdditionalData = data;
+   }
+
    public get intendedSpentAmounts(): AddressAmount[] {
       throw new Error("Method not implemented.");
    }

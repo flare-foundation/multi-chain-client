@@ -35,11 +35,8 @@ describe("Transaction Ltc base test ", function () {
       let transaction: BtcTransaction;
 
       before(async () => {
-         const fullTrans = await MccClient.getTransaction(txid);
-         if (fullTrans) {
-            transaction = new BtcTransaction(fullTrans.data);
-            await transaction.makeFullPayment(MccClient);
-         }
+         transaction = await MccClient.getTransaction(txid);
+         await transaction.makeFullPayment(MccClient);
       });
 
       it("Should find transaction in block ", function () {

@@ -4,8 +4,12 @@ import { BlockTipBase } from "../BlockBase";
 
 @Managed()
 export abstract class UtxoBlockTip extends BlockTipBase {
-   private get data(): IUtxoChainTip {
+   protected get data(): IUtxoChainTip {
       return this.privateData as IUtxoChainTip;
+   }
+
+   public get branchLen(): number {
+      return this.data.branchlen;
    }
 
    public get number(): number {

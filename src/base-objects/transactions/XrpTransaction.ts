@@ -20,7 +20,11 @@ import {
 
 // @Managed()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes, any> {
+export class XrpTransaction extends TransactionBase {
+   protected get data(): IXrpGetTransactionRes {
+      return this.privateData as IXrpGetTransactionRes;
+   }
+
    public get txid(): string {
       return this.hash;
    }
