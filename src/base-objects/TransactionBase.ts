@@ -95,11 +95,6 @@ export abstract class TransactionBase {
       this.privateAdditionalData = additionalData;
    }
 
-   // Debug output (dev only method)
-   public consoleDataDump(): void {
-      console.dir(this.privateData, { depth: null });
-   }
-
    /**
     * Exposing the private data for the derived classes (dev only/python like privatization)
     */

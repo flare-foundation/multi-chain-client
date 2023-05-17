@@ -1,4 +1,3 @@
-import { Transaction } from "xrpl";
 import { IXrpGetBlockRes } from "../../types/xrpTypes";
 import { XRP_UTD } from "../../utils/constants";
 import { Managed } from "../../utils/managed";

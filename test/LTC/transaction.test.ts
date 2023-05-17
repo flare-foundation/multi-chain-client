@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BtcTransaction, MCC, PaymentSummaryStatus, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { BtcTransaction, LtcTransaction, MCC, PaymentSummaryStatus, toBN, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -30,9 +30,32 @@ describe("Transaction Ltc base test ", function () {
       });
    });
 
+   describe("Transaction not full", function () {
+      const txid = "40225226e4a3c7b00eebb8ec8fcb738c7069f557f3dd31370d51388ed65aa908";
+      let transaction: LtcTransaction;
+
+      before(async () => {
+         transaction = await MccClient.getTransaction(txid);
+      });
+
+      it("Should return undefined for not full transaction for source addresses", async function () {
+         expect(transaction.sourceAddresses).to.eq([undefined]);
+      });
+
+      it("Should return empty spentAmounts for not full transaction for spentAmounts", async function () {
+         expect(transaction.spentAmounts).to.deep.eq({
+            amount: toBN(0),
+         });
+      });
+
+      it("Should have correct type", async function () {
+         expect(transaction.type).to.eq("Payment");
+      });
+   });
+
    describe("Transaction full ", function () {
       const txid = "40225226e4a3c7b00eebb8ec8fcb738c7069f557f3dd31370d51388ed65aa908";
-      let transaction: BtcTransaction;
+      let transaction: LtcTransaction;
 
       before(async () => {
          transaction = await MccClient.getTransaction(txid);
@@ -96,6 +119,10 @@ describe("Transaction Ltc base test ", function () {
 
       it("Should get fee ", async function () {
          expect(transaction.fee.toString()).to.eq("25500");
+      });
+
+      it("Should get currency name", async () => {
+         expect(transaction.currencyName).to.eq("LTC");
       });
 
       it("Should spend amount ", async function () {

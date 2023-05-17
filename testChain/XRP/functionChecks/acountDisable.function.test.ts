@@ -161,7 +161,7 @@ async function main() {
 
    // 8. Check the new transaction status from mcc client
    const txNew = await MccXrp.getTransaction(hash2);
-   txNew.consoleDataDump();
+   console.dir(txNew._data, { depth: null });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
