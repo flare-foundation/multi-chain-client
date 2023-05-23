@@ -611,4 +611,34 @@ export abstract class UtxoTransaction extends TransactionBase {
       }
       // otherwise `address` stays undefined
    }
+
+   // Scripts and output transaction script types
+
+   /**
+    * Checks if the output on index `voutIndex` is P2PKH. (Pay to public key hash)
+    * @param voutIndex index of the output we are checking
+    * @returns weather a vout script is standard P2PKH
+    */
+   public isP2PKH(voutIndex: number): boolean {
+      const vout = this.extractVoutAt(voutIndex);
+      const script_commands = vout.scriptPubKey.asm.split(" ");
+      return (
+         script_commands.length === 5 &&
+         script_commands[0] === "OP_DUP" &&
+         script_commands[1] === "OP_HASH160" &&
+         script_commands[3] === "OP_EQUALVERIFY" &&
+         script_commands[4] === "OP_CHECKSIG"
+      );
+   }
+
+   /**
+    * Checks if the output on index `voutIndex` is P2PK. (Pay to public key)
+    * @param voutIndex index of the output we are checking
+    * @returns weather a vout script is standard P2PK
+    */
+   public isP2PK(voutIndex: number): boolean {
+      const vout = this.extractVoutAt(voutIndex);
+      const script_commands = vout.scriptPubKey.asm.split(" ");
+      return script_commands.length === 2 && script_commands[1] === "OP_CHECKSIG";
+   }
 }
