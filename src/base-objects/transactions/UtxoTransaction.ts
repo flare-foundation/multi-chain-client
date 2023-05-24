@@ -615,6 +615,15 @@ export abstract class UtxoTransaction extends TransactionBase {
    // Scripts and output transaction script types
 
    /**
+    * Weather a output is a valid "nice" payment output currently P2PKH or P2PK
+    * @param voutIndex index of the output we are checking
+    * @returns weather a vout script is standard P2PKH or P2PK
+    */
+   public isValidPaymentScript(voutIndex: number): boolean {
+      return this.isP2PKH(voutIndex) || this.isP2PK(voutIndex);
+   }
+
+   /**
     * Checks if the output on index `voutIndex` is P2PKH. (Pay to public key hash)
     * @param voutIndex index of the output we are checking
     * @returns weather a vout script is standard P2PKH
