@@ -1,3 +1,6 @@
+import Web3 from "web3";
+import BN from "bn.js";
+import { unPrefix0x } from "../utils/utils";
 export abstract class AddressBase {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    protected privateData: any;
@@ -14,6 +17,10 @@ export abstract class AddressBase {
       return this.privateData;
    }
 
+   /**
+    * Return the well defined standardized address hash for address created by the string representation used at the constructor
+    * @returns {string} The standardized address hash (32 bytes hex string without prefix 0x)
+    */
    public abstract get stdHash(): string;
 
    public abstract get type(): string;
@@ -25,6 +32,15 @@ export abstract class AddressBase {
     * Some chains support multiple types of addresses that have different address format definitions (ie X addresses and classic addresses)
     */
    public abstract isValidFormat(): boolean;
+
+   /**
+    * Static method to convert a string to a standard hash
+    * @param a string to hash
+    * @returns standardized un-prefixed keccak256 hash
+    */
+   protected static toStandardHash(a: string): string {
+      return unPrefix0x(Web3.utils.keccak256(a));
+   }
 }
 
 export { XrpAddress } from "./addressObjects/XrpAddress";

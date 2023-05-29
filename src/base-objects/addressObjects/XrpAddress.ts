@@ -20,8 +20,8 @@ export class XrpAddress extends AddressBase {
    }
 
    public get stdHash(): string {
-      const dec = base58.decode(this.privateData);
-      return prefix0x(bytesToHex(dec));
+      const dec = bytesToHex(base58.decode(this.privateData));
+      return XrpAddress.toStandardHash(dec);
    }
 
    public isChecksumValid(): boolean {

@@ -16,7 +16,7 @@ describe("Balance decreasing summary tests", function () {
 
    it("Should be standard address hash", async function () {
       const stdHash = XrpAdd.stdHash;
-      expect(stdHash).to.eq("0x006499a56429ae005dd7ff3e1b059864dc323fc229f75e5157");
+      expect(stdHash).to.eq("a0cc9e76d9486afc51590f2a1aa13ce310fde5a44c85870022a31a8a348f2817");
    });
 });
 
@@ -114,7 +114,7 @@ describe("Iterating over addresses ", function () {
 
       it(`Address should return equl length std address hash ${add}`, function () {
          const address = new XrpAddress(add);
-         expect(address.stdHash).to.have.lengthOf(52);
+         expect(address.stdHash).to.have.lengthOf(64);
       });
    }
 });
