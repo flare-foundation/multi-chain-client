@@ -232,7 +232,7 @@ export abstract class UtxoCore<
          throw new mccError(mccErrorCode.InvalidTransaction);
       }
       // It transaction number of confirmations is not at least 1, we got a transaction from mempool, we don't consider this transaction as valid
-      if (res.data.result.confirmations < 1) {
+      if (res.data && res.data.result && res.data.result.confirmations && res.data.result.confirmations < 1) {
          throw new mccError(mccErrorCode.InvalidTransaction);
       }
       utxo_ensure_data(res.data);
