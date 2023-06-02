@@ -1,5 +1,17 @@
 import BN from "bn.js";
-import { isValidBytes32Hex, IUtxoGetTransactionRes, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x, ZERO_BYTES_32 } from "../..";
+import {
+   base32ToHex,
+   btcBase58Decode,
+   bytesToHex,
+   isValidBytes32Hex,
+   IUtxoGetTransactionRes,
+   prefix0x,
+   standardAddressHash,
+   toBN,
+   toHex,
+   unPrefix0x,
+   ZERO_BYTES_32,
+} from "../..";
 import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types";
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
@@ -16,6 +28,8 @@ import {
    PaymentSummaryStatus,
    TransactionBase,
 } from "../TransactionBase";
+import crypto from "crypto";
+import { bech32Decode } from "../../utils/bech32";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
 // Transaction types and their description
@@ -623,6 +637,8 @@ export abstract class UtxoTransaction extends TransactionBase {
       return this.isP2PKH(voutIndex) || this.isP2PK(voutIndex);
    }
 
+   //// P2PKH
+
    /**
     * Checks if the output on index `voutIndex` is P2PKH. (Pay to public key hash)
     * @param voutIndex index of the output we are checking
@@ -641,6 +657,67 @@ export abstract class UtxoTransaction extends TransactionBase {
    }
 
    /**
+    * Checks that address specified by `address` is actually the one that can redeem the script for a valid P2PKH output script
+    * @param voutIndex index of the output we are checking
+    * @returns weather the output script is spendable by address
+    */
+   public isValidP2PKH(voutIndex: number): boolean {
+      if (!this.isP2PKH(voutIndex)) {
+         return false;
+      }
+      const vout = this.extractVoutAt(voutIndex);
+      console.dir(vout);
+      const address = vout.scriptPubKey.address;
+      if (!address) {
+         return false;
+      }
+      const addressHex = btcBase58Decode(address);
+      // This is the version check for P2PKH
+      if (addressHex[0] !== 0x00) {
+         return false;
+      }
+      const xx = bytesToHex(addressHex.slice(1, 21));
+      const script_commands = vout.scriptPubKey.asm.split(" ");
+      const hash = script_commands[2];
+      return hash === xx;
+   }
+
+   //// P2WPKH
+
+   public isP2WPKH(voutIndex: number): boolean {
+      const vout = this.extractVoutAt(voutIndex);
+      console.dir(vout);
+      const script_commands = vout.scriptPubKey.asm.split(" ");
+      return script_commands.length === 2 && script_commands[0] === "0";
+   }
+
+   public isValidP2WPKH(voutIndex: number): boolean {
+      if (!this.isP2WPKH(voutIndex)) {
+         return false;
+      }
+      const vout = this.extractVoutAt(voutIndex);
+      const address = vout.scriptPubKey.address;
+      if (!address) {
+         return false;
+      }
+      // let addressData: string;
+      // testnet must start with tb1
+      // if (address.startsWith("bc1")) {
+      //    addressData = address.slice(3);
+      // } else {
+      //    return false;
+      // }
+      const addressHex = bech32Decode("bc", address);
+      console.dir(addressHex);
+      // This is the version check for P2PKH
+      const script_commands = vout.scriptPubKey.asm.split(" ");
+      const hash = script_commands[1];
+      return false;
+   }
+
+   //// P2PK
+
+   /**
     * Checks if the output on index `voutIndex` is P2PK. (Pay to public key)
     * @param voutIndex index of the output we are checking
     * @returns weather a vout script is standard P2PK
@@ -649,5 +726,12 @@ export abstract class UtxoTransaction extends TransactionBase {
       const vout = this.extractVoutAt(voutIndex);
       const script_commands = vout.scriptPubKey.asm.split(" ");
       return script_commands.length === 2 && script_commands[1] === "OP_CHECKSIG";
+   }
+
+   public isValidP2PK(voutIndex: number): boolean {
+      if (!this.isP2PK(voutIndex)) {
+         return false;
+      }
+      throw new Error("Not implemented");
    }
 }

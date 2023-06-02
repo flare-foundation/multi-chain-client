@@ -196,3 +196,18 @@ export function fillWithDefault(partialMccLogging: MccLoggingOptions): MccLoggin
 export function standardAddressHash(address: string): string {
    return Web3.utils.keccak256(address);
 }
+
+// Base 58 encoding/decoding
+
+import base from "base-x";
+const XRP_BASE_58_DICT = "rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz";
+const BTC_BASE_58_DICT = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+const base58 = base(BTC_BASE_58_DICT);
+
+export function btcBase58Encode(input: Uint8Array | Buffer | number[]): string {
+   return base58.encode(input);
+}
+
+export function btcBase58Decode(input: string): Uint8Array {
+   return base58.decode(input);
+}

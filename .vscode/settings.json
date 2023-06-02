@@ -32,6 +32,7 @@
       "INSUFF",
       "locktime",
       "NFTOKEN",
-      "vsize"
+      "vsize",
+      "WPKH"
    ]
 }
