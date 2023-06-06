@@ -5,7 +5,6 @@ import { AlgoTransactionTypeOptions, IAlgoGetTransactionRes, IAlgoIndexerAdditio
 import { base64ToHex, txIdToHexNo0x } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { Managed } from "../../utils/managed";
 import { ZERO_BYTES_32, isValidBytes32Hex, prefix0x, toBN } from "../../utils/utils";
 import {
    AddressAmount,
@@ -18,7 +17,6 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const web3 = require("web3");
 
-@Managed()
 export class AlgoIndexerTransaction extends TransactionBase {
    protected get data(): IAlgoGetTransactionRes {
       return this.privateData as IAlgoGetTransactionRes;

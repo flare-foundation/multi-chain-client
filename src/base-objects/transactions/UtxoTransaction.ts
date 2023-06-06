@@ -4,7 +4,6 @@ import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types"
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { Managed } from "../../utils/managed";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import {
    AddressAmount,

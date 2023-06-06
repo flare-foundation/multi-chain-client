@@ -3,6 +3,7 @@ import { AccountInfoResponse, AccountTxResponse, LedgerResponse, ServerStateResp
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { BlockTipBase, XrpBlock } from "../base-objects/BlockBase";
 import { XrpNodeStatus } from "../base-objects/StatusBase";
+import { XrpTransaction } from "../base-objects/TransactionBase";
 import { XrpFullBlock } from "../base-objects/fullBlocks/XrpFullBlock";
 import { mccSettings } from "../global-settings/globalSettings";
 import {
@@ -19,15 +20,12 @@ import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils
 import { mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
 import { mccJsonStringify, unPrefix0x } from "../utils/utils";
 import { xrp_ensure_data } from "../utils/xrpUtils";
-import { XrpTransaction } from "../base-objects/TransactionBase";
-import { Managed } from "../utils/managed";
 
 const DEFAULT_TIMEOUT = 15000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
    maxRPS: 5,
 };
 
-@Managed()
 export class XRPImplementation implements ReadRpcInterface {
    client: AxiosInstance;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any

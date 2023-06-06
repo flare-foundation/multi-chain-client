@@ -1,5 +1,4 @@
 import { IUtxoGetBlockRes } from "../../types";
-import { Managed } from "../../utils/managed";
 import { UtxoFullBlock } from "../BlockBase";
 import { DogeTransaction } from "../TransactionBase";
 
@@ -10,7 +9,6 @@ import { DogeTransaction } from "../TransactionBase";
 //    }
 // }
 
-@Managed()
 export class DogeFullBlock extends UtxoFullBlock<DogeTransaction> {
    constructor(data: IUtxoGetBlockRes) {
       super(data);

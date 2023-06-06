@@ -1,6 +1,5 @@
 import { IAlgoGetIndexerBlockRes, IAlgoTransaction } from "../../types";
 import { hexToBase64, txIdToHexNo0x } from "../../utils/algoUtils";
-import { Managed } from "../../utils/managed";
 import { BlockBase } from "../BlockBase";
 
 function filterHashesIndexer(trans: IAlgoTransaction) {
@@ -10,8 +9,6 @@ function filterHashesIndexer(trans: IAlgoTransaction) {
       return "";
    }
 }
-
-@Managed()
 export class AlgoIndexerBlock extends BlockBase {
    protected get data(): IAlgoGetIndexerBlockRes {
       return this.privateData as IAlgoGetIndexerBlockRes;
