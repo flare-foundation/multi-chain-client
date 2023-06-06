@@ -1,4 +1,4 @@
-import { BtcBlock, BtcBlockHeader, BtcBlockTip, BtcFullBlock } from "../base-objects/BlockBase";
+import { BtcBlock, BtcBlockHeader, BtcBlockTip, BtcFullBlock } from "../base-objects";
 import { BtcTransaction } from "../base-objects/transactions/BtcTransaction";
 import { ChainType, UtxoMccCreate, UtxoRpcInterface } from "../types";
 import { UtxoCore } from "./UtxoCore";

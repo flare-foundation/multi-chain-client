@@ -1,5 +1,6 @@
 import { expect } from "chai";
-import { AlgoBlock, MCC, traceManager } from "../../src";
+import { MCC, traceManager } from "../../src";
+import { AlgoBlock } from "../../src/base-objects";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");

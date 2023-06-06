@@ -3,7 +3,7 @@ import { IAlgoBlockMsgPack, IAlgoTransactionMsgPack } from "../../types";
 import { bytesToHex, calculateAlgoTxid, hexToBase32, hexToBase64 } from "../../utils/algoUtils";
 import { mccJsonStringify } from "../../utils/utils";
 import { BlockBase } from "../BlockBase";
-import { AlgoTransaction } from "../TransactionBase";
+import { AlgoTransaction } from "../transactions/AlgoTransaction";
 
 export class AlgoBlock extends BlockBase {
    transactionObjects: AlgoTransaction[];

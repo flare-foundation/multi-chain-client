@@ -1,6 +1,7 @@
 import { IXrpGetTransactionRes } from "../../types";
-import { FullBlockBase, XrpBlock } from "../BlockBase";
-import { XrpTransaction } from "../TransactionBase";
+import { FullBlockBase } from "../FullBlockBase";
+import { XrpBlock } from "../blocks/XrpBlock";
+import { XrpTransaction } from "../transactions/XrpTransaction";
 
 export class XrpFullBlock extends XrpBlock implements FullBlockBase<XrpTransaction> {
    public get transactions(): XrpTransaction[] {

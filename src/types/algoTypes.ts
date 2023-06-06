@@ -1,6 +1,5 @@
 import { EncodedTransaction } from "algosdk";
 import { Asset } from "algosdk/dist/types/client/v2/algod/models/types";
-import { AlgoTransaction } from "../base-objects/TransactionBase";
 import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
 import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions } from "./genericMccTypes";
@@ -165,10 +164,6 @@ export interface IAlgoBlockMsgPackBlock {
 export interface IAlgoBlockMsgPack {
    block: IAlgoBlockMsgPackBlock;
    cert: IAlgoCert;
-}
-
-export interface IAlgoBlockAdditionalData {
-   transactionsObjects: AlgoTransaction[];
 }
 
 export interface IAlgoSignature {

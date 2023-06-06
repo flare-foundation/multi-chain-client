@@ -1,5 +1,5 @@
 import { IUtxoGetBlockRes } from "../../types";
-import { LtcTransaction } from "../TransactionBase";
+import { LtcTransaction } from "../transactions/LtcTransaction";
 import { UtxoFullBlock } from "./UtxoFullBlock";
 
 export class LtcFullBlock extends UtxoFullBlock<LtcTransaction> {

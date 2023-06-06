@@ -1,7 +1,5 @@
-import { DogeBlock, DogeBlockHeader, DogeBlockTip, DogeFullBlock } from "../base-objects/BlockBase";
-import { DogeTransaction } from "../base-objects/TransactionBase";
+import { DogeBlock, DogeBlockHeader, DogeBlockTip, DogeFullBlock, DogeTransaction } from "../base-objects";
 import { ChainType, DogeRpcInterface, UtxoMccCreate } from "../types";
-import { Managed } from "../utils/managed";
 import { UtxoCore } from "./UtxoCore";
 
 export const dogeObjectConstructors = {
@@ -11,7 +9,6 @@ export const dogeObjectConstructors = {
    blockHeaderConstructor: DogeBlockHeader,
    blockTipConstructor: DogeBlockTip,
 };
-@Managed()
 export class DOGEImplementation extends UtxoCore<DogeTransaction, DogeFullBlock, DogeBlock, DogeBlockHeader, DogeBlockTip> implements DogeRpcInterface {
    constructor(options: UtxoMccCreate) {
       super(options, dogeObjectConstructors);

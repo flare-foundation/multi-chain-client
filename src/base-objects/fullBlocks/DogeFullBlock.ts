@@ -1,7 +1,6 @@
 import { IUtxoGetBlockRes } from "../../types";
-import { UtxoFullBlock } from "../BlockBase";
-import { DogeTransaction } from "../TransactionBase";
-
+import { DogeTransaction } from "../transactions/DogeTransaction";
+import { UtxoFullBlock } from "./UtxoFullBlock";
 // @Managed()
 // export class DogeFullBlock extends UtxoBlock implements FullBlockBase<DogeTransaction> {
 //    public get transactions(): DogeTransaction[] {

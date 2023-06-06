@@ -1,11 +1,8 @@
 import axios, { AxiosInstance } from "axios";
 
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { FullBlockBase, UtxoBlock } from "../base-objects/BlockBase";
 import { UtxoBlockHeader } from "../base-objects/blockHeaders/UtxoBlockHeader";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
-import { UtxoNodeStatus } from "../base-objects/StatusBase";
-import { UtxoTransaction } from "../base-objects/TransactionBase";
 import {
    getAddressByLabelResponse,
    getTransactionOptions,
@@ -31,6 +28,10 @@ import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils
 import { mccError, mccErrorCode } from "../utils/errors";
 import { sleepMs, unPrefix0x } from "../utils/utils";
 import { utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
+import { FullBlockBase } from "../base-objects/FullBlockBase";
+import { UtxoTransaction } from "../base-objects/transactions/UtxoTransaction";
+import { UtxoBlock } from "../base-objects/blocks/UtxoBlock";
+import { UtxoNodeStatus } from "../base-objects/status/UtxoStatus";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
@@ -51,7 +52,6 @@ interface objectConstructors<
    blockTipConstructor: new (d: IUtxoChainTip) => BTipCon;
 }
 
-// @Managed()
 export abstract class UtxoCore<
    TranCon extends UtxoTransaction,
    FBlockCon extends FullBlockBase<UtxoTransaction>,

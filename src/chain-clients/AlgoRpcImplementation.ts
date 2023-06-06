@@ -1,10 +1,7 @@
 import * as msgpack from "algo-msgpack-with-bigint";
 import axios, { AxiosInstance } from "axios";
-import { AlgoBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { BlockTipBase, FullBlockBase } from "../base-objects/BlockBase";
-import { AlgoNodeStatus } from "../base-objects/StatusBase";
-import { AlgoTransaction } from "../base-objects/TransactionBase";
+import { BlockTipBase } from "../base-objects/BlockBase";
 import { AlgoIndexerBlock } from "../base-objects/blocks/AlgoIndexerBlock";
 import { AlgoIndexerTransaction } from "../base-objects/transactions/AlgoIndexerTransaction";
 import {
@@ -17,6 +14,7 @@ import {
    IAlgoStatusRes,
    IAlgoTransaction,
    RateLimitOptions,
+   ReadRpcInterface,
 } from "../types";
 import {
    IAlgoAssets,
@@ -30,6 +28,8 @@ import {
 import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, certToInCert, mpDecode } from "../utils/algoUtils";
 import { mccError, mccErrorCode } from "../utils/errors";
 import { isPrefixed0x, toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
+import { AlgoBlock, AlgoNodeStatus, AlgoTransaction } from "../base-objects";
+import { FullBlockBase } from "../base-objects/FullBlockBase";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {

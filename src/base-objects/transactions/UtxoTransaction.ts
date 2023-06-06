@@ -1,7 +1,6 @@
 import BN from "bn.js";
-import { isValidBytes32Hex, IUtxoGetTransactionRes, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x, ZERO_BYTES_32 } from "../..";
-import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types";
-import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
+import { TransactionSuccessStatus } from "../../types";
+import { IUtxoGetTransactionRes, IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
 import { WordToOpcode } from "../../utils/utxoUtils";
@@ -15,6 +14,8 @@ import {
    PaymentSummaryStatus,
    TransactionBase,
 } from "../TransactionBase";
+import { ZERO_BYTES_32, isValidBytes32Hex, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x } from "../../utils/utils";
+import { MccClient, MccUtxoClient } from "../../module";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
 // Transaction types and their description
