@@ -1,7 +1,7 @@
 import * as msgpack from "algo-msgpack-with-bigint";
 import algosdk from "algosdk";
 import { IAlgoCert, IAlgoHexAddress, IAlgoIndexerCert } from "../types/algoTypes";
-import { MccError, prefix0x, unPrefix0x } from "./utils";
+import { MccError, prefix0x, unPrefix0x, hexToBytes } from "./utils";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const base32 = require("base32.js");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -25,13 +25,6 @@ export const INVALIDPUBKEYPAIRERROR = (algoKeyPair: IAlgoHexAddress) => {
 ///////////////////
 // Bytes <-> Hex //
 ///////////////////
-
-// Convert a hex string to a byte array
-export function hexToBytes(hex: string): Uint8Array {
-   const bytes = [];
-   for (let c = 0; c < hex.length; c += 2) bytes.push(parseInt(hex.substr(c, 2), 16));
-   return new Uint8Array(bytes);
-}
 
 // prefix helper
 function bufferEntryToHexString(bytePair: number) {

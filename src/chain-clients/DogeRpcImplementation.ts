@@ -1,5 +1,6 @@
 import { DogeBlock, DogeBlockHeader, DogeBlockTip, DogeFullBlock, DogeTransaction } from "../base-objects";
-import { ChainType, DogeRpcInterface, UtxoMccCreate } from "../types";
+import { DogeRpcInterface, UtxoMccCreate } from "../types";
+import { ChainType } from "../types/genericMccTypes";
 import { UtxoCore } from "./UtxoCore";
 
 export const dogeObjectConstructors = {

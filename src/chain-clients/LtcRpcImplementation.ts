@@ -1,5 +1,6 @@
 import { LtcBlock, LtcBlockHeader, LtcBlockTip, LtcFullBlock, LtcTransaction } from "../base-objects";
-import { ChainType, UtxoMccCreate, UtxoRpcInterface } from "../types";
+import { UtxoMccCreate, UtxoRpcInterface } from "../types";
+import { ChainType } from "../types/genericMccTypes";
 import { UtxoCore } from "./UtxoCore";
 
 export const ltcObjectConstructors = {

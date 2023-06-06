@@ -3,7 +3,8 @@ import { BTCImplementation } from "./chain-clients/BtcRpcImplementation";
 import { DOGEImplementation } from "./chain-clients/DogeRpcImplementation";
 import { LTCImplementation } from "./chain-clients/LtcRpcImplementation";
 import { XRPImplementation } from "./chain-clients/XrpRpcImplementation";
-import { AlgoMccCreate, ChainType, ReadRpcInterface, UtxoMccCreate, XrpMccCreate } from "./types";
+import { AlgoMccCreate, UtxoMccCreate, XrpMccCreate } from "./types";
+import { ChainType, ReadRpcInterface } from "./types/genericMccTypes";
 
 export type MccCreate = XrpMccCreate | AlgoMccCreate | UtxoMccCreate;
 

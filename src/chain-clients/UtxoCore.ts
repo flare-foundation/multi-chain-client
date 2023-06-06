@@ -3,17 +3,8 @@ import axios, { AxiosInstance } from "axios";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { UtxoBlockHeader } from "../base-objects/blockHeaders/UtxoBlockHeader";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
-import {
-   getAddressByLabelResponse,
-   getTransactionOptions,
-   IIUtxoVin,
-   IIUtxoVout,
-   IUtxoTransactionListRes,
-   IUtxoWalletRes,
-   RateLimitOptions,
-   UtxoMccCreate,
-} from "../types";
-import { ChainType, ReadRpcInterface } from "../types/genericMccTypes";
+import { getAddressByLabelResponse, IIUtxoVin, IIUtxoVout, IUtxoTransactionListRes, IUtxoWalletRes, UtxoMccCreate } from "../types";
+import { ChainType, getTransactionOptions, ReadRpcInterface } from "../types/genericMccTypes";
 import {
    IUtxoChainTip,
    IUtxoGetAlternativeBlocksOptions,
@@ -32,6 +23,7 @@ import { FullBlockBase } from "../base-objects/FullBlockBase";
 import { UtxoTransaction } from "../base-objects/transactions/UtxoTransaction";
 import { UtxoBlock } from "../base-objects/blocks/UtxoBlock";
 import { UtxoNodeStatus } from "../base-objects/status/UtxoStatus";
+import { RateLimitOptions } from "../types/axiosRateLimitTypes";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {

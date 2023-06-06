@@ -2,7 +2,6 @@
 import BN from "bn.js";
 import Web3 from "web3";
 import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
-import { hexToBytes } from "./algoUtils";
 import { TextDecoder } from "util";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const camelCase = require("camelcase");
@@ -51,6 +50,13 @@ export function isPrefixed0x(tx: string) {
 
 export function toHex(x: string | number | BN): string {
    return Web3.utils.toHex(x);
+}
+
+// Convert a hex string to a byte array (???ALGO SPECIFIC???)
+export function hexToBytes(hex: string): Uint8Array {
+   const bytes = [];
+   for (let c = 0; c < hex.length; c += 2) bytes.push(parseInt(hex.substr(c, 2), 16));
+   return new Uint8Array(bytes);
 }
 
 export function toHex32Bytes(x: string | number | BN): string {

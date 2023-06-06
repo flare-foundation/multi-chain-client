@@ -1,6 +1,5 @@
 import BN from "bn.js";
 import { MCC } from "../..";
-import { TransactionSuccessStatus } from "../../types";
 import { AlgoTransactionTypeOptions, IAlgoGetTransactionRes, IAlgoIndexerAdditionalData } from "../../types/algoTypes";
 import { base64ToHex, txIdToHexNo0x } from "../../utils/algoUtils";
 import { ALGO_MDU, ALGO_NATIVE_TOKEN_NAME } from "../../utils/constants";
@@ -14,6 +13,7 @@ import {
    PaymentSummaryResponse,
    TransactionBase,
 } from "../TransactionBase";
+import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const web3 = require("web3");
 

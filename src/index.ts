@@ -1,4 +1,6 @@
 // Object exports
+export * from "./base-objects/index";
+
 export * from "./base-objects/BlockBase";
 export * from "./base-objects/StatusBase";
 export * from "./base-objects/TransactionBase";

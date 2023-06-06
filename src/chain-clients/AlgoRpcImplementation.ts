@@ -6,15 +6,12 @@ import { AlgoIndexerBlock } from "../base-objects/blocks/AlgoIndexerBlock";
 import { AlgoIndexerTransaction } from "../base-objects/transactions/AlgoIndexerTransaction";
 import {
    AlgoMccCreate,
-   ChainType,
    IAlgoGetBlockHeaderRes,
    IAlgoIndexerAsset,
    IAlgoListTransactionRes,
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
-   RateLimitOptions,
-   ReadRpcInterface,
 } from "../types";
 import {
    IAlgoAssets,
@@ -30,6 +27,8 @@ import { mccError, mccErrorCode } from "../utils/errors";
 import { isPrefixed0x, toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
 import { AlgoBlock, AlgoNodeStatus, AlgoTransaction } from "../base-objects";
 import { FullBlockBase } from "../base-objects/FullBlockBase";
+import { ChainType, ReadRpcInterface } from "../types/genericMccTypes";
+import { RateLimitOptions } from "../types/axiosRateLimitTypes";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {

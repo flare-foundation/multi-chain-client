@@ -2,7 +2,6 @@ import BN from "bn.js";
 import { Payment, Transaction, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
-import { TransactionSuccessStatus } from "../../types";
 import { IXrpGetTransactionRes, XrpTransactionStatusPrefixes, XrpTransactionStatusTec, XrpTransactionTypeUnion } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash, toBN } from "../../utils/utils";
@@ -17,6 +16,7 @@ import {
    TransactionBase,
 } from "../TransactionBase";
 import { MccClient } from "../../module";
+import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 
 // @Managed()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -4,21 +4,14 @@ import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { BlockTipBase } from "../base-objects/BlockBase";
 import { XrpFullBlock } from "../base-objects/fullBlocks/XrpFullBlock";
 import { mccSettings } from "../global-settings/globalSettings";
-import {
-   ChainType,
-   IAccountInfoRequest,
-   IAccountTxRequest,
-   RateLimitOptions,
-   ReadRpcInterface,
-   XrpBlockReqParams,
-   XrpMccCreate,
-   getTransactionOptions,
-} from "../types";
+import { IAccountInfoRequest, IAccountTxRequest, XrpBlockReqParams, XrpMccCreate } from "../types";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
 import { mccJsonStringify, unPrefix0x } from "../utils/utils";
 import { xrp_ensure_data } from "../utils/xrpUtils";
 import { XrpBlock, XrpNodeStatus, XrpTransaction } from "../base-objects";
+import { ChainType, ReadRpcInterface, getTransactionOptions } from "../types/genericMccTypes";
+import { RateLimitOptions } from "../types/axiosRateLimitTypes";
 
 const DEFAULT_TIMEOUT = 15000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {

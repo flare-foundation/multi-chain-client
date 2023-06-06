@@ -1,6 +1,6 @@
 import BN from "bn.js";
-import { TransactionSuccessStatus } from "../types";
 import { MccClient } from "../module";
+import { TransactionSuccessStatus } from "../types/genericMccTypes";
 
 type SummaryBaseProps = {
    client?: MccClient;
