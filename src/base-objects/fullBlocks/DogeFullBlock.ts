@@ -1,6 +1,6 @@
 import { IUtxoGetBlockRes } from "../../types";
 import { Managed } from "../../utils/managed";
-import { FullBlockBase, UtxoBlock, UtxoFullBlock } from "../BlockBase";
+import { UtxoFullBlock } from "../BlockBase";
 import { DogeTransaction } from "../TransactionBase";
 
 // @Managed()
