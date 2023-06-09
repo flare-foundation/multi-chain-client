@@ -707,7 +707,7 @@ export abstract class UtxoTransaction extends TransactionBase {
       // } else {
       //    return false;
       // }
-      const addressHex = bech32Decode("bc", address);
+      const addressHex = bech32Decode(address);
       console.dir(addressHex);
       // This is the version check for P2PKH
       const script_commands = vout.scriptPubKey.asm.split(" ");
