@@ -1,16 +1,20 @@
 import { AddressBase } from "../AddressBase";
+import { UtxoAddressTypes } from "./AddressTypes";
 
-export class UtxoAddress extends AddressBase {
+export abstract class UtxoAddress extends AddressBase {
    public get stdHash(): string {
       throw new Error("Method not implemented.");
    }
-   public get type(): string {
+   public get type(): UtxoAddressTypes {
       throw new Error("Method not implemented.");
    }
-   public isChecksumValid(): boolean {
+
+   abstract get prefix(): string;
+
+   public addressToPkscript(): string {
       throw new Error("Method not implemented.");
    }
-   public isValidFormat(): boolean {
+   public isValid(): boolean {
       throw new Error("Method not implemented.");
    }
 }

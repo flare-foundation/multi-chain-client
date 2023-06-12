@@ -24,7 +24,7 @@ export class XrpAddress extends AddressBase {
       return XrpAddress.toStandardHash(dec);
    }
 
-   public isChecksumValid(): boolean {
+   private isChecksumValid(): boolean {
       const dec = base58.decode(this.privateData);
       const c1 = crypto.createHash("sha256").update(dec.slice(0, -4)).digest();
       const c2 = crypto.createHash("sha256").update(c1).digest();
@@ -33,8 +33,9 @@ export class XrpAddress extends AddressBase {
       return checksum_computed.equals(checksum_read);
    }
 
-   public isValidFormat(): boolean {
-      return this.isValidClassicAddressFormat();
+   public isValid(): boolean {
+      if (this.isValidClassicAddressFormat()) return this.isChecksumValid();
+      return false;
    }
 
    private isValidClassicAddressFormat(): boolean {

@@ -5,12 +5,7 @@ describe("Balance decreasing summary tests", function () {
    const XrpAdd = new XrpAddress("rwwvd6W78HXK4k5yZP1MieSddtHHUEKG34");
 
    it("Should be valid checksum", async function () {
-      const valid = XrpAdd.isChecksumValid();
-      expect(valid).to.eq(true);
-   });
-
-   it("Should be valid format", async function () {
-      const valid = XrpAdd.isValidFormat();
+      const valid = XrpAdd.isValid();
       expect(valid).to.eq(true);
    });
 
@@ -109,7 +104,7 @@ describe("Iterating over addresses ", function () {
    for (const add of addresses) {
       it(`Address should have valid checksum ${add}`, function () {
          const address = new XrpAddress(add);
-         expect(address.isChecksumValid()).to.be.true;
+         expect(address.isValid()).to.be.true;
       });
 
       it(`Address should return equl length std address hash ${add}`, function () {

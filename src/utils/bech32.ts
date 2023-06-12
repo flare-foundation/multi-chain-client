@@ -185,17 +185,23 @@ export function bech32Encode(hrp: hrp, version: number, program: number[]) {
    return ret;
 }
 
+/**
+ * Returns pkscript corresponding to a bech32 address.
+ * @param address in bech32 or bech32m
+ * @returns
+ */
 export function bech32AddressToPkscript(address: string) {
    const decode = bech32Decode(address);
 
-   if (!decode) return null;
+   if (!decode) throw new Error("invalid address");
    const length = unPrefix0x(toHex(decode.program.length));
    const data = decode.program.map((num: number) => unPrefix0x(Web3.utils.padLeft(toHex(num), 2)));
    let prefix = "00";
    if (decode.version) {
       prefix = unPrefix0x(toHex(decode.version + 80));
    }
-   return [prefix, length].concat(data).join("");
+   const pkscript = [prefix, length].concat(data).join("");
+   return pkscript;
 }
 
 // export function isValidAddress(address: string, hrp: string) {

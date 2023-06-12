@@ -1,9 +1,8 @@
 import Web3 from "web3";
-import BN from "bn.js";
 import { unPrefix0x } from "../utils/utils";
 export abstract class AddressBase {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   protected privateData: any;
+   protected privateData: string;
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    constructor(data: string) {
@@ -25,13 +24,11 @@ export abstract class AddressBase {
 
    public abstract get type(): string;
 
-   public abstract isChecksumValid(): boolean;
-
    /**
-    * Check if address has the correct format
+    * Check if address has the correct format and satisfies checksum
     * Some chains support multiple types of addresses that have different address format definitions (ie X addresses and classic addresses)
     */
-   public abstract isValidFormat(): boolean;
+   public abstract isValid(): boolean;
 
    /**
     * Static method to convert a string to a standard hash

@@ -200,14 +200,50 @@ export function standardAddressHash(address: string): string {
 // Base 58 encoding/decoding
 
 import base from "base-x";
+import { mccError, mccErrorCode } from "./errors";
+import { createHash } from "crypto";
 const XRP_BASE_58_DICT = "rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz";
 const BTC_BASE_58_DICT = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+export const BTC_BASE_58_DICT_regex = /[^123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]/;
 const base58 = base(BTC_BASE_58_DICT);
 
 export function btcBase58Encode(input: Uint8Array | Buffer | number[]): string {
    return base58.encode(input);
 }
 
-export function btcBase58Decode(input: string): Uint8Array {
+export function btcBase58Decode(input: string): Buffer {
    return base58.decode(input);
+}
+
+/**
+ *
+ * @param address a base 58 address
+ */
+export function base58Checksum(address: string) {
+   let decoded = btcBase58Decode(address);
+   const preChecksum = decoded.slice(-4);
+   const hash1 = createHash("sha256").update(decoded.slice(0, -4)).digest();
+   const hash2 = createHash("sha256").update(hash1).digest();
+   const newChecksum = hash2.slice(0, 4);
+   return preChecksum.equals(newChecksum);
+}
+
+/**
+ * Transforms a valid base58 btc address into a corresponding pkscript: either p2pkh or p2sh
+ * @param address
+ * @returns
+ */
+export function btcBase58AddrToPkScript(address: string) {
+   const prefix = address[0];
+   const hexAddr = btcBase58Decode(address).toString("hex");
+   //remove prefix and checksum bytes
+   const strippedAddr = hexAddr.slice(2, hexAddr.length - 8);
+   switch (prefix) {
+      case "1":
+         return ["76", "a9", strippedAddr, "ac"].join("");
+      case "3":
+         return ["a9", strippedAddr, "87"].join("");
+      default:
+         throw new mccError(mccErrorCode.InvalidParameter, Error("invalid prefix"));
+   }
 }
