@@ -1,7 +1,8 @@
 import { createHash } from "crypto";
 import { BTC_BASE_58_DICT_regex, btcBase58Decode, toHex } from "../../src";
 import { BtcAddress } from "../../src/base-objects/addressObjects/BtcAddress";
-import { assert } from "chai";
+import { assert, expect } from "chai";
+import { bech32AddressToHex1, bech32AddressToHex2, bech32Decode, bech32Encode, bech32_decode } from "../../src/utils/bech32";
 
 const validAddressesBase58 = ["3EZBRrEk7JELP6c9LWNR2iJfFD91sr35ep", "3Nbxwjb9tBszckeF46PxbTqXNWtuei91Ti", "13Lf377cv9xm4KX2daMVmMQ751oqW3ZhWW"];
 const validAddressesBech32 = [
@@ -13,11 +14,23 @@ const validAddressesBech32 = [
 ];
 
 describe("addresses utils", function () {
+   it("should decode address to hex", function () {
+      //https://en.bitcoin.it/wiki/Bech32
+
+      const addr = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4";
+      const addrHex1 = bech32AddressToHex1(addr);
+      const addrHex2 = bech32AddressToHex2(addr);
+
+      const exAddrHex1 = "751e76e8199196d454941c45d1b3a323f1433bd6";
+      const exAddrHex2 = "000e140f070d1a001912060b0d081504140311021d030c1d03040f1814060e1e160c0709110b15";
+      expect(addrHex1).to.eq(exAddrHex1);
+      expect(addrHex2).to.eq(exAddrHex2);
+   });
+
    it("isValid bech32", function () {
       for (let str of validAddressesBech32) {
          const address = new BtcAddress(str);
-         console.log(address.prefix);
-         console.log(address.type, "type");
+
          assert(address.isValid());
       }
    });
@@ -25,8 +38,7 @@ describe("addresses utils", function () {
    it("isValid base58", function () {
       for (let str of validAddressesBase58) {
          const address = new BtcAddress(str);
-         console.log(address.prefix);
-         console.log(address.type, "type");
+
          assert(address.isValid());
       }
    });
