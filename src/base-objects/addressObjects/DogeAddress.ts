@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import { BTC_BASE_58_DICT_regex, base58Checksum, btcBase58AddrToPkScript, btcBase58Decode } from "../../utils/utils";
-import { AddressBase } from "../AddressBase";
+import { AddressBase } from "./AddressBase";
 import { UtxoAddressTypes } from "./AddressTypes";
 import { UtxoAddress } from "./UtxoAddress";
 

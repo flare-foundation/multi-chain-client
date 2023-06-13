@@ -1,11 +1,9 @@
-import { createHash } from "crypto";
-
-import { bech32AddressToPkscript, bech32Decode, bech32_decode } from "../../utils/bech32";
+import { bech32AddressToHex2, bech32AddressToPkscript, bech32Decode, bech32_decode } from "../../utils/bech32";
 import { mccError, mccErrorCode } from "../../utils/errors";
 import { BTC_BASE_58_DICT_regex, base58Checksum, btcBase58AddrToPkScript, btcBase58Decode } from "../../utils/utils";
 import { UtxoAddressTypes } from "./AddressTypes";
 import { UtxoAddress } from "./UtxoAddress";
-import { AddressBase } from "../AddressBase";
+import { AddressBase } from "./AddressBase";
 
 export class BtcAddress extends UtxoAddress {
    get prefix(): string {
@@ -84,7 +82,7 @@ export class BtcAddress extends UtxoAddress {
          case UtxoAddressTypes.P2SH:
          case UtxoAddressTypes.TEST_P2PKH:
          case UtxoAddressTypes.TEST_P2SH:
-            return AddressBase.toStandardHash(this.privateData);
+            return AddressBase.toStandardHash(btcBase58Decode(this.privateData).toString("hex"));
          case UtxoAddressTypes.P2WPKH:
          case UtxoAddressTypes.P2WSH:
          case UtxoAddressTypes.P2TR:
@@ -93,7 +91,9 @@ export class BtcAddress extends UtxoAddress {
          case UtxoAddressTypes.TEST_P2WPKH:
          case UtxoAddressTypes.TEST_P2WSH:
          case UtxoAddressTypes.TEST_P2TR:
-            return AddressBase.toStandardHash(this.privateData.toLocaleLowerCase());
+            const addressHex = bech32AddressToHex2(this.privateData);
+            if (addressHex) return AddressBase.toStandardHash(addressHex);
+            throw new Error("invalid address");
          default:
             throw new Error("invalid address");
       }
@@ -124,7 +124,7 @@ export class BtcAddress extends UtxoAddress {
          case UtxoAddressTypes.HIGHER_VERSION:
          case UtxoAddressTypes.TEST_HIGHER_VERSION:
             if (bech32_decode(this.privateData, "bech32m")) return true;
-            else return true;
+            else return false;
          default:
             return false;
       }

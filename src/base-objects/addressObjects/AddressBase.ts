@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import { unPrefix0x } from "../utils/utils";
+import { unPrefix0x } from "../../utils/utils";
 export abstract class AddressBase {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    protected privateData: string;
@@ -40,4 +40,4 @@ export abstract class AddressBase {
    }
 }
 
-export { XrpAddress } from "./addressObjects/XrpAddress";
+export { XrpAddress } from "./XrpAddress";

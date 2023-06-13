@@ -1,4 +1,4 @@
-import { AddressBase } from "../AddressBase";
+import { AddressBase } from "./AddressBase";
 import * as crypto from "crypto";
 import base from "base-x";
 import { bytesToHex } from "../../utils/algoUtils";

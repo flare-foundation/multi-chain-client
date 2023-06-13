@@ -76,6 +76,7 @@ export function bech32_encode(hrp: hrp, data: number[], enc: encoding) {
    return ret;
 }
 
+//without checksum
 export function bech32_decode(bechString: string, enc: encoding) {
    let p;
    let has_lower = false;
@@ -113,6 +114,45 @@ export function bech32_decode(bechString: string, enc: encoding) {
       return null;
    }
    return { hrp: hrp, data: data.slice(0, data.length - 6) };
+}
+
+export function bech32_decodeWithCheckSum(bechString: string, enc: encoding) {
+   let p;
+   let has_lower = false;
+   let has_upper = false;
+   for (p = 0; p < bechString.length; ++p) {
+      if (bechString.charCodeAt(p) < 33 || bechString.charCodeAt(p) > 126) {
+         return null;
+      }
+      if (bechString.charCodeAt(p) >= 97 && bechString.charCodeAt(p) <= 122) {
+         has_lower = true;
+      }
+      if (bechString.charCodeAt(p) >= 65 && bechString.charCodeAt(p) <= 90) {
+         has_upper = true;
+      }
+   }
+   if (has_lower && has_upper) {
+      return null;
+   }
+   bechString = bechString.toLowerCase();
+   const pos = bechString.lastIndexOf("1");
+   if (pos < 1 || pos + 7 > bechString.length || bechString.length > 90) {
+      return null;
+   }
+   const hrp = bechString.substring(0, pos);
+   if (!isHrp(hrp)) return null;
+   const data = [];
+   for (p = pos + 1; p < bechString.length; ++p) {
+      const d = CHARSET.indexOf(bechString.charAt(p));
+      if (d === -1) {
+         return null;
+      }
+      data.push(d);
+   }
+   if (!verifyChecksum(hrp, data, enc)) {
+      return null;
+   }
+   return { hrp: hrp, data: data.slice(0, data.length) };
 }
 
 export function convertBits(data: number[], fromBits: number, toBits: number, pad: boolean) {
@@ -183,6 +223,36 @@ export function bech32Encode(hrp: hrp, version: number, program: number[]) {
       return null;
    }
    return ret;
+}
+
+export function bech32AddressToHex1(address: string) {
+   const decode = bech32Decode(address);
+   if (!decode) throw new Error("invalid address");
+   const data = decode.program.map((num: number) => unPrefix0x(Web3.utils.padLeft(toHex(num), 2))).join("");
+   return data;
+}
+
+export function bech32AddressToHex2(address: string) {
+   let bech32m = false;
+   let dec = bech32_decodeWithCheckSum(address, "bech32");
+   if (dec === null) {
+      dec = bech32_decodeWithCheckSum(address, "bech32m");
+      bech32m = true;
+   }
+
+   if (dec === null || dec.data.length < 1 || dec.data[0] > 16) {
+      return null;
+   }
+
+   if (dec.data[0] === 0 && bech32m) {
+      return null;
+   }
+   if (dec.data[0] !== 0 && !bech32m) {
+      return null;
+   }
+
+   const addressHex = dec.data.map((num: number) => unPrefix0x(Web3.utils.padLeft(toHex(num), 2))).join("");
+   return addressHex;
 }
 
 /**
