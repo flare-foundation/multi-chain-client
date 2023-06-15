@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
 import { BtcTransaction, MCC, PaymentSummaryStatus, UtxoMccCreate } from "../../src";
+import { getTestFile } from "../testUtils";
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",
@@ -9,7 +10,7 @@ const BtcMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
-describe("Transaction Btc test ", function () {
+describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
    let MccClient: MCC.BTC;
 
    before(async function () {

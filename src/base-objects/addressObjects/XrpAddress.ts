@@ -1,8 +1,7 @@
-import { AddressBase } from "./AddressBase";
+import { AddressBase } from "../AddressBase";
 import * as crypto from "crypto";
 import base from "base-x";
 import { bytesToHex } from "../../utils/algoUtils";
-import { prefix0x } from "../../utils/utils";
 
 export type XrpAddressTypeUnion = "classic" | "invalid";
 

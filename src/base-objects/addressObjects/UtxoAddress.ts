@@ -1,4 +1,4 @@
-import { AddressBase } from "./AddressBase";
+import { AddressBase } from "../AddressBase";
 import { UtxoAddressTypes } from "./AddressTypes";
 
 export abstract class UtxoAddress extends AddressBase {

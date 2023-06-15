@@ -229,7 +229,7 @@ export function base58Checksum(address: string) {
 }
 
 /**
- * Transforms a valid base58 btc address into a corresponding pkscript: either p2pkh or p2sh
+ * Transforms a valid base58 btc/doge address into a corresponding pkscript: either p2pkh or p2sh
  * @param address
  * @returns
  */
@@ -237,12 +237,13 @@ export function btcBase58AddrToPkScript(address: string) {
    const prefix = address[0];
    const hexAddr = btcBase58Decode(address).toString("hex");
    //remove prefix and checksum bytes
-   const strippedAddr = hexAddr.slice(2, hexAddr.length - 8);
+   const strippedAddr = hexAddr.slice(2, -8);
+   const len = unPrefix0x(Web3.utils.padLeft(toHex(strippedAddr.length / 2), 2));
    switch (prefix) {
       case "1":
-         return ["76", "a9", strippedAddr, "ac"].join("");
+         return ["76", "a9", len, strippedAddr, "88", "ac"].join("");
       case "3":
-         return ["a9", strippedAddr, "87"].join("");
+         return ["a9", len, strippedAddr, "87"].join("");
       default:
          throw new mccError(mccErrorCode.InvalidParameter, Error("invalid prefix"));
    }

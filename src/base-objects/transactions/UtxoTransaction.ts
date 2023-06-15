@@ -1,6 +1,5 @@
 import BN from "bn.js";
 import {
-   base32ToHex,
    btcBase58Decode,
    bytesToHex,
    isValidBytes32Hex,
@@ -16,7 +15,6 @@ import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types"
 import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { Managed } from "../../utils/managed";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import {
    AddressAmount,
@@ -28,7 +26,6 @@ import {
    PaymentSummaryStatus,
    TransactionBase,
 } from "../TransactionBase";
-import crypto from "crypto";
 import { bech32Decode } from "../../utils/bech32";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
@@ -165,9 +162,16 @@ export abstract class UtxoTransaction extends TransactionBase {
       }
 
       return this.additionalData.vinouts.map((mapper: IUtxoVinVoutsMapper | undefined) => {
+         let amount: BN;
+         if (mapper == undefined) {
+            amount = toBN(0);
+         } else {
+            amount = this.isValidPkscript(mapper.index) ? toBN(Math.round((mapper?.vinvout?.value || 0) * BTC_MDU).toFixed(0)) : toBN(0);
+         }
+
          return {
             address: mapper?.vinvout?.scriptPubKey?.address,
-            amount: toBN(Math.round((mapper?.vinvout?.value || 0) * BTC_MDU).toFixed(0)),
+            amount: amount,
             utxo: mapper?.vinvout?.n,
          } as AddressAmount;
       });
@@ -338,7 +342,7 @@ export abstract class UtxoTransaction extends TransactionBase {
          const receivedAmount = receivingAddress && outUtxo != null ? this.receivedAmounts[outUtxo].amount : toBN(0);
 
          return {
-            status: PaymentSummaryStatus.Success,
+            status: this.isValidPkscript(outUtxo) ? PaymentSummaryStatus.Success : PaymentSummaryStatus.InvalidPkscript,
             response: {
                blockTimestamp: this.unixTimestamp,
                transactionHash: this.stdTxid,
@@ -613,6 +617,11 @@ export abstract class UtxoTransaction extends TransactionBase {
       await Promise.all(promises);
    }
 
+   /**
+    * Doge has additional brackets around addresses in out tx
+    * @param vout
+    * @returns
+    */
    private processOutput(vout: IUtxoVoutTransaction | undefined) {
       if (!vout) {
          return;
@@ -627,6 +636,8 @@ export abstract class UtxoTransaction extends TransactionBase {
    }
 
    // Scripts and output transaction script types
+
+   public abstract isValidPkscript(voutIndex: number): boolean;
 
    /**
     * Weather a output is a valid "nice" payment output currently P2PKH or P2PK
@@ -691,6 +702,7 @@ export abstract class UtxoTransaction extends TransactionBase {
       return script_commands.length === 2 && script_commands[0] === "0";
    }
 
+   //this is to ok
    public isValidP2WPKH(voutIndex: number): boolean {
       if (!this.isP2WPKH(voutIndex)) {
          return false;
