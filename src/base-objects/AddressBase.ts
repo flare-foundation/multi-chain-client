@@ -32,7 +32,7 @@ export abstract class AddressBase {
 
    /**
     * Static method to convert a string to a standard hash
-    * @param a string to hash
+    * @param a 0x prefixed string to be hashed
     * @returns standardized un-prefixed keccak256 hash
     */
    protected static toStandardHash(a: string): string {

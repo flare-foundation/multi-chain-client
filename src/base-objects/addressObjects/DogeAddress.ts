@@ -1,5 +1,4 @@
-import { createHash } from "crypto";
-import { BTC_BASE_58_DICT_regex, base58Checksum, btcBase58AddrToPkScript, btcBase58Decode } from "../../utils/utils";
+import { BTC_BASE_58_DICT_regex, btcBase58Checksum, btcBase58AddrToPkScript, btcBase58Decode, prefix0x } from "../../utils/utils";
 import { AddressBase } from "../AddressBase";
 import { UtxoAddressTypes } from "./AddressTypes";
 import { UtxoAddress } from "./UtxoAddress";
@@ -35,7 +34,7 @@ export class DogeAddress extends UtxoAddress {
          case UtxoAddressTypes.P2SH:
          case UtxoAddressTypes.TEST_P2PKH:
          case UtxoAddressTypes.TEST_P2SH:
-            return AddressBase.toStandardHash(this.privateData);
+            return AddressBase.toStandardHash(prefix0x(btcBase58Decode(this.privateData).toString("hex")));
          default:
             throw new Error("invalid address");
       }
@@ -53,7 +52,7 @@ export class DogeAddress extends UtxoAddress {
             }
             if (BTC_BASE_58_DICT_regex.test(this.privateData)) return false; // contains invalid characters
 
-            return base58Checksum(this.privateData);
+            return btcBase58Checksum(this.privateData);
 
          default:
             return false;

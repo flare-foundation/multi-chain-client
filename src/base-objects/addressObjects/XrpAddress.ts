@@ -2,6 +2,7 @@ import { AddressBase } from "../AddressBase";
 import * as crypto from "crypto";
 import base from "base-x";
 import { bytesToHex } from "../../utils/algoUtils";
+import { prefix0x, xrpBase58Decode } from "../../utils/utils";
 
 export type XrpAddressTypeUnion = "classic" | "invalid";
 
@@ -19,7 +20,7 @@ export class XrpAddress extends AddressBase {
    }
 
    public get stdHash(): string {
-      const dec = bytesToHex(base58.decode(this.privateData));
+      const dec = prefix0x(bytesToHex(xrpBase58Decode(this.privateData)));
       return XrpAddress.toStandardHash(dec);
    }
 

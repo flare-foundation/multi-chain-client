@@ -1,6 +1,6 @@
 import { bech32AddressToHex2, bech32AddressToPkscript, bech32Decode, bech32_decode } from "../../utils/bech32";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { BTC_BASE_58_DICT_regex, base58Checksum, btcBase58AddrToPkScript, btcBase58Decode } from "../../utils/utils";
+import { BTC_BASE_58_DICT_regex, btcBase58Checksum, btcBase58AddrToPkScript, btcBase58Decode, prefix0x } from "../../utils/utils";
 import { UtxoAddressTypes } from "./AddressTypes";
 import { UtxoAddress } from "./UtxoAddress";
 import { AddressBase } from "../AddressBase";
@@ -82,7 +82,7 @@ export class BtcAddress extends UtxoAddress {
          case UtxoAddressTypes.P2SH:
          case UtxoAddressTypes.TEST_P2PKH:
          case UtxoAddressTypes.TEST_P2SH:
-            return AddressBase.toStandardHash(btcBase58Decode(this.privateData).toString("hex"));
+            return AddressBase.toStandardHash(prefix0x(btcBase58Decode(this.privateData).toString("hex")));
          case UtxoAddressTypes.P2WPKH:
          case UtxoAddressTypes.P2WSH:
          case UtxoAddressTypes.P2TR:
@@ -92,7 +92,7 @@ export class BtcAddress extends UtxoAddress {
          case UtxoAddressTypes.TEST_P2WSH:
          case UtxoAddressTypes.TEST_P2TR:
             const addressHex = bech32AddressToHex2(this.privateData);
-            if (addressHex) return AddressBase.toStandardHash(addressHex);
+            if (addressHex) return AddressBase.toStandardHash(prefix0x(addressHex));
             throw new Error("invalid address");
          default:
             throw new Error("invalid address");
@@ -112,7 +112,7 @@ export class BtcAddress extends UtxoAddress {
             if (BTC_BASE_58_DICT_regex.test(this.privateData)) return false; // contains invalid characters
 
             // checksum
-            return base58Checksum(this.privateData);
+            return btcBase58Checksum(this.privateData);
          case UtxoAddressTypes.P2WPKH:
          case UtxoAddressTypes.P2WSH:
          case UtxoAddressTypes.TEST_P2WPKH:

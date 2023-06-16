@@ -205,22 +205,40 @@ import { createHash } from "crypto";
 const XRP_BASE_58_DICT = "rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz";
 const BTC_BASE_58_DICT = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 export const BTC_BASE_58_DICT_regex = /[^123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]/;
-const base58 = base(BTC_BASE_58_DICT);
+const btcBase58 = base(BTC_BASE_58_DICT);
+const xrpBase58 = base(XRP_BASE_58_DICT);
 
 export function btcBase58Encode(input: Uint8Array | Buffer | number[]): string {
-   return base58.encode(input);
+   return btcBase58.encode(input);
 }
 
 export function btcBase58Decode(input: string): Buffer {
-   return base58.decode(input);
+   return btcBase58.decode(input);
+}
+
+export function xrpBase58Encode(input: Uint8Array | Buffer | number[]): string {
+   return xrpBase58.encode(input);
+}
+
+export function xrpBase58Decode(input: string): Buffer {
+   return xrpBase58.decode(input);
 }
 
 /**
  *
  * @param address a base 58 address
  */
-export function base58Checksum(address: string) {
+export function btcBase58Checksum(address: string): boolean {
    let decoded = btcBase58Decode(address);
+   const preChecksum = decoded.slice(-4);
+   const hash1 = createHash("sha256").update(decoded.slice(0, -4)).digest();
+   const hash2 = createHash("sha256").update(hash1).digest();
+   const newChecksum = hash2.slice(0, 4);
+   return preChecksum.equals(newChecksum);
+}
+
+export function xrpBase58Checksum(address: string): boolean {
+   let decoded = xrpBase58Decode(address);
    const preChecksum = decoded.slice(-4);
    const hash1 = createHash("sha256").update(decoded.slice(0, -4)).digest();
    const hash2 = createHash("sha256").update(hash1).digest();
