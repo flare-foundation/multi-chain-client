@@ -1,5 +1,6 @@
 import BN from "bn.js";
-import { MccClient, TransactionSuccessStatus } from "../types";
+import { MccClient } from "../module";
+import { TransactionSuccessStatus } from "../types/genericMccTypes";
 
 type SummaryBaseProps = {
    client?: MccClient;
@@ -298,10 +299,3 @@ export abstract class TransactionBase {
     */
    public abstract balanceDecreasingSummary(props: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse>;
 }
-
-export { AlgoTransaction } from "./transactions/AlgoTransaction";
-export { BtcTransaction } from "./transactions/BtcTransaction";
-export { DogeTransaction } from "./transactions/DogeTransaction";
-export { LtcTransaction } from "./transactions/LtcTransaction";
-export { UtxoTransaction } from "./transactions/UtxoTransaction";
-export { XrpTransaction } from "./transactions/XrpTransaction";

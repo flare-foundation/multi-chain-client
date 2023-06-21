@@ -1,9 +1,9 @@
 import { IUtxoGetBlockRes } from "../../types";
-import { Managed } from "../../utils/managed";
-import { FullBlockBase, UtxoBlock } from "../BlockBase";
-import { TransactionBase, UtxoTransaction } from "../TransactionBase";
+import { FullBlockBase } from "../FullBlockBase";
+import { TransactionBase } from "../TransactionBase";
+import { UtxoBlock } from "../blocks/UtxoBlock";
+import { UtxoTransaction } from "../transactions/UtxoTransaction";
 
-@Managed()
 export class UtxoFullBlock<T extends TransactionBase> extends UtxoBlock implements FullBlockBase<T> {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    transactionConstructor: any;

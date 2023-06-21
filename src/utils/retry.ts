@@ -1,6 +1,5 @@
-import { defaultExceptionCallback, defaultWarningCallback, MccError } from "..";
 import { IExceptionCallback as backOffTime, ILoggingCallback } from "../types/genericMccTypes";
-import { getSimpleRandom, sleepMs } from "./utils";
+import { defaultExceptionCallback, defaultWarningCallback, getSimpleRandom, MccError, sleepMs } from "./utils";
 
 const TIMEOUT_STEP_MULTIPLY = 1.2;
 const BACKOFF_TIME_STEP_MULTIPLY = 1.2;

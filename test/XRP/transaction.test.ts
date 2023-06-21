@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
-import { MCC, PaymentSummaryStatus, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { MCC, PaymentSummaryStatus, traceManager, TransactionSuccessStatus } from "../../src";
 import { getTestFile } from "../testUtils";
 import { TransactionMetadata } from "xrpl";
+import { XrpTransaction } from "../../src/base-objects";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
 // eslint-disable-next-line @typescript-eslint/no-var-requires

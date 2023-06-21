@@ -80,16 +80,6 @@ export abstract class BlockBase extends BlockHeaderBase {
    }
 }
 
-/**
- * Base class for blocks that also include all transactions (including information about the transaction)
- */
-export abstract class FullBlockBase<T extends TransactionBase> extends BlockBase {
-   /**
-    * Array of transactions objects in block
-    */
-   public abstract get transactions(): T[];
-}
-
 export function blockConstructor<A extends BlockBase>(c: new () => A): A {
    return new c();
 }
@@ -101,35 +91,3 @@ export function blockHeaderConstructor<A extends BlockHeaderBase>(c: new () => A
 export function blockTipConstructor<A extends BlockTipBase>(c: new () => A): A {
    return new c();
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function fullBlockConstructor<A extends FullBlockBase<any>>(c: new () => A): A {
-   return new c();
-}
-
-// Block Tips
-/**
- * Algo and Ripple (XRP) have no specific block header endpoint (liter block with limited data)
- */
-// Block headers
-export { BtcBlockHeader } from "./blockHeaders/BtcBlockHeader";
-export { DogeBlockHeader } from "./blockHeaders/DogeBlockHeader";
-export { LtcBlockHeader } from "./blockHeaders/LtcBlockHeader";
-export { UtxoBlockHeader } from "./blockHeaders/UtxoBlockHeader";
-export { BtcBlockTip } from "./blockTips/BtcBlockTip";
-export { DogeBlockTip } from "./blockTips/DogeBlockTip";
-export { LtcBlockTip } from "./blockTips/LtcBlockTip";
-export { UtxoBlockTip } from "./blockTips/UtxoBlockTip";
-// Blocks
-export { AlgoBlock } from "./blocks/AlgoBlock";
-export { BtcBlock } from "./blocks/BtcBlock";
-export { DogeBlock } from "./blocks/DogeBlock";
-export { LtcBlock } from "./blocks/LtcBlock";
-export { UtxoBlock } from "./blocks/UtxoBlock";
-export { XrpBlock } from "./blocks/XrpBlock";
-// Full blocks
-export { BtcFullBlock } from "./fullBlocks/BtcFullBlock";
-export { DogeFullBlock } from "./fullBlocks/DogeFullBlock";
-export { LtcFullBlock } from "./fullBlocks/LtcFullBlock";
-export { UtxoFullBlock } from "./fullBlocks/UtxoFullBlock";
-export { XrpFullBlock } from "./fullBlocks/XrpFullBlock";

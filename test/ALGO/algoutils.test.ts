@@ -15,13 +15,12 @@ import {
    hexToAddress,
    hexToBase32,
    hexToBase64,
-   hexToBytes,
    mpDecode,
    mpEncode,
    txIdToHex,
    txIdToHexNo0x,
 } from "../../src/utils/algoUtils";
-import { mccJsonStringify } from "../../src/utils/utils";
+import { hexToBytes, mccJsonStringify } from "../../src/utils/utils";
 import { addressToBtyeAddress } from "../testUtils";
 
 describe("ALGO utils tests", () => {

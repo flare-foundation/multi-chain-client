@@ -1,22 +1,17 @@
 import * as msgpack from "algo-msgpack-with-bigint";
 import axios, { AxiosInstance } from "axios";
-import { AlgoBlock, ReadRpcInterface } from "..";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { BlockTipBase, FullBlockBase } from "../base-objects/BlockBase";
+import { BlockTipBase } from "../base-objects/BlockBase";
 import { AlgoIndexerBlock } from "../base-objects/blocks/AlgoIndexerBlock";
-import { AlgoNodeStatus } from "../base-objects/StatusBase";
-import { AlgoTransaction } from "../base-objects/TransactionBase";
 import { AlgoIndexerTransaction } from "../base-objects/transactions/AlgoIndexerTransaction";
 import {
    AlgoMccCreate,
-   ChainType,
    IAlgoGetBlockHeaderRes,
    IAlgoIndexerAsset,
    IAlgoListTransactionRes,
    IAlgoLitsTransaction,
    IAlgoStatusRes,
    IAlgoTransaction,
-   RateLimitOptions,
 } from "../types";
 import {
    IAlgoAssets,
@@ -29,8 +24,11 @@ import {
 } from "../types/algoTypes";
 import { algo_check_expect_block_out_of_range, algo_check_expect_empty, algo_ensure_data, certToInCert, mpDecode } from "../utils/algoUtils";
 import { mccError, mccErrorCode } from "../utils/errors";
-import { Managed } from "../utils/managed";
 import { isPrefixed0x, toCamelCase, toSnakeCase, unPrefix0x } from "../utils/utils";
+import { AlgoBlock, AlgoNodeStatus, AlgoTransaction } from "../base-objects";
+import { FullBlockBase } from "../base-objects/FullBlockBase";
+import { ChainType, ReadRpcInterface } from "../types/genericMccTypes";
+import { RateLimitOptions } from "../types/axiosRateLimitTypes";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
@@ -41,7 +39,6 @@ function algoResponseValidator(responseCode: number) {
    // allow any response, process them later in mcc
    return responseCode >= 200 && responseCode < 600;
 }
-@Managed()
 export class ALGOImplementation implements ReadRpcInterface {
    algodClient: AxiosInstance;
    indexerClient: AxiosInstance | undefined;

@@ -1,5 +1,5 @@
-import { RateLimitOptions } from "../types";
 import { optional } from "../utils/typeReflection";
+import { RateLimitOptions } from "./axiosRateLimitTypes";
 import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions, RPCInterface } from "./genericMccTypes";
 
 export class UtxoMccCreate {

@@ -1,5 +1,3 @@
-import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
-import { ReadRpcInterface } from "../types";
 import { MccError } from "./utils";
 
 /**

@@ -1,9 +1,8 @@
-import { IXrpGetBlockRes, IXrpGetTransactionRes } from "../../types";
-import { Managed } from "../../utils/managed";
-import { FullBlockBase, XrpBlock } from "../BlockBase";
-import { XrpTransaction } from "../TransactionBase";
+import { IXrpGetTransactionRes } from "../../types";
+import { FullBlockBase } from "../FullBlockBase";
+import { XrpBlock } from "../blocks/XrpBlock";
+import { XrpTransaction } from "../transactions/XrpTransaction";
 
-@Managed()
 export class XrpFullBlock extends XrpBlock implements FullBlockBase<XrpTransaction> {
    public get transactions(): XrpTransaction[] {
       if (!this.data.result.ledger.transactions) return [];

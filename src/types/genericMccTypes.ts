@@ -1,4 +1,5 @@
-import { BlockBase, BlockHeaderBase, BlockTipBase, FullBlockBase } from "../base-objects/BlockBase";
+import { BlockBase, BlockHeaderBase, BlockTipBase } from "../base-objects/BlockBase";
+import { FullBlockBase } from "../base-objects/FullBlockBase";
 import { INodeStatus } from "../base-objects/StatusBase";
 import { TransactionBase } from "../base-objects/TransactionBase";
 
