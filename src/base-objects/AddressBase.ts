@@ -22,6 +22,9 @@ export abstract class AddressBase {
     */
    public abstract get stdHash(): string;
 
+   /**
+    * Returns the type of address
+    */
    public abstract get type(): string;
 
    /**

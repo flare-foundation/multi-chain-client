@@ -1,4 +1,4 @@
-import { BTC_BASE_58_DICT_regex, btcBase58Checksum, btcBase58AddrToPkScript, btcBase58Decode, prefix0x } from "../../utils/utils";
+import { BTC_BASE_58_DICT_regex, btcBase58Checksum, btcBase58Decode, prefix0x, dogeBase58AddrToPkScript } from "../../utils/utils";
 import { AddressBase } from "../AddressBase";
 import { UtxoAddressTypes } from "./AddressTypes";
 import { UtxoAddress } from "./UtxoAddress";
@@ -66,7 +66,7 @@ export class DogeAddress extends UtxoAddress {
          case UtxoAddressTypes.P2SH:
          case UtxoAddressTypes.TEST_P2PKH:
          case UtxoAddressTypes.TEST_P2SH:
-            return btcBase58AddrToPkScript(this.privateData);
+            return dogeBase58AddrToPkScript(this.privateData);
          default:
             throw new Error("invalid address");
       }

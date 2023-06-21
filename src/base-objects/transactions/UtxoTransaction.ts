@@ -157,7 +157,7 @@ export abstract class UtxoTransaction extends TransactionBase {
          if (mapper == undefined) {
             amount = toBN(0);
          } else {
-            amount = this.isValidPkscript(mapper.index) ? toBN(Math.round((mapper?.vinvout?.value || 0) * BTC_MDU).toFixed(0)) : toBN(0);
+            amount = this.isValidPkscript(mapper.index) ? toBN(Math.round((mapper?.vinvout?.value || 0) * BTC_MDU).toFixed(0)) : toBN(0); //If pkscript is not valid, the amount is set to 0.
          }
 
          return {
@@ -627,7 +627,10 @@ export abstract class UtxoTransaction extends TransactionBase {
    }
 
    // Scripts and output transaction script types
-
+   /**
+    * Validate that the pkscript and address for a given vout index match.
+    * @param voutIndex
+    */
    public abstract isValidPkscript(voutIndex: number): boolean;
 
    /**

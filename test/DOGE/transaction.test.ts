@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import { MCC, PaymentSummaryStatus, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
@@ -217,6 +217,12 @@ describe("Transaction DOGE base test ", function () {
 
          it("Should get success status ", async function () {
             expect(transaction.successStatus).to.eq(transData.expect.successStatus);
+         });
+
+         it("should validate pkscripts", function () {
+            for (let index = 0; index < transaction["data"].vout.length; index++) {
+               assert(transaction.isValidPkscript(index));
+            }
          });
       });
    }
