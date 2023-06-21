@@ -1,7 +1,8 @@
-import { MCC, XrpTransaction, bytesToRippleAddress, rippleAddressToBytes, rippleTimeToUnixEpoch, unixEpochToRippleTime } from "../../src";
+import { MCC, bytesToRippleAddress, rippleAddressToBytes, rippleTimeToUnixEpoch, unixEpochToRippleTime } from "../../src";
 import { assert, expect } from "chai";
 import { GETTERS_AMOUNTS, GETTERS_BASIC, GETTERS_BN, GETTERS_LISTS } from "../testUtils";
 import { checkTransactionTypes } from "./xrplJsTransactionTypesCheck";
+import { XrpTransaction } from "../../src/base-objects";
 
 describe("Test utils ", function () {
    it("should convert empty address to bytes ", async function () {

@@ -1,7 +1,7 @@
 import { expect, assert } from "chai";
-import { AddressAmount, PaymentSummaryResponse, unPrefix0x } from "../src";
+import { AddressAmount, PaymentSummaryResponse, hexToBytes, unPrefix0x } from "../src";
 import { IIUtxoVout, TransactionSuccessStatus } from "../src/types";
-import { addressToHex, hexToBytes } from "../src/utils/algoUtils";
+import { addressToHex } from "../src/utils/algoUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const expectThrow = async (method: any, errorMessage: any) => {

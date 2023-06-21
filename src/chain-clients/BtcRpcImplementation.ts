@@ -1,7 +1,7 @@
-import { BtcBlock, BtcBlockHeader, BtcBlockTip, BtcFullBlock } from "../base-objects/BlockBase";
+import { BtcBlock, BtcBlockHeader, BtcBlockTip, BtcFullBlock } from "../base-objects";
 import { BtcTransaction } from "../base-objects/transactions/BtcTransaction";
-import { ChainType, UtxoMccCreate, UtxoRpcInterface } from "../types";
-import { Managed } from "../utils/managed";
+import { UtxoMccCreate, UtxoRpcInterface } from "../types";
+import { ChainType } from "../types/genericMccTypes";
 import { UtxoCore } from "./UtxoCore";
 
 export const btcObjectConstructors = {
@@ -12,7 +12,6 @@ export const btcObjectConstructors = {
    blockTipConstructor: BtcBlockTip,
 };
 
-@Managed()
 export class BTCImplementation extends UtxoCore<BtcTransaction, BtcFullBlock, BtcBlock, BtcBlockHeader, BtcBlockTip> implements UtxoRpcInterface {
    constructor(options: UtxoMccCreate) {
       super(options, btcObjectConstructors);

@@ -1,8 +1,6 @@
 import { IUtxoGetBlockHeaderRes } from "../../types";
-import { Managed } from "../../utils/managed";
 import { BlockHeaderBase } from "../BlockBase";
 
-@Managed()
 export abstract class UtxoBlockHeader extends BlockHeaderBase {
    protected get data(): IUtxoGetBlockHeaderRes {
       return this.privateData as IUtxoGetBlockHeaderRes;

@@ -1,8 +1,6 @@
 import { IUtxoChainTip, IUtxoChainTipStatuses } from "../../types";
-import { Managed } from "../../utils/managed";
 import { BlockTipBase } from "../BlockBase";
 
-@Managed()
 export abstract class UtxoBlockTip extends BlockTipBase {
    protected get data(): IUtxoChainTip {
       return this.privateData as IUtxoChainTip;

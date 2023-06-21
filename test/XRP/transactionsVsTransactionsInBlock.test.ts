@@ -1,9 +1,8 @@
 import { expect } from "chai";
 import { SingleBar } from "cli-progress";
 import { XrpFullBlock } from "../../src/base-objects/fullBlocks/XrpFullBlock";
-import { MCC, XrpBlock, XrpTransaction } from "../../src/index";
+import { MCC } from "../../src/index";
 import {
-   AddressAmountEqual,
    GETTERS_BASIC,
    GETTERS_LISTS,
    getRandomNumber,
@@ -15,6 +14,7 @@ import {
    throwOrReturnSameGetterAmounts,
    GETTERS_BN,
 } from "../testUtils";
+import { XrpBlock } from "../../src/base-objects";
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",

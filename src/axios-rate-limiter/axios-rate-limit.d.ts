@@ -1,7 +1,7 @@
 // Adopted from: https://github.com/aishek/axios-rate-limit
 
 import { AxiosInstance } from "axios";
-import { RateLimitedAxiosInstance, RateLimitOptions } from "../types";
+import { RateLimitOptions, RateLimitedAxiosInstance } from "../types/axiosRateLimitTypes";
 
 /**
  * Apply rate limit to axios instance.

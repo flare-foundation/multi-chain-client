@@ -1,7 +1,6 @@
-import { LtcBlock, LtcBlockHeader, LtcBlockTip, LtcFullBlock } from "../base-objects/BlockBase";
-import { LtcTransaction } from "../base-objects/TransactionBase";
-import { ChainType, UtxoMccCreate, UtxoRpcInterface } from "../types";
-import { Managed } from "../utils/managed";
+import { LtcBlock, LtcBlockHeader, LtcBlockTip, LtcFullBlock, LtcTransaction } from "../base-objects";
+import { UtxoMccCreate, UtxoRpcInterface } from "../types";
+import { ChainType } from "../types/genericMccTypes";
 import { UtxoCore } from "./UtxoCore";
 
 export const ltcObjectConstructors = {
@@ -12,7 +11,6 @@ export const ltcObjectConstructors = {
    blockTipConstructor: LtcBlockTip,
 };
 
-@Managed()
 export class LTCImplementation extends UtxoCore<LtcTransaction, LtcFullBlock, LtcBlock, LtcBlockHeader, LtcBlockTip> implements UtxoRpcInterface {
    constructor(options: UtxoMccCreate) {
       super(options, ltcObjectConstructors);

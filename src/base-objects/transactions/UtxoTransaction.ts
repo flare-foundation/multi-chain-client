@@ -1,18 +1,5 @@
 import BN from "bn.js";
-import {
-   btcBase58Decode,
-   bytesToHex,
-   isValidBytes32Hex,
-   IUtxoGetTransactionRes,
-   prefix0x,
-   standardAddressHash,
-   toBN,
-   toHex,
-   unPrefix0x,
-   ZERO_BYTES_32,
-} from "../..";
-import { MccClient, MccUtxoClient, TransactionSuccessStatus } from "../../types";
-import { IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
+import { IUtxoGetTransactionRes, IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
 import { WordToOpcode } from "../../utils/utxoUtils";
@@ -26,6 +13,10 @@ import {
    PaymentSummaryStatus,
    TransactionBase,
 } from "../TransactionBase";
+import { ZERO_BYTES_32, btcBase58Decode, isValidBytes32Hex, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x } from "../../utils/utils";
+import { MccClient, MccUtxoClient } from "../../module";
+import { TransactionSuccessStatus } from "../../types/genericMccTypes";
+import { bytesToHex } from "../../utils/algoUtils";
 import { bech32Decode } from "../../utils/bech32";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";

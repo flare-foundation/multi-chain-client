@@ -1,3 +1,12 @@
+# 3.1.0
+
+* Dogecoin transaction parsing fix 
+* Removed circular dependency issues
+
+# 3.0.3
+
+* bugfix transaction confirmation check in utxo core (doge does not provide this in response)
+
 # 3.0.2
 
 * added `_data` and `_additional` data to all base project to enable reading of private data

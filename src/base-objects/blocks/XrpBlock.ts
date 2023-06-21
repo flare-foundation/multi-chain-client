@@ -1,9 +1,7 @@
 import { IXrpGetBlockRes } from "../../types/xrpTypes";
 import { XRP_UTD } from "../../utils/constants";
-import { Managed } from "../../utils/managed";
 import { BlockBase } from "../BlockBase";
 
-@Managed()
 export class XrpBlock extends BlockBase {
    protected get data(): IXrpGetBlockRes {
       return this.privateData as IXrpGetBlockRes;

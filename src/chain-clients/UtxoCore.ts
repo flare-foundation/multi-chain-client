@@ -1,22 +1,10 @@
 import axios, { AxiosInstance } from "axios";
 
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { FullBlockBase, UtxoBlock } from "../base-objects/BlockBase";
 import { UtxoBlockHeader } from "../base-objects/blockHeaders/UtxoBlockHeader";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
-import { UtxoNodeStatus } from "../base-objects/StatusBase";
-import { UtxoTransaction } from "../base-objects/TransactionBase";
-import {
-   getAddressByLabelResponse,
-   getTransactionOptions,
-   IIUtxoVin,
-   IIUtxoVout,
-   IUtxoTransactionListRes,
-   IUtxoWalletRes,
-   RateLimitOptions,
-   UtxoMccCreate,
-} from "../types";
-import { ChainType, ReadRpcInterface } from "../types/genericMccTypes";
+import { getAddressByLabelResponse, IIUtxoVin, IIUtxoVout, IUtxoTransactionListRes, IUtxoWalletRes, UtxoMccCreate } from "../types";
+import { ChainType, getTransactionOptions, ReadRpcInterface } from "../types/genericMccTypes";
 import {
    IUtxoChainTip,
    IUtxoGetAlternativeBlocksOptions,
@@ -31,6 +19,11 @@ import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils
 import { mccError, mccErrorCode } from "../utils/errors";
 import { sleepMs, unPrefix0x } from "../utils/utils";
 import { utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
+import { FullBlockBase } from "../base-objects/FullBlockBase";
+import { UtxoTransaction } from "../base-objects/transactions/UtxoTransaction";
+import { UtxoBlock } from "../base-objects/blocks/UtxoBlock";
+import { UtxoNodeStatus } from "../base-objects/status/UtxoStatus";
+import { RateLimitOptions } from "../types/axiosRateLimitTypes";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
@@ -51,7 +44,6 @@ interface objectConstructors<
    blockTipConstructor: new (d: IUtxoChainTip) => BTipCon;
 }
 
-// @Managed()
 export abstract class UtxoCore<
    TranCon extends UtxoTransaction,
    FBlockCon extends FullBlockBase<UtxoTransaction>,
@@ -232,7 +224,7 @@ export abstract class UtxoCore<
          throw new mccError(mccErrorCode.InvalidTransaction);
       }
       // It transaction number of confirmations is not at least 1, we got a transaction from mempool, we don't consider this transaction as valid
-      if (res.data.result.confirmations < 1) {
+      if (res.data && res.data.result && res.data.result.confirmations && res.data.result.confirmations < 1) {
          throw new mccError(mccErrorCode.InvalidTransaction);
       }
       utxo_ensure_data(res.data);
