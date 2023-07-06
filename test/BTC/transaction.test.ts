@@ -661,6 +661,24 @@ describe("Transaction Btc base test ", function () {
          expect(fn0).to.throw(Error);
       });
    });
+
+   describe("transaction with op_return", async function () {
+      const txId = "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684";
+      let transaction: BtcTransaction;
+      before(async () => {
+         transaction = await MccClient.getTransaction(txId);
+         await transaction.makeFullPayment(MccClient);
+      });
+
+      it("Should spent amounts", function () {
+         expect(transaction.spentAmounts[0].amount.toString()).to.eq("220000");
+      });
+
+      it("Should reveived amounts", function () {
+         expect(transaction.receivedAmounts[1].amount.toString()).to.eq("200000");
+         expect(transaction.receivedAmounts[0].amount.toString()).to.eq("0");
+      });
+   });
 });
 
 // TODO special transactions
