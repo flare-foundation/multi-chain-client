@@ -117,7 +117,7 @@ export class BtcAddress extends UtxoAddress {
          case UtxoAddressTypes.P2WSH:
          case UtxoAddressTypes.TEST_P2WPKH:
          case UtxoAddressTypes.TEST_P2WSH:
-            if (bech32_decode(this.privateData, "bech32")) return true;
+            if (bech32_decode(this.privateData, "bech32") && (this.privateData.length == 42 || this.privateData.length == 62)) return true;
             else return false;
          case UtxoAddressTypes.P2TR:
          case UtxoAddressTypes.TEST_P2TR:
