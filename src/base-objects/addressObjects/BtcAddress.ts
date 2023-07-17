@@ -19,7 +19,7 @@ export class BtcAddress extends UtxoAddress {
             if (this.privateData.slice(0, 3).toLocaleLowerCase() == "bc1") {
                return "bc1";
             }
-            throw new mccError(mccErrorCode.InvalidParameter, Error("invalid prefix"));
+            return "invalidPrefix";
          case "t":
             if (this.privateData.slice(0, 3).toLocaleLowerCase() == "tb1") {
                return "tb1";
@@ -114,10 +114,12 @@ export class BtcAddress extends UtxoAddress {
             // checksum
             return btcBase58Checksum(this.privateData);
          case UtxoAddressTypes.P2WPKH:
-         case UtxoAddressTypes.P2WSH:
          case UtxoAddressTypes.TEST_P2WPKH:
+            if (bech32_decode(this.privateData, "bech32") && this.privateData.length == 42) return true;
+            else return false;
+         case UtxoAddressTypes.P2WSH:
          case UtxoAddressTypes.TEST_P2WSH:
-            if (bech32_decode(this.privateData, "bech32") && (this.privateData.length == 42 || this.privateData.length == 62)) return true;
+            if (bech32_decode(this.privateData, "bech32") && this.privateData.length == 62) return true;
             else return false;
          case UtxoAddressTypes.P2TR:
          case UtxoAddressTypes.TEST_P2TR:
