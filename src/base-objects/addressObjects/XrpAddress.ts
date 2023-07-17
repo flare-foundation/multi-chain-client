@@ -33,10 +33,13 @@ export class XrpAddress extends AddressBase {
       return checksum_computed.equals(checksum_read);
    }
 
-   //todo: add length check, leading byte
    public isValid(): boolean {
-      if (this.isValidClassicAddressFormat()) return this.isChecksumValid();
-      return false;
+      return this.isValidClassicAddressFormat() && this.isChecksumValid() && base58.decode(this.privateData).length == 25;
+   }
+
+   get isMainnet() {
+      if (this.isValid() && this.privateData[0] == "r") return true;
+      else return false;
    }
 
    private isValidClassicAddressFormat(): boolean {

@@ -28,6 +28,11 @@ export abstract class AddressBase {
    public abstract get type(): string;
 
    /**
+    *Returns true if the address is valid on main
+    */
+   public abstract get isMainnet(): boolean;
+
+   /**
     * Check if address has the correct format and satisfies checksum
     * Some chains support multiple types of addresses that have different address format definitions (ie X addresses and classic addresses)
     */
