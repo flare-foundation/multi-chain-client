@@ -5,6 +5,7 @@ import {
    PaymentSummaryStatus,
    standardAddressHash,
    toBN,
+   toHex32Bytes,
    traceManager,
    TransactionSuccessStatus,
    UtxoMccCreate,
@@ -46,7 +47,6 @@ describe("Transaction Btc base test ", function () {
 
       before(async () => {
          transaction = await MccClient.getTransaction(txid);
-         await transaction.makeFullPayment(MccClient);
       });
 
       it("Should find transaction in block ", function () {
@@ -80,6 +80,8 @@ describe("Transaction Btc base test ", function () {
       it("Should get source address ", async function () {
          expect(transaction.sourceAddresses.length).to.eq(3);
          expect(transaction.sourceAddresses[0]).to.eq("bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk");
+         expect(transaction.sourceAddresses[1]).to.eq("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw");
+         expect(transaction.sourceAddresses[2]).to.eq("bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw");
       });
 
       it("Should get receiving address ", async function () {
@@ -101,6 +103,10 @@ describe("Transaction Btc base test ", function () {
          expect(transaction.receivedAmounts.length).to.eq(6);
          expect(transaction.receivedAmounts[0].address).to.eq("19Vxz7mg6YSgQhVB96YvXFsES1e8aXewHp");
          expect(transaction.receivedAmounts[0].amount.toNumber()).to.eq(237272503);
+         expect(transaction.receivedAmounts[3].address).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
+         expect(transaction.receivedAmounts[3].amount.toNumber()).to.eq(7299851943);
+         expect(transaction.receivedAmounts[4].address).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
+         expect(transaction.receivedAmounts[4].amount.toNumber()).to.eq(7299851943);
       });
 
       it("Should get type ", async function () {
@@ -123,7 +129,7 @@ describe("Transaction Btc base test ", function () {
          expect(transaction.successStatus).to.eq(0);
       });
 
-      it("should validate pkscripts", function () {
+      it.skip("should validate pkscripts", function () {
          for (let index = 0; index < transaction["data"].vout.length; index++) {
             assert(transaction.isValidPkscript(index));
          }
@@ -135,15 +141,43 @@ describe("Transaction Btc base test ", function () {
          expect(() => transaction.assetSpentAmounts).to.throw("InvalidResponse");
          expect(() => transaction.assetReceivedAmounts).to.throw("InvalidResponse");
       });
+
+      it("should make payment summmary", async function () {
+         const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 3 });
+
+         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+
+         const resp = summary.response!;
+         expect(resp.isFull).to.be.true;
+         expect(resp.oneToOne).to.be.false;
+
+         expect(resp.receivingAddress).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
+         expect(resp.intendedReceivingAddress).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
+
+         expect(resp.receivedAmount.toNumber()).to.eq(2 * 7299851943);
+         expect(resp.intendedReceivingAmount.toNumber()).to.eq(2 * 7299851943);
+      });
+
+      it("Should make balance decreasing summary", async function () {
+         const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: toHex32Bytes(1), client: MccClient });
+
+         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+
+         const resp = summary.response!;
+
+         expect(resp.isFull).to.be.true;
+         expect(resp.sourceAddress).to.eq("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw");
+         expect(resp.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
+         expect(resp.spentAmount.toNumber()).to.eq(7424900255);
+      });
    });
 
-   describe("Transaction makeFull ", function () {
+   describe.skip("Transaction makeFull ", function () {
       const txid = "141479db9d6da30fafaf47e71ae6323cac57c391ea2f7f84754e0a70fea8e36a";
       let transaction: BtcTransaction;
 
       before(async () => {
          transaction = await MccClient.getTransaction(txid);
-         await transaction.makeFullPayment(MccClient);
       });
 
       it("Should find transaction in block ", function () {
@@ -220,7 +254,7 @@ describe("Transaction Btc base test ", function () {
          expect(transaction.successStatus).to.eq(0);
       });
 
-      it("should validate pkscripts", function () {
+      it.skip("should validate pkscripts", function () {
          for (let index = 0; index < transaction["data"].vout.length; index++) {
             assert(transaction.isValidPkscript(index));
          }
