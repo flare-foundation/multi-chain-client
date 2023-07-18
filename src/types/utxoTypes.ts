@@ -105,6 +105,7 @@ export interface IUtxoVinTransaction {
    sequence: number;
    txid?: string;
    vout?: number;
+   prevout?: IUtxoVoutTransaction;
    scriptSig?: IUtxoScriptSig;
    txinwitness?: string[];
 }

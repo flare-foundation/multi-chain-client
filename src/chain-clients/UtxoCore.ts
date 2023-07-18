@@ -135,7 +135,7 @@ export abstract class UtxoCore<
          throw new mccError(mccErrorCode.InvalidParameter);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let params: any[] = [blockHash, full ? 2 : 1];
+      let params: any[] = [blockHash, full ? 3 : 1];
       if (this.chainType === ChainType.DOGE) {
          params = [blockHash, true];
       }
@@ -213,11 +213,15 @@ export abstract class UtxoCore<
 
       const verbose = true; // by default getting transaction is in verbose mode
       const unTxId = unPrefix0x(txId);
+      let params: any[] = [unTxId, 2];
+      if (this.chainType === ChainType.DOGE) {
+         params = [unTxId, true];
+      }
       const res = await this.client.post("", {
          jsonrpc: "1.0",
          id: "rpc",
          method: "getrawtransaction",
-         params: [unTxId, verbose],
+         params: params,
       });
       // Error codes https://github.com/bitcoin/bitcoin/blob/master/src/rpc/protocol.h
       if (utxo_check_expect_empty(res.data)) {

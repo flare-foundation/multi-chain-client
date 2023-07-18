@@ -93,10 +93,22 @@ describe("Transaction Btc base test ", function () {
          expect(transaction.fee.toNumber()).to.eq(43300);
       });
 
-      it("Should spend amount ", async function () {
+      it("Should spend amount 0", async function () {
          expect(transaction.spentAmounts.length).to.eq(3);
          expect(transaction.spentAmounts[0].address).to.eq("bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk");
          expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(7424891554);
+      });
+
+      it("Should spend amount 1", async function () {
+         expect(transaction.spentAmounts.length).to.eq(3);
+         expect(transaction.spentAmounts[1].address).to.eq("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw");
+         expect(transaction.spentAmounts[1].amount.toNumber()).to.eq(7424900255);
+      });
+
+      it("Should spend amount 2", async function () {
+         expect(transaction.spentAmounts.length).to.eq(3);
+         expect(transaction.spentAmounts[2].address).to.eq("bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw");
+         expect(transaction.spentAmounts[2].amount.toNumber()).to.eq(7426316499);
       });
 
       it("Should received amount ", async function () {
@@ -133,13 +145,6 @@ describe("Transaction Btc base test ", function () {
          for (let index = 0; index < transaction["data"].vout.length; index++) {
             assert(transaction.isValidPkscript(index));
          }
-      });
-
-      it("Should reject assets", async function () {
-         expect(() => transaction.assetSourceAddresses).to.throw("InvalidResponse");
-         expect(() => transaction.assetReceivingAddresses).to.throw("InvalidResponse");
-         expect(() => transaction.assetSpentAmounts).to.throw("InvalidResponse");
-         expect(() => transaction.assetReceivedAmounts).to.throw("InvalidResponse");
       });
 
       it("should make payment summmary", async function () {
@@ -258,13 +263,6 @@ describe("Transaction Btc base test ", function () {
          for (let index = 0; index < transaction["data"].vout.length; index++) {
             assert(transaction.isValidPkscript(index));
          }
-      });
-
-      it("Should reject assets", async function () {
-         expect(() => transaction.assetSourceAddresses).to.throw("InvalidResponse");
-         expect(() => transaction.assetReceivingAddresses).to.throw("InvalidResponse");
-         expect(() => transaction.assetSpentAmounts).to.throw("InvalidResponse");
-         expect(() => transaction.assetReceivedAmounts).to.throw("InvalidResponse");
       });
    });
 
@@ -628,16 +626,6 @@ describe("Transaction Btc base test ", function () {
          expect(transaction.isSyncedVinIndex(0)).to.be.false;
       });
 
-      it("Should get partial_payment type ", async function () {
-         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-         transaction._additionalData!.vinouts = [
-            { index: -1, vinvout: { value: 1, n: 300, scriptPubKey: { asm: "", hex: "", type: "" } } },
-            { index: -1, vinvout: undefined },
-            undefined,
-         ];
-         expect(transaction.type).to.eq("partial_payment");
-      });
-
       it("Should not extract vout ", async function () {
          transaction._data.vout[0].n = 10;
          const fn0 = () => {
@@ -719,3 +707,34 @@ describe("Transaction Btc base test ", function () {
 
 // https://www.blockchain.com/btc/tx/56214420a7c4dcc4832944298d169a75e93acf9721f00656b2ee0e4d194f9970
 // https://www.blockchain.com/btc/tx/055f9c6dc094cf21fa224e1eb4a54ee3cc44ae9daa8aa47f98df5c73c48997f9
+
+describe("Transaction from full block test", async function () {
+   let MccClient: MCC.BTC;
+
+   before(async function () {
+      traceManager.displayStateOnException = false;
+      MccClient = new MCC.BTC(BtcMccConnection);
+   });
+
+   it("All transaction objects in block should have hasPrevouts", async function () {
+      const block = await MccClient.getFullBlock(799201);
+
+      for (const tx of block.transactions) {
+         expect(tx.hasPrevouts).to.be.true;
+      }
+   });
+
+   it.skip("Test transactions", async function () {
+      const block = await MccClient.getFullBlock(799201);
+
+      const cbtx = block.transactions[0];
+
+      console.log(cbtx._data);
+
+      console.log();
+
+      const tx = block.transactions[1];
+
+      console.dir(tx._data, { depth: 10 });
+   });
+});

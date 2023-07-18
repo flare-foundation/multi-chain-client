@@ -122,8 +122,10 @@ Vote on the trading fee for an Automated Market Maker instance.
 
 Return LPTokens into an Automated Market Maker in exchange for a share of the assets the pool holds.
 
-## Check Transactions 
+## Check Transactions
+
 https://xrpl.org/known-amendments.html#checks
+
 ## CheckCancel
 
 Cancel a check.
