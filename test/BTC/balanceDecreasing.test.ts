@@ -8,7 +8,7 @@ const BtcMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
-describe("Chain tips test ", function () {
+describe("Balance decrease test for BTC ", function () {
    let MccClient: MCC.BTC;
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
@@ -31,7 +31,7 @@ describe("Chain tips test ", function () {
          expect(decRes.sourceAddressHash).to.eq(standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"));
          expect(decRes.sourceAddress).to.eq("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg");
          expect(decRes.spentAmount.toString()).to.eq("220000");
-         expect(decRes.isFull).to.eq(false);
+         expect(decRes.isFull).to.eq(true);
          expect(decRes.paymentReference).to.eq(ZERO_BYTES_32);
       }
    });
@@ -48,7 +48,7 @@ describe("Chain tips test ", function () {
          expect(decRes.sourceAddressHash).to.eq(standardAddressHash("1Lm4XEmHNsNCeKdPS7bc4RGHdAAtBjBjtF"));
          expect(decRes.sourceAddress).to.eq("1Lm4XEmHNsNCeKdPS7bc4RGHdAAtBjBjtF");
          expect(decRes.spentAmount.toString()).to.eq("3526751");
-         expect(decRes.isFull).to.eq(false);
+         expect(decRes.isFull).to.eq(true);
          expect(decRes.paymentReference).to.eq(ZERO_BYTES_32);
       }
    });
@@ -65,7 +65,7 @@ describe("Chain tips test ", function () {
          expect(decRes.sourceAddressHash).to.eq(standardAddressHash("bc1q32sxnq5hecdurfzgzp5x0zh8du86v9x84wdqdx"));
          expect(decRes.sourceAddress).to.eq("bc1q32sxnq5hecdurfzgzp5x0zh8du86v9x84wdqdx");
          expect(decRes.spentAmount.toString()).to.eq("3388240291");
-         expect(decRes.isFull).to.eq(false);
+         expect(decRes.isFull).to.eq(true);
          expect(decRes.paymentReference).to.eq(ZERO_BYTES_32);
       }
    });

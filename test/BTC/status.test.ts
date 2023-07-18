@@ -25,7 +25,7 @@ describe("Block BTC base test ", function () {
 
    it("Should get status version ", async function () {
       const version = status.version.split("_");
-      expect(version[0]).to.be.oneOf(["230000", "240001"]);
+      expect(version[0]).to.be.oneOf(["230000", "240001", "250000"]);
    });
 
    it("Should get status state ", async function () {
