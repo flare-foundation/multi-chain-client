@@ -306,22 +306,26 @@ describe("Transaction Btc base test ", function () {
             reference: [],
             stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
             unixTimestamp: 1647547988,
-            sourceAddresses: [undefined, undefined, undefined],
+            sourceAddresses: [
+               "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
+               "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu",
+               "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
+            ],
             receivingAddresses: ["bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc", "14PbdXD3gRMnrrsP4CnS66fYKHSb1aawea"],
-            isFeeError: true,
-            fee: "InvalidResponse", // number as a string
+            isFeeError: false,
+            fee: "828", // number as a string
             spentAmounts: [
                {
-                  address: undefined,
-                  amount: toBN(0),
+                  address: "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
+                  amount: toBN(3533),
                },
                {
-                  address: undefined,
-                  amount: toBN(0),
+                  address: "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu",
+                  amount: toBN(5130),
                },
                {
-                  address: undefined,
-                  amount: toBN(0),
+                  address: "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
+                  amount: toBN(6664),
                },
             ],
             receivedAmounts: [
@@ -334,7 +338,7 @@ describe("Transaction Btc base test ", function () {
                   amount: toBN(12240),
                },
             ],
-            type: "payment",
+            type: "full_payment",
             isNativePayment: true,
             currencyName: "BTC",
             elementaryUnits: "100000000", // number as string
