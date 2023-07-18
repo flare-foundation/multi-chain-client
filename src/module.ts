@@ -1,7 +1,5 @@
-import { ALGOImplementation } from "./chain-clients/AlgoRpcImplementation";
 import { BTCImplementation } from "./chain-clients/BtcRpcImplementation";
 import { DOGEImplementation } from "./chain-clients/DogeRpcImplementation";
-import { LTCImplementation } from "./chain-clients/LtcRpcImplementation";
 import { XRPImplementation } from "./chain-clients/XrpRpcImplementation";
 import { AlgoMccCreate, UtxoMccCreate, XrpMccCreate } from "./types";
 import { ChainType, ReadRpcInterface } from "./types/genericMccTypes";
@@ -9,12 +7,6 @@ import { ChainType, ReadRpcInterface } from "./types/genericMccTypes";
 export type MccCreate = XrpMccCreate | AlgoMccCreate | UtxoMccCreate;
 
 export module MCC {
-   export class LTC extends LTCImplementation implements ReadRpcInterface {
-      constructor(options: UtxoMccCreate) {
-         super(options);
-      }
-   }
-
    export class BTC extends BTCImplementation implements ReadRpcInterface {
       constructor(options: UtxoMccCreate) {
          super(options);
@@ -33,12 +25,6 @@ export module MCC {
       }
    }
 
-   export class ALGO extends ALGOImplementation implements ReadRpcInterface {
-      constructor(options: AlgoMccCreate) {
-         super(options);
-      }
-   }
-
    export function getChainType(chainIdOrName: number | string | ChainType) {
       switch (chainIdOrName) {
          case "XRP":
@@ -48,16 +34,9 @@ export module MCC {
          case "BTC":
          case ChainType.BTC:
             return ChainType.BTC;
-         case "LTC":
-         case ChainType.LTC:
-            return ChainType.LTC;
          case "DOGE":
          case ChainType.DOGE:
             return ChainType.DOGE;
-         case "ALGO":
-         case "ALGORAND":
-         case ChainType.ALGO:
-            return ChainType.ALGO;
          default:
             return ChainType.invalid;
       }
@@ -69,12 +48,8 @@ export module MCC {
             return "XRP";
          case ChainType.BTC:
             return "BTC";
-         case ChainType.LTC:
-            return "LTC";
          case ChainType.DOGE:
             return "DOGE";
-         case ChainType.ALGO:
-            return "ALGO";
          default:
             return "invalid";
       }
@@ -87,12 +62,8 @@ export module MCC {
             return new XRP(options as XrpMccCreate);
          case ChainType.BTC:
             return new BTC(options as UtxoMccCreate);
-         case ChainType.LTC:
-            return new LTC(options as UtxoMccCreate);
          case ChainType.DOGE:
             return new DOGE(options as UtxoMccCreate);
-         case ChainType.ALGO:
-            return new ALGO(options as AlgoMccCreate);
          default: {
             throw new Error("Not implemented");
          }
@@ -100,5 +71,5 @@ export module MCC {
    }
 }
 
-export type MccClient = MCC.XRP | MCC.ALGO | MCC.DOGE | MCC.LTC | MCC.BTC;
-export type MccUtxoClient = MCC.BTC | MCC.DOGE | MCC.LTC;
+export type MccClient = MCC.XRP | MCC.DOGE | MCC.BTC;
+export type MccUtxoClient = MCC.BTC | MCC.DOGE;

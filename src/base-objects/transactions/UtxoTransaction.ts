@@ -94,10 +94,6 @@ export abstract class UtxoTransaction extends TransactionBase {
       return this.additionalData.vinouts.map((mapper: IUtxoVinVoutsMapper | undefined) => mapper?.vinvout?.scriptPubKey.address);
    }
 
-   public get assetSourceAddresses(): (string | undefined)[] {
-      throw new mccError(mccErrorCode.InvalidResponse, Error(`There are no build-in assets on ${this.currencyName} chain`));
-   }
-
    public get receivingAddresses(): (string | undefined)[] {
       /* istanbul ignore if */
       // Transaction should always have vout array
@@ -107,20 +103,23 @@ export abstract class UtxoTransaction extends TransactionBase {
       return this.data.vout.map((vout: IUtxoVoutTransaction) => vout.scriptPubKey.address);
    }
 
-   public get assetReceivingAddresses(): (string | undefined)[] {
-      throw new mccError(mccErrorCode.InvalidResponse, Error(`There are no build-in assets on ${this.currencyName} chain`));
+   toBnValue(value: number | undefined): BN {
+      if (value === undefined) {
+         return toBN(0);
+      }
+      return toBN(Math.round(value * BTC_MDU).toFixed(0));
    }
+   reducerFunctionAdditionalDataVinOuts = (prev: BN, vout: IUtxoVinVoutsMapper | undefined) => prev.add(this.toBnValue(vout?.vinvout?.value));
+   reducerFunctionPrevouts = (prev: BN, vin: IUtxoVinTransaction) => prev.add(this.toBnValue(vin?.prevout?.value));
+   reducerFunctionVouts = (prev: BN, vout: IUtxoVoutTransaction) => prev.add(this.toBnValue(vout.value));
 
    public get fee(): BN {
-      const reducerFunctionVinOuts = (prev: BN, vout: IUtxoVinVoutsMapper | undefined) =>
-         prev.add(toBN(Math.round((vout?.vinvout?.value || 0) * BTC_MDU).toFixed(0)));
-      const reducerFunctionVouts = (prev: BN, vout: IUtxoVoutTransaction) => prev.add(toBN(Math.round(vout.value * BTC_MDU).toFixed(0)));
       if (this.type === "full_payment") {
          if (!this.additionalData || !this.additionalData.vinouts) {
             throw new mccError(mccErrorCode.InvalidTransaction, Error(`Transaction was not made full`));
          }
-         const inSum = this.additionalData.vinouts.reduce(reducerFunctionVinOuts, toBN(0));
-         const outSum = this.data.vout.reduce(reducerFunctionVouts, toBN(0));
+         const inSum = this.additionalData.vinouts.reduce(this.reducerFunctionAdditionalDataVinOuts, toBN(0));
+         const outSum = this.data.vout.reduce(this.reducerFunctionVouts, toBN(0));
          return inSum.sub(outSum);
       }
       if (this.type === "coinbase") {
@@ -172,10 +171,6 @@ export abstract class UtxoTransaction extends TransactionBase {
       return this.spentAmounts;
    }
 
-   public get assetSpentAmounts(): AddressAmount[] {
-      throw new mccError(mccErrorCode.InvalidResponse, Error(`There are no build-in assets on ${this.currencyName} chain`));
-   }
-
    public get receivedAmounts(): AddressAmount[] {
       return this.data.vout.map((vout: IUtxoVoutTransaction) => {
          return {
@@ -188,10 +183,6 @@ export abstract class UtxoTransaction extends TransactionBase {
 
    public get intendedReceivedAmounts(): AddressAmount[] {
       return this.receivedAmounts;
-   }
-
-   public get assetReceivedAmounts(): AddressAmount[] {
-      throw new mccError(mccErrorCode.InvalidResponse, Error(`There are no build-in assets on ${this.currencyName} chain`));
    }
 
    public get type(): UtxoTransactionTypeOptions {

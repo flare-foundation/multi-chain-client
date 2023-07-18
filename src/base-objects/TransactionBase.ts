@@ -159,14 +159,14 @@ export abstract class TransactionBase {
     */
    public abstract get sourceAddresses(): (string | undefined)[];
 
-   /**
-    Returns an array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP). 
-    * In account-based chains only one address is present.
-    * In UTXO chains this feature is not supported.
+   // /**
+   //  Returns an array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP).
+   //  * In account-based chains only one address is present.
+   //  * In UTXO chains this feature is not supported.
 
-    WIP / TODO
-    */
-   public abstract get assetSourceAddresses(): (string | undefined)[];
+   //  WIP / TODO
+   //  */
+   // public abstract get assetSourceAddresses(): (string | undefined)[];
 
    /**
     * Array of a receiving addresses. In account-based chains only one address in present.
@@ -175,18 +175,18 @@ export abstract class TransactionBase {
     */
    public abstract get receivingAddresses(): (string | undefined)[];
 
-   /*
-    Array of a receiving addresses that receive build in assets tokens.
+   // /*
+   //  Array of a receiving addresses that receive build in assets tokens.
 
-    * In account-based chains, only one address in present
-      * Algo transactions that close to certain address list both receiving address and close address.
-    * In UTXO chains, this feature is not supported
-    
-    WIP / TODO
+   //  * In account-based chains, only one address in present
+   //    * Algo transactions that close to certain address list both receiving address and close address.
+   //  * In UTXO chains, this feature is not supported
 
-    Some addresses may be undefined since outputs may not have addresses defined.
-    */
-   public abstract get assetReceivingAddresses(): (string | undefined)[];
+   //  WIP / TODO
+
+   //  Some addresses may be undefined since outputs may not have addresses defined.
+   //  */
+   // public abstract get assetReceivingAddresses(): (string | undefined)[];
 
    /**
     * Gets transaction fee. In some cases it can revert, since fee is not possible to calculate.
@@ -215,10 +215,10 @@ export abstract class TransactionBase {
     */
    public abstract get intendedSpentAmounts(): AddressAmount[];
 
-   /**
-    * An array of spent amounts in build-in assets tokens on transaction inputs.
-    */
-   public abstract get assetSpentAmounts(): AddressAmount[];
+   // /**
+   //  * An array of spent amounts in build-in assets tokens on transaction inputs.
+   //  */
+   // public abstract get assetSpentAmounts(): AddressAmount[];
 
    /**
     * An array of received amounts on transaction outputs.
@@ -234,10 +234,10 @@ export abstract class TransactionBase {
     */
    public abstract get intendedReceivedAmounts(): AddressAmount[];
 
-   /**
-    * An array of received amounts in build-in tokens on transaction outputs.
-    */
-   public abstract get assetReceivedAmounts(): AddressAmount[];
+   // /**
+   //  * An array of received amounts in build-in tokens on transaction outputs.
+   //  */
+   // public abstract get assetReceivedAmounts(): AddressAmount[];
 
    /**
     * Returns transaction type as a string identifier. A set of types depends on a specific underlying chain.
