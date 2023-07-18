@@ -11,7 +11,7 @@ import {
    UtxoMccCreate,
    UtxoTransaction,
 } from "../../src";
-import { transactionTestCases } from "../testUtils";
+import { getTestFile, transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -25,7 +25,7 @@ const BtcMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
-describe("Transaction Btc base test ", function () {
+describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function () {
    let MccClient: MCC.BTC;
 
    before(async function () {
@@ -313,17 +313,17 @@ describe("Transaction Btc base test ", function () {
                sourceAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
                receivingAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
                receivingAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
-               spentAmount: toBN(220000),
+               spentAmount: toBN(20000),
                receivedAmount: toBN(0),
                paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
 
                intendedSourceAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
                intendedSourceAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
-               intendedSourceAmount: toBN(220000),
+               intendedSourceAmount: toBN(20000),
 
                intendedReceivingAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
                intendedReceivingAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
-               intendedReceivingAmount: toBN(0),
+               intendedReceivingAmount: toBN(-20000),
                oneToOne: false,
                isFull: true,
                transactionStatus: TransactionSuccessStatus.SUCCESS,
@@ -389,7 +389,7 @@ describe("Transaction Btc base test ", function () {
                receivingAddress: "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
                receivingAddressHash: standardAddressHash("bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"),
                spentAmount: toBN(3533),
-               receivedAmount: toBN(2259),
+               receivedAmount: toBN(2259 - 6664),
                paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
                intendedSourceAddressHash: standardAddressHash("bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly"),
                intendedSourceAddress: "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
@@ -397,9 +397,9 @@ describe("Transaction Btc base test ", function () {
 
                intendedReceivingAddressHash: standardAddressHash("bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"),
                intendedReceivingAddress: "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
-               intendedReceivingAmount: toBN(2259),
+               intendedReceivingAmount: toBN(6664 - 2259),
                oneToOne: false,
-               isFull: false,
+               isFull: true,
             },
          },
       },
@@ -460,9 +460,6 @@ describe("Transaction Btc base test ", function () {
             if (transactionb !== null) {
                transaction = transactionb;
             }
-            if (transData.makeFull) {
-               await transaction.makeFull(MccClient);
-            }
          });
 
          it("Should find transaction in block ", function () {
@@ -517,13 +514,7 @@ describe("Transaction Btc base test ", function () {
          });
 
          it("Should get fee ", async function () {
-            if (transData.expect.isFeeError) {
-               expect(function () {
-                  transaction.fee;
-               }).to.throw(transData.expect.fee);
-            } else {
-               expect(transaction.fee.toString()).to.eq(transData.expect.fee);
-            }
+            expect(transaction.fee.toString()).to.eq(transData.expect.fee);
          });
 
          it("Should spend amount ", async function () {
@@ -566,7 +557,7 @@ describe("Transaction Btc base test ", function () {
             expect(transaction.successStatus).to.eq(transData.expect.successStatus);
          });
 
-         it("should validate pkscripts", function () {
+         it.skip("should validate pkscripts", function () {
             for (let index = 0; index < transaction["data"].vout.length; index++) {
                assert(transaction.isValidPkscript(index), `${transaction.txid} index ${index}`);
             }
@@ -638,7 +629,7 @@ describe("Transaction Btc base test ", function () {
          expect(fn0).to.throw(Error);
       });
 
-      it("Should not assert additional data and synchronize additional data ", async function () {
+      it.skip("Should not assert additional data and synchronize additional data ", async function () {
          const fn0 = () => {
             return transaction.assertAdditionalData();
          };

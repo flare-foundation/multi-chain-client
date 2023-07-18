@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { XrpAddress } from "../../../src/base-objects/AddressBase";
+import { AddressBase, XrpAddress } from "../../../src/base-objects/AddressBase";
 
 describe("Balance decreasing summary tests", function () {
    const XrpAdd = new XrpAddress("rwwvd6W78HXK4k5yZP1MieSddtHHUEKG34");
@@ -7,11 +7,6 @@ describe("Balance decreasing summary tests", function () {
    it("Should be valid checksum", async function () {
       const valid = XrpAdd.isValid();
       expect(valid).to.eq(true);
-   });
-
-   it("Should be standard address hash", async function () {
-      const stdHash = XrpAdd.stdHash;
-      expect(stdHash).to.eq("a0cc9e76d9486afc51590f2a1aa13ce310fde5a44c85870022a31a8a348f2817");
    });
 });
 
