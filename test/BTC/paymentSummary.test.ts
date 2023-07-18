@@ -19,7 +19,6 @@ describe("BTC payment summary ", function () {
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
       transaction = await MccClient.getTransaction(txid);
-      await transaction.makeFull(MccClient);
    });
 
    it("Should be full transaction", async function () {
@@ -57,7 +56,6 @@ describe("BTC payment summary coinbase ", function () {
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
       transaction = await MccClient.getTransaction(txid);
-      await transaction.makeFull(MccClient);
    });
 
    it("Should be coinbase transaction", async function () {
@@ -84,7 +82,6 @@ describe("BTC payment summary with op return ", function () {
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
       transaction = await MccClient.getTransaction(txid);
-      await transaction.makeFull(MccClient);
    });
 
    it("Should be full transaction", async function () {
