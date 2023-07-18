@@ -1,6 +1,7 @@
 import { expect } from "chai";
-import { AlgoBlock, MCC } from "../../src";
+import { MCC } from "../../src";
 import { AlgoIndexerBlock } from "../../src/base-objects/blocks/AlgoIndexerBlock";
+import { AlgoBlock } from "../../src/base-objects";
 
 const algoCreateConfig = {
    algod: {
