@@ -1,23 +1,26 @@
 import BN from "bn.js";
+import { MccClient, MccUtxoClient } from "../../module";
+import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 import { IUtxoGetTransactionRes, IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
+import { bytesToHex } from "../../utils/algoUtils";
+import { bech32Decode } from "../../utils/bech32";
 import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
+import { ZERO_BYTES_32, btcBase58Decode, isValidBytes32Hex, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x } from "../../utils/utils";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import {
    AddressAmount,
    BalanceDecreasingProps,
    BalanceDecreasingSummaryResponse,
    BalanceDecreasingSummaryStatus,
+   PaymentNonexistenceSummaryResponse,
+   PaymentNonexistenceSummaryStatus,
    PaymentSummaryProps,
    PaymentSummaryResponse,
    PaymentSummaryStatus,
    TransactionBase,
+   paymentNonexistenceSummaryProps,
 } from "../TransactionBase";
-import { ZERO_BYTES_32, btcBase58Decode, isValidBytes32Hex, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x } from "../../utils/utils";
-import { MccClient, MccUtxoClient } from "../../module";
-import { TransactionSuccessStatus } from "../../types/genericMccTypes";
-import { bytesToHex } from "../../utils/algoUtils";
-import { bech32Decode } from "../../utils/bech32";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
 // Transaction types and their description
@@ -223,6 +226,86 @@ export abstract class UtxoTransaction extends TransactionBase {
 
    public get successStatus(): TransactionSuccessStatus {
       return TransactionSuccessStatus.SUCCESS;
+   }
+
+   public async paymentNonexistenceSummary({ client, inUtxo }: paymentNonexistenceSummaryProps): Promise<PaymentNonexistenceSummaryResponse> {
+      try {
+         this.assertValidVinIndex(inUtxo);
+      } catch (e) {
+         return { status: PaymentNonexistenceSummaryStatus.InvalidInUtxo };
+      }
+      // TODO: this is not done on BTC side, only ond DOGE
+      await this.vinVoutAt(inUtxo, client as MccUtxoClient);
+
+      if (this.type === "coinbase") {
+         return { status: PaymentNonexistenceSummaryStatus.Coinbase };
+      }
+      const spentAmount = this.spentAmounts[inUtxo];
+      if (!spentAmount.address) {
+         return { status: PaymentNonexistenceSummaryStatus.NoSpentAmountAddress };
+      }
+
+      // Extract addresses from input and output fields
+      const sourceAddress = spentAmount.address;
+
+      // We will update this once we iterate over inputs and outputs if we have full transaction
+      // TODO: this is always true on BTC assuming we interacted with the right node version and correct verbosity
+      const isFull = this.type === "full_payment";
+
+      if (isFull) {
+         let inFunds = toBN(0);
+         let returnFunds = toBN(0);
+
+         for (const vinAmount of this.spentAmounts) {
+            if (sourceAddress && vinAmount.address === sourceAddress) {
+               inFunds = inFunds.add(vinAmount.amount);
+            }
+         }
+         for (const voutAmount of this.receivedAmounts) {
+            if (sourceAddress && voutAmount.address === sourceAddress) {
+               returnFunds = returnFunds.add(voutAmount.amount);
+            }
+         }
+         return {
+            status: PaymentNonexistenceSummaryStatus.Success,
+            response: {
+               blockTimestamp: this.unixTimestamp,
+               transactionHash: this.stdTxid,
+               sourceAddressHash: standardAddressHash(sourceAddress),
+               sourceAddress,
+               spentAmount: inFunds.sub(returnFunds),
+               transactionStatus: this.successStatus,
+               paymentReference: this.stdPaymentReference,
+
+               // Intended and actual amounts are the same for utxo transactions
+               intendedSourceAddressHash: standardAddressHash(sourceAddress),
+               intendedSourceAddress: sourceAddress,
+               intendedSourceAmount: inFunds.sub(returnFunds),
+               isFull,
+            },
+         };
+      } else {
+         // Since we don't have all inputs "decoded" we can't be sure that transaction is one-to-one
+         const spentAmount = sourceAddress && inUtxo != null ? this.spentAmounts[inUtxo].amount : toBN(0);
+
+         return {
+            status: PaymentNonexistenceSummaryStatus.Success,
+            response: {
+               blockTimestamp: this.unixTimestamp,
+               transactionHash: this.stdTxid,
+               sourceAddress,
+               sourceAddressHash: standardAddressHash(sourceAddress),
+               spentAmount,
+               paymentReference: this.stdPaymentReference,
+               transactionStatus: this.successStatus,
+               // Intended and actual amounts are the same for utxo transactions
+               intendedSourceAddressHash: standardAddressHash(sourceAddress),
+               intendedSourceAddress: sourceAddress,
+               intendedSourceAmount: spentAmount,
+               isFull,
+            },
+         };
+      }
    }
 
    public async paymentSummary({ client, inUtxo, outUtxo }: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
