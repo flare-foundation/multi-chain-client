@@ -38,6 +38,7 @@ export enum PaymentSummaryStatus {
    NoReceiveAmountAddress = "noReceiveAmountAddress",
    NoIntendedSpentAmountAddress = "noIntendedSpentAmountAddress",
    NoIntendedReceiveAmountAddress = "noIntendedReceiveAmountAddress",
+   InvalidPkscript = "invalidPkscript",
 }
 
 export enum BalanceDecreasingSummaryStatus {

@@ -24,12 +24,15 @@
       "blockhash",
       "blockheight",
       "blocktime",
+      "CHECKSIG",
       "CRYPTOCONDITION",
+      "EQUALVERIFY",
       "getblock",
       "INSUF",
       "INSUFF",
       "locktime",
       "NFTOKEN",
-      "vsize"
+      "vsize",
+      "WPKH"
    ]
 }

@@ -78,6 +78,15 @@
          "runtimeExecutable": "yarn",
          "runtimeArgs": ["test", "test/BTC/transactionsVsTransactionsInBlock.test.ts"]
       },
+
+      {
+         "type": "node",
+         "request": "launch",
+         "name": "Test BTC scripts",
+         "runtimeExecutable": "yarn",
+         "runtimeArgs": ["test", "test/BTC/transactionOutputType.test.ts"]
+      },
+
       {
          "type": "node",
          "request": "launch",

@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import {
    BtcTransaction,
    MCC,
@@ -123,6 +123,12 @@ describe("Transaction Btc base test ", function () {
          expect(transaction.successStatus).to.eq(0);
       });
 
+      it("should validate pkscripts", function () {
+         for (let index = 0; index < transaction["data"].vout.length; index++) {
+            assert(transaction.isValidPkscript(index));
+         }
+      });
+
       it("Should reject assets", async function () {
          expect(() => transaction.assetSourceAddresses).to.throw("InvalidResponse");
          expect(() => transaction.assetReceivingAddresses).to.throw("InvalidResponse");
@@ -212,6 +218,12 @@ describe("Transaction Btc base test ", function () {
 
       it("Should get success status ", async function () {
          expect(transaction.successStatus).to.eq(0);
+      });
+
+      it("should validate pkscripts", function () {
+         for (let index = 0; index < transaction["data"].vout.length; index++) {
+            assert(transaction.isValidPkscript(index));
+         }
       });
 
       it("Should reject assets", async function () {
@@ -415,7 +427,6 @@ describe("Transaction Btc base test ", function () {
             if (transData.makeFull) {
                await transaction.makeFull(MccClient);
             }
-            console.dir(transaction, { depth: null });
          });
 
          it("Should find transaction in block ", function () {
@@ -452,7 +463,6 @@ describe("Transaction Btc base test ", function () {
          });
 
          it("Should get source address ", async function () {
-            console.dir(transaction.sourceAddresses, { depth: null });
             expect(transaction.sourceAddresses.length).to.eq(transData.expect.sourceAddresses.length);
             const a = transaction.sourceAddresses.sort();
             const b = transData.expect.sourceAddresses.sort();
@@ -481,7 +491,6 @@ describe("Transaction Btc base test ", function () {
          });
 
          it("Should spend amount ", async function () {
-            console.dir(transaction.spentAmounts, { depth: null });
             expect(transaction.spentAmounts.length).to.eq(transData.expect.spentAmounts.length);
             const a = transaction.spentAmounts.sort();
             const b = transData.expect.spentAmounts.sort();
@@ -521,14 +530,17 @@ describe("Transaction Btc base test ", function () {
             expect(transaction.successStatus).to.eq(transData.expect.successStatus);
          });
 
+         it("should validate pkscripts", function () {
+            for (let index = 0; index < transaction["data"].vout.length; index++) {
+               assert(transaction.isValidPkscript(index), `${transaction.txid} index ${index}`);
+            }
+         });
+
          it("Should get payment summary", async function () {
             const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
 
             if (summary.status === PaymentSummaryStatus.Success) {
-               console.dir(summary, { depth: null });
-
                console.log("prepeared (expected)");
-               console.dir(transData.summary, { depth: null });
                expect(summary.status).to.eq(transData.summary.status);
                if (summary.response && transData.summary.response) {
                   expect(summary.response.blockTimestamp).to.eq(transData.summary.response.blockTimestamp);
@@ -564,6 +576,7 @@ describe("Transaction Btc base test ", function () {
       before(async () => {
          transaction = await MccClient.getTransaction(txid);
       });
+
       it("Should get vin index invalid ", async function () {
          const fn = () => {
             return transaction.assertValidVinIndex(-2);
@@ -646,6 +659,24 @@ describe("Transaction Btc base test ", function () {
             return transaction.extractVoutAt(0);
          };
          expect(fn0).to.throw(Error);
+      });
+   });
+
+   describe("transaction with op_return", async function () {
+      const txId = "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684";
+      let transaction: BtcTransaction;
+      before(async () => {
+         transaction = await MccClient.getTransaction(txId);
+         await transaction.makeFullPayment(MccClient);
+      });
+
+      it("Should spent amounts", function () {
+         expect(transaction.spentAmounts[0].amount.toString()).to.eq("220000");
+      });
+
+      it("Should reveived amounts", function () {
+         expect(transaction.receivedAmounts[1].amount.toString()).to.eq("200000");
+         expect(transaction.receivedAmounts[0].amount.toString()).to.eq("0");
       });
    });
 });
