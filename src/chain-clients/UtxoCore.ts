@@ -211,7 +211,6 @@ export abstract class UtxoCore<
       }
       // TODO trow if txid does not match expected input
 
-      const verbose = true; // by default getting transaction is in verbose mode
       const unTxId = unPrefix0x(txId);
       let params: any[] = [unTxId, 2];
       if (this.chainType === ChainType.DOGE) {
