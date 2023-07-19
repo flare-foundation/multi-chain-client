@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { AccountInfoResponse, AccountTxResponse, LedgerResponse, ServerStateResponse } from "xrpl";
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { BlockTipBase } from "../base-objects/BlockBase";
+import { BlockHeaderBase, BlockTipBase } from "../base-objects/BlockBase";
 import { XrpFullBlock } from "../base-objects/fullBlocks/XrpFullBlock";
 import { mccSettings } from "../global-settings/globalSettings";
 import { IAccountInfoRequest, IAccountTxRequest, XrpBlockReqParams, XrpMccCreate } from "../types";
@@ -18,7 +18,7 @@ const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
    maxRPS: 5,
 };
 
-export class XRPImplementation implements ReadRpcInterface {
+export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHeaderBase, XrpBlock, XrpFullBlock, XrpTransaction> {
    client: AxiosInstance;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    inRegTest: any;

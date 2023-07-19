@@ -1,5 +1,19 @@
+import Block from "algosdk/dist/types/client/v2/algod/block";
+import {
+   BlockHeaderBase,
+   BlockTipBase,
+   BtcBlock,
+   BtcBlockHeader,
+   BtcBlockTip,
+   BtcFullBlock,
+   BtcTransaction,
+   XrpBlock,
+   XrpFullBlock,
+   XrpTransaction,
+} from "./base-objects";
 import { BTCImplementation } from "./chain-clients/BtcRpcImplementation";
 import { DOGEImplementation } from "./chain-clients/DogeRpcImplementation";
+import { objectConstructors } from "./chain-clients/UtxoCore";
 import { XRPImplementation } from "./chain-clients/XrpRpcImplementation";
 import { AlgoMccCreate, UtxoMccCreate, XrpMccCreate } from "./types";
 import { ChainType, ReadRpcInterface } from "./types/genericMccTypes";
@@ -7,19 +21,19 @@ import { ChainType, ReadRpcInterface } from "./types/genericMccTypes";
 export type MccCreate = XrpMccCreate | AlgoMccCreate | UtxoMccCreate;
 
 export module MCC {
-   export class BTC extends BTCImplementation implements ReadRpcInterface {
+   export class BTC extends BTCImplementation {
       constructor(options: UtxoMccCreate) {
          super(options);
       }
    }
 
-   export class DOGE extends DOGEImplementation implements ReadRpcInterface {
+   export class DOGE extends DOGEImplementation {
       constructor(options: UtxoMccCreate) {
          super(options);
       }
    }
 
-   export class XRP extends XRPImplementation implements ReadRpcInterface {
+   export class XRP extends XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHeaderBase, XrpBlock, XrpFullBlock, XrpTransaction> {
       constructor(options: XrpMccCreate) {
          super(options);
       }
