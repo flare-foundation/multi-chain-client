@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { BalanceDecreasingSummaryStatus, MCC, UtxoMccCreate, ZERO_BYTES_32, standardAddressHash, toHex32Bytes, traceManager } from "../../src";
+import { getTestFile } from "../testUtils";
 
 const BtcMccConnection = {
    url: process.env.BTC_URL || "",
@@ -8,7 +9,7 @@ const BtcMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
-describe("Balance decrease test for BTC ", function () {
+describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function () {
    let MccClient: MCC.BTC;
    before(async function () {
       MccClient = new MCC.BTC(BtcMccConnection);
