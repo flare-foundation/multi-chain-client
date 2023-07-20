@@ -1,7 +1,6 @@
 import { expect, assert } from "chai";
 import { AddressAmount, PaymentSummaryResponse, hexToBytes, unPrefix0x } from "../src";
 import { IIUtxoVout, TransactionSuccessStatus } from "../src/types";
-import { addressToHex } from "../src/utils/algoUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const expectThrow = async (method: any, errorMessage: any) => {
@@ -65,11 +64,6 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
    const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signKeys);
    const txId = await RPC.sendRawTransactionInBlock(fromWalletLabel, signedTx.hex);
    return txId;
-}
-
-export function addressToBtyeAddress(address: string): Uint8Array {
-   const algoKeyPair = addressToHex(address);
-   return hexToBytes(unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum));
 }
 
 export function singleAddressAmountEqual(a: AddressAmount, b: AddressAmount) {

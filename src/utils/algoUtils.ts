@@ -1,6 +1,5 @@
 import * as msgpack from "algo-msgpack-with-bigint";
 import algosdk from "algosdk";
-import { IAlgoCert, IAlgoHexAddress, IAlgoIndexerCert } from "../types/algoTypes";
 import { MccError, prefix0x, unPrefix0x, hexToBytes } from "./utils";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const base32 = require("base32.js");
@@ -14,9 +13,9 @@ const sha512_256 = require("js-sha512").sha512_256;
 export const INVALIDADDRESERROR = (address: string) => {
    return new Error(`Invalid address: ${address}`);
 };
-export const INVALIDPUBKEYPAIRERROR = (algoKeyPair: IAlgoHexAddress) => {
-   return new Error(`Invalid keypair: ${algoKeyPair.publicKey} -  ${algoKeyPair.checksum}`);
-};
+// export const INVALIDPUBKEYPAIRERROR = (algoKeyPair: IAlgoHexAddress) => {
+//    return new Error(`Invalid keypair: ${algoKeyPair.publicKey} -  ${algoKeyPair.checksum}`);
+// };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////// Code ////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,28 +138,28 @@ export function base64ToText(rawdata: string): string {
 // Algo address <-> Hex //
 //////////////////////////
 
-export function addressToHex(address: string): IAlgoHexAddress {
-   if (!algosdk.isValidAddress(address)) {
-      throw INVALIDADDRESERROR(address);
-   }
-   const dad = algosdk.decodeAddress(address);
-   const publicKey = Buffer.from(dad.publicKey).toString("hex");
-   const checksum = Buffer.from(dad.checksum).toString("hex");
-   return {
-      publicKey: prefix0x(publicKey),
-      checksum: prefix0x(checksum),
-   } as IAlgoHexAddress;
-}
+// export function addressToHex(address: string): IAlgoHexAddress {
+//    if (!algosdk.isValidAddress(address)) {
+//       throw INVALIDADDRESERROR(address);
+//    }
+//    const dad = algosdk.decodeAddress(address);
+//    const publicKey = Buffer.from(dad.publicKey).toString("hex");
+//    const checksum = Buffer.from(dad.checksum).toString("hex");
+//    return {
+//       publicKey: prefix0x(publicKey),
+//       checksum: prefix0x(checksum),
+//    } as IAlgoHexAddress;
+// }
 
-export function hexToAddress(algoKeyPair: IAlgoHexAddress): string {
-   const conc = unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum);
-   const concBytes = hexToBytes(conc);
-   const address = hexToBase32(concBytes);
-   if (!algosdk.isValidAddress(address)) {
-      throw INVALIDPUBKEYPAIRERROR(algoKeyPair);
-   }
-   return address;
-}
+// export function hexToAddress(algoKeyPair: IAlgoHexAddress): string {
+//    const conc = unPrefix0x(algoKeyPair.publicKey) + unPrefix0x(algoKeyPair.checksum);
+//    const concBytes = hexToBytes(conc);
+//    const address = hexToBase32(concBytes);
+//    if (!algosdk.isValidAddress(address)) {
+//       throw INVALIDPUBKEYPAIRERROR(algoKeyPair);
+//    }
+//    return address;
+// }
 
 ///////////////////////////////////////
 // Algo address <-> address+checksum //
@@ -200,15 +199,15 @@ export function txIdToHexNo0x(txid: string) {
 // Algo cert id <-> Hex //
 //////////////////////////
 
-export function certToInCert(cert: IAlgoCert): IAlgoIndexerCert {
-   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   const { prop, ...rest } = cert;
-   const newCert: IAlgoIndexerCert = { prop: { dig: "", encdig: "", oprop: "" }, ...rest } as IAlgoIndexerCert;
-   newCert.prop.dig = bytesToHex(cert.prop.dig);
-   newCert.prop.encdig = bytesToHex(cert.prop.encdig);
-   newCert.prop.oprop = bytesToHex(cert.prop.oprop);
-   return newCert;
-}
+// export function certToInCert(cert: IAlgoCert): IAlgoIndexerCert {
+//    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//    const { prop, ...rest } = cert;
+//    const newCert: IAlgoIndexerCert = { prop: { dig: "", encdig: "", oprop: "" }, ...rest } as IAlgoIndexerCert;
+//    newCert.prop.dig = bytesToHex(cert.prop.dig);
+//    newCert.prop.encdig = bytesToHex(cert.prop.encdig);
+//    newCert.prop.oprop = bytesToHex(cert.prop.oprop);
+//    return newCert;
+// }
 
 ////////////////////////////
 //// MCC Error handling ////

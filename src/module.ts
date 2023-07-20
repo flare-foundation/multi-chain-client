@@ -2,10 +2,10 @@ import { BlockHeaderBase, BlockTipBase, XrpBlock, XrpFullBlock, XrpTransaction }
 import { BTCImplementation } from "./chain-clients/BtcRpcImplementation";
 import { DOGEImplementation } from "./chain-clients/DogeRpcImplementation";
 import { XRPImplementation } from "./chain-clients/XrpRpcImplementation";
-import { AlgoMccCreate, UtxoMccCreate, XrpMccCreate } from "./types";
+import { UtxoMccCreate, XrpMccCreate } from "./types";
 import { ChainType, ReadRpcInterface } from "./types/genericMccTypes";
 
-export type MccCreate = XrpMccCreate | AlgoMccCreate | UtxoMccCreate;
+export type MccCreate = XrpMccCreate | UtxoMccCreate;
 
 export module MCC {
    export class BTC extends BTCImplementation {
@@ -56,7 +56,7 @@ export module MCC {
       }
    }
 
-   export function Client(chainIdOrName: number | string | ChainType, options: AlgoMccCreate | UtxoMccCreate | XrpMccCreate) {
+   export function Client(chainIdOrName: number | string | ChainType, options: UtxoMccCreate | XrpMccCreate) {
       const chainType = getChainType(chainIdOrName);
       switch (chainType) {
          case ChainType.XRP:
