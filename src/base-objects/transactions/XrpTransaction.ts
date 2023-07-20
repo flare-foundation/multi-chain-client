@@ -532,58 +532,6 @@ export class XrpTransaction extends TransactionBase {
       };
    }
 
-   public async paymentNonexistenceSummary(props: paymentNonexistenceSummaryProps): Promise<PaymentNonexistenceSummaryResponse> {
-      if (this.type === "Payment" && this.isNativePayment) {
-         // Is native transfer
-         if (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1) {
-            return {
-               status: PaymentNonexistenceSummaryStatus.UnexpectedNumberOfParticipants,
-            };
-         }
-         const spendAmount = this.spentAmounts[0];
-         if (!spendAmount.address) {
-            return {
-               status: PaymentNonexistenceSummaryStatus.NoSpentAmountAddress,
-            };
-         }
-         if (this.successStatus !== TransactionSuccessStatus.SUCCESS) {
-            if (this.intendedSpentAmounts.length !== 1 || this.intendedReceivedAmounts.length !== 1) {
-               return {
-                  status: PaymentNonexistenceSummaryStatus.UnexpectedNumberOfParticipants,
-               };
-            }
-         }
-         const intendedSpendAmounts = this.intendedSpentAmounts[0];
-         if (!intendedSpendAmounts.address) {
-            return {
-               status: PaymentNonexistenceSummaryStatus.NoIntendedSpentAmountAddress,
-            };
-         }
-
-         return {
-            status: PaymentNonexistenceSummaryStatus.Success,
-            response: {
-               blockTimestamp: this.unixTimestamp,
-               transactionHash: this.stdTxid,
-               sourceAddress: spendAmount.address,
-               sourceAddressHash: standardAddressHash(spendAmount.address),
-               spentAmount: spendAmount.amount,
-               transactionStatus: this.successStatus,
-               // For transactions that are not successful but still in block
-               intendedSourceAddressHash: standardAddressHash(intendedSpendAmounts.address),
-               intendedSourceAddress: intendedSpendAmounts.address,
-               intendedSourceAmount: toBN(intendedSpendAmounts.amount),
-
-               paymentReference: this.stdPaymentReference,
-               isFull: true,
-            },
-         };
-      }
-      return {
-         status: PaymentNonexistenceSummaryStatus.NotNativePayment,
-      };
-   }
-
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
    public async balanceDecreasingSummary({ sourceAddressIndicator }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
       if (!isValidBytes32Hex(sourceAddressIndicator)) {

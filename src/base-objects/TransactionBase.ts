@@ -291,14 +291,6 @@ export abstract class TransactionBase {
    public abstract paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse>;
 
    /**
-    * Provides payment nonexistence summary for a given transaction.
-    * It is used to prove that a certain transaction didn't happen so for some transactions we must be able to extract some base information from candidates.
-    * @param props.client : Initialized mcc client for the underlying chain
-    * @param props.inUtxo : Vin index for utxo chains and ignored on non utxo chains
-    */
-   public abstract paymentNonexistenceSummary(props: paymentNonexistenceSummaryProps): Promise<PaymentNonexistenceSummaryResponse>;
-
-   /**
     * Provides balance decreasing summary for a given transaction.
     * Must be able to analyze any transaction, and provide a summary of the balance decreasing actions, that either reduce the given address balance or are signed by the given address.
     * If balance decreasing can be successfully summarized, the response will contain a `BalanceDecreasingSummaryObject` and status of `BalanceDecreasingSummaryStatus.Success`.
