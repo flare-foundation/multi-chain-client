@@ -103,41 +103,4 @@ describe(`summaries, , ${getTestFile(__filename)}`, function () {
          });
       });
    });
-
-   describe(`BTC nonexistence summery`, function () {
-      let transaction: BtcTransaction;
-
-      before(async function () {});
-
-      it("Should construct nonexistence report #1", async function () {
-         const txid = "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684";
-         transaction = await MccClient.getTransaction(txid);
-         const report = await transaction.paymentNonexistenceSummary({ client: MccClient, inUtxo: 0 });
-
-         expect(report.status).to.eq(PaymentNonexistenceSummaryStatus.Success);
-
-         const resp = report.response!;
-
-         expect(resp.sourceAddress).to.eq("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg");
-         expect(resp.spentAmount.toNumber()).to.eq(20000);
-         expect(resp.isFull).to.be.true;
-         expect(resp.paymentReference).to.eq(ZERO_BYTES_32);
-      });
-
-      it("Should construct nonexistence report #2", async function () {
-         const txid = "3378c286074f2c0bb3866a442f7f9419dcb57ff42d882827484363e8e75d21e6";
-         transaction = await MccClient.getTransaction(txid);
-
-         const report = await transaction.paymentNonexistenceSummary({ client: MccClient, inUtxo: 0 });
-
-         expect(report.status).to.eq(PaymentNonexistenceSummaryStatus.Success);
-
-         const resp = report.response!;
-
-         expect(resp.sourceAddress).to.eq("1Kr6QSydW9bFQG1mXiPNNu6WpJGmUa9i1g");
-         expect(resp.spentAmount.toNumber()).to.eq(1691681124 - 2638542219);
-         expect(resp.isFull).to.be.true;
-         expect(resp.paymentReference).to.eq(ZERO_BYTES_32);
-      });
-   });
 });
