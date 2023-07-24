@@ -8,19 +8,7 @@ import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
 import { ZERO_BYTES_32, btcBase58Decode, isValidBytes32Hex, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x } from "../../utils/utils";
 import { WordToOpcode } from "../../utils/utxoUtils";
-import {
-   AddressAmount,
-   BalanceDecreasingProps,
-   BalanceDecreasingSummaryResponse,
-   BalanceDecreasingSummaryStatus,
-   PaymentNonexistenceSummaryResponse,
-   PaymentNonexistenceSummaryStatus,
-   PaymentSummaryProps,
-   PaymentSummaryResponse,
-   PaymentSummaryStatus,
-   TransactionBase,
-   paymentNonexistenceSummaryProps,
-} from "../TransactionBase";
+import { AddressAmount, BalanceDecreasingProps, BalanceDecreasingSummaryResponse, BalanceDecreasingSummaryStatus, TransactionBase } from "../TransactionBase";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
 // Transaction types and their description
