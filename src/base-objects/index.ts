@@ -39,3 +39,10 @@ export { XrpTransaction } from "./transactions/XrpTransaction";
 
 export { TransactionBase } from "./TransactionBase";
 export { UtxoTransaction } from "./transactions/UtxoTransaction";
+
+// Address objects
+export { BtcAddress } from "./addressObjects/BtcAddress";
+export { DogeAddress } from "./addressObjects/DogeAddress";
+export { XrpAddress } from "./addressObjects/XrpAddress";
+
+export { AddressBase } from "./AddressBase";

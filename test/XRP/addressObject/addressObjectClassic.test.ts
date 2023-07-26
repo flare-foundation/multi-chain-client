@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressBase, XrpAddress } from "../../../src/base-objects/AddressBase";
+import { XrpAddress } from "../../../src";
 
 describe("Balance decreasing summary tests", function () {
    const XrpAdd = new XrpAddress("rwwvd6W78HXK4k5yZP1MieSddtHHUEKG34");
