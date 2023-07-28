@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { BtcBlock, MCC, UtxoMccCreate } from "../../src";
+import { getTestFile } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -13,7 +14,7 @@ const BtcMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
-describe("Block Btc base test ", function () {
+describe(`Block Btc base test ${getTestFile(__filename)}`, function () {
    let MccClient: MCC.BTC;
    let block: BtcBlock;
    const blockNumber = 729_409;

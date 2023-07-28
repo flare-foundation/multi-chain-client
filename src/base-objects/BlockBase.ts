@@ -1,5 +1,3 @@
-import { TransactionBase } from "./TransactionBase";
-
 export abstract class BlockTipBase {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    protected privateData: any;
@@ -15,6 +13,9 @@ export abstract class BlockTipBase {
    public get _data() {
       return this.privateData;
    }
+
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   protected abstract get data(): any;
 
    /**
     * Block number sometimes refers to as block height or ledger height (number of block in blockchain)

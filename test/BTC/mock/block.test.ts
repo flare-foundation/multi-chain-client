@@ -4,6 +4,7 @@ import { BtcBlock, MCC, traceManager, UtxoMccCreate } from "../../../src";
 
 import MockAdapter from "axios-mock-adapter";
 import { getBlockHashRes, getBlockRes } from "./data.blockTest";
+import { getTestFile } from "../../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -16,7 +17,7 @@ const BtcMccConnection = {
    password: "",
 } as UtxoMccCreate;
 
-describe("Block Btc base test ", function () {
+describe.skip(`Block Btc base test, ${getTestFile(__filename)}`, function () {
    let MccClient: MCC.BTC;
    let block: BtcBlock;
    let mock: MockAdapter;

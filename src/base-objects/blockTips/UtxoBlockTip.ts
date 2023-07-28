@@ -2,7 +2,7 @@ import { IUtxoChainTip, IUtxoChainTipStatuses } from "../../types";
 import { BlockTipBase } from "../BlockBase";
 
 export abstract class UtxoBlockTip extends BlockTipBase {
-   protected get data(): IUtxoChainTip {
+   public get data(): IUtxoChainTip {
       return this.privateData as IUtxoChainTip;
    }
 

@@ -7,7 +7,13 @@ interface BaseRpcInterface {
    chainType: ChainType;
 }
 
-export interface ReadRpcInterface extends BaseRpcInterface {
+export interface ReadRpcInterface<
+   BT extends BlockTipBase,
+   BH extends BlockHeaderBase,
+   B extends BlockBase,
+   FB extends FullBlockBase<T>,
+   T extends TransactionBase
+> extends BaseRpcInterface {
    // General methods
    getNodeStatus(): Promise<INodeStatus>;
    /**
@@ -17,19 +23,19 @@ export interface ReadRpcInterface extends BaseRpcInterface {
 
    // Block data
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   getBlockHeader(blockNumberOrHash: number | string | any): Promise<BlockHeaderBase>;
+   getBlockHeader(blockNumberOrHash: number | string | any): Promise<BH>;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   getBlock(blockNumberOrHash: number | string | any): Promise<BlockBase>;
+   getBlock(blockNumberOrHash: number | string | any): Promise<B>;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   getFullBlock(blockNumberOrHash: number | string): Promise<FullBlockBase<any>>;
+   getFullBlock(blockNumberOrHash: number | string): Promise<FB>;
    getBlockHeight(): Promise<number>;
 
    // To be used with chain tip indexer processing
-   getBlockTips?(height_gte: number): Promise<BlockTipBase[]>;
-   getTopLiteBlocks(branch_len: number, read_main?: boolean): Promise<BlockTipBase[]>;
+   getBlockTips?(height_gte: number): Promise<BT[]>;
+   getTopLiteBlocks(branch_len: number, read_main?: boolean): Promise<BT[]>;
 
    // Transaction data
-   getTransaction(txId: string, metaData?: getTransactionOptions): Promise<TransactionBase>;
+   getTransaction(txId: string, metaData?: getTransactionOptions): Promise<T>;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    listTransactions?(options?: any): any;
 
@@ -58,7 +64,9 @@ export interface WriteRpcInterface extends BaseRpcInterface {
    fundAddress(address: string, amount: number): any;
 }
 
-export interface RPCInterface extends ReadRpcInterface, WriteRpcInterface {}
+export interface RPCInterface<BT extends BlockTipBase, BH extends BlockHeaderBase, B extends BlockBase, FB extends FullBlockBase<T>, T extends TransactionBase>
+   extends ReadRpcInterface<BT, BH, B, FB, T>,
+      WriteRpcInterface {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////// MCC base response interfaces ////////////////////////////////////////////////////////////////////

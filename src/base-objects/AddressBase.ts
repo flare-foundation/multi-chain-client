@@ -47,5 +47,3 @@ export abstract class AddressBase {
       return unPrefix0x(Web3.utils.keccak256(a));
    }
 }
-
-export { XrpAddress } from "./addressObjects/XrpAddress";

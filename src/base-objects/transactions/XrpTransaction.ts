@@ -10,10 +10,13 @@ import {
    BalanceDecreasingProps,
    BalanceDecreasingSummaryResponse,
    BalanceDecreasingSummaryStatus,
+   PaymentNonexistenceSummaryResponse,
+   PaymentNonexistenceSummaryStatus,
    PaymentSummaryProps,
    PaymentSummaryResponse,
    PaymentSummaryStatus,
    TransactionBase,
+   paymentNonexistenceSummaryProps,
 } from "../TransactionBase";
 import { MccClient } from "../../module";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";

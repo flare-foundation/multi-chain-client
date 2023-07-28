@@ -150,7 +150,7 @@ describe("BTC client tests", () => {
    });
 
    describe("All possible transaction types", function () {
-      let possibleRPC: UtxoRpcInterface;
+      // let possibleRPC: UtxoRpcInterface;
       const addresses_leg: getAddressByLabelResponse[] = [];
       const addresses_leg_2: getAddressByLabelResponse[] = [];
       const addresses_seg: getAddressByLabelResponse[] = [];
@@ -230,26 +230,26 @@ describe("BTC client tests", () => {
       //    addresses_bec_2 = await possibleRPC.listAllAddressesByLabel(test_wall, test_acc_2_bec);
       // });
 
-      it.skip("should create tx legacy -> legacy", async function () {
-         await possibleRPC.fundAddress(addresses_leg[0].address, 10);
-         const ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_leg[0].address, addresses_leg_2[0].address, 10 - 1e-4, 1e-4);
+      // it.skip("should create tx legacy -> legacy", async function () {
+      //    await possibleRPC.fundAddress(addresses_leg[0].address, 10);
+      //    const ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_leg[0].address, addresses_leg_2[0].address, 10 - 1e-4, 1e-4);
 
-         console.log("Legacy -> Legacy: ", ttx);
-      });
+      //    console.log("Legacy -> Legacy: ", ttx);
+      // });
 
-      it.skip("should create tx p2sh-segwit -> p2sh-segwit", async function () {
-         await possibleRPC.fundAddress(addresses_seg[0].address, 10);
-         const ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_seg[0].address, addresses_seg_2[0].address, 10 - 1e-4, 1e-4);
+      // it.skip("should create tx p2sh-segwit -> p2sh-segwit", async function () {
+      //    await possibleRPC.fundAddress(addresses_seg[0].address, 10);
+      //    const ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_seg[0].address, addresses_seg_2[0].address, 10 - 1e-4, 1e-4);
 
-         console.log("p2sh-segwit -> p2sh-segwit: ", ttx);
-      });
+      //    console.log("p2sh-segwit -> p2sh-segwit: ", ttx);
+      // });
 
-      it.skip("should create tx bech32 -> bech32", async function () {
-         await possibleRPC.fundAddress(addresses_bec[0].address, 10);
-         const ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_bec[0].address, addresses_bec_2[0].address, 10 - 1e-4, 1e-4);
+      // it.skip("should create tx bech32 -> bech32", async function () {
+      //    await possibleRPC.fundAddress(addresses_bec[0].address, 10);
+      //    const ttx = await sendUtxoTransaction(possibleRPC, test_wall, addresses_bec[0].address, addresses_bec_2[0].address, 10 - 1e-4, 1e-4);
 
-         console.log("bech32 -> bech32: ", ttx);
-      });
+      //    console.log("bech32 -> bech32: ", ttx);
+      // });
 
       it.skip("should log all addresses: ", async function () {
          console.log(addresses_leg);

@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { MCC, ZERO_BYTES_32, standardAddressHash, traceManager } from "../../src";
+import { getTestFile } from "../testUtils";
 
 const XRPMccConnection = {
    url: process.env.XRP_URL || "",
@@ -8,7 +9,7 @@ const XRPMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("Balance decreasing summary tests", function () {
+describe(`Balance decreasing summary tests, ${getTestFile(__filename)}`, function () {
    let MccClient: MCC.XRP;
 
    before(async function () {

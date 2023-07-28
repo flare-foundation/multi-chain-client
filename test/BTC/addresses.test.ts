@@ -1,8 +1,9 @@
-import { createHash } from "crypto";
-import { BTC_BASE_58_DICT_regex, btcBase58Decode, toHex } from "../../src";
-import { BtcAddress } from "../../src/base-objects/addressObjects/BtcAddress";
 import { assert, expect } from "chai";
-import { bech32AddressToHex1, bech32AddressToHex2, bech32Decode, bech32Encode, bech32_decode } from "../../src/utils/bech32";
+import { createHash } from "crypto";
+import { BTC_BASE_58_DICT_regex, btcBase58Decode } from "../../src";
+import { BtcAddress } from "../../src/base-objects/addressObjects/BtcAddress";
+import { bech32AddressToHex1, bech32AddressToHex2 } from "../../src/utils/bech32";
+import { getTestFile } from "../testUtils";
 
 const validAddressesBase58 = ["3EZBRrEk7JELP6c9LWNR2iJfFD91sr35ep", "3Nbxwjb9tBszckeF46PxbTqXNWtuei91Ti", "13Lf377cv9xm4KX2daMVmMQ751oqW3ZhWW"];
 const validAddressesBech32 = [
@@ -13,7 +14,7 @@ const validAddressesBech32 = [
    "bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs",
 ];
 
-describe("addresses utils", function () {
+describe(`addresses utils (${getTestFile(__filename)})`, function () {
    it("should decode address to hex", function () {
       //https://en.bitcoin.it/wiki/Bech32
 
@@ -28,7 +29,7 @@ describe("addresses utils", function () {
    });
 
    it("isValid bech32", function () {
-      for (let str of validAddressesBech32) {
+      for (const str of validAddressesBech32) {
          const address = new BtcAddress(str);
 
          assert(address.isValid());
@@ -36,7 +37,7 @@ describe("addresses utils", function () {
    });
 
    it("isValid base58", function () {
-      for (let str of validAddressesBase58) {
+      for (const str of validAddressesBase58) {
          const address = new BtcAddress(str);
 
          assert(address.isValid());
@@ -51,7 +52,7 @@ describe("addresses utils", function () {
 
          const decoded = btcBase58Decode(addr).toString("hex");
 
-         let decodedtest = btcBase58Decode(addr);
+         const decodedtest = btcBase58Decode(addr);
          const preChecksum = decodedtest.slice(-4);
          const hash1 = createHash("sha256").update(decodedtest.slice(0, -4)).digest();
          const hash2 = createHash("sha256").update(hash1).digest();

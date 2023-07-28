@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { MCC, UtxoMccCreate, UtxoNodeStatus } from "../../src";
+import { getTestFile } from "../testUtils";
 
 const BtcMccConnection = {
    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
@@ -11,7 +12,7 @@ const BtcMccConnection = {
    },
 } as UtxoMccCreate;
 
-describe("Block BTC base test ", function () {
+describe(`Block BTC base test ,(${getTestFile(__filename)})`, function () {
    let MccClient: MCC.BTC;
    let status: UtxoNodeStatus;
 
@@ -25,7 +26,7 @@ describe("Block BTC base test ", function () {
 
    it("Should get status version ", async function () {
       const version = status.version.split("_");
-      expect(version[0]).to.be.oneOf(["230000", "240001"]);
+      expect(version[0]).to.be.oneOf(["230000", "240001", "250000"]);
    });
 
    it("Should get status state ", async function () {

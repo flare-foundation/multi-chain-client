@@ -10,7 +10,10 @@ export const dogeObjectConstructors = {
    blockHeaderConstructor: DogeBlockHeader,
    blockTipConstructor: DogeBlockTip,
 };
-export class DOGEImplementation extends UtxoCore<DogeTransaction, DogeFullBlock, DogeBlock, DogeBlockHeader, DogeBlockTip> implements DogeRpcInterface {
+export class DOGEImplementation
+   extends UtxoCore<DogeBlockTip, DogeBlockHeader, DogeBlock, DogeFullBlock, DogeTransaction>
+   implements DogeRpcInterface<DogeBlockTip, DogeBlockHeader, DogeBlock, DogeFullBlock, DogeTransaction>
+{
    constructor(options: UtxoMccCreate) {
       super(options, dogeObjectConstructors);
       this.chainType = ChainType.DOGE;

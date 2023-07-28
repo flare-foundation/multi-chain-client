@@ -15,6 +15,10 @@ export type PaymentSummaryProps = SummaryBaseProps & {
    outUtxo: number;
 };
 
+export type paymentNonexistenceSummaryProps = SummaryBaseProps & {
+   inUtxo: number;
+};
+
 export interface AddressAmount {
    address?: string;
    amount: BN;
@@ -27,18 +31,30 @@ interface TransactionSummaryBase<ST, TO> {
    response?: TO;
 }
 
+export enum PaymentNonexistenceSummaryStatus {
+   Success = "success",
+   Coinbase = "coinbase",
+   NotNativePayment = "notNativePayment",
+   UnexpectedNumberOfParticipants = "unexpectedNumberOfParticipants",
+   InvalidInUtxo = "invalidInUtxo",
+   NoSpentAmountAddress = "noSpentAmountAddress",
+   NoIntendedSpentAmountAddress = "noIntendedSpentAmountAddress",
+   InvalidPkscript = "invalidPkscript",
+}
+
 export enum PaymentSummaryStatus {
    Success = "success",
    Coinbase = "coinbase",
    NotNativePayment = "notNativePayment",
    UnexpectedNumberOfParticipants = "unexpectedNumberOfParticipants",
    InvalidInUtxo = "invalidInUtxo",
-   InvalidOutUtxo = "invalidOutUtxo",
    NoSpentAmountAddress = "noSpentAmountAddress",
-   NoReceiveAmountAddress = "noReceiveAmountAddress",
    NoIntendedSpentAmountAddress = "noIntendedSpentAmountAddress",
-   NoIntendedReceiveAmountAddress = "noIntendedReceiveAmountAddress",
    InvalidPkscript = "invalidPkscript",
+
+   InvalidOutUtxo = "invalidOutUtxo",
+   NoReceiveAmountAddress = "noReceiveAmountAddress",
+   NoIntendedReceiveAmountAddress = "noIntendedReceiveAmountAddress",
 }
 
 export enum BalanceDecreasingSummaryStatus {
@@ -76,6 +92,14 @@ export interface PaymentSummaryObject extends SummaryObjectBase {
    isFull: boolean;
 }
 
+export interface PaymentNonexistenceSummaryObject extends SummaryObjectBase {
+   intendedSourceAddressHash: string;
+   intendedSourceAddress: string;
+   intendedSourceAmount: BN;
+
+   isFull: boolean;
+}
+
 export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
    sourceAddressIndicator: string;
    isFull: boolean;
@@ -83,6 +107,7 @@ export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
 
 export type BalanceDecreasingSummaryResponse = TransactionSummaryBase<BalanceDecreasingSummaryStatus, BalanceDecreasingSummaryObject>;
 export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus, PaymentSummaryObject>;
+export type PaymentNonexistenceSummaryResponse = TransactionSummaryBase<PaymentNonexistenceSummaryStatus, PaymentNonexistenceSummaryObject>;
 
 export abstract class TransactionBase {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -160,33 +185,11 @@ export abstract class TransactionBase {
    public abstract get sourceAddresses(): (string | undefined)[];
 
    /**
-    Returns an array of all source addresses that are a source of build-in assets (currently only supported on ALGO and XRP). 
-    * In account-based chains only one address is present.
-    * In UTXO chains this feature is not supported.
-
-    WIP / TODO
-    */
-   public abstract get assetSourceAddresses(): (string | undefined)[];
-
-   /**
     * Array of a receiving addresses. In account-based chains only one address in present.
     * In UTXO chains, the list indicates the addresses on the corresponding transaction outputs.
     * Some may be undefined since outputs may not have addresses defined.
     */
    public abstract get receivingAddresses(): (string | undefined)[];
-
-   /*
-    Array of a receiving addresses that receive build in assets tokens.
-
-    * In account-based chains, only one address in present
-      * Algo transactions that close to certain address list both receiving address and close address.
-    * In UTXO chains, this feature is not supported
-    
-    WIP / TODO
-
-    Some addresses may be undefined since outputs may not have addresses defined.
-    */
-   public abstract get assetReceivingAddresses(): (string | undefined)[];
 
    /**
     * Gets transaction fee. In some cases it can revert, since fee is not possible to calculate.
@@ -215,10 +218,10 @@ export abstract class TransactionBase {
     */
    public abstract get intendedSpentAmounts(): AddressAmount[];
 
-   /**
-    * An array of spent amounts in build-in assets tokens on transaction inputs.
-    */
-   public abstract get assetSpentAmounts(): AddressAmount[];
+   // /**
+   //  * An array of spent amounts in build-in assets tokens on transaction inputs.
+   //  */
+   // public abstract get assetSpentAmounts(): AddressAmount[];
 
    /**
     * An array of received amounts on transaction outputs.
@@ -234,10 +237,10 @@ export abstract class TransactionBase {
     */
    public abstract get intendedReceivedAmounts(): AddressAmount[];
 
-   /**
-    * An array of received amounts in build-in tokens on transaction outputs.
-    */
-   public abstract get assetReceivedAmounts(): AddressAmount[];
+   // /**
+   //  * An array of received amounts in build-in tokens on transaction outputs.
+   //  */
+   // public abstract get assetReceivedAmounts(): AddressAmount[];
 
    /**
     * Returns transaction type as a string identifier. A set of types depends on a specific underlying chain.

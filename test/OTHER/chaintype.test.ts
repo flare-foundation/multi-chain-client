@@ -17,21 +17,6 @@ describe("Lite block base test ", function () {
          expect(en).to.eq(ChainType.invalid);
       });
 
-      it("Should get chainType : ALGO", async function () {
-         const en = MCC.getChainType("ALGO");
-         expect(en).to.eq(ChainType.ALGO);
-      });
-
-      it("Should get chainType : ALGORAND", async function () {
-         const en = MCC.getChainType("ALGORAND");
-         expect(en).to.eq(ChainType.ALGO);
-      });
-
-      it("Should get chainType : ALGO", async function () {
-         const en = MCC.getChainType(ChainType.ALGO);
-         expect(en).to.eq(ChainType.ALGO);
-      });
-
       it("Should get chainType : DOGE", async function () {
          const en = MCC.getChainType("DOGE");
          expect(en).to.eq(ChainType.DOGE);
@@ -40,16 +25,6 @@ describe("Lite block base test ", function () {
       it("Should get chainType : DOGE", async function () {
          const en = MCC.getChainType(ChainType.DOGE);
          expect(en).to.eq(ChainType.DOGE);
-      });
-
-      it("Should get chainType : LTC", async function () {
-         const en = MCC.getChainType("LTC");
-         expect(en).to.eq(ChainType.LTC);
-      });
-
-      it("Should get chainType : LTC", async function () {
-         const en = MCC.getChainType(ChainType.LTC);
-         expect(en).to.eq(ChainType.LTC);
       });
 
       it("Should get chainType : BTC", async function () {
@@ -89,11 +64,6 @@ describe("Lite block base test ", function () {
          expect(en).to.eq("XRP");
       });
 
-      it("Should get ChainTypeName : ALGO", async function () {
-         const en = MCC.getChainTypeName(ChainType.ALGO);
-         expect(en).to.eq("ALGO");
-      });
-
       it("Should get ChainTypeName : BTC", async function () {
          const en = MCC.getChainTypeName(ChainType.BTC);
          expect(en).to.eq("BTC");
@@ -102,11 +72,6 @@ describe("Lite block base test ", function () {
       it("Should get ChainTypeName : DOGE", async function () {
          const en = MCC.getChainTypeName(ChainType.DOGE);
          expect(en).to.eq("DOGE");
-      });
-
-      it("Should get ChainTypeName : LTC", async function () {
-         const en = MCC.getChainTypeName(ChainType.LTC);
-         expect(en).to.eq("LTC");
       });
    });
 

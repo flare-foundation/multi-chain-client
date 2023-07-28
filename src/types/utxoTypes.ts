@@ -1,3 +1,6 @@
+import { BlockBase, BlockHeaderBase, BlockTipBase } from "../base-objects/BlockBase";
+import { FullBlockBase } from "../base-objects/FullBlockBase";
+import { TransactionBase } from "../base-objects/TransactionBase";
 import { optional } from "../utils/typeReflection";
 import { RateLimitOptions } from "./axiosRateLimitTypes";
 import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions, RPCInterface } from "./genericMccTypes";
@@ -105,6 +108,7 @@ export interface IUtxoVinTransaction {
    sequence: number;
    txid?: string;
    vout?: number;
+   prevout?: IUtxoVoutTransaction;
    scriptSig?: IUtxoScriptSig;
    txinwitness?: string[];
 }
@@ -280,7 +284,13 @@ export type IUtxoNodeStatus = IUtxoGetBlockchainInfoRes & IUtxoGetNetworkInfoRes
 ////////////////////// MCC RPC implementation interfaces ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export interface UtxoRpcInterface extends RPCInterface {
+export interface UtxoRpcInterface<
+   BT extends BlockTipBase,
+   BH extends BlockHeaderBase,
+   B extends BlockBase,
+   FB extends FullBlockBase<T>,
+   T extends TransactionBase
+> extends RPCInterface<BT, BH, B, FB, T> {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    getBlockHeaderBase(blockHash: string): any;
 

@@ -1,6 +1,6 @@
 {
    "name": "@flarenetwork/mcc",
-   "version": "3.1.0",
+   "version": "3.2.0",
    "description": "Multi chain client",
    "main": "dist/src/index.js",
    "types": "dist/src/index.d.ts",
@@ -66,9 +66,7 @@
       "test:xrp": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/XRP/**/*.test.ts\" ",
       "test:doge": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/DOGE/**/*.test.ts\" ",
       "test:btc": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/BTC/**/*.test.ts\" ",
-      "test:ltc": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/LTC/**/*.test.ts\" ",
-      "test:algo": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/ALGO/**/*.test.ts\" ",
-      "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/[!ALGO]*/**/*.test.ts\" ",
+      "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/**/*.test.ts\" ",
       "test:coverage": "yarn nyc yarn test:all",
       "----------TESTNET-LOGIC-CHECK----------": "----------TESTNET-LOGIC-CHECK----------",
       "run_test_chain": "yarn ts-node -r dotenv/config"
@@ -103,6 +101,7 @@
       "chai-as-promised": "^7.1.1",
       "cli-progress": "^3.12.0",
       "dotenv": "16.0.1",
+      "dpdm": "^3.13.1",
       "eslint": "^8.26.0",
       "eslint-plugin-prettier": "^4.2.1",
       "mocha": "9.2.2",

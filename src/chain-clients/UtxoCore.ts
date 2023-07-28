@@ -1,9 +1,12 @@
 import axios, { AxiosInstance } from "axios";
 
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { UtxoBlockHeader } from "../base-objects/blockHeaders/UtxoBlockHeader";
+import { BlockBase, BlockHeaderBase, BlockTipBase, TransactionBase } from "../base-objects";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
+import { FullBlockBase } from "../base-objects/FullBlockBase";
+import { UtxoNodeStatus } from "../base-objects/status/UtxoStatus";
 import { getAddressByLabelResponse, IIUtxoVin, IIUtxoVout, IUtxoTransactionListRes, IUtxoWalletRes, UtxoMccCreate } from "../types";
+import { RateLimitOptions } from "../types/axiosRateLimitTypes";
 import { ChainType, getTransactionOptions, ReadRpcInterface } from "../types/genericMccTypes";
 import {
    IUtxoChainTip,
@@ -19,23 +22,18 @@ import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils
 import { mccError, mccErrorCode } from "../utils/errors";
 import { sleepMs, unPrefix0x } from "../utils/utils";
 import { utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
-import { FullBlockBase } from "../base-objects/FullBlockBase";
-import { UtxoTransaction } from "../base-objects/transactions/UtxoTransaction";
-import { UtxoBlock } from "../base-objects/blocks/UtxoBlock";
-import { UtxoNodeStatus } from "../base-objects/status/UtxoStatus";
-import { RateLimitOptions } from "../types/axiosRateLimitTypes";
 
 const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
    maxRPS: 5,
 };
 
-interface objectConstructors<
-   TranCon extends UtxoTransaction,
-   FBlockCon extends FullBlockBase<UtxoTransaction>,
-   BlockCon extends UtxoBlock,
-   BHeadCon extends UtxoBlockHeader,
-   BTipCon extends UtxoBlockTip
+export interface objectConstructors<
+   BTipCon extends BlockTipBase,
+   BHeadCon extends BlockHeaderBase,
+   BlockCon extends BlockBase,
+   FBlockCon extends FullBlockBase<TranCon>,
+   TranCon extends TransactionBase
 > {
    transactionConstructor: new (d: IUtxoGetTransactionRes, a?: IUtxoTransactionAdditionalData) => TranCon;
    fullBlockConstructor: new (d: IUtxoGetBlockRes) => FBlockCon;
@@ -45,20 +43,20 @@ interface objectConstructors<
 }
 
 export abstract class UtxoCore<
-   TranCon extends UtxoTransaction,
-   FBlockCon extends FullBlockBase<UtxoTransaction>,
-   BlockCon extends UtxoBlock,
-   BHeadCon extends UtxoBlockHeader,
-   BTipCon extends UtxoBlockTip
-> implements ReadRpcInterface
+   BTipCon extends UtxoBlockTip,
+   BHeadCon extends BlockHeaderBase,
+   BlockCon extends BlockBase,
+   FBlockCon extends FullBlockBase<TranCon>,
+   TranCon extends TransactionBase
+> implements ReadRpcInterface<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>
 {
    client: AxiosInstance;
    inRegTest: boolean;
    // eslint-disable-next-line prettier/prettier
-   constructors: objectConstructors<TranCon, FBlockCon, BlockCon, BHeadCon, BTipCon>;
+   constructors: objectConstructors<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>;
    chainType: ChainType;
 
-   constructor(createConfig: UtxoMccCreate, constructors: objectConstructors<TranCon, FBlockCon, BlockCon, BHeadCon, BTipCon>) {
+   constructor(createConfig: UtxoMccCreate, constructors: objectConstructors<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>) {
       const client = axios.create({
          baseURL: createConfig.url,
          timeout: createConfig.rateLimitOptions?.timeoutMs || DEFAULT_TIMEOUT,
@@ -135,7 +133,7 @@ export abstract class UtxoCore<
          throw new mccError(mccErrorCode.InvalidParameter);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let params: any[] = [blockHash, full ? 2 : 1];
+      let params: any[] = [blockHash, full ? 3 : 1];
       if (this.chainType === ChainType.DOGE) {
          params = [blockHash, true];
       }
@@ -211,13 +209,16 @@ export abstract class UtxoCore<
       }
       // TODO trow if txid does not match expected input
 
-      const verbose = true; // by default getting transaction is in verbose mode
       const unTxId = unPrefix0x(txId);
+      let params: any[] = [unTxId, 2];
+      if (this.chainType === ChainType.DOGE) {
+         params = [unTxId, true];
+      }
       const res = await this.client.post("", {
          jsonrpc: "1.0",
          id: "rpc",
          method: "getrawtransaction",
-         params: [unTxId, verbose],
+         params: params,
       });
       // Error codes https://github.com/bitcoin/bitcoin/blob/master/src/rpc/protocol.h
       if (utxo_check_expect_empty(res.data)) {
@@ -403,7 +404,7 @@ export abstract class UtxoCore<
          return tempTips;
       });
       // filter out duplicates
-      const reducedTips = allTips.reduce((acc: BTipCon[], nev: BTipCon[]) => acc.concat(nev), []).concat(mainBranchHashes as BTipCon[]);
+      const reducedTips = allTips.reduce((acc: BTipCon[], nev: BTipCon[]) => acc.concat(nev), []).concat(mainBranchHashes as any as BTipCon[]);
       const unique = new Set();
       return reducedTips.filter((elem: BTipCon) => {
          const key = `${elem.number}_${elem.blockHash}`;
@@ -648,7 +649,7 @@ export abstract class UtxoCore<
       }
    }
 
-   async recursive_block_tip(tip: BTipCon, processHeight: number): Promise<BTipCon[]> {
+   async recursive_block_tip(tip: BTipCon, processHeight: number): Promise<UtxoBlockTip[]> {
       if (tip.stdBlockHash === "") {
          return [];
       }
