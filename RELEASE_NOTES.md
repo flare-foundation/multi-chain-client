@@ -1,3 +1,8 @@
+# 3.2.0
+- Removed un-maintained instances for ALGO and LTC
+- Added the support for BTC version 25 (full tx verbosity)
+- Doge and btc transaction logic separation (due to node change)
+
 # 3.1.0
 
 * Dogecoin transaction parsing fix 
