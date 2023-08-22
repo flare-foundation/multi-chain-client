@@ -2,15 +2,15 @@
 export type INodeStatus = NodeStatusBase<any>;
 
 export abstract class NodeStatusBase<S> {
-   data: S;
+    data: S;
 
-   constructor(data: S) {
-      this.data = data;
-   }
+    constructor(data: S) {
+        this.data = data;
+    }
 
-   public abstract get version(): string;
-   public abstract get state(): string;
+    public abstract get version(): string;
+    public abstract get state(): string;
 
-   public abstract get isHealthy(): boolean;
-   public abstract get isSynced(): boolean;
+    public abstract get isHealthy(): boolean;
+    public abstract get isSynced(): boolean;
 }

@@ -7,223 +7,223 @@ import { UtxoTransaction, UtxoTransactionTypeOptions } from "./UtxoTransaction";
 import BN from "bn.js";
 
 export class BtcTransaction extends UtxoTransaction {
-   // Btc specific transaction
+    // Btc specific transaction
 
-   public get currencyName(): string {
-      return BTC_NATIVE_TOKEN_NAME;
-   }
+    public get currencyName(): string {
+        return BTC_NATIVE_TOKEN_NAME;
+    }
 
-   public isValidPkscript(index: number): boolean {
-      const vout = this.extractVoutAt(index);
-      if (!vout.scriptPubKey.address) return true; //OP_RETURN
-      const address = new BtcAddress(vout.scriptPubKey.address);
-      return address.addressToPkscript() == vout.scriptPubKey.hex;
-   }
+    public isValidPkscript(index: number): boolean {
+        const vout = this.extractVoutAt(index);
+        if (!vout.scriptPubKey.address) return true; //OP_RETURN
+        const address = new BtcAddress(vout.scriptPubKey.address);
+        return address.addressToPkscript() == vout.scriptPubKey.hex;
+    }
 
-   public get sourceAddresses(): (string | undefined)[] {
-      if (this.type === "coinbase") {
-         // Coinbase transactions mint coins
-         return [undefined];
-      }
+    public get sourceAddresses(): (string | undefined)[] {
+        if (this.type === "coinbase") {
+            // Coinbase transactions mint coins
+            return [undefined];
+        }
 
-      // Regular transactions
-      return this.data.vin.map((vin) => {
-         if (vin.prevout) {
-            return vin.prevout.scriptPubKey.address;
-         } else {
-            // TODO: we don't have info about the source addresses of this transaction, return undefined for now
-            // TODO: we can extract them from additional data (old way)
-            return undefined;
-         }
-      });
-   }
+        // Regular transactions
+        return this.data.vin.map((vin) => {
+            if (vin.prevout) {
+                return vin.prevout.scriptPubKey.address;
+            } else {
+                // TODO: we don't have info about the source addresses of this transaction, return undefined for now
+                // TODO: we can extract them from additional data (old way)
+                return undefined;
+            }
+        });
+    }
 
-   public get fee(): BN {
-      const error = new mccError(
-         mccErrorCode.InvalidResponse,
-         Error("fee can't be calculated, the transaction data does not contain the prevouts field (verbosity 2)")
-      );
-      if (this.type === "coinbase") {
-         // Coinbase transactions mint coins
-         return toBN(0);
-      }
-      let inSum = toBN(0);
-      if (this.hasPrevouts) {
-         inSum = this.data.vin.reduce(this.reducerFunctionPrevouts, toBN(0));
-      } else {
-         throw error;
-      }
-      const outSum = this.data.vout.reduce(this.reducerFunctionVouts, toBN(0));
-      return inSum.sub(outSum);
-   }
-
-   public get spentAmounts(): AddressAmount[] {
-      if (this.type === "coinbase") {
-         // Coinbase transactions mint coins
-         return [
-            {
-               amount: toBN(0),
-            } as AddressAmount,
-         ];
-      }
-
-      if (this.hasPrevouts) {
-         return this.data.vin.map((vin) => {
-            const address = vin.prevout && vin.prevout.scriptPubKey.address ? vin.prevout.scriptPubKey.address : undefined;
-            const value = this.toBnValue(vin?.prevout?.value || 0);
-            const addressAmount = {
-               address: address,
-               amount: value,
-               utxo: vin?.vout || 0,
-            } as AddressAmount;
-            return addressAmount;
-         });
-      } else {
-         const error = new mccError(
+    public get fee(): BN {
+        const error = new mccError(
             mccErrorCode.InvalidResponse,
             Error("fee can't be calculated, the transaction data does not contain the prevouts field (verbosity 2)")
-         );
-         throw error;
-      }
-   }
+        );
+        if (this.type === "coinbase") {
+            // Coinbase transactions mint coins
+            return toBN(0);
+        }
+        let inSum = toBN(0);
+        if (this.hasPrevouts) {
+            inSum = this.data.vin.reduce(this.reducerFunctionPrevouts, toBN(0));
+        } else {
+            throw error;
+        }
+        const outSum = this.data.vout.reduce(this.reducerFunctionVouts, toBN(0));
+        return inSum.sub(outSum);
+    }
 
-   public get type(): UtxoTransactionTypeOptions {
-      if (this.data.vin.length === 0 || this.data.vin[0].coinbase) {
-         return "coinbase";
-      }
-      if (this.hasPrevouts) return "full_payment";
-      return "payment";
-   }
+    public get spentAmounts(): AddressAmount[] {
+        if (this.type === "coinbase") {
+            // Coinbase transactions mint coins
+            return [
+                {
+                    amount: toBN(0),
+                } as AddressAmount,
+            ];
+        }
 
-   // BTC transaction specific helper methods
+        if (this.hasPrevouts) {
+            return this.data.vin.map((vin) => {
+                const address = vin.prevout && vin.prevout.scriptPubKey.address ? vin.prevout.scriptPubKey.address : undefined;
+                const value = this.toBnValue(vin?.prevout?.value || 0);
+                const addressAmount = {
+                    address: address,
+                    amount: value,
+                    utxo: vin?.vout || 0,
+                } as AddressAmount;
+                return addressAmount;
+            });
+        } else {
+            const error = new mccError(
+                mccErrorCode.InvalidResponse,
+                Error("fee can't be calculated, the transaction data does not contain the prevouts field (verbosity 2)")
+            );
+            throw error;
+        }
+    }
 
-   get hasPrevouts(): boolean {
-      return this.data.vin.every((vin) => {
-         return vin.prevout !== undefined || vin.coinbase !== undefined;
-      });
-   }
+    public get type(): UtxoTransactionTypeOptions {
+        if (this.data.vin.length === 0 || this.data.vin[0].coinbase) {
+            return "coinbase";
+        }
+        if (this.hasPrevouts) return "full_payment";
+        return "payment";
+    }
 
-   public async paymentSummary({ client, inUtxo, outUtxo }: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
-      try {
-         this.assertValidVinIndex(inUtxo);
-      } catch (e) {
-         return { status: PaymentSummaryStatus.InvalidInUtxo };
-      }
-      try {
-         this.assertValidVoutIndex(outUtxo);
-      } catch (e) {
-         return { status: PaymentSummaryStatus.InvalidOutUtxo };
-      }
+    // BTC transaction specific helper methods
 
-      if (this.type === "coinbase") {
-         return { status: PaymentSummaryStatus.Coinbase };
-      }
-      const spentAmount = this.spentAmounts[inUtxo];
-      if (!spentAmount.address) {
-         return { status: PaymentSummaryStatus.NoSpentAmountAddress };
-      }
-      const receiveAmount = this.receivedAmounts[outUtxo];
-      if (!receiveAmount.address) {
-         return { status: PaymentSummaryStatus.NoReceiveAmountAddress };
-      }
+    get hasPrevouts(): boolean {
+        return this.data.vin.every((vin) => {
+            return vin.prevout !== undefined || vin.coinbase !== undefined;
+        });
+    }
 
-      // Extract addresses from input and output fields
-      const sourceAddress = spentAmount.address;
-      const receivingAddress = receiveAmount.address;
+    public async paymentSummary({ client, inUtxo, outUtxo }: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
+        try {
+            this.assertValidVinIndex(inUtxo);
+        } catch (e) {
+            return { status: PaymentSummaryStatus.InvalidInUtxo };
+        }
+        try {
+            this.assertValidVoutIndex(outUtxo);
+        } catch (e) {
+            return { status: PaymentSummaryStatus.InvalidOutUtxo };
+        }
 
-      // We will update this once we iterate over inputs and outputs if we have full transaction
-      let oneToOne: boolean = true;
-      const isFull = this.type === "full_payment";
+        if (this.type === "coinbase") {
+            return { status: PaymentSummaryStatus.Coinbase };
+        }
+        const spentAmount = this.spentAmounts[inUtxo];
+        if (!spentAmount.address) {
+            return { status: PaymentSummaryStatus.NoSpentAmountAddress };
+        }
+        const receiveAmount = this.receivedAmounts[outUtxo];
+        if (!receiveAmount.address) {
+            return { status: PaymentSummaryStatus.NoReceiveAmountAddress };
+        }
 
-      if (isFull) {
-         let inFunds = toBN(0);
-         let returnFunds = toBN(0);
-         let outFunds = toBN(0);
-         let inFundsOfReceivingAddress = toBN(0);
+        // Extract addresses from input and output fields
+        const sourceAddress = spentAmount.address;
+        const receivingAddress = receiveAmount.address;
 
-         for (const vinAmount of this.spentAmounts) {
-            if (sourceAddress && vinAmount.address === sourceAddress) {
-               inFunds = inFunds.add(vinAmount.amount);
+        // We will update this once we iterate over inputs and outputs if we have full transaction
+        let oneToOne: boolean = true;
+        const isFull = this.type === "full_payment";
+
+        if (isFull) {
+            let inFunds = toBN(0);
+            let returnFunds = toBN(0);
+            let outFunds = toBN(0);
+            let inFundsOfReceivingAddress = toBN(0);
+
+            for (const vinAmount of this.spentAmounts) {
+                if (sourceAddress && vinAmount.address === sourceAddress) {
+                    inFunds = inFunds.add(vinAmount.amount);
+                }
+                if (receivingAddress && vinAmount.address === receivingAddress) {
+                    inFundsOfReceivingAddress = inFundsOfReceivingAddress.add(vinAmount.amount);
+                }
+                if (oneToOne && vinAmount.address != sourceAddress && vinAmount.address != receivingAddress) {
+                    oneToOne = false;
+                }
             }
-            if (receivingAddress && vinAmount.address === receivingAddress) {
-               inFundsOfReceivingAddress = inFundsOfReceivingAddress.add(vinAmount.amount);
+            for (const voutAmount of this.receivedAmounts) {
+                if (sourceAddress && voutAmount.address === sourceAddress) {
+                    returnFunds = returnFunds.add(voutAmount.amount);
+                }
+                if (receivingAddress && voutAmount.address === receivingAddress) {
+                    outFunds = outFunds.add(voutAmount.amount);
+                }
+                // Outputs without address do not break one-to-one condition
+                if (oneToOne && !voutAmount.address && voutAmount.amount.gt(toBN(0))) {
+                    oneToOne = false;
+                }
+                if (oneToOne && voutAmount.address && voutAmount.address != sourceAddress && voutAmount.address != receivingAddress) {
+                    oneToOne = false;
+                }
             }
-            if (oneToOne && vinAmount.address != sourceAddress && vinAmount.address != receivingAddress) {
-               oneToOne = false;
-            }
-         }
-         for (const voutAmount of this.receivedAmounts) {
-            if (sourceAddress && voutAmount.address === sourceAddress) {
-               returnFunds = returnFunds.add(voutAmount.amount);
-            }
-            if (receivingAddress && voutAmount.address === receivingAddress) {
-               outFunds = outFunds.add(voutAmount.amount);
-            }
-            // Outputs without address do not break one-to-one condition
-            if (oneToOne && !voutAmount.address && voutAmount.amount.gt(toBN(0))) {
-               oneToOne = false;
-            }
-            if (oneToOne && voutAmount.address && voutAmount.address != sourceAddress && voutAmount.address != receivingAddress) {
-               oneToOne = false;
-            }
-         }
-         return {
-            status: PaymentSummaryStatus.Success,
-            response: {
-               blockTimestamp: this.unixTimestamp,
-               transactionHash: this.stdTxid,
-               sourceAddressHash: standardAddressHash(sourceAddress),
-               sourceAddress,
-               receivingAddress,
-               receivingAddressHash: standardAddressHash(receivingAddress),
-               spentAmount: inFunds.sub(returnFunds),
-               receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
-               transactionStatus: this.successStatus,
-               paymentReference: this.stdPaymentReference,
+            return {
+                status: PaymentSummaryStatus.Success,
+                response: {
+                    blockTimestamp: this.unixTimestamp,
+                    transactionHash: this.stdTxid,
+                    sourceAddressHash: standardAddressHash(sourceAddress),
+                    sourceAddress,
+                    receivingAddress,
+                    receivingAddressHash: standardAddressHash(receivingAddress),
+                    spentAmount: inFunds.sub(returnFunds),
+                    receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
+                    transactionStatus: this.successStatus,
+                    paymentReference: this.stdPaymentReference,
 
-               // Intended and actual amounts are the same for utxo transactions
-               intendedSourceAddressHash: standardAddressHash(sourceAddress),
-               intendedSourceAddress: sourceAddress,
-               intendedSourceAmount: inFunds.sub(returnFunds),
+                    // Intended and actual amounts are the same for utxo transactions
+                    intendedSourceAddressHash: standardAddressHash(sourceAddress),
+                    intendedSourceAddress: sourceAddress,
+                    intendedSourceAmount: inFunds.sub(returnFunds),
 
-               intendedReceivingAddressHash: standardAddressHash(receivingAddress),
-               intendedReceivingAddress: receivingAddress,
-               intendedReceivingAmount: outFunds.sub(inFundsOfReceivingAddress),
-               oneToOne,
-               isFull,
-            },
-         };
-      } else {
-         // Since we don't have all inputs "decoded" we can't be sure that transaction is one-to-one
-         oneToOne = false;
-         const spentAmount = sourceAddress && inUtxo != null ? this.spentAmounts[inUtxo].amount : toBN(0);
-         const receivedAmount = receivingAddress && outUtxo != null ? this.receivedAmounts[outUtxo].amount : toBN(0);
+                    intendedReceivingAddressHash: standardAddressHash(receivingAddress),
+                    intendedReceivingAddress: receivingAddress,
+                    intendedReceivingAmount: outFunds.sub(inFundsOfReceivingAddress),
+                    oneToOne,
+                    isFull,
+                },
+            };
+        } else {
+            // Since we don't have all inputs "decoded" we can't be sure that transaction is one-to-one
+            oneToOne = false;
+            const spentAmount = sourceAddress && inUtxo != null ? this.spentAmounts[inUtxo].amount : toBN(0);
+            const receivedAmount = receivingAddress && outUtxo != null ? this.receivedAmounts[outUtxo].amount : toBN(0);
 
-         return {
-            status: this.isValidPkscript(outUtxo) ? PaymentSummaryStatus.Success : PaymentSummaryStatus.InvalidPkscript,
-            response: {
-               blockTimestamp: this.unixTimestamp,
-               transactionHash: this.stdTxid,
-               sourceAddress,
-               sourceAddressHash: standardAddressHash(sourceAddress),
-               receivingAddress,
-               receivingAddressHash: standardAddressHash(receivingAddress),
-               spentAmount,
-               receivedAmount,
-               paymentReference: this.stdPaymentReference,
-               transactionStatus: this.successStatus,
-               // Intended and actual amounts are the same for utxo transactions
-               intendedSourceAddressHash: standardAddressHash(sourceAddress),
-               intendedSourceAddress: sourceAddress,
-               intendedSourceAmount: spentAmount,
+            return {
+                status: this.isValidPkscript(outUtxo) ? PaymentSummaryStatus.Success : PaymentSummaryStatus.InvalidPkscript,
+                response: {
+                    blockTimestamp: this.unixTimestamp,
+                    transactionHash: this.stdTxid,
+                    sourceAddress,
+                    sourceAddressHash: standardAddressHash(sourceAddress),
+                    receivingAddress,
+                    receivingAddressHash: standardAddressHash(receivingAddress),
+                    spentAmount,
+                    receivedAmount,
+                    paymentReference: this.stdPaymentReference,
+                    transactionStatus: this.successStatus,
+                    // Intended and actual amounts are the same for utxo transactions
+                    intendedSourceAddressHash: standardAddressHash(sourceAddress),
+                    intendedSourceAddress: sourceAddress,
+                    intendedSourceAmount: spentAmount,
 
-               intendedReceivingAddressHash: standardAddressHash(receivingAddress),
-               intendedReceivingAddress: receivingAddress,
-               intendedReceivingAmount: receivedAmount,
-               oneToOne,
-               isFull,
-            },
-         };
-      }
-   }
+                    intendedReceivingAddressHash: standardAddressHash(receivingAddress),
+                    intendedReceivingAddress: receivingAddress,
+                    intendedReceivingAmount: receivedAmount,
+                    oneToOne,
+                    isFull,
+                },
+            };
+        }
+    }
 }

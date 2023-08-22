@@ -7,76 +7,76 @@ const BACKOFF_TIME_STEP_MULTIPLY = 1.2;
 const retrySleepResult = "wVgdz8YJgsUud6CPtKYH8tw4mHdLHLbgrEGsGqdWetPDKWAW5hbZ5LMz";
 
 async function retrySleepMs(ms: number): Promise<string> {
-   await sleepMs(ms);
-   return retrySleepResult;
+    await sleepMs(ms);
+    return retrySleepResult;
 }
 
 export async function retry<T>(
-   label: string,
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   funct: (...args: any) => T,
-   timeoutTime: number = 5000,
-   numRetries: number = 5,
-   backOddTimeout: number = 1000,
-   exceptionCallback: backOffTime = defaultExceptionCallback,
-   warningCallback: ILoggingCallback = defaultWarningCallback,
-   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-   failure: (label: string) => void = (label) => {}
+    label: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    funct: (...args: any) => T,
+    timeoutTime: number = 5000,
+    numRetries: number = 5,
+    backOddTimeout: number = 1000,
+    exceptionCallback: backOffTime = defaultExceptionCallback,
+    warningCallback: ILoggingCallback = defaultWarningCallback,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+    failure: (label: string) => void = (label) => {}
 ): Promise<T> {
-   try {
-      const result = await Promise.race([funct(), retrySleepMs(timeoutTime)]);
+    try {
+        const result = await Promise.race([funct(), retrySleepMs(timeoutTime)]);
 
-      if (result !== retrySleepResult) return result as T;
-      // timeout section
-      if (numRetries > 0) {
-         warningCallback(`retry ^R${label}^^ ${numRetries}`);
+        if (result !== retrySleepResult) return result as T;
+        // timeout section
+        if (numRetries > 0) {
+            warningCallback(`retry ^R${label}^^ ${numRetries}`);
 
-         await sleepMs(backOddTimeout / 2 + getSimpleRandom(backOddTimeout / 2));
+            await sleepMs(backOddTimeout / 2 + getSimpleRandom(backOddTimeout / 2));
 
-         return retry(
-            label,
-            funct,
-            timeoutTime * TIMEOUT_STEP_MULTIPLY,
-            numRetries - 1,
-            backOddTimeout * BACKOFF_TIME_STEP_MULTIPLY,
-            exceptionCallback,
-            warningCallback,
-            failure
-         );
-      } else {
-         warningCallback(`retry ^R${label}^^ failed`);
+            return retry(
+                label,
+                funct,
+                timeoutTime * TIMEOUT_STEP_MULTIPLY,
+                numRetries - 1,
+                backOddTimeout * BACKOFF_TIME_STEP_MULTIPLY,
+                exceptionCallback,
+                warningCallback,
+                failure
+            );
+        } else {
+            warningCallback(`retry ^R${label}^^ failed`);
 
-         // failure callback
-         failure(label);
+            // failure callback
+            failure(label);
 
-         //  return null; // TODO this should probably raise an error
-         throw MccError(`retry ^R${label}^^ failed`);
-      }
-   } catch (error) {
-      // exception section
-      if (numRetries > 0) {
-         exceptionCallback(error, `retry ^R${label}^^ exception (retry ${numRetries})`);
+            //  return null; // TODO this should probably raise an error
+            throw MccError(`retry ^R${label}^^ failed`);
+        }
+    } catch (error) {
+        // exception section
+        if (numRetries > 0) {
+            exceptionCallback(error, `retry ^R${label}^^ exception (retry ${numRetries})`);
 
-         await sleepMs(backOddTimeout / 2 + getSimpleRandom(backOddTimeout / 2));
+            await sleepMs(backOddTimeout / 2 + getSimpleRandom(backOddTimeout / 2));
 
-         return retry(
-            label,
-            funct,
-            timeoutTime * TIMEOUT_STEP_MULTIPLY,
-            numRetries - 1,
-            backOddTimeout * BACKOFF_TIME_STEP_MULTIPLY,
-            exceptionCallback,
-            warningCallback,
-            failure
-         );
-      } else {
-         exceptionCallback(error, `retry ^R${label}^^ exception (retry failed)`);
+            return retry(
+                label,
+                funct,
+                timeoutTime * TIMEOUT_STEP_MULTIPLY,
+                numRetries - 1,
+                backOddTimeout * BACKOFF_TIME_STEP_MULTIPLY,
+                exceptionCallback,
+                warningCallback,
+                failure
+            );
+        } else {
+            exceptionCallback(error, `retry ^R${label}^^ exception (retry failed)`);
 
-         // failure callback
-         failure(label);
+            // failure callback
+            failure(label);
 
-         //  return null;
-         throw MccError(error);
-      }
-   }
+            //  return null;
+            throw MccError(error);
+        }
+    }
 }

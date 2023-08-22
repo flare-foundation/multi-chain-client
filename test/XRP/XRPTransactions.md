@@ -14,7 +14,7 @@ Set options on an account.
 
 ### Mainnet example
 
--  327FD263132A4D08170E1B01FE1BB2E21D0126CE58165C97A9173CA9551BCD70
+-   327FD263132A4D08170E1B01FE1BB2E21D0126CE58165C97A9173CA9551BCD70
 
 ### Field grouping / native tokens
 
@@ -74,7 +74,7 @@ Delete an account.
 
 ### Mainnet example
 
--  1AF19BF9717DA0B05A3BFC5007873E7743BA54C0311CCCCC60776AAEAC5C4635
+-   1AF19BF9717DA0B05A3BFC5007873E7743BA54C0311CCCCC60776AAEAC5C4635
 
 ### Field grouping / native tokens
 
@@ -187,8 +187,8 @@ Submit an order to exchange currency.
 Send funds from one account to another.
 Mcc further differentiates between native token payments and build-in assets payments. On XRP ledger the transaction of type payment is used for both cases. The lib differentiates between the two depending on the `Amount` field.
 
--  Native Payment --- Amount is of type `string`
--  Token Payment --- Amount is of type `Object`
+-   Native Payment --- Amount is of type `string`
+-   Token Payment --- Amount is of type `Object`
 
 ### Field grouping / native tokens
 

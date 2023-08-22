@@ -9,9 +9,9 @@ import { UtxoFullBlock } from "./UtxoFullBlock";
 // }
 
 export class DogeFullBlock extends UtxoFullBlock<DogeTransaction> {
-   constructor(data: IUtxoGetBlockRes) {
-      super(data);
-      // Must be implemented in specific chain class
-      this.transactionConstructor = DogeTransaction;
-   }
+    constructor(data: IUtxoGetBlockRes) {
+        super(data);
+        // Must be implemented in specific chain class
+        this.transactionConstructor = DogeTransaction;
+    }
 }
