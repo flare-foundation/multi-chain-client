@@ -1,14 +1,13 @@
 import BN from "bn.js";
-import { MccClient, MccUtxoClient } from "../../module";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 import { IUtxoGetTransactionRes, IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { bytesToHex } from "../../utils/algoUtils";
 import { bech32Decode } from "../../utils/bech32";
 import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { ZERO_BYTES_32, btcBase58Decode, isValidBytes32Hex, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x } from "../../utils/utils";
+import { ZERO_BYTES_32, btcBase58Decode, isValidBytes32Hex, prefix0x, toBN, toHex, unPrefix0x } from "../../utils/utils";
 import { WordToOpcode } from "../../utils/utxoUtils";
-import { AddressAmount, BalanceDecreasingProps, BalanceDecreasingSummaryResponse, BalanceDecreasingSummaryStatus, TransactionBase } from "../TransactionBase";
+import { AddressAmount, TransactionBase } from "../TransactionBase";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
 // Transaction types and their description
@@ -30,14 +29,14 @@ export abstract class UtxoTransaction extends TransactionBase {
         this.privateAdditionalData = data;
     }
 
-    constructor(data: IUtxoGetTransactionRes, additionalData?: IUtxoTransactionAdditionalData) {
-        super(data, additionalData);
-        this.data.vout.forEach((vout) => {
-            this.processOutput(vout);
-        });
-        this.synchronizeAdditionalData();
-        this.assertAdditionalData();
-    }
+    // constructor(data: IUtxoGetTransactionRes, additionalData?: IUtxoTransactionAdditionalData) {
+    //     super(data, additionalData);
+    //     this.data.vout.forEach((vout) => {
+    //         this.processOutput(vout);
+    //     });
+    //     this.synchronizeAdditionalData();
+    //     this.assertAdditionalData();
+    // }
 
     public get txid(): string {
         return this.data.txid;
@@ -216,72 +215,6 @@ export abstract class UtxoTransaction extends TransactionBase {
         return TransactionSuccessStatus.SUCCESS;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async balanceDecreasingSummary({ sourceAddressIndicator, client }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
-        // We expect sourceAddressIndicator to be utxo vin index (as hex string)
-        if (!isValidBytes32Hex(sourceAddressIndicator)) {
-            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
-        }
-        const vinIndex = parseInt(sourceAddressIndicator, 16);
-        if (isNaN(vinIndex)) {
-            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
-        }
-        try {
-            this.assertValidVinIndex(vinIndex);
-        } catch (e) {
-            return { status: BalanceDecreasingSummaryStatus.InvalidInUtxo };
-        }
-        if (this.isValidAdditionalData()) {
-            const spentAmounts = this.spentAmounts;
-            const spentAmount = spentAmounts[vinIndex];
-            if (spentAmount.address) {
-                return {
-                    status: BalanceDecreasingSummaryStatus.Success,
-                    response: {
-                        blockTimestamp: this.unixTimestamp,
-                        transactionHash: this.stdTxid,
-                        sourceAddressIndicator: sourceAddressIndicator,
-                        sourceAddressHash: standardAddressHash(spentAmount.address),
-                        sourceAddress: spentAmount.address,
-                        spentAmount: spentAmount.amount,
-                        transactionStatus: this.successStatus,
-                        paymentReference: this.stdPaymentReference,
-                        isFull: true,
-                    },
-                };
-            }
-            // Else we have to extract vin
-        }
-        if (!client) {
-            throw new Error("Client not provided");
-        }
-        // TODO how to make sure client you provided is BTC client
-        const vinVout = await this.extractVinVoutAt(vinIndex, client as MccUtxoClient);
-
-        if (vinVout?.vinvout?.scriptPubKey?.address) {
-            return {
-                status: BalanceDecreasingSummaryStatus.Success,
-                response: {
-                    blockTimestamp: this.unixTimestamp,
-                    transactionHash: this.stdTxid,
-                    sourceAddressIndicator: sourceAddressIndicator,
-                    sourceAddressHash: standardAddressHash(vinVout.vinvout.scriptPubKey.address),
-                    sourceAddress: vinVout.vinvout.scriptPubKey.address,
-                    spentAmount: toBN(Math.round((vinVout.vinvout.value || 0) * BTC_MDU).toFixed(0)),
-                    transactionStatus: this.successStatus,
-                    paymentReference: this.stdPaymentReference,
-                    isFull: false,
-                },
-            };
-        }
-        // We didn't find the address we are looking for
-        return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
-    }
-
-    public async makeFull(client: MccClient): Promise<void> {
-        await this.makeFullPayment(client as MccUtxoClient);
-    }
-
     ///////////////////////////////
     //// Utxo specific methods ////
     ///////////////////////////////
@@ -307,56 +240,6 @@ export abstract class UtxoTransaction extends TransactionBase {
     }
 
     /**
-     * Asserts whether vinvouts Mapper is full mapper and only has unique and matching indices
-     */
-    assertAdditionalData() {
-        if (this.additionalData) {
-            if (this.additionalData.vinouts?.length !== this.data.vin.length) {
-                throw new mccError(mccErrorCode.InvalidParameter, Error("Bad format, Additional data vinvouts and data vin length mismatch"));
-            }
-            this.additionalData.vinouts.forEach((vinvout, ind) => {
-                if (vinvout && vinvout.index !== ind) {
-                    throw new mccError(mccErrorCode.InvalidParameter, Error("Additional data corrupted: indices mismatch"));
-                }
-            });
-        }
-    }
-
-    isValidAdditionalData(): boolean {
-        if (this.additionalData) {
-            if (this.additionalData.vinouts?.length !== this.data.vin.length) {
-                return false;
-            }
-            this.additionalData.vinouts.forEach((vinvout, ind) => {
-                if (vinvout && vinvout.index !== ind) {
-                    return false;
-                }
-            });
-            return true;
-        }
-        return false;
-    }
-
-    synchronizeAdditionalData() {
-        const tempAdditionalData = this.additionalData;
-
-        this.additionalData = {
-            vinouts: new Array(this.data.vin.length).fill(undefined),
-        };
-        if (tempAdditionalData?.vinouts) {
-            for (const vinvout of tempAdditionalData.vinouts) {
-                if (vinvout) {
-                    if (vinvout.index < 0 || vinvout.index >= this.data.vin.length || !this.additionalData || !this.additionalData.vinouts) {
-                        throw new mccError(mccErrorCode.InvalidParameter, new Error("vinvout wrong index out of range"));
-                    }
-                    this.additionalData.vinouts[vinvout.index] = vinvout;
-                    this.processOutput(vinvout.vinvout);
-                }
-            }
-        }
-    }
-
-    /**
      * Extract vout on vout index. If vout index is not valid or data is corrupted, exception is thrown.
      * @param voutIndex vout index
      * @returns vout on vout index
@@ -373,116 +256,11 @@ export abstract class UtxoTransaction extends TransactionBase {
         return toReturn;
     }
 
-    /**
-     *
-     * @param vinIndex vin index
-     * @returns vin on vin index
-     */
-    extractVinAt(vinIndex: number): IUtxoVinTransaction {
-        this.assertValidVinIndex(vinIndex);
-        return this.data.vin[vinIndex];
-    }
+    /////////////////////////////////////////////////////
+    //// Scripts and output transaction script types ////
+    /////////////// LOCKING SCRIPT METHODS //////////////
+    /////////////////////////////////////////////////////
 
-    /**
-     * Gets the vout corresponding to vin in the given vin index. If the vout is not fetched, the
-     * input transaction is read and the corresponding vout is obtained
-     * @param vinIndex vin index
-     * @param client mcc client for fetching input the transactions
-     * @returns input vout of the relevant utxo of the input transaction on the vin on the index `vinIndex`
-     */
-    private async extractVinVoutAt(vinIndex: number, client: MccUtxoClient): Promise<IUtxoVinVoutsMapper> {
-        const vinObject = this.extractVinAt(vinIndex);
-        if (!vinObject.txid) {
-            return {
-                index: vinIndex,
-                vinvout: undefined,
-            };
-        }
-        const connectedTrans = await client.getTransaction(vinObject.txid);
-        if (connectedTrans === null) {
-            return {
-                index: vinIndex,
-                vinvout: undefined,
-            };
-        }
-        return {
-            index: vinIndex,
-            vinvout: connectedTrans.extractVoutAt(vinObject.vout || 0),
-        };
-    }
-
-    /**
-     * Gets the vout corresponding to vin in the given vin index. If it is not stored in the additionalData,
-     * it's fetched and updated using the client.
-     * @param vinIndex vin index
-     * @param client mcc client to fetch transaction data
-     * @returns input vout of the relevant utxo of the input transaction on the vin on the index `vinIndex`
-     */
-    public async vinVoutAt(vinIndex: number, client?: MccUtxoClient) {
-        // note: vinouts list is always initialized
-        if (!this.additionalData) {
-            this.additionalData = {
-                vinouts: new Array(this.data.vin.length).fill(undefined),
-            };
-        }
-        if (!this.additionalData || !this.additionalData.vinouts) {
-            throw new mccError(mccErrorCode.NotImplemented, new Error(`Can not happen`));
-        }
-        let vinVout = this.additionalData.vinouts[vinIndex];
-        if (vinVout) {
-            return vinVout;
-        }
-        if (!client) {
-            throw new Error("Client not provided");
-        }
-        vinVout = await this.extractVinVoutAt(vinIndex, client);
-        this.additionalData.vinouts[vinIndex] = vinVout;
-        return vinVout;
-    }
-
-    /**
-     * Checks if the input on index `vinIndex` is fetched.
-     * @param vinIndex vin index
-     * @returns true if input on the index `vinIndex` is already fetched.
-     */
-    public isSyncedVinIndex(vinIndex: number): boolean {
-        this.assertValidVinIndex(vinIndex);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return !!this.additionalData!.vinouts![vinIndex];
-    }
-
-    /**
-     * Fetches all the vin data from input transactions and makes the payment full_payment.
-     * @param client mcc client to use for fetching input data
-     */
-    public async makeFullPayment(client: MccUtxoClient) {
-        const promises = [];
-        this.synchronizeAdditionalData();
-        for (let i = 0; i < this.data.vin.length; i++) {
-            promises.push(this.vinVoutAt(i, client as MccUtxoClient));
-        }
-        await Promise.all(promises);
-    }
-
-    /**
-     * Doge has additional brackets around addresses in out tx
-     * @param vout
-     * @returns
-     */
-    private processOutput(vout: IUtxoVoutTransaction | undefined) {
-        if (!vout) {
-            return;
-        }
-        if (vout.scriptPubKey.address) {
-            return;
-        }
-        if (vout.scriptPubKey.addresses && vout.scriptPubKey.addresses.length === 1) {
-            vout.scriptPubKey.address = vout.scriptPubKey.addresses[0];
-        }
-        // otherwise `address` stays undefined
-    }
-
-    // Scripts and output transaction script types
     /**
      * Validate that the pkscript and address for a given vout index match.
      * @param voutIndex

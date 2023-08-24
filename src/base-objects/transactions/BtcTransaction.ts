@@ -1,12 +1,28 @@
+import BN from "bn.js";
 import { BTC_NATIVE_TOKEN_NAME } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { standardAddressHash, toBN } from "../../utils/utils";
-import { AddressAmount, PaymentSummaryProps, PaymentSummaryResponse, PaymentSummaryStatus } from "../TransactionBase";
+import { isValidBytes32Hex, standardAddressHash, toBN } from "../../utils/utils";
+import {
+    AddressAmount,
+    BalanceDecreasingProps,
+    BalanceDecreasingSummaryResponse,
+    BalanceDecreasingSummaryStatus,
+    PaymentSummaryProps,
+    PaymentSummaryResponse,
+    PaymentSummaryStatus,
+    TransactionGetterFunction,
+} from "../TransactionBase";
 import { BtcAddress } from "../addressObjects/BtcAddress";
 import { UtxoTransaction, UtxoTransactionTypeOptions } from "./UtxoTransaction";
-import BN from "bn.js";
 
 export class BtcTransaction extends UtxoTransaction {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public async makeFull<BtcTransaction>(transactionGetter: TransactionGetterFunction<BtcTransaction>): Promise<void> {
+        // Not needed with verbosity 2
+        // throw new Error("Not needed with verbosity 2");
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        return;
+    }
     // Btc specific transaction
 
     public get currencyName(): string {
@@ -81,7 +97,7 @@ export class BtcTransaction extends UtxoTransaction {
         } else {
             const error = new mccError(
                 mccErrorCode.InvalidResponse,
-                Error("fee can't be calculated, the transaction data does not contain the prevouts field (verbosity 2)")
+                Error("Spent amounts can't be calculated, the transaction data does not contain the prevouts field (verbosity 2)")
             );
             throw error;
         }
@@ -103,7 +119,7 @@ export class BtcTransaction extends UtxoTransaction {
         });
     }
 
-    public async paymentSummary({ client, inUtxo, outUtxo }: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
+    public async paymentSummary<BtcTransaction>({ inUtxo, outUtxo }: PaymentSummaryProps<BtcTransaction>): Promise<PaymentSummaryResponse> {
         try {
             this.assertValidVinIndex(inUtxo);
         } catch (e) {
@@ -225,5 +241,64 @@ export class BtcTransaction extends UtxoTransaction {
                 },
             };
         }
+    }
+
+    public async balanceDecreasingSummary<BtcTransaction>({
+        sourceAddressIndicator,
+    }: BalanceDecreasingProps<BtcTransaction>): Promise<BalanceDecreasingSummaryResponse> {
+        // We expect sourceAddressIndicator to be utxo vin index (as hex string)
+        if (!isValidBytes32Hex(sourceAddressIndicator)) {
+            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
+        }
+        const vinIndex = parseInt(sourceAddressIndicator, 16);
+        if (isNaN(vinIndex)) {
+            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
+        }
+        try {
+            this.assertValidVinIndex(vinIndex);
+        } catch (e) {
+            return { status: BalanceDecreasingSummaryStatus.InvalidInUtxo };
+        }
+        const transactionType: UtxoTransactionTypeOptions = this.type;
+        switch (transactionType) {
+            case "coinbase": {
+                return { status: BalanceDecreasingSummaryStatus.Coinbase };
+            }
+            case "full_payment": {
+                const spentAmounts = this.spentAmounts;
+                const spentAmount = spentAmounts[vinIndex];
+                if (spentAmount.address) {
+                    return {
+                        status: BalanceDecreasingSummaryStatus.Success,
+                        response: {
+                            blockTimestamp: this.unixTimestamp,
+                            transactionHash: this.stdTxid,
+                            sourceAddressIndicator: sourceAddressIndicator,
+                            sourceAddressHash: standardAddressHash(spentAmount.address),
+                            sourceAddress: spentAmount.address,
+                            spentAmount: spentAmount.amount,
+                            transactionStatus: this.successStatus,
+                            paymentReference: this.stdPaymentReference,
+                            isFull: true,
+                        },
+                    };
+                } else {
+                    // The input has no address, the type is wrongly extracted (Should not happen)
+                    return { status: BalanceDecreasingSummaryStatus.InvalidTransactionDataObject };
+                }
+                return { status: BalanceDecreasingSummaryStatus.Success }; // TODO: implement
+            }
+            case "partial_payment":
+            case "payment":
+                return { status: BalanceDecreasingSummaryStatus.InvalidTransactionDataObject };
+
+            default:
+                // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+                // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+                ((_: never): void => {})(transactionType);
+        }
+
+        // We didn't find the address we are looking for
+        return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
     }
 }

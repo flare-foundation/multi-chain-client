@@ -16,6 +16,7 @@ import {
     PaymentSummaryResponse,
     PaymentSummaryStatus,
     TransactionBase,
+    TransactionGetterFunction,
     paymentNonexistenceSummaryProps,
 } from "../TransactionBase";
 import { MccClient } from "../../module";
@@ -459,7 +460,7 @@ export class XrpTransaction extends TransactionBase {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse> {
+    public async paymentSummary<XrpTransaction>(props: PaymentSummaryProps<XrpTransaction>): Promise<PaymentSummaryResponse> {
         if (this.type === "Payment" && this.isNativePayment) {
             // Is native transfer
             if (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1) {
@@ -533,7 +534,9 @@ export class XrpTransaction extends TransactionBase {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async balanceDecreasingSummary({ sourceAddressIndicator }: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse> {
+    public async balanceDecreasingSummary<XrpTransaction>({
+        sourceAddressIndicator,
+    }: BalanceDecreasingProps<XrpTransaction>): Promise<BalanceDecreasingSummaryResponse> {
         if (!isValidBytes32Hex(sourceAddressIndicator)) {
             return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
         }
@@ -580,7 +583,7 @@ export class XrpTransaction extends TransactionBase {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async makeFull(client?: MccClient): Promise<void> {
+    public async makeFull<XrpTransaction>(transactionGetter: TransactionGetterFunction<XrpTransaction>): Promise<void> {
         return;
     }
 

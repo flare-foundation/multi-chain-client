@@ -1,21 +1,21 @@
 import BN from "bn.js";
-import { MccClient } from "../module";
 import { TransactionSuccessStatus } from "../types/genericMccTypes";
 
-type SummaryBaseProps = {
-    client?: MccClient;
+export type TransactionGetterFunction<T> = (txId: string) => Promise<T>;
+type SummaryBaseProps<T> = {
+    transactionGetter?: TransactionGetterFunction<T>;
 };
 
-export type BalanceDecreasingProps = SummaryBaseProps & {
+export type BalanceDecreasingProps<T> = SummaryBaseProps<T> & {
     sourceAddressIndicator: string;
 };
 
-export type PaymentSummaryProps = SummaryBaseProps & {
+export type PaymentSummaryProps<T> = SummaryBaseProps<T> & {
     inUtxo: number;
     outUtxo: number;
 };
 
-export type paymentNonexistenceSummaryProps = SummaryBaseProps & {
+export type paymentNonexistenceSummaryProps<T> = SummaryBaseProps<T> & {
     inUtxo: number;
 };
 
@@ -55,11 +55,15 @@ export enum PaymentSummaryStatus {
     InvalidOutUtxo = "invalidOutUtxo",
     NoReceiveAmountAddress = "noReceiveAmountAddress",
     NoIntendedReceiveAmountAddress = "noIntendedReceiveAmountAddress",
+
+    // NoTransactionGetterProvided = "NoTransactionGetterProvided",
 }
 
 export enum BalanceDecreasingSummaryStatus {
     Success = "success",
+    Coinbase = "coinbase",
     InvalidInUtxo = "invalidInUtxo",
+    InvalidTransactionDataObject = "InvalidTransactionDataObject", // TODO: only possible on BTC
     NoSourceAddress = "noSourceAddress",
     NotValidSourceAddressFormat = "notValidSourceAddressFormat",
 }
@@ -108,7 +112,6 @@ export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
 export type BalanceDecreasingSummaryResponse = TransactionSummaryBase<BalanceDecreasingSummaryStatus, BalanceDecreasingSummaryObject>;
 export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus, PaymentSummaryObject>;
 export type PaymentNonexistenceSummaryResponse = TransactionSummaryBase<PaymentNonexistenceSummaryStatus, PaymentNonexistenceSummaryObject>;
-
 export abstract class TransactionBase {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected privateData: any;
@@ -274,7 +277,7 @@ export abstract class TransactionBase {
      * Make
      * @param client
      */
-    public abstract makeFull(client: MccClient): Promise<void>;
+    public abstract makeFull<T>(transactionGetter: TransactionGetterFunction<T>): Promise<void>;
 
     /**
      * Provides payment summary for a given transaction.
@@ -288,7 +291,7 @@ export abstract class TransactionBase {
      * @param props.inUtxo : Vin index for utxo chains and ignored on non utxo chains
      * @param props.outUtxo : Vout index for utxo chains and ignored on non utxo chains
      */
-    public abstract paymentSummary(props: PaymentSummaryProps): Promise<PaymentSummaryResponse>;
+    public abstract paymentSummary<T>(props: PaymentSummaryProps<T>): Promise<PaymentSummaryResponse>;
 
     /**
      * Provides balance decreasing summary for a given transaction.
@@ -301,5 +304,5 @@ export abstract class TransactionBase {
      * @param props.client : Initialized mcc client for the underlying chain
      * @param props.sourceAddressIndicator : AddressIndicator (vin index on utxo chains and standardized address hash on non utxo chains)
      */
-    public abstract balanceDecreasingSummary(props: BalanceDecreasingProps): Promise<BalanceDecreasingSummaryResponse>;
+    public abstract balanceDecreasingSummary<T>(props: BalanceDecreasingProps<T>): Promise<BalanceDecreasingSummaryResponse>;
 }
