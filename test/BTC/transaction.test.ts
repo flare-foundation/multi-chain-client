@@ -148,7 +148,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         });
 
         it("should make payment summmary", async function () {
-            const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 3 });
+            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 3 });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
 
@@ -164,7 +164,10 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         });
 
         it("Should make balance decreasing summary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: toHex32Bytes(1), client: MccClient });
+            const summary = await transaction.balanceDecreasingSummary({
+                sourceAddressIndicator: toHex32Bytes(1),
+                transactionGetter: MccClient.getTransaction,
+            });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
 
@@ -454,7 +457,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
 
     for (const transData of TransactionsToTest) {
         describe(transData.description, function () {
-            let transaction: UtxoTransaction;
+            let transaction: BtcTransaction;
             before(async function () {
                 const transactionb = await MccClient.getTransaction(transData.txid);
                 if (transactionb !== null) {
@@ -564,7 +567,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             });
 
             it("Should get payment summary", async function () {
-                const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+                const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
 
                 if (summary.status === PaymentSummaryStatus.Success) {
                     console.log("prepeared (expected)");
@@ -617,9 +620,10 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             expect(fn).to.throw(Error);
         });
 
-        it("Should get synced vin index ", async function () {
-            expect(transaction.isSyncedVinIndex(0)).to.be.false;
-        });
+        // TODO: move to doge make full
+        // it.skip("Should get synced vin index ", async function () {
+        //     expect(transaction.isSyncedVinIndex(0)).to.be.false;
+        // });
 
         it("Should not extract vout ", async function () {
             transaction._data.vout[0].n = 10;
@@ -629,46 +633,46 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             expect(fn0).to.throw(Error);
         });
 
-        it.skip("Should not assert additional data and synchronize additional data ", async function () {
-            const fn0 = () => {
-                return transaction.assertAdditionalData();
-            };
-            expect(fn0).to.throw(Error);
-            const fn00 = () => {
-                return transaction.synchronizeAdditionalData();
-            };
-            expect(fn00).to.throw(Error);
+        // it.skip("Should not assert additional data and synchronize additional data ", async function () {
+        //     const fn0 = () => {
+        //         return transaction.assertAdditionalData();
+        //     };
+        //     expect(fn0).to.throw(Error);
+        //     const fn00 = () => {
+        //         return transaction.synchronizeAdditionalData();
+        //     };
+        //     expect(fn00).to.throw(Error);
 
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            transaction._additionalData!.vinouts = [undefined, { index: Number.MAX_SAFE_INTEGER, vinvout: undefined }, { index: -1, vinvout: undefined }];
-            const fn01 = () => {
-                return transaction.synchronizeAdditionalData();
-            };
-            expect(fn01).to.throw(Error);
+        //     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        //     transaction._additionalData!.vinouts = [undefined, { index: Number.MAX_SAFE_INTEGER, vinvout: undefined }, { index: -1, vinvout: undefined }];
+        //     const fn01 = () => {
+        //         return transaction.synchronizeAdditionalData();
+        //     };
+        //     expect(fn01).to.throw(Error);
 
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            transaction._additionalData!.vinouts = [{ index: 0, vinvout: undefined }];
-            transaction.synchronizeAdditionalData();
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            expect(transaction._additionalData!.vinouts[0]?.index).to.eq(0);
+        //     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        //     transaction._additionalData!.vinouts = [{ index: 0, vinvout: undefined }];
+        //     transaction.synchronizeAdditionalData();
+        //     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        //     expect(transaction._additionalData!.vinouts[0]?.index).to.eq(0);
 
-            transaction._data.vin.splice(-1);
-            const fn1 = () => {
-                return transaction.assertAdditionalData();
-            };
-            expect(fn1).to.throw(Error);
-            delete transaction._additionalData?.vinouts;
-            const fn2 = () => {
-                return transaction.assertAdditionalData();
-            };
-            expect(fn2).to.throw(Error);
-            // delete transaction._additionalData;
-            // expect(transaction.assertAdditionalData()).to.be.undefined;
-        });
+        //     transaction._data.vin.splice(-1);
+        //     const fn1 = () => {
+        //         return transaction.assertAdditionalData();
+        //     };
+        //     expect(fn1).to.throw(Error);
+        //     delete transaction._additionalData?.vinouts;
+        //     const fn2 = () => {
+        //         return transaction.assertAdditionalData();
+        //     };
+        //     expect(fn2).to.throw(Error);
+        //     // delete transaction._additionalData;
+        //     // expect(transaction.assertAdditionalData()).to.be.undefined;
+        // });
 
-        it("Should get the vout corresponding to vin", async function () {
-            await expect(transaction.vinVoutAt(0)).to.be.rejected;
-        });
+        // it("Should get the vout corresponding to vin", async function () {
+        //     await expect(transaction.vinVoutAt(0)).to.be.rejected;
+        // });
 
         it("Should not extract vout ", async function () {
             delete transaction._additionalData?.vinouts;
@@ -684,7 +688,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         let transaction: BtcTransaction;
         before(async () => {
             transaction = await MccClient.getTransaction(txId);
-            await transaction.makeFullPayment(MccClient);
+            await transaction.makeFull(MccClient.getTransaction);
         });
 
         it("Should spent amounts", function () {

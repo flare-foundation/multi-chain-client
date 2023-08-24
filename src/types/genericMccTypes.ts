@@ -12,7 +12,8 @@ export interface ReadRpcInterface<
     BH extends BlockHeaderBase,
     B extends BlockBase,
     FB extends FullBlockBase<T>,
-    T extends TransactionBase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    T extends TransactionBase<any>
 > extends BaseRpcInterface {
     // General methods
     getNodeStatus(): Promise<INodeStatus>;
@@ -64,8 +65,14 @@ export interface WriteRpcInterface extends BaseRpcInterface {
     fundAddress(address: string, amount: number): any;
 }
 
-export interface RPCInterface<BT extends BlockTipBase, BH extends BlockHeaderBase, B extends BlockBase, FB extends FullBlockBase<T>, T extends TransactionBase>
-    extends ReadRpcInterface<BT, BH, B, FB, T>,
+export interface RPCInterface<
+    BT extends BlockTipBase,
+    BH extends BlockHeaderBase,
+    B extends BlockBase,
+    FB extends FullBlockBase<T>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    T extends TransactionBase<any>
+> extends ReadRpcInterface<BT, BH, B, FB, T>,
         WriteRpcInterface {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

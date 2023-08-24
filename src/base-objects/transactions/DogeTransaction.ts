@@ -14,7 +14,7 @@ import {
 import { DogeAddress } from "../addressObjects/DogeAddress";
 import { UtxoTransaction } from "./UtxoTransaction";
 
-export class DogeTransaction extends UtxoTransaction {
+export class DogeTransaction extends UtxoTransaction<DogeTransaction> {
     constructor(data: IUtxoGetTransactionRes, additionalData?: IUtxoTransactionAdditionalData) {
         super(data, additionalData);
         this.data.vout.forEach((vout) => {
@@ -35,11 +35,7 @@ export class DogeTransaction extends UtxoTransaction {
         return DOGE_NATIVE_TOKEN_NAME;
     }
 
-    public async paymentSummary<DogeTransaction>({
-        transactionGetter,
-        inUtxo,
-        outUtxo,
-    }: PaymentSummaryProps<DogeTransaction>): Promise<PaymentSummaryResponse> {
+    public async paymentSummary({ transactionGetter, inUtxo, outUtxo }: PaymentSummaryProps<DogeTransaction>): Promise<PaymentSummaryResponse> {
         try {
             this.assertValidVinIndex(inUtxo);
         } catch (e) {
@@ -54,6 +50,10 @@ export class DogeTransaction extends UtxoTransaction {
         // if (transactionGetter === undefined) {
         //     return { status: PaymentSummaryStatus.NoTransactionGetterProvided };
         // }
+
+        const a: TransactionGetterFunction<DogeTransaction> | undefined = transactionGetter;
+        console.log(a);
+
         await this.vinVoutAt(inUtxo, transactionGetter);
 
         if (this.type === "coinbase") {
@@ -168,7 +168,7 @@ export class DogeTransaction extends UtxoTransaction {
         }
     }
 
-    public async balanceDecreasingSummary<DogeTransaction>({
+    public async balanceDecreasingSummary({
         sourceAddressIndicator,
         transactionGetter,
     }: BalanceDecreasingProps<DogeTransaction>): Promise<BalanceDecreasingSummaryResponse> {
@@ -231,7 +231,7 @@ export class DogeTransaction extends UtxoTransaction {
         return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
     }
 
-    public async makeFull<DogeTransaction>(transactionGetter: TransactionGetterFunction<DogeTransaction>): Promise<void> {
+    public async makeFull(transactionGetter: TransactionGetterFunction<DogeTransaction>): Promise<void> {
         await this.makeFullPayment(transactionGetter);
     }
 

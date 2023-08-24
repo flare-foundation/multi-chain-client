@@ -15,7 +15,7 @@ import {
 import { BtcAddress } from "../addressObjects/BtcAddress";
 import { UtxoTransaction, UtxoTransactionTypeOptions } from "./UtxoTransaction";
 
-export class BtcTransaction extends UtxoTransaction {
+export class BtcTransaction extends UtxoTransaction<BtcTransaction> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async makeFull<BtcTransaction>(transactionGetter: TransactionGetterFunction<BtcTransaction>): Promise<void> {
         // Not needed with verbosity 2

@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { BlockBase, BlockHeaderBase, BlockTipBase, TransactionBase } from "../base-objects";
+import { BlockBase, BlockHeaderBase, BlockTipBase, TransactionBase, UtxoTransaction } from "../base-objects";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
 import { FullBlockBase } from "../base-objects/FullBlockBase";
 import { UtxoNodeStatus } from "../base-objects/status/UtxoStatus";
@@ -33,7 +33,8 @@ export interface objectConstructors<
     BHeadCon extends BlockHeaderBase,
     BlockCon extends BlockBase,
     FBlockCon extends FullBlockBase<TranCon>,
-    TranCon extends TransactionBase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    TranCon extends UtxoTransaction<any>
 > {
     transactionConstructor: new (d: IUtxoGetTransactionRes, a?: IUtxoTransactionAdditionalData) => TranCon;
     fullBlockConstructor: new (d: IUtxoGetBlockRes) => FBlockCon;
@@ -47,7 +48,8 @@ export abstract class UtxoCore<
     BHeadCon extends BlockHeaderBase,
     BlockCon extends BlockBase,
     FBlockCon extends FullBlockBase<TranCon>,
-    TranCon extends TransactionBase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    TranCon extends UtxoTransaction<any>
 > implements ReadRpcInterface<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>
 {
     client: AxiosInstance;

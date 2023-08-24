@@ -24,7 +24,7 @@ describe(`Transaction Btc test (${getTestFile(__filename)})`, function () {
         before(async () => {
             transaction = await MccClient.getTransaction(txid);
 
-            await transaction.makeFullPayment(MccClient);
+            // await transaction.makeFullPayment(MccClient.getTransaction);
         });
 
         it("Should get transaction txid ", async function () {
@@ -49,7 +49,7 @@ describe(`Transaction Btc test (${getTestFile(__filename)})`, function () {
         before(async () => {
             transaction = await MccClient.getTransaction(txid);
 
-            await transaction.makeFullPayment(MccClient);
+            // await transaction.makeFullPayment(MccClient);
         });
 
         it("Should get transaction txid ", async function () {

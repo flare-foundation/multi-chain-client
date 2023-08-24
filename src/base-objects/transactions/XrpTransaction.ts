@@ -2,6 +2,7 @@ import BN from "bn.js";
 import { Payment, Transaction, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
+import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 import { IXrpGetTransactionRes, XrpTransactionStatusPrefixes, XrpTransactionStatusTec, XrpTransactionTypeUnion } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash, toBN } from "../../utils/utils";
@@ -10,21 +11,16 @@ import {
     BalanceDecreasingProps,
     BalanceDecreasingSummaryResponse,
     BalanceDecreasingSummaryStatus,
-    PaymentNonexistenceSummaryResponse,
-    PaymentNonexistenceSummaryStatus,
     PaymentSummaryProps,
     PaymentSummaryResponse,
     PaymentSummaryStatus,
     TransactionBase,
     TransactionGetterFunction,
-    paymentNonexistenceSummaryProps,
 } from "../TransactionBase";
-import { MccClient } from "../../module";
-import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 
 // @Managed()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class XrpTransaction extends TransactionBase {
+export class XrpTransaction extends TransactionBase<XrpTransaction> {
     protected get data(): IXrpGetTransactionRes {
         return this.privateData as IXrpGetTransactionRes;
     }
@@ -460,7 +456,7 @@ export class XrpTransaction extends TransactionBase {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async paymentSummary<XrpTransaction>(props: PaymentSummaryProps<XrpTransaction>): Promise<PaymentSummaryResponse> {
+    public async paymentSummary<T extends XrpTransaction>(props: PaymentSummaryProps<XrpTransaction>): Promise<PaymentSummaryResponse> {
         if (this.type === "Payment" && this.isNativePayment) {
             // Is native transfer
             if (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1) {

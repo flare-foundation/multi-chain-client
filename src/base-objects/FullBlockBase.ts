@@ -4,7 +4,8 @@ import { TransactionBase } from "./TransactionBase";
 /**
  * Base class for blocks that also include all transactions (including information about the transaction)
  */
-export abstract class FullBlockBase<T extends TransactionBase> extends BlockBase {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export abstract class FullBlockBase<T extends TransactionBase<any>> extends BlockBase {
     /**
      * Array of transactions objects in block
      */

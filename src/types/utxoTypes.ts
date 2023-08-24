@@ -289,7 +289,8 @@ export interface UtxoRpcInterface<
     BH extends BlockHeaderBase,
     B extends BlockBase,
     FB extends FullBlockBase<T>,
-    T extends TransactionBase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    T extends TransactionBase<any>
 > extends RPCInterface<BT, BH, B, FB, T> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getBlockHeaderBase(blockHash: string): any;

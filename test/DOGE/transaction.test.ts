@@ -1,5 +1,5 @@
 import { assert, expect } from "chai";
-import { MCC, PaymentSummaryStatus, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { DogeTransaction, MCC, PaymentSummaryStatus, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -113,7 +113,7 @@ describe("Transaction DOGE base test ", function () {
 
     for (const transData of TransactionsToTest) {
         describe(transData.description, function () {
-            let transaction: UtxoTransaction;
+            let transaction: DogeTransaction;
             before(async function () {
                 transaction = await MccClient.getTransaction(transData.txid);
             });

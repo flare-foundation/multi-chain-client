@@ -98,7 +98,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary ", async function () {
-            const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
         });
 
@@ -188,7 +188,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it.skip("Should get payment summary ", async function () {
-            const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
 
@@ -285,7 +285,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it.skip("Should get payment summary ", async function () {
-            const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
             expect(summary.response!.sourceAddress).to.eq("r3zUhJWabAMMLT5n631r2wDh9RP3dN1bRy");
@@ -378,7 +378,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it.skip("Should get payment summary ", async function () {
-            const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
             expect(summary.response!.sourceAddress).to.eq("rP6JLXtRNs3tjeYnn7zUHpbfLjuyBXqhwF");
@@ -437,9 +437,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary ", async function () {
-            const summary1 = await transaction1.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
-            const summary2 = await transaction2.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
-            const summary3 = await transaction3.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+            const summary1 = await transaction1.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
+            const summary2 = await transaction2.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
+            const summary3 = await transaction3.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
             expect(summary1.status).to.eq(PaymentSummaryStatus.NotNativePayment);
             expect(summary2.status).to.eq(PaymentSummaryStatus.NotNativePayment);
             // Transaction failed

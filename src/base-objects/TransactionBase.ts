@@ -15,9 +15,9 @@ export type PaymentSummaryProps<T> = SummaryBaseProps<T> & {
     outUtxo: number;
 };
 
-export type paymentNonexistenceSummaryProps<T> = SummaryBaseProps<T> & {
-    inUtxo: number;
-};
+// export type paymentNonexistenceSummaryProps<T> = SummaryBaseProps<T> & {
+//     inUtxo: number;
+// };
 
 export interface AddressAmount {
     address?: string;
@@ -112,7 +112,7 @@ export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
 export type BalanceDecreasingSummaryResponse = TransactionSummaryBase<BalanceDecreasingSummaryStatus, BalanceDecreasingSummaryObject>;
 export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus, PaymentSummaryObject>;
 export type PaymentNonexistenceSummaryResponse = TransactionSummaryBase<PaymentNonexistenceSummaryStatus, PaymentNonexistenceSummaryObject>;
-export abstract class TransactionBase {
+export abstract class TransactionBase<T> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected privateData: any;
     // we can add additional data about transaction to this object
@@ -277,7 +277,7 @@ export abstract class TransactionBase {
      * Make
      * @param client
      */
-    public abstract makeFull<T>(transactionGetter: TransactionGetterFunction<T>): Promise<void>;
+    public abstract makeFull(transactionGetter: TransactionGetterFunction<T>): Promise<void>;
 
     /**
      * Provides payment summary for a given transaction.
@@ -291,7 +291,7 @@ export abstract class TransactionBase {
      * @param props.inUtxo : Vin index for utxo chains and ignored on non utxo chains
      * @param props.outUtxo : Vout index for utxo chains and ignored on non utxo chains
      */
-    public abstract paymentSummary<T>(props: PaymentSummaryProps<T>): Promise<PaymentSummaryResponse>;
+    public abstract paymentSummary(props: PaymentSummaryProps<T>): Promise<PaymentSummaryResponse>;
 
     /**
      * Provides balance decreasing summary for a given transaction.
@@ -304,5 +304,5 @@ export abstract class TransactionBase {
      * @param props.client : Initialized mcc client for the underlying chain
      * @param props.sourceAddressIndicator : AddressIndicator (vin index on utxo chains and standardized address hash on non utxo chains)
      */
-    public abstract balanceDecreasingSummary<T>(props: BalanceDecreasingProps<T>): Promise<BalanceDecreasingSummaryResponse>;
+    public abstract balanceDecreasingSummary(props: BalanceDecreasingProps<T>): Promise<BalanceDecreasingSummaryResponse>;
 }

@@ -34,7 +34,7 @@ describe("BTC payment summary with op return ", function () {
     });
 
     it("Should get payment summary", async function () {
-        const ps = await transaction.paymentSummary({ inUtxo: 0, outUtxo: 1, client: MccClient });
+        const ps = await transaction.paymentSummary({ inUtxo: 0, outUtxo: 1, transactionGetter: (a: string) => MccClient.getTransaction(a) });
         console.dir(ps, { depth: 10 });
     });
 });

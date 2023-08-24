@@ -24,7 +24,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         before(async () => {
             transaction = await MccClient.getTransaction(txid);
 
-            await transaction.makeFullPayment(MccClient);
+            // await transaction.makeFullPayment(MccClient);
         });
 
         it("Should get transaction txid ", async function () {
@@ -105,7 +105,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from utxo 0 to utxo 0", async function () {
-            const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 0 });
+            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
@@ -120,7 +120,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from utxo 0 to utxo 1", async function () {
-            const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 0, outUtxo: 1 });
+            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 1 });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
@@ -135,7 +135,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from utxo 1 to utxo 0", async function () {
-            const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 1, outUtxo: 0 });
+            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 1, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
 
@@ -149,7 +149,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from utxo 1 to utxo 1", async function () {
-            const summary = await transaction.paymentSummary({ client: MccClient, inUtxo: 1, outUtxo: 1 });
+            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 1, outUtxo: 1 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
 

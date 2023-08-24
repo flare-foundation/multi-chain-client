@@ -16,7 +16,7 @@ export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payme
 // - partial_payment : transaction with some vout of vins added to additional data
 // - full_payment    : transaction with vouts for all vins added to additional data
 //@Managed()
-export abstract class UtxoTransaction extends TransactionBase {
+export abstract class UtxoTransaction<T> extends TransactionBase<T> {
     protected get data(): IUtxoGetTransactionRes {
         return this.privateData as IUtxoGetTransactionRes;
     }
