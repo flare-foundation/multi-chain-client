@@ -459,7 +459,8 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
     public async paymentSummary<T extends XrpTransaction>(props: PaymentSummaryProps<XrpTransaction>): Promise<PaymentSummaryResponse> {
         if (this.type === "Payment" && this.isNativePayment) {
             // Is native transfer
-            if (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1) {
+            // Successful transaction of type payment always only one source and one receiving address
+            if (TransactionSuccessStatus.SUCCESS && (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1)) {
                 return {
                     status: PaymentSummaryStatus.UnexpectedNumberOfParticipants,
                 };
@@ -471,17 +472,16 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
                     status: PaymentSummaryStatus.NoSpentAmountAddress,
                 };
             }
-            if (!receiveAmount.address) {
+            // Successful transaction always has a receiving address
+            if (TransactionSuccessStatus.SUCCESS && !receiveAmount.address) {
                 return {
                     status: PaymentSummaryStatus.NoReceiveAmountAddress,
                 };
             }
-            if (this.successStatus !== TransactionSuccessStatus.SUCCESS) {
-                if (this.intendedSpentAmounts.length !== 1 || this.intendedReceivedAmounts.length !== 1) {
-                    return {
-                        status: PaymentSummaryStatus.UnexpectedNumberOfParticipants,
-                    };
-                }
+            if (this.intendedSpentAmounts.length !== 1 || this.intendedReceivedAmounts.length !== 1) {
+                return {
+                    status: PaymentSummaryStatus.UnexpectedNumberOfParticipants,
+                };
             }
             const intendedSpendAmounts = this.intendedSpentAmounts[0];
             const intendedReceivedAmounts = this.intendedReceivedAmounts[0];
@@ -503,8 +503,8 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
                     transactionHash: this.stdTxid,
                     sourceAddress: spendAmount.address,
                     sourceAddressHash: standardAddressHash(spendAmount.address),
-                    receivingAddressHash: standardAddressHash(receiveAmount.address),
-                    receivingAddress: receiveAmount.address,
+                    receivingAddressHash: receiveAmount.address ? standardAddressHash(receiveAmount.address) : "",
+                    receivingAddress: receiveAmount.address ? receiveAmount.address : "",
                     spentAmount: spendAmount.amount,
                     // TODO: Check if intended sent value can be set
                     receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : toBN(0),
