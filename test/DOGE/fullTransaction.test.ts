@@ -22,7 +22,7 @@ describe(`Transaction Doge test ,(${getTestFile(__filename)})`, function () {
 
         //console.log("HERE");
 
-        expect(transaction.type).to.eq("payment");
+        expect(transaction.type).to.eq("partial_payment");
 
         const getter = (a: string) => MccClient.getTransaction(a);
         // const getter = MccClient.getTransaction;
@@ -36,7 +36,7 @@ describe(`Transaction Doge test ,(${getTestFile(__filename)})`, function () {
         const txid = "a4d9dbd0047cc48526586fc6d64d4404ba594f5e152e268a48d0abbd786782bc";
         const transaction = await MccClient.getTransaction(txid);
 
-        expect(transaction.type).to.eq("payment");
+        expect(transaction.type).to.eq("partial_payment");
 
         await transaction.makeFull((a: string) => MccClient.getTransaction(a));
 

@@ -63,7 +63,7 @@ describe("Transaction DOGE base test ", function () {
                         amount: toBN(1677708425369),
                     },
                 ],
-                type: "payment",
+                type: "partial_payment",
                 isNativePayment: true,
                 currencyName: "DOGE",
                 elementaryUnits: "100000000", // number as string

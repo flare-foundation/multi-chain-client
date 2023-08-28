@@ -108,7 +108,7 @@ export class BtcTransaction extends UtxoTransaction<BtcTransaction> {
             return "coinbase";
         }
         if (this.hasPrevouts) return "full_payment";
-        return "payment";
+        return "partial_payment";
     }
 
     // BTC transaction specific helper methods
@@ -267,16 +267,30 @@ export class BtcTransaction extends UtxoTransaction<BtcTransaction> {
             case "full_payment": {
                 const spentAmounts = this.spentAmounts;
                 const spentAmount = spentAmounts[vinIndex];
-                if (spentAmount.address) {
+                const sourceAddress = spentAmount.address;
+                if (sourceAddress) {
+                    let inFunds = toBN(0);
+                    let returnFunds = toBN(0);
+
+                    for (const vinAmount of this.spentAmounts) {
+                        if (sourceAddress && vinAmount.address === sourceAddress) {
+                            inFunds = inFunds.add(vinAmount.amount);
+                        }
+                    }
+                    for (const voutAmount of this.receivedAmounts) {
+                        if (sourceAddress && voutAmount.address === sourceAddress) {
+                            returnFunds = returnFunds.add(voutAmount.amount);
+                        }
+                    }
                     return {
                         status: BalanceDecreasingSummaryStatus.Success,
                         response: {
                             blockTimestamp: this.unixTimestamp,
                             transactionHash: this.stdTxid,
                             sourceAddressIndicator: sourceAddressIndicator,
-                            sourceAddressHash: standardAddressHash(spentAmount.address),
-                            sourceAddress: spentAmount.address,
-                            spentAmount: spentAmount.amount,
+                            sourceAddressHash: standardAddressHash(sourceAddress),
+                            sourceAddress: sourceAddress,
+                            spentAmount: inFunds.sub(returnFunds),
                             transactionStatus: this.successStatus,
                             paymentReference: this.stdPaymentReference,
                             isFull: true,
@@ -289,7 +303,6 @@ export class BtcTransaction extends UtxoTransaction<BtcTransaction> {
                 return { status: BalanceDecreasingSummaryStatus.Success }; // TODO: implement
             }
             case "partial_payment":
-            case "payment":
                 return { status: BalanceDecreasingSummaryStatus.InvalidTransactionDataObject };
 
             default:

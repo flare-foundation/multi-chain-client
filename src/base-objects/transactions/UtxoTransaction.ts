@@ -9,7 +9,7 @@ import { ZERO_BYTES_32, btcBase58Decode, isValidBytes32Hex, prefix0x, toBN, toHe
 import { WordToOpcode } from "../../utils/utxoUtils";
 import { AddressAmount, TransactionBase } from "../TransactionBase";
 
-export type UtxoTransactionTypeOptions = "coinbase" | "payment" | "partial_payment" | "full_payment";
+export type UtxoTransactionTypeOptions = "coinbase" | "partial_payment" | "full_payment";
 // Transaction types and their description
 // - coinbase        : transaction that mints new coins
 // - payment         : what you get from node
@@ -182,7 +182,7 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
         let hasUndefined = false;
         let hasDefined = false;
         if (!this.additionalData || !this.additionalData.vinouts) {
-            return "payment";
+            return "partial_payment";
         }
         for (let i = 0; i < this.additionalData.vinouts.length; i++) {
             const vinOut = this.additionalData.vinouts[i];
@@ -196,10 +196,7 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
         if (hasDefined && !hasUndefined) {
             return "full_payment";
         }
-        if (hasDefined) {
-            return "partial_payment";
-        }
-        return "payment";
+        return "partial_payment";
     }
 
     public get isNativePayment(): boolean {

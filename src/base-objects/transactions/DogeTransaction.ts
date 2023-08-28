@@ -12,7 +12,7 @@ import {
     TransactionGetterFunction,
 } from "../TransactionBase";
 import { DogeAddress } from "../addressObjects/DogeAddress";
-import { UtxoTransaction } from "./UtxoTransaction";
+import { UtxoTransaction, UtxoTransactionTypeOptions } from "./UtxoTransaction";
 
 export class DogeTransaction extends UtxoTransaction<DogeTransaction> {
     constructor(data: IUtxoGetTransactionRes, additionalData?: IUtxoTransactionAdditionalData) {
@@ -52,7 +52,7 @@ export class DogeTransaction extends UtxoTransaction<DogeTransaction> {
         // }
 
         const a: TransactionGetterFunction<DogeTransaction> | undefined = transactionGetter;
-        console.log(a);
+        //console.log(a);
 
         await this.vinVoutAt(inUtxo, transactionGetter);
 
@@ -185,50 +185,83 @@ export class DogeTransaction extends UtxoTransaction<DogeTransaction> {
         } catch (e) {
             return { status: BalanceDecreasingSummaryStatus.InvalidInUtxo };
         }
-        if (this.isValidAdditionalData()) {
-            const spentAmounts = this.spentAmounts;
-            const spentAmount = spentAmounts[vinIndex];
-            if (spentAmount.address) {
-                return {
-                    status: BalanceDecreasingSummaryStatus.Success,
-                    response: {
-                        blockTimestamp: this.unixTimestamp,
-                        transactionHash: this.stdTxid,
-                        sourceAddressIndicator: sourceAddressIndicator,
-                        sourceAddressHash: standardAddressHash(spentAmount.address),
-                        sourceAddress: spentAmount.address,
-                        spentAmount: spentAmount.amount,
-                        transactionStatus: this.successStatus,
-                        paymentReference: this.stdPaymentReference,
-                        isFull: true,
-                    },
-                };
-            }
-            // Else we have to extract vin
-        }
-        if (!transactionGetter) {
-            throw new Error("Transaction getter not provided");
-        }
-        const vinVout = await this.extractVinVoutAt(vinIndex, transactionGetter);
 
-        if (vinVout?.vinvout?.scriptPubKey?.address) {
-            return {
-                status: BalanceDecreasingSummaryStatus.Success,
-                response: {
-                    blockTimestamp: this.unixTimestamp,
-                    transactionHash: this.stdTxid,
-                    sourceAddressIndicator: sourceAddressIndicator,
-                    sourceAddressHash: standardAddressHash(vinVout.vinvout.scriptPubKey.address),
-                    sourceAddress: vinVout.vinvout.scriptPubKey.address,
-                    spentAmount: toBN(Math.round((vinVout.vinvout.value || 0) * BTC_MDU).toFixed(0)),
-                    transactionStatus: this.successStatus,
-                    paymentReference: this.stdPaymentReference,
-                    isFull: false,
-                },
-            };
+        const transactionType: UtxoTransactionTypeOptions = this.type;
+        console.log(transactionType);
+        switch (transactionType) {
+            case "coinbase": {
+                return { status: BalanceDecreasingSummaryStatus.Coinbase };
+            }
+            case "full_payment": {
+                const spentAmounts = this.spentAmounts;
+                const spentAmount = spentAmounts[vinIndex];
+                const sourceAddress = spentAmount.address;
+                if (sourceAddress) {
+                    let inFunds = toBN(0);
+                    let returnFunds = toBN(0);
+
+                    for (const vinAmount of this.spentAmounts) {
+                        if (sourceAddress && vinAmount.address === sourceAddress) {
+                            inFunds = inFunds.add(vinAmount.amount);
+                        }
+                    }
+                    for (const voutAmount of this.receivedAmounts) {
+                        if (sourceAddress && voutAmount.address === sourceAddress) {
+                            returnFunds = returnFunds.add(voutAmount.amount);
+                        }
+                    }
+                    return {
+                        status: BalanceDecreasingSummaryStatus.Success,
+                        response: {
+                            blockTimestamp: this.unixTimestamp,
+                            transactionHash: this.stdTxid,
+                            sourceAddressIndicator: sourceAddressIndicator,
+                            sourceAddressHash: standardAddressHash(sourceAddress),
+                            sourceAddress: sourceAddress,
+                            spentAmount: inFunds.sub(returnFunds),
+                            transactionStatus: this.successStatus,
+                            paymentReference: this.stdPaymentReference,
+                            isFull: true,
+                        },
+                    };
+                } else {
+                    // The input has no address, the type is wrongly extracted (Should not happen)
+                    return { status: BalanceDecreasingSummaryStatus.InvalidTransactionDataObject };
+                }
+                return { status: BalanceDecreasingSummaryStatus.Success }; // TODO: implement
+            }
+            case "partial_payment": {
+                if (!transactionGetter) {
+                    throw new Error("Transaction getter not provided");
+                }
+                const vinVout = await this.extractVinVoutAt(vinIndex, transactionGetter);
+
+                if (vinVout?.vinvout?.scriptPubKey?.address) {
+                    return {
+                        status: BalanceDecreasingSummaryStatus.Success,
+                        response: {
+                            blockTimestamp: this.unixTimestamp,
+                            transactionHash: this.stdTxid,
+                            sourceAddressIndicator: sourceAddressIndicator,
+                            sourceAddressHash: standardAddressHash(vinVout.vinvout.scriptPubKey.address),
+                            sourceAddress: vinVout.vinvout.scriptPubKey.address,
+                            spentAmount: toBN(Math.round((vinVout.vinvout.value || 0) * BTC_MDU).toFixed(0)),
+                            transactionStatus: this.successStatus,
+                            paymentReference: this.stdPaymentReference,
+                            isFull: false,
+                        },
+                    };
+                }
+                return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
+            }
+            default:
+                // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+                // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+                (_: never): void => {};
+                // We didn't find the address we are looking for
+
+                return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
         }
-        // We didn't find the address we are looking for
-        return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
     }
 
     public async makeFull(transactionGetter: TransactionGetterFunction<DogeTransaction>): Promise<void> {
