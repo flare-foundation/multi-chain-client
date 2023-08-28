@@ -82,23 +82,6 @@ describe("Type where no xrp or assets are transferred", function () {
         it("should correctly parse receivedAmounts", async function () {
             expect(transaction.receivedAmounts).to.deep.equal([]);
         });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-        });
     });
 
     describe("CheckCreate", function () {
@@ -123,23 +106,6 @@ describe("Type where no xrp or assets are transferred", function () {
 
         it("should correctly parse receivedAmounts", async function () {
             expect(transaction.receivedAmounts).to.deep.equal([]);
-        });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
         });
     });
 
@@ -170,23 +136,6 @@ describe("Type where no xrp or assets are transferred", function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-        });
     });
 
     describe("NFTokenBurn", function () {
@@ -215,23 +164,6 @@ describe("Type where no xrp or assets are transferred", function () {
         it("should correctly parse receivedAmounts", async function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
-        });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
         });
     });
 
@@ -262,23 +194,6 @@ describe("Type where no xrp or assets are transferred", function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-        });
     });
 
     describe("NFTokenCreateOffer", function () {
@@ -307,23 +222,6 @@ describe("Type where no xrp or assets are transferred", function () {
         it("should correctly parse receivedAmounts", async function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
-        });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
         });
     });
 
@@ -354,23 +252,6 @@ describe("Type where no xrp or assets are transferred", function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-        });
     });
 
     describe("OfferCancel", function () {
@@ -399,23 +280,6 @@ describe("Type where no xrp or assets are transferred", function () {
         it("should correctly parse receivedAmounts", async function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
-        });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
         });
     });
 
@@ -446,23 +310,6 @@ describe("Type where no xrp or assets are transferred", function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-        });
     });
 
     describe("SignerListSet", function () {
@@ -491,23 +338,6 @@ describe("Type where no xrp or assets are transferred", function () {
         it("should correctly parse receivedAmounts", async function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
-        });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
         });
     });
 
@@ -538,23 +368,6 @@ describe("Type where no xrp or assets are transferred", function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-        });
     });
 
     describe("TrustSet", function () {
@@ -583,23 +396,6 @@ describe("Type where no xrp or assets are transferred", function () {
         it("should correctly parse receivedAmounts", async function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
-        });
-
-        // Token transfers
-        it.skip("should correctly parse assetSourceAddresses", async function () {
-            expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivingAddresses", async function () {
-            expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetSpentAmounts", async function () {
-            expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        });
-
-        it.skip("should correctly parse assetReceivedAmounts", async function () {
-            expect(transaction.assetReceivedAmounts).to.deep.equal([]);
         });
     });
 });

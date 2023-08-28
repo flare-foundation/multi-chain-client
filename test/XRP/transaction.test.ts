@@ -4,6 +4,7 @@ import { MCC, PaymentSummaryStatus, traceManager, TransactionSuccessStatus } fro
 import { getTestFile } from "../testUtils";
 import { TransactionMetadata } from "xrpl";
 import { XrpTransaction } from "../../src/base-objects";
+import { assert } from "console";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -187,18 +188,11 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(transaction.successStatus).to.eq(0);
         });
 
-        it.skip("Should get payment summary ", async function () {
+        it("Should get payment summary ", async function () {
             const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
-            expect(summary.status).to.eq(PaymentSummaryStatus.Success);
-            expect(summary.response).to.exist;
 
-            expect(summary.response!.sourceAddress).to.eq("rBy7gEjA6AJytwZAUKYfXvGAf5Y1koFCX1");
-            expect(summary.response!.receivingAddress).to.eq(undefined);
-            expect(summary.response!.spentAmount.toNumber()).to.eq(20);
-            expect(summary.response!.receivedAmount.toNumber()).to.eq(undefined);
-            expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-            expect(summary.response!.oneToOne).to.eq(true);
-            expect(summary.response!.isFull).to.eq(true);
+            expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
+            assert(!summary.response);
         });
     });
 
@@ -284,7 +278,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(transaction.successStatus).to.eq(0);
         });
 
-        it.skip("Should get payment summary ", async function () {
+        it("Should get payment summary ", async function () {
             const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
@@ -377,17 +371,10 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(transaction.successStatus).to.eq(0);
         });
 
-        it.skip("Should get payment summary ", async function () {
+        it("Should get payment summary ", async function () {
             const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
-            expect(summary.status).to.eq(PaymentSummaryStatus.Success);
-            expect(summary.response).to.exist;
-            expect(summary.response!.sourceAddress).to.eq("rP6JLXtRNs3tjeYnn7zUHpbfLjuyBXqhwF");
-            expect(summary.response!.receivingAddress).to.eq(undefined);
-            expect(summary.response!.spentAmount?.toNumber()).to.eq(10);
-            expect(summary.response!.receivedAmount?.toNumber()).to.eq(undefined);
-            expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-            expect(summary.response!.oneToOne).to.eq(true);
-            expect(summary.response!.isFull).to.eq(true);
+            expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
+            assert(!summary.response);
         });
 
         // it("Should received amount 2 ", async function () {
@@ -447,7 +434,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
     });
 
-    describe.skip("Reference tests ", function () {
+    describe("Reference tests ", function () {
         let transaction: XrpTransaction;
         const txid = "C32ACF8CCF4F48B7AE097873AA2B7672DC66E05D4F1B3133DA90D1F476B1EAC6";
         before(async function () {

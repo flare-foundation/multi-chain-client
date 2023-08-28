@@ -78,10 +78,6 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
         return sourceAddresses;
     }
 
-    public get assetSourceAddresses(): (string | undefined)[] {
-        throw new Error("Method not implemented.");
-    }
-
     public get receivingAddresses(): string[] {
         const receivingAddresses: string[] = [];
         for (const addAmm of this.receivedAmounts) {
@@ -90,10 +86,6 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
             }
         }
         return receivingAddresses;
-    }
-
-    public get assetReceivingAddresses(): (string | undefined)[] {
-        throw new Error("Method not implemented.");
     }
 
     public get fee(): BN {
@@ -264,10 +256,6 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
         }
     }
 
-    public get assetSpentAmounts(): AddressAmount[] {
-        throw new Error("Method not implemented.");
-    }
-
     public get receivedAmounts(): AddressAmount[] {
         if (typeof this.data.result.meta === "string" || !this.data.result.meta) {
             throw new Error("Transaction meta is not available thus received amounts cannot be calculated");
@@ -333,10 +321,6 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
             default:
                 throw new Error(`Intended received amounts for transaction type ${this.type} are not implemented`);
         }
-    }
-
-    public get assetReceivedAmounts(): AddressAmount[] {
-        throw new Error("Method not implemented.");
     }
 
     public get type(): XrpTransactionTypeUnion {
