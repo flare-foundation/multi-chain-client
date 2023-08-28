@@ -16,11 +16,11 @@ describe(`Transaction Doge test ,(${getTestFile(__filename)})`, function () {
         MccClient = new MCC.DOGE(DogeMccConnection);
     });
 
-    it.only("Should update transaction type when making full ", async function () {
+    it("Should update transaction type when making full ", async function () {
         const txid = "a4d9dbd0047cc48526586fc6d64d4404ba594f5e152e268a48d0abbd786782bc";
         const transaction = await MccClient.getTransaction(txid);
 
-        console.log("HERE");
+        //console.log("HERE");
 
         expect(transaction.type).to.eq("payment");
 
@@ -42,6 +42,6 @@ describe(`Transaction Doge test ,(${getTestFile(__filename)})`, function () {
 
         expect(transaction.type).to.eq("full_payment");
 
-        console.dir(transaction._additionalData);
+        //console.dir(transaction._additionalData);
     });
 });

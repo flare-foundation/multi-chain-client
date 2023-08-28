@@ -1,5 +1,15 @@
 import { assert, expect } from "chai";
-import { AddressAmount, MCC, PaymentSummaryStatus, TransactionSuccessStatus, XrpTransaction, toBN, traceManager } from "../../src";
+import {
+    AddressAmount,
+    BalanceDecreasingSummaryStatus,
+    MCC,
+    PaymentSummaryStatus,
+    TransactionSuccessStatus,
+    XrpTransaction,
+    standardAddressHash,
+    toBN,
+    traceManager,
+} from "../../src";
 import { AddressAmountEqual } from "../testUtils";
 
 const XRPMccConnection = {
@@ -47,7 +57,16 @@ describe("Failed transactions", function () {
             });
             expect(summary.status, "status").to.eq(PaymentSummaryStatus.Success);
 
-            console.log(summary.response);
+            assert(summary.response);
+        });
+
+        it("Should get balance decreasing summary", async function () {
+            const indicator = standardAddressHash("rKbb74HAdKBWPyJC6Q7p8m2BMrBgRs5uWT");
+            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: indicator });
+            expect(summary.status, "status").to.eq(BalanceDecreasingSummaryStatus.Success);
+
+            assert(summary.response);
+            expect(summary.response.transactionStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
         });
     });
 
@@ -78,6 +97,23 @@ describe("Failed transactions", function () {
             expect(() => {
                 transaction.intendedReceivedAmounts;
             }).to.throw("Intended received amounts for transaction type OfferCreate are not implemented");
+        });
+
+        it("Should get payment summary", async function () {
+            const summary = await transaction.paymentSummary({
+                inUtxo: 0,
+                outUtxo: 0,
+            });
+            expect(summary.status, "status").to.eq(PaymentSummaryStatus.NotNativePayment);
+        });
+
+        it("Should get balance decreasing summary", async function () {
+            const indicator = standardAddressHash("rQp6dDmvv53z9NjCzi2HYMg1jMXSwAsBJ6");
+            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: indicator });
+            expect(summary.status, "status").to.eq(BalanceDecreasingSummaryStatus.Success);
+
+            assert(summary.response);
+            expect(summary.response.transactionStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
         });
     });
 

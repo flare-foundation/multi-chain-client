@@ -389,7 +389,9 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
 
         it("should get payment summary", async function () {
             const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
-            expect(summary.status).to.eq(PaymentSummaryStatus.UnexpectedNumberOfParticipants);
+            expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+            assert(summary.response);
+            expect(summary.response.transactionStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
             // expect(summary.response!.spentAmount.toString()).to.eq("10");
             // expect(summary.response!.receivedAmount.toString()).to.eq("0");
             // expect(summary.response!.receivedAmount.toString()).to.eq("0");

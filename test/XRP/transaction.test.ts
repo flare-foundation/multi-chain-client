@@ -443,7 +443,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(summary1.status).to.eq(PaymentSummaryStatus.NotNativePayment);
             expect(summary2.status).to.eq(PaymentSummaryStatus.NotNativePayment);
             // Transaction failed
-            expect(summary3.status).to.eq(PaymentSummaryStatus.UnexpectedNumberOfParticipants);
+            expect(summary3.status).to.eq(PaymentSummaryStatus.Success);
         });
     });
 

@@ -305,7 +305,7 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
             return false;
         }
         const vout = this.extractVoutAt(voutIndex);
-        console.dir(vout);
+        // console.dir(vout);
         const address = vout.scriptPubKey.address;
         if (!address) {
             return false;

@@ -13,7 +13,7 @@ const BtcMccConnection = {
     },
 } as UtxoMccCreate;
 
-describe(`summaries, , ${getTestFile(__filename)}`, function () {
+describe(`summaries, (${getTestFile(__filename)})`, function () {
     let MccClient: MCC.BTC;
 
     before(async function () {
@@ -81,19 +81,19 @@ describe(`summaries, , ${getTestFile(__filename)}`, function () {
     });
 
     describe("BTC payment summary with op return ", function () {
-        let transaction: BtcTransaction;
+        let transaction1: BtcTransaction;
         const txid = "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684";
 
         before(async function () {
-            transaction = await MccClient.getTransaction(txid);
+            transaction1 = await MccClient.getTransaction(txid);
         });
 
         it("Should be full transaction", async function () {
-            expect(transaction.type).to.eq("full_payment");
+            expect(transaction1.type).to.eq("full_payment");
         });
 
         it("Should get invalid in utxo error", async function () {
-            const error = await transaction.paymentSummary({
+            const error = await transaction1.paymentSummary({
                 transactionGetter: MccClient.getTransaction,
                 inUtxo: 0,
                 outUtxo: 0,
