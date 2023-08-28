@@ -195,7 +195,7 @@ export interface IUtxoVinVoutsMapper {
 }
 
 export interface IUtxoTransactionAdditionalData {
-    vinouts?: (IUtxoVinVoutsMapper | undefined)[];
+    vinouts?: (IUtxoVinVoutsMapper | undefined)[]; // TODO: update to prevout s
 }
 
 // Status methods

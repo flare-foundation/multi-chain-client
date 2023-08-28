@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, UtxoMccCreate } from "../../src";
+import { IUtxoVinVoutsMapper, MCC, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const DogeMccConnection = {
@@ -8,6 +8,12 @@ const DogeMccConnection = {
     password: process.env.DOGE_PASSWORD || "",
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
+
+interface AdditionalDataAsserts {
+    index: number;
+    value: number;
+    address: string;
+}
 
 describe(`Transaction Doge test ,(${getTestFile(__filename)})`, function () {
     let MccClient: MCC.DOGE;
@@ -42,6 +48,45 @@ describe(`Transaction Doge test ,(${getTestFile(__filename)})`, function () {
 
         expect(transaction.type).to.eq("full_payment");
 
-        //console.dir(transaction._additionalData);
+        // console.dir(transaction._additionalData);
+
+        const addData: IUtxoVinVoutsMapper[] = transaction._additionalData.vinouts;
+
+        let indexCounter = 0;
+
+        const expected_add: AdditionalDataAsserts[] = [
+            {
+                index: 0,
+                value: 3967436.83298823,
+                address: "D9gTzd79xNDLWfA1BvU3B231ykPvcYy96P",
+            },
+            {
+                index: 1,
+                value: 353.657103,
+                address: "D9gTzd79xNDLWfA1BvU3B231ykPvcYy96P",
+            },
+            {
+                index: 2,
+                value: 1.00000001,
+                address: "D9gTzd79xNDLWfA1BvU3B231ykPvcYy96P",
+            },
+            {
+                index: 3,
+                value: 556.75685312,
+                address: "D9gTzd79xNDLWfA1BvU3B231ykPvcYy96P",
+            },
+        ];
+
+        for (const prevout of addData) {
+            // console.log(prevout);
+            expect(prevout.index).to.eq(indexCounter);
+            const addresses = prevout.vinvout ? prevout.vinvout?.scriptPubKey.addresses : ["null"];
+            const address = addresses ? (addresses.length >= 1 ? addresses[0] : "null") : "null";
+
+            expect(address).to.eq(expected_add[indexCounter].address);
+            expect(prevout.vinvout?.value).to.eq(expected_add[indexCounter].value);
+
+            indexCounter += 1;
+        }
     });
 });
