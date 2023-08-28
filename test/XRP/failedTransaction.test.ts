@@ -1,5 +1,5 @@
 import { assert, expect } from "chai";
-import { AddressAmount, MCC, TransactionSuccessStatus, XrpTransaction, toBN, traceManager } from "../../src";
+import { AddressAmount, MCC, PaymentSummaryStatus, TransactionSuccessStatus, XrpTransaction, toBN, traceManager } from "../../src";
 import { AddressAmountEqual } from "../testUtils";
 
 const XRPMccConnection = {
@@ -38,6 +38,16 @@ describe("Failed transactions", function () {
         it("Should get intendedReceivedAmounts", function () {
             const expected: AddressAmount[] = [{ address: "rfLyN2k3KShu6kEuXgzQsmiK4xRLsaU8Ad", amount: toBN("42") }];
             assert(AddressAmountEqual(transaction.intendedReceivedAmounts, expected));
+        });
+
+        it("Should get payment summary", async function () {
+            const summary = await transaction.paymentSummary({
+                inUtxo: 0,
+                outUtxo: 0,
+            });
+            expect(summary.status, "status").to.eq(PaymentSummaryStatus.Success);
+
+            console.log(summary.response);
         });
     });
 

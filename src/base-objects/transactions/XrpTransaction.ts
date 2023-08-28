@@ -467,13 +467,16 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
             }
             const spendAmount = this.spentAmounts[0];
             const receiveAmount = this.receivedAmounts[0];
+
+            const receiveAddress = receiveAmount && receiveAmount.address ? receiveAmount.address : "";
+
             if (!spendAmount.address) {
                 return {
                     status: PaymentSummaryStatus.NoSpentAmountAddress,
                 };
             }
-            // Successful transaction always has a receiving address
-            if (TransactionSuccessStatus.SUCCESS && !receiveAmount.address) {
+            // Successful payment transaction always has a receiving address
+            if (TransactionSuccessStatus.SUCCESS && receiveAddress) {
                 return {
                     status: PaymentSummaryStatus.NoReceiveAmountAddress,
                 };
@@ -503,8 +506,8 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
                     transactionHash: this.stdTxid,
                     sourceAddress: spendAmount.address,
                     sourceAddressHash: standardAddressHash(spendAmount.address),
-                    receivingAddressHash: receiveAmount.address ? standardAddressHash(receiveAmount.address) : "",
-                    receivingAddress: receiveAmount.address ? receiveAmount.address : "",
+                    receivingAddressHash: standardAddressHash(receiveAddress),
+                    receivingAddress: receiveAddress,
                     spentAmount: spendAmount.amount,
                     // TODO: Check if intended sent value can be set
                     receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : toBN(0),
