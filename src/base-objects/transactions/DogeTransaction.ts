@@ -187,7 +187,6 @@ export class DogeTransaction extends UtxoTransaction<DogeTransaction> {
         }
 
         const transactionType: UtxoTransactionTypeOptions = this.type;
-        console.log(transactionType);
         switch (transactionType) {
             case "coinbase": {
                 return { status: BalanceDecreasingSummaryStatus.Coinbase };
