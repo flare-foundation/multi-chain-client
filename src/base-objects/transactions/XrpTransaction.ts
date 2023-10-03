@@ -490,7 +490,7 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
                     transactionHash: this.stdTxid,
                     sourceAddress: spendAmount.address,
                     sourceAddressHash: standardAddressHash(spendAmount.address),
-                    receivingAddressHash: standardAddressHash(receiveAddress),
+                    receivingAddressHash: receiveAddress ? standardAddressHash(receiveAddress) : ZERO_BYTES_32,
                     receivingAddress: receiveAddress,
                     spentAmount: spendAmount.amount,
                     // TODO: Check if intended sent value can be set
