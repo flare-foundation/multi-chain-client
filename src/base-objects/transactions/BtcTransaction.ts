@@ -216,7 +216,7 @@ export class BtcTransaction extends UtxoTransaction<BtcTransaction> {
             const receivedAmount = receivingAddress && outUtxo != null ? this.receivedAmounts[outUtxo].amount : toBN(0);
 
             return {
-                status: this.isValidPkscript(outUtxo) ? PaymentSummaryStatus.Success : PaymentSummaryStatus.InvalidPkscript,
+                status: PaymentSummaryStatus.Success,
                 response: {
                     blockTimestamp: this.unixTimestamp,
                     transactionHash: this.stdTxid,
