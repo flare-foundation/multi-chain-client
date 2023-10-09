@@ -497,8 +497,6 @@ export class XrpTransaction extends TransactionBase<XrpTransaction> {
                     receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : toBN(0),
                     transactionStatus: this.successStatus,
                     // For transactions that are not successful but still in block
-                    intendedSourceAddressHash: standardAddressHash(intendedSpendAmounts.address),
-                    intendedSourceAddress: intendedSpendAmounts.address,
                     intendedSourceAmount: toBN(intendedSpendAmounts.amount),
 
                     intendedReceivingAddressHash: standardAddressHash(intendedReceivedAmounts.address),

@@ -12,7 +12,6 @@ import {
     PaymentSummaryStatus,
     TransactionGetterFunction,
 } from "../TransactionBase";
-import { BtcAddress } from "../addressObjects/BtcAddress";
 import { UtxoTransaction, UtxoTransactionTypeOptions } from "./UtxoTransaction";
 
 export class BtcTransaction extends UtxoTransaction<BtcTransaction> {
@@ -27,13 +26,6 @@ export class BtcTransaction extends UtxoTransaction<BtcTransaction> {
 
     public get currencyName(): string {
         return BTC_NATIVE_TOKEN_NAME;
-    }
-
-    public isValidPkscript(index: number): boolean {
-        const vout = this.extractVoutAt(index);
-        if (!vout.scriptPubKey.address) return true; //OP_RETURN
-        const address = new BtcAddress(vout.scriptPubKey.address);
-        return address.addressToPkscript() == vout.scriptPubKey.hex;
     }
 
     public get sourceAddresses(): (string | undefined)[] {
@@ -196,12 +188,7 @@ export class BtcTransaction extends UtxoTransaction<BtcTransaction> {
                     receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
                     transactionStatus: this.successStatus,
                     paymentReference: this.stdPaymentReference,
-
-                    // Intended and actual amounts are the same for utxo transactions
-                    intendedSourceAddressHash: standardAddressHash(sourceAddress),
-                    intendedSourceAddress: sourceAddress,
                     intendedSourceAmount: inFunds.sub(returnFunds),
-
                     intendedReceivingAddressHash: standardAddressHash(receivingAddress),
                     intendedReceivingAddress: receivingAddress,
                     intendedReceivingAmount: outFunds.sub(inFundsOfReceivingAddress),
@@ -228,11 +215,7 @@ export class BtcTransaction extends UtxoTransaction<BtcTransaction> {
                     receivedAmount,
                     paymentReference: this.stdPaymentReference,
                     transactionStatus: this.successStatus,
-                    // Intended and actual amounts are the same for utxo transactions
-                    intendedSourceAddressHash: standardAddressHash(sourceAddress),
-                    intendedSourceAddress: sourceAddress,
                     intendedSourceAmount: spentAmount,
-
                     intendedReceivingAddressHash: standardAddressHash(receivingAddress),
                     intendedReceivingAddress: receivingAddress,
                     intendedReceivingAmount: receivedAmount,

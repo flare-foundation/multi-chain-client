@@ -39,7 +39,6 @@ export enum PaymentNonexistenceSummaryStatus {
     InvalidInUtxo = "invalidInUtxo",
     NoSpentAmountAddress = "noSpentAmountAddress",
     NoIntendedSpentAmountAddress = "noIntendedSpentAmountAddress",
-    InvalidPkscript = "invalidPkscript",
 }
 
 export enum PaymentSummaryStatus {
@@ -50,7 +49,6 @@ export enum PaymentSummaryStatus {
     InvalidInUtxo = "invalidInUtxo",
     NoSpentAmountAddress = "noSpentAmountAddress",
     NoIntendedSpentAmountAddress = "noIntendedSpentAmountAddress",
-    InvalidPkscript = "invalidPkscript",
 
     InvalidOutUtxo = "invalidOutUtxo",
     NoReceiveAmountAddress = "noReceiveAmountAddress",
@@ -83,15 +81,10 @@ export interface PaymentSummaryObject extends SummaryObjectBase {
     receivingAddressHash: string;
     receivingAddress: string;
     receivedAmount: BN;
-
-    intendedSourceAddressHash: string;
-    intendedSourceAddress: string;
     intendedSourceAmount: BN;
-
     intendedReceivingAddressHash: string;
     intendedReceivingAddress: string;
     intendedReceivingAmount: BN;
-
     oneToOne: boolean;
     isFull: boolean;
 }
@@ -100,7 +93,6 @@ export interface PaymentNonexistenceSummaryObject extends SummaryObjectBase {
     intendedSourceAddressHash: string;
     intendedSourceAddress: string;
     intendedSourceAmount: BN;
-
     isFull: boolean;
 }
 

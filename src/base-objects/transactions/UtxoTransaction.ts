@@ -1,11 +1,9 @@
 import BN from "bn.js";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 import { IUtxoGetTransactionRes, IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
-import { bytesToHex } from "../../utils/algoUtils";
-import { bech32Decode } from "../../utils/bech32";
 import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { ZERO_BYTES_32, btcBase58Decode, isValidBytes32Hex, prefix0x, toBN, toHex, unPrefix0x } from "../../utils/utils";
+import { ZERO_BYTES_32, isValidBytes32Hex, prefix0x, toBN, toHex, unPrefix0x } from "../../utils/utils";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import { AddressAmount, TransactionBase } from "../TransactionBase";
 
@@ -251,124 +249,5 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
             );
         }
         return toReturn;
-    }
-
-    /////////////////////////////////////////////////////
-    //// Scripts and output transaction script types ////
-    /////////////// LOCKING SCRIPT METHODS //////////////
-    /////////////////////////////////////////////////////
-
-    /**
-     * Validate that the pkscript and address for a given vout index match.
-     * @param voutIndex
-     */
-    public abstract isValidPkscript(voutIndex: number): boolean;
-
-    /**
-     * Weather a output is a valid "nice" payment output currently P2PKH or P2PK
-     * @param voutIndex index of the output we are checking
-     * @returns weather a vout script is standard P2PKH or P2PK
-     */
-    public isValidPaymentScript(voutIndex: number): boolean {
-        return this.isP2PKH(voutIndex) || this.isP2PK(voutIndex);
-    }
-
-    //// P2PKH
-
-    /**
-     * Checks if the output on index `voutIndex` is P2PKH. (Pay to public key hash)
-     * @param voutIndex index of the output we are checking
-     * @returns weather a vout script is standard P2PKH
-     */
-    public isP2PKH(voutIndex: number): boolean {
-        const vout = this.extractVoutAt(voutIndex);
-        const script_commands = vout.scriptPubKey.asm.split(" ");
-        return (
-            script_commands.length === 5 &&
-            script_commands[0] === "OP_DUP" &&
-            script_commands[1] === "OP_HASH160" &&
-            script_commands[3] === "OP_EQUALVERIFY" &&
-            script_commands[4] === "OP_CHECKSIG"
-        );
-    }
-
-    /**
-     * Checks that address specified by `address` is actually the one that can redeem the script for a valid P2PKH output script
-     * @param voutIndex index of the output we are checking
-     * @returns weather the output script is spendable by address
-     */
-    public isValidP2PKH(voutIndex: number): boolean {
-        if (!this.isP2PKH(voutIndex)) {
-            return false;
-        }
-        const vout = this.extractVoutAt(voutIndex);
-        // console.dir(vout);
-        const address = vout.scriptPubKey.address;
-        if (!address) {
-            return false;
-        }
-        const addressHex = btcBase58Decode(address);
-        // This is the version check for P2PKH
-        if (addressHex[0] !== 0x00) {
-            return false;
-        }
-        const xx = bytesToHex(addressHex.slice(1, 21));
-        const script_commands = vout.scriptPubKey.asm.split(" ");
-        const hash = script_commands[2];
-        return hash === xx;
-    }
-
-    //// P2WPKH
-
-    public isP2WPKH(voutIndex: number): boolean {
-        const vout = this.extractVoutAt(voutIndex);
-        console.dir(vout);
-        const script_commands = vout.scriptPubKey.asm.split(" ");
-        return script_commands.length === 2 && script_commands[0] === "0";
-    }
-
-    //this is to ok
-    public isValidP2WPKH(voutIndex: number): boolean {
-        if (!this.isP2WPKH(voutIndex)) {
-            return false;
-        }
-        const vout = this.extractVoutAt(voutIndex);
-        const address = vout.scriptPubKey.address;
-        if (!address) {
-            return false;
-        }
-        // let addressData: string;
-        // testnet must start with tb1
-        // if (address.startsWith("bc1")) {
-        //    addressData = address.slice(3);
-        // } else {
-        //    return false;
-        // }
-        const addressHex = bech32Decode(address);
-        // console.dir(addressHex);
-        // This is the version check for P2PKH
-        const script_commands = vout.scriptPubKey.asm.split(" ");
-        const hash = script_commands[1];
-        return false;
-    }
-
-    //// P2PK
-
-    /**
-     * Checks if the output on index `voutIndex` is P2PK. (Pay to public key)
-     * @param voutIndex index of the output we are checking
-     * @returns weather a vout script is standard P2PK
-     */
-    public isP2PK(voutIndex: number): boolean {
-        const vout = this.extractVoutAt(voutIndex);
-        const script_commands = vout.scriptPubKey.asm.split(" ");
-        return script_commands.length === 2 && script_commands[1] === "OP_CHECKSIG";
-    }
-
-    public isValidP2PK(voutIndex: number): boolean {
-        if (!this.isP2PK(voutIndex)) {
-            return false;
-        }
-        throw new Error("Not implemented");
     }
 }
