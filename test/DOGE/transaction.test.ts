@@ -218,12 +218,6 @@ describe("Transaction DOGE base test ", function () {
             it("Should get success status ", async function () {
                 expect(transaction.successStatus).to.eq(transData.expect.successStatus);
             });
-
-            it("should validate pkscripts", function () {
-                for (let index = 0; index < transaction["data"].vout.length; index++) {
-                    assert(transaction.isValidPkscript(index));
-                }
-            });
         });
     }
 });

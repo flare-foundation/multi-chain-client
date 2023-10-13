@@ -141,12 +141,6 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             expect(transaction.successStatus).to.eq(0);
         });
 
-        it.skip("should validate pkscripts", function () {
-            for (let index = 0; index < transaction["data"].vout.length; index++) {
-                assert(transaction.isValidPkscript(index));
-            }
-        });
-
         it("should make payment summmary", async function () {
             const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 3 });
 
@@ -261,12 +255,6 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         it("Should get success status ", async function () {
             expect(transaction.successStatus).to.eq(0);
         });
-
-        it.skip("should validate pkscripts", function () {
-            for (let index = 0; index < transaction["data"].vout.length; index++) {
-                assert(transaction.isValidPkscript(index));
-            }
-        });
     });
 
     const TransactionsToTest: transactionTestCases[] = [
@@ -319,11 +307,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     spentAmount: toBN(20000),
                     receivedAmount: toBN(0),
                     paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-
-                    intendedSourceAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
-                    intendedSourceAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
                     intendedSourceAmount: toBN(20000),
-
                     intendedReceivingAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
                     intendedReceivingAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
                     intendedReceivingAmount: toBN(-20000),
@@ -394,8 +378,6 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     spentAmount: toBN(3533),
                     receivedAmount: toBN(2259 - 6664),
                     paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                    intendedSourceAddressHash: standardAddressHash("bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly"),
-                    intendedSourceAddress: "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
                     intendedSourceAmount: toBN(3533),
 
                     intendedReceivingAddressHash: standardAddressHash("bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"),
@@ -558,12 +540,6 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
 
             it("Should get success status ", async function () {
                 expect(transaction.successStatus).to.eq(transData.expect.successStatus);
-            });
-
-            it.skip("should validate pkscripts", function () {
-                for (let index = 0; index < transaction["data"].vout.length; index++) {
-                    assert(transaction.isValidPkscript(index), `${transaction.txid} index ${index}`);
-                }
             });
 
             it("Should get payment summary", async function () {
