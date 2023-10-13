@@ -43,9 +43,6 @@ export class DogeTransaction extends UtxoTransaction<DogeTransaction> {
         //     return { status: PaymentSummaryStatus.NoTransactionGetterProvided };
         // }
 
-        const a: TransactionGetterFunction<DogeTransaction> | undefined = transactionGetter;
-        //console.log(a);
-
         await this.vinVoutAt(inUtxo, transactionGetter);
 
         if (this.type === "coinbase") {
@@ -418,4 +415,15 @@ export class DogeTransaction extends UtxoTransaction<DogeTransaction> {
         }
         // otherwise `address` stays undefined
     }
+}
+
+function processDogeData(data: IUtxoGetTransactionRes): IUtxoGetTransactionRes {
+    data.vout.forEach((vout) => {
+        if (vout) {
+            if (!vout.scriptPubKey.address && vout.scriptPubKey.addresses && vout.scriptPubKey.addresses.length === 1) {
+                vout.scriptPubKey.address = vout.scriptPubKey.addresses[0];
+            }
+        }
+    });
+    return data;
 }
