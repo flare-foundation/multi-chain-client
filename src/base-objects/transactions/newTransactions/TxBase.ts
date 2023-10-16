@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { TransactionSuccessStatus } from "../../../types/genericMccTypes";
+import { ChainType, TransactionSuccessStatus } from "../../../types/genericMccTypes";
 
 export interface AddressAmount {
     address?: string;
@@ -96,6 +96,11 @@ export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus
 
 export abstract class TxBase<T> {
     constructor(protected data: T) {}
+
+    /**
+     * Source chain of the transaction
+     */
+    public abstract get chain(): ChainType;
 
     /**
      * Transaction ID
