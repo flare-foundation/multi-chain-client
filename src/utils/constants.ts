@@ -16,6 +16,9 @@ export const PREFIXED_STD_BLOCK_HASH_REGEX = /^(0x)[a-fA-F0-9]{64}$/;
 // Satoshi to BTC 100_000_000
 export const BTC_MDU = 1e8;
 
+// Koinu to DOGE 100_000_000
+export const DOGE_MDU = 1e8;
+
 // Ripple drops 1_000_000
 export const XRP_MDU = 1e6;
 
