@@ -93,11 +93,13 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         switch (this.type) {
             case "payment": {
                 let fee = new BN(0);
+
                 this.spentAmounts.forEach((addressAmount) => {
-                    fee.add(addressAmount.amount);
+                    fee = fee.add(addressAmount.amount);
                 });
+
                 this.receivedAmounts.forEach((addressAmount) => {
-                    fee.sub(addressAmount.amount);
+                    fee = fee.sub(addressAmount.amount);
                 });
                 return fee;
             }

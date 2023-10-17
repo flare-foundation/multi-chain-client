@@ -25,26 +25,26 @@ describe(`Account delete type (${getTestFile(__filename)})`, function () {
             //  console.dir(transaction.data, { depth: null });
         });
 
-        it("should correctly parse sourceAddresses", async function () {
+        it("should correctly parse sourceAddresses", function () {
             expect(transaction.sourceAddresses).to.deep.equal(["rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre"]);
         });
 
-        it("should correctly parse receivingAddresses", async function () {
+        it("should correctly parse receivingAddresses", function () {
             expect(transaction.receivingAddresses).to.deep.equal(["rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"]);
         });
 
-        it("should correctly parse spentAmounts", async function () {
+        it("should correctly parse spentAmounts", function () {
             const expected = [{ address: "rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre", amount: toBN("2000000").add(toBN("12665795")) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
-        it("should correctly parse receivedAmounts", async function () {
+        it("should correctly parse receivedAmounts", function () {
             const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("12665795") }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
 
-        it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre") });
+        it("should get balanceDecreasingSummary", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre"));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq(toBN("2000000").add(toBN("12665795")).toString());
         });

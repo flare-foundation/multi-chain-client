@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { MCC, XrpNodeStatus } from "../../src";
+import { getTestFile } from "../testUtils";
 
 const XRPMccConnection = {
     url: process.env.XRP_URL || "",
@@ -11,7 +12,7 @@ const XRPMccConnection = {
     },
 };
 
-describe("Block Xrp base test ", function () {
+describe(`Block Xrp base test (${getTestFile(__filename)})`, function () {
     let MccClient: MCC.XRP;
     let status: XrpNodeStatus;
 
@@ -22,7 +23,7 @@ describe("Block Xrp base test ", function () {
 
     it("Should get status version ", async function () {
         const version = status.version.split("_");
-        expect(version[0]).to.be.oneOf(["1.9.1", "1.8.5", "1.9.4", "1.10.0", "1.10.1", "1.11.0"]);
+        expect(version[0]).to.be.oneOf(["1.9.1", "1.8.5", "1.9.4", "1.10.0", "1.10.1", "1.11.0", "1.12.0"]);
     });
 
     it("Should get status state ", async function () {

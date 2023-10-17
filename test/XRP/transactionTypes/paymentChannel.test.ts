@@ -52,7 +52,7 @@ describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
         });
 
         it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressPay) });
+            const summary = await transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).add(toBN(value)).toString());
         });
@@ -106,27 +106,10 @@ describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
         });
 
         it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressPay) });
+            const summary = await transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).add(toBN(value)).toString());
         });
-
-        // // Token transfers
-        // it.skip("should correctly parse assetSourceAddresses", async function () {
-        //    expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        // });
-
-        // it.skip("should correctly parse assetReceivingAddresses", async function () {
-        //    expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        // });
-
-        // it.skip("should correctly parse assetSpentAmounts", async function () {
-        //    expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        // });
-
-        // it.skip("should correctly parse assetReceivedAmounts", async function () {
-        //    expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-        // });
     });
 
     describe("PaymentChannelClaim", function () {
@@ -141,50 +124,33 @@ describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
             transaction = await MccClient.getTransaction(txId);
         });
 
-        it("should correctly parse sourceAddresses", async function () {
+        it("should correctly parse sourceAddresses", function () {
             expect(transaction.sourceAddresses).to.deep.equal([]);
         });
 
-        it("should correctly parse feeSignerTotalAmount address amount", async function () {
+        it("should correctly parse feeSignerTotalAmount address amount", function () {
             const expected = { address: addressRec, amount: toBN(fee).sub(toBN(value)) };
             expect(singleAddressAmountEqual(transaction.feeSignerTotalAmount, expected)).to.be.true;
         });
 
-        it("should correctly parse receivingAddresses", async function () {
+        it("should correctly parse receivingAddresses", function () {
             expect(transaction.receivingAddresses).to.deep.equal([addressRec]);
         });
 
-        it("should correctly parse spentAmounts", async function () {
+        it("should correctly parse spentAmounts", function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
-        it("should correctly parse receivedAmounts", async function () {
+        it("should correctly parse receivedAmounts", function () {
             const expected = [{ address: addressRec, amount: toBN(value).sub(toBN(fee)) }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
 
-        it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressRec) });
+        it("should get balanceDecreasingSummary", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressRec));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).sub(toBN(value)).toString());
         });
-
-        // // Token transfers
-        // it.skip("should correctly parse assetSourceAddresses", async function () {
-        //    expect(transaction.assetSourceAddresses).to.deep.equal([]);
-        // });
-
-        // it.skip("should correctly parse assetReceivingAddresses", async function () {
-        //    expect(transaction.assetReceivingAddresses).to.deep.equal([]);
-        // });
-
-        // it.skip("should correctly parse assetSpentAmounts", async function () {
-        //    expect(transaction.assetSpentAmounts).to.deep.equal([]);
-        // });
-
-        // it.skip("should correctly parse assetReceivedAmounts", async function () {
-        //    expect(transaction.assetReceivedAmounts).to.deep.equal([]);
-        // });
     });
 });

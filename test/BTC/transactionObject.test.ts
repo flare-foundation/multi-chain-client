@@ -35,10 +35,6 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
             expect(transaction.stdTxid).to.eq("4d58bd737d87eb2011ba7e0d33d3a0c8f94f13020dd096f8d1b96849c9660a53");
         });
 
-        it("Should get transaction hash ", async function () {
-            expect(transaction.hash).to.eq("c16f1d89e5e82ecfebe57f3ff5fc1c7a6144964a133da24ec3216965cf787cfd");
-        });
-
         it("Should get transaction reference array ", async function () {
             expect(transaction.reference.length).to.eq(0);
         });
@@ -85,7 +81,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get type ", async function () {
-            expect(transaction.type).to.eq("full_payment");
+            expect(transaction.type).to.eq("payment");
         });
 
         it("Should check if native payment ", async function () {
@@ -105,7 +101,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from utxo 0 to utxo 0", async function () {
-            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
@@ -116,11 +112,10 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
             expect(summary.response!.receivedAmount?.toNumber()).to.eq(494000000);
             expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
             expect(summary.response!.oneToOne).to.eq(false);
-            expect(summary.response!.isFull).to.eq(true);
         });
 
         it("Should get payment summary from utxo 0 to utxo 1", async function () {
-            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 1 });
+            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 1 });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
@@ -131,11 +126,10 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
             expect(summary.response!.receivedAmount?.toNumber()).to.eq(305960000);
             expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
             expect(summary.response!.oneToOne).to.eq(false);
-            expect(summary.response!.isFull).to.eq(true);
         });
 
         it("Should get payment summary from utxo 1 to utxo 0", async function () {
-            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 1, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 1, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
 
@@ -145,11 +139,10 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
             expect(summary.response!.receivedAmount?.toNumber()).to.eq(494000000);
             expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
             expect(summary.response!.oneToOne).to.eq(false);
-            expect(summary.response!.isFull).to.eq(true);
         });
 
         it("Should get payment summary from utxo 1 to utxo 1", async function () {
-            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 1, outUtxo: 1 });
+            const summary = transaction.paymentSummary({ inUtxo: 1, outUtxo: 1 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
 
@@ -159,7 +152,6 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
             expect(summary.response!.receivedAmount?.toNumber()).to.eq(305960000);
             expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
             expect(summary.response!.oneToOne).to.eq(false);
-            expect(summary.response!.isFull).to.eq(true);
         });
     });
 });

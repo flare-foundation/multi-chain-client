@@ -4,7 +4,7 @@ import { UtxoBlock } from "../blocks/UtxoBlock";
 import { UtxoTransaction } from "../transactions/UtxoTransaction";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class UtxoFullBlock<T extends UtxoTransaction<any>> extends UtxoBlock implements FullBlockBase<T> {
+export class UtxoFullBlock<T extends UtxoTransaction> extends UtxoBlock implements FullBlockBase<T> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transactionConstructor: any;
     constructor(data: IUtxoGetBlockRes) {

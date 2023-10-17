@@ -49,36 +49,9 @@ describe(`Transaction Doge test ,(${getTestFile(__filename)})`, function () {
 
     it("Should update transaction type when making full ", async function () {
         const transaction = await MccClient.getTransaction(txid);
-        expect(transaction.type).to.eq("partial_payment");
-
-        const getter = (a: string) => MccClient.getTransaction(a);
-        await transaction.makeFull(getter);
+        expect(transaction.type).to.eq("payment");
 
         expect(transaction.type).to.eq("full_payment");
-    });
-
-    it("Should check additional data ", async function () {
-        const transaction = await MccClient.getTransaction(txid);
-        expect(transaction.type).to.eq("partial_payment");
-
-        await transaction.makeFull((a: string) => MccClient.getTransaction(a));
-
-        expect(transaction.type).to.eq("full_payment");
-        const addData: IUtxoVinVoutsMapper[] = transaction._additionalData.vinouts;
-
-        let indexCounter = 0;
-
-        for (const prevout of addData) {
-            // console.log(prevout);
-            expect(prevout.index).to.eq(indexCounter);
-            const addresses = prevout.vinvout ? prevout.vinvout?.scriptPubKey.addresses : ["null"];
-            const address = addresses ? (addresses.length >= 1 ? addresses[0] : "null") : "null";
-
-            expect(address).to.eq(expected_add[indexCounter].address);
-            expect(prevout.vinvout?.value).to.eq(expected_add[indexCounter].value);
-
-            indexCounter += 1;
-        }
     });
 
     describe("On Full transaction", async function () {
@@ -86,8 +59,6 @@ describe(`Transaction Doge test ,(${getTestFile(__filename)})`, function () {
 
         before(async function () {
             transaction = await MccClient.getTransaction(txid);
-            const getter = (a: string) => MccClient.getTransaction(a);
-            await transaction.makeFull(getter);
         });
 
         it("Should check payment summary inUtxo: 0 ; outUtxo: 0 ", async function () {

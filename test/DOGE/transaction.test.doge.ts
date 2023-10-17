@@ -130,10 +130,6 @@ describe("Transaction DOGE base test ", function () {
                 expect(transaction.stdTxid).to.eq(transData.expect.stdTxid);
             });
 
-            it("Should get transaction hash ", async function () {
-                expect(transaction.hash).to.eq(transData.expect.hash);
-            });
-
             it("Should get transaction reference array ", async function () {
                 expect(transaction.reference.length).to.eq(transData.expect.reference.length);
                 const a = transaction.reference.sort();

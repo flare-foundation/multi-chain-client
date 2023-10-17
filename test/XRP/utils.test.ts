@@ -5,27 +5,27 @@ import { checkTransactionTypes } from "./xrplJsTransactionTypesCheck";
 import { XrpTransaction } from "../../src/base-objects";
 
 describe("Test utils ", function () {
-    it("should convert empty address to bytes ", async function () {
+    it("should convert empty address to bytes ", function () {
         const byts = rippleAddressToBytes("");
 
         expect(byts.length).to.eq(1);
     });
 
-    it("should convert classic account to bytes ", async function () {
+    it("should convert classic account to bytes ", function () {
         const acc = "r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd";
         const byts = rippleAddressToBytes(acc);
 
         expect(byts.length).to.eq(20);
     });
 
-    it("should convert x-account to bytes ", async function () {
+    it("should convert x-account to bytes ", function () {
         const acc = "XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi";
         const byts = rippleAddressToBytes(acc);
 
         expect(byts.length).to.eq(20);
     });
 
-    it("should check that classic and x-account to bytes match ", async function () {
+    it("should check that classic and x-account to bytes match ", function () {
         const acc = "XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi";
         const classicAcc = "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf";
         const byts = rippleAddressToBytes(acc);
@@ -36,7 +36,7 @@ describe("Test utils ", function () {
         expect(Buffer.compare(byts, cByts)).to.eq(0);
     });
 
-    it("should encode and decode to same acc string ", async function () {
+    it("should encode and decode to same acc string ", function () {
         const classicAcc = "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf";
         const cByts = rippleAddressToBytes(classicAcc);
         const decode = bytesToRippleAddress(cByts);
@@ -45,7 +45,7 @@ describe("Test utils ", function () {
         expect(classicAcc).to.eq(decode);
     });
 
-    it("should not convert from bytes to ripple address", async function () {
+    it("should not convert from bytes to ripple address", function () {
         const byts = Buffer.from("0x00");
         const fn = () => {
             return bytesToRippleAddress(byts);
@@ -55,7 +55,7 @@ describe("Test utils ", function () {
         expect(fn).to.throw(er);
     });
 
-    it("should not decode from x-account to bytes ", async function () {
+    it("should not decode from x-account to bytes ", function () {
         const acc = "XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi";
         const classicAcc = "rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf";
         const byts = rippleAddressToBytes(acc);
@@ -65,7 +65,7 @@ describe("Test utils ", function () {
         expect(classicAcc).to.eq(decode);
     });
 
-    it("should convert from ripple time to unix epoch", async function () {
+    it("should convert from ripple time to unix epoch", function () {
         //1.1.2022 in ripple time = 694310400
         //1.1.2022 in unix epoch = 1640995200
         const rt2022 = 694310400;
@@ -74,7 +74,7 @@ describe("Test utils ", function () {
         expect(res).to.equal(expected);
     });
 
-    it("should convert from unix epoch to ripple time", async function () {
+    it("should convert from unix epoch to ripple time", function () {
         //1.1.2022 in ripple time = 694310400
         //1.1.2022 in unix epoch = 1640995200
         const ux2022 = 1640995200;

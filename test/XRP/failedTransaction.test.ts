@@ -24,7 +24,7 @@ describe("Failed transactions", function () {
     traceManager.displayStateOnException = false;
     const MccClient = new MCC.XRP(XRPMccConnection);
 
-    describe("Transaction payment: receiver's fault", async function () {
+    describe("Transaction payment: receiver's fault", function () {
         let transaction: XrpTransaction;
         const tx_id = "1EB2504C2632414C110D74EE2A1E9357CE2845672D2FEB5BC79160AB25067A8D";
 
@@ -50,8 +50,8 @@ describe("Failed transactions", function () {
             assert(AddressAmountEqual(transaction.intendedReceivedAmounts, expected));
         });
 
-        it("Should get payment summary", async function () {
-            const summary = await transaction.paymentSummary({
+        it("Should get payment summary", function () {
+            const summary = transaction.paymentSummary({
                 inUtxo: 0,
                 outUtxo: 0,
             });
@@ -60,9 +60,9 @@ describe("Failed transactions", function () {
             assert(summary.response);
         });
 
-        it("Should get balance decreasing summary", async function () {
+        it("Should get balance decreasing summary", function () {
             const indicator = standardAddressHash("rKbb74HAdKBWPyJC6Q7p8m2BMrBgRs5uWT");
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: indicator });
+            const summary = transaction.balanceDecreasingSummary(indicator);
             expect(summary.status, "status").to.eq(BalanceDecreasingSummaryStatus.Success);
 
             assert(summary.response);
@@ -70,7 +70,7 @@ describe("Failed transactions", function () {
         });
     });
 
-    describe("Transaction not payment: sender's fault", async function () {
+    describe("Transaction not payment: sender's fault", function () {
         let transaction: XrpTransaction;
 
         const tx_id = "585D3AAEF6ABF72B6E43F54FDCFA3F6AFA463BA3C28B0D787F0C10AAD2178A5B";
@@ -99,17 +99,17 @@ describe("Failed transactions", function () {
             }).to.throw("Intended received amounts for transaction type OfferCreate are not implemented");
         });
 
-        it("Should get payment summary", async function () {
-            const summary = await transaction.paymentSummary({
+        it("Should get payment summary", function () {
+            const summary = transaction.paymentSummary({
                 inUtxo: 0,
                 outUtxo: 0,
             });
             expect(summary.status, "status").to.eq(PaymentSummaryStatus.NotNativePayment);
         });
 
-        it("Should get balance decreasing summary", async function () {
+        it("Should get balance decreasing summary", function () {
             const indicator = standardAddressHash("rQp6dDmvv53z9NjCzi2HYMg1jMXSwAsBJ6");
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: indicator });
+            const summary = transaction.balanceDecreasingSummary(indicator);
             expect(summary.status, "status").to.eq(BalanceDecreasingSummaryStatus.Success);
 
             assert(summary.response);

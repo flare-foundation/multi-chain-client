@@ -36,20 +36,20 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             transaction = await MccClient.getTransaction("7BF105CFE4EFE78ADB63FE4E03A851440551FE189FD4B51CAAD9279C9F534F0E");
         });
 
-        it("should correctly parse sourceAddresses", async function () {
+        it("should correctly parse sourceAddresses", function () {
             expect(transaction.sourceAddresses).to.deep.equal(["rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"]);
         });
 
-        it("should correctly parse receivingAddresses", async function () {
+        it("should correctly parse receivingAddresses", function () {
             expect(transaction.receivingAddresses).to.deep.equal([]);
         });
 
-        it("should correctly parse spentAmounts", async function () {
+        it("should correctly parse spentAmounts", function () {
             const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("10") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
-        it("should correctly parse receivedAmounts", async function () {
+        it("should correctly parse receivedAmounts", function () {
             expect(transaction.receivedAmounts).to.deep.equal([]);
         });
 
@@ -65,24 +65,24 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             assert(AddressAmountEqual(intRecAmt, expected));
         });
 
-        it("should get payment summary", async function () {
-            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
+        it("should get payment summary", function () {
+            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
         });
 
-        it("should get balanceDecreasingSummary #1", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn") });
+        it("should get balanceDecreasingSummary #1", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("10");
         });
 
-        it("should get balanceDecreasingSummary #2", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jrn") });
+        it("should not  get balanceDecreasingSummary #2", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jrn"));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.NoSourceAddress);
         });
 
-        it("should get balanceDecreasingSummary #3", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: "12" });
+        it("should not get balanceDecreasingSummary #3", function () {
+            const summary = transaction.balanceDecreasingSummary("12");
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat);
         });
         // // Token transfers
@@ -140,8 +140,8 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             assert(AddressAmountEqual(intRecAmt, expected));
         });
 
-        it("should get payment summary", async function () {
-            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
+        it("should get payment summary", function () {
+            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("1400000010");
             expect(summary.response!.sourceAddressHash).to.eq(standardAddressHash("rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5"));
@@ -151,8 +151,8 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
         });
 
-        it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5") });
+        it("should get balanceDecreasingSummary", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5"));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("1400000010");
         });
@@ -164,20 +164,20 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             transaction = await MccClient.getTransaction("160426BB861B2E1AD7A4214EE12B41A3C9C4EEBCC15B4D8A5C41E9405E288CDB");
         });
 
-        it("should correctly parse sourceAddresses", async function () {
+        it("should correctly parse sourceAddresses", function () {
             expect(transaction.sourceAddresses).to.deep.equal(["rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p"]);
         });
 
-        it("should correctly parse receivingAddresses", async function () {
+        it("should correctly parse receivingAddresses", function () {
             expect(transaction.receivingAddresses).to.deep.equal(["rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"]);
         });
 
-        it("should correctly parse spentAmounts", async function () {
+        it("should correctly parse spentAmounts", function () {
             const expected = [{ address: "rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p", amount: toBN("39") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
-        it("should correctly parse receivedAmounts", async function () {
+        it("should correctly parse receivedAmounts", function () {
             const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("27") }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
@@ -194,8 +194,8 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             assert(AddressAmountEqual(intRecAmt, expected));
         });
 
-        it("should get payment summary", async function () {
-            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
+        it("should get payment summary", function () {
+            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("39");
             expect(summary.response!.sourceAddressHash).to.eq(standardAddressHash("rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p"));
@@ -205,8 +205,8 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
         });
 
-        it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p") });
+        it("should get balanceDecreasingSummary", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p"));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("39");
             expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
@@ -293,39 +293,17 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             assert(AddressAmountEqual(intRecAmt, expected));
         });
 
-        it("should get payment summary", async function () {
-            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
+        it("should get payment summary", function () {
+            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
         });
 
-        it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB") });
+        it("should get balanceDecreasingSummary", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB"));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("10");
             expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
         });
-
-        // // Token transfers
-
-        // it.skip("Should get assetSpentAmounts", function () {
-        //    const assetSpentAmount = transaction.assetSpentAmounts[0];
-        //    assert(!assetSpentAmount, "No assets were transferred");
-        // });
-
-        // it.skip("Should get assetSourceAddresses", function () {
-        //    const assetSourceAddress = transaction.assetSourceAddresses[0];
-        //    assert(!assetSourceAddress, "No assets were transferred");
-        // });
-
-        // it.skip("Should get assetReceivingAddress", function () {
-        //    const assetReceivingAddress = transaction.assetReceivingAddresses[0];
-        //    assert(!assetReceivingAddress, "No assets were transferred");
-        // });
-
-        // it.skip("Should get assetReceivingAddress", function () {
-        //    const assetReceivedAmount = transaction.assetSpentAmounts[0];
-        //    assert(!assetReceivedAmount, "No assets were transferred");
-        // });
     });
 
     describe("Payment failed native", function () {
@@ -387,8 +365,8 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             assert(AddressAmountEqual(intRecAmt, expected));
         });
 
-        it("should get payment summary", async function () {
-            const summary = await transaction.paymentSummary({ transactionGetter: MccClient.getTransaction, inUtxo: 0, outUtxo: 0 });
+        it("should get payment summary", function () {
+            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             assert(summary.response);
             expect(summary.response.transactionStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
@@ -398,33 +376,11 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             // expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
         });
 
-        it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2") });
+        it("should get balanceDecreasingSummary", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2"));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("10");
             expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
         });
-
-        // // Token transfers
-
-        // it.skip("Should get assetSpentAmounts", function () {
-        //    const assetSpentAmount = transaction.assetSpentAmounts[0];
-        //    assert(!assetSpentAmount, "No assets were transferred");
-        // });
-
-        // it.skip("Should get assetSourceAddresses", function () {
-        //    const assetSourceAddress = transaction.assetSourceAddresses[0];
-        //    assert(!assetSourceAddress, "No assets were transferred");
-        // });
-
-        // it.skip("Should get assetReceivingAddress", function () {
-        //    const assetReceivingAddress = transaction.assetReceivingAddresses[0];
-        //    assert(!assetReceivingAddress, "No assets were transferred");
-        // });
-
-        // it.skip("Should get assetReceivingAddress", function () {
-        //    const assetReceivedAmount = transaction.assetSpentAmounts[0];
-        //    assert(!assetReceivedAmount, "No assets were transferred");
-        // });
     });
 });

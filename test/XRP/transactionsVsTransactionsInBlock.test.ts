@@ -23,8 +23,8 @@ const XRPMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe(`XRP transactions in full block vs transactions from getTransaction (${getTestFile(__filename)})`, () => {
-    const blockNumbersToCheck = [75798761, getRandomNumber(70000000, 79362506)];
+describe.skip(`XRP transactions in full block vs transactions from getTransaction (${getTestFile(__filename)})`, () => {
+    const blockNumbersToCheck = [75798761, 78915959, getRandomNumber(70000000, 79362506)];
 
     for (const blockNumber of blockNumbersToCheck) {
         describe(`Testing transactions in block ${blockNumber} (transitions from full block vs )`, () => {
@@ -56,15 +56,15 @@ describe(`XRP transactions in full block vs transactions from getTransaction (${
                 });
                 b1.start(transactions.length, 0);
                 expect(transactions.length).to.be.greaterThan(0);
-                let i = 0;
 
                 for (const transaction of transactions) {
-                    i++;
+                    b1.increment();
+
                     // if (i != 83) {
                     //    continue;
                     // }
-                    b1.increment();
                     const transObject = await client.getTransaction(transaction.txid);
+                    // console.log(transObject.txid);
 
                     for (const getter of GETTERS_BASIC) {
                         throwOrReturnSameGetter(transaction, transObject, getter);

@@ -31,22 +31,22 @@ describe(`CheckCash type (${getTestFile(__filename)})`, function () {
             expect(transaction.sourceAddresses).to.deep.equal(addresses);
         });
 
-        it("should correctly parse receivingAddresses", async function () {
+        it("should correctly parse receivingAddresses", function () {
             expect(transaction.receivingAddresses, "No one receives any xrp").to.deep.equal([]);
         });
 
-        it("should correctly parse spentAmounts", async function () {
+        it("should correctly parse spentAmounts", function () {
             const expected = [{ address: "rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am", amount: toBN("12") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected), "Only the fee is payed in xrp").to.be.true;
         });
 
-        it("should correctly parse receivedAmounts", async function () {
+        it("should correctly parse receivedAmounts", function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected), "No one receives any xrp").to.be.true;
         });
 
-        it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash("rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am") });
+        it("should get balanceDecreasingSummary", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am"));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("12");
         });

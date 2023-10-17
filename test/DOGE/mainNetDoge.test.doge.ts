@@ -37,7 +37,7 @@ describe("DOGE mainnet client tests", () => {
             const txid = "2d906dbce50eb47567d1decae6a0ce5267eaabe56838ea9fd700a732bbcdcb3b";
             const trans = await RPC.getTransaction(txid);
             if (trans) {
-                expect(trans.hash).to.eq(txid);
+                expect(trans.txid).to.eq(txid);
             }
         });
 
@@ -93,7 +93,7 @@ describe("DOGE mainnet client tests", () => {
             const txid = "2d906dbce50eb47567d1decae6a0ce5267eaabe56838ea9fd700a732bbcdcb3b";
             const trans = await RPC.getTransaction(txid);
             if (trans) {
-                expect(trans.hash).to.eq(txid);
+                expect(trans.txid).to.eq(txid);
             }
         });
     });

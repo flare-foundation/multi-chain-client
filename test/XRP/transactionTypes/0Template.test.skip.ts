@@ -24,20 +24,20 @@ describe.skip("<Type name> type", function () {
             transaction = await MccClient.getTransaction("1AF19BF9717DA0B05A3BFC5007873E7743BA54C0311CCCCC60776AAEAC5C4635");
         });
 
-        it("should correctly parse sourceAddresses", async function () {
+        it("should correctly parse sourceAddresses", function () {
             expect(transaction.sourceAddresses).to.deep.equal(["<address>"]);
         });
 
-        it("should correctly parse receivingAddresses", async function () {
+        it("should correctly parse receivingAddresses", function () {
             expect(transaction.receivingAddresses).to.deep.equal(["<address>"]);
         });
 
-        it("should correctly parse spentAmounts", async function () {
+        it("should correctly parse spentAmounts", function () {
             const expected = [{ address: "<address>", amount: toBN("1") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
-        it("should correctly parse receivedAmounts", async function () {
+        it("should correctly parse receivedAmounts", function () {
             const expected = [{ address: "<address>", amount: toBN("1") }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });

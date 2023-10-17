@@ -30,12 +30,11 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
         });
 
         it("Should be full transaction", async function () {
-            expect(transaction.type).to.eq("full_payment");
+            expect(transaction.type).to.eq("payment");
         });
 
         it("Should get invalid in utxo error", async function () {
             const error = await transaction.paymentSummary({
-                transactionGetter: MccClient.getTransaction,
                 inUtxo: -1,
                 outUtxo: 0,
             });
@@ -46,7 +45,6 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
 
         it("Should get invalid out utxo error", async function () {
             const error = await transaction.paymentSummary({
-                transactionGetter: MccClient.getTransaction,
                 inUtxo: 0,
                 outUtxo: -1,
             });
@@ -70,7 +68,6 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
 
         it("Should get invalid in utxo error", async function () {
             const error = await transaction.paymentSummary({
-                transactionGetter: MccClient.getTransaction,
                 inUtxo: 0,
                 outUtxo: 0,
             });
@@ -89,12 +86,11 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
         });
 
         it("Should be full transaction", async function () {
-            expect(transaction1.type).to.eq("full_payment");
+            expect(transaction1.type).to.eq("payment");
         });
 
         it("Should get invalid in utxo error", async function () {
             const error = await transaction1.paymentSummary({
-                transactionGetter: MccClient.getTransaction,
                 inUtxo: 0,
                 outUtxo: 0,
             });

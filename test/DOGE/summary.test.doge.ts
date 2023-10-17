@@ -19,20 +19,18 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
 
         before(async function () {
             tx = await MccClient.getTransaction(txId);
-            await tx.makeFull(getter);
         });
 
-        it("Should create payment summary", async function () {
-            const summary = await tx.paymentSummary({ transactionGetter: getter, inUtxo: 0, outUtxo: 0 });
+        it("Should create payment summary", function () {
+            const summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             assert(summary.response);
-            assert(summary.response?.isFull);
             expect(summary.response.spentAmount.toNumber()).to.eq(209645600000);
             expect(summary.response?.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
         });
 
-        it("Should create balance decreasing summary", async function () {
-            const summary = await tx.balanceDecreasingSummary({ transactionGetter: getter, sourceAddressIndicator: ZERO_BYTES_32 });
+        it("Should create balance decreasing summary", function () {
+            const summary = tx.balanceDecreasingSummary(ZERO_BYTES_32);
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             assert(summary.response);
             assert(summary.response?.isFull);
@@ -50,17 +48,16 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
             tx = await MccClient.getTransaction(txId);
         });
 
-        it("Should create payment summary", async function () {
-            const summary = await tx.paymentSummary({ transactionGetter: getter, inUtxo: 0, outUtxo: 0 });
+        it("Should create payment summary", function () {
+            const summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             assert(summary.response);
-            assert(summary.response?.isFull);
             expect(summary.response.spentAmount.toNumber()).to.eq(209645600000);
             expect(summary.response?.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
         });
 
-        it("Should create balance decreasing summary", async function () {
-            const summary = await tx.balanceDecreasingSummary({ transactionGetter: getter, sourceAddressIndicator: ZERO_BYTES_32 });
+        it("Should create balance decreasing summary", function () {
+            const summary = tx.balanceDecreasingSummary(ZERO_BYTES_32);
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             assert(summary.response);
             assert(summary.response?.isFull);
@@ -82,19 +79,17 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
             expect(tx.type).to.eq("partial_payment");
         });
 
-        it("Should create payment summary", async function () {
-            const summary = await tx.paymentSummary({ transactionGetter: getter, inUtxo: 0, outUtxo: 0 });
+        it("Should create payment summary", function () {
+            const summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             assert(summary.response);
-            assert(!summary.response?.isFull);
             expect(summary.response?.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
         });
 
-        it("Should create balance decreasing summary", async function () {
-            const summary = await tx.balanceDecreasingSummary({ transactionGetter: getter, sourceAddressIndicator: ZERO_BYTES_32 });
+        it("Should create balance decreasing summary", function () {
+            const summary = tx.balanceDecreasingSummary(ZERO_BYTES_32);
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             assert(summary.response);
-            expect(summary.response?.isFull, "full").to.be.false;
             expect(summary.response?.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
             expect(summary.response?.spentAmount.toNumber()).to.eq(476276000000);
         });

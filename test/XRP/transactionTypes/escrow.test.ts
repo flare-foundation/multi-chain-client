@@ -33,26 +33,26 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
             transaction = await MccClient.getTransaction(txId);
         });
 
-        it("should correctly parse sourceAddresses", async function () {
+        it("should correctly parse sourceAddresses", function () {
             expect(transaction.sourceAddresses).to.deep.equal([addressPay]);
         });
 
-        it("should correctly parse receivingAddresses", async function () {
+        it("should correctly parse receivingAddresses", function () {
             expect(transaction.receivingAddresses).to.deep.equal([]);
         });
 
-        it("should correctly parse spentAmounts", async function () {
+        it("should correctly parse spentAmounts", function () {
             const expected = [{ address: addressPay, amount: toBN(fee).add(toBN(value)) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
-        it("should correctly parse receivedAmounts", async function () {
+        it("should correctly parse receivedAmounts", function () {
             const expected: AddressAmount[] = [];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
 
-        it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressPay) });
+        it("should get balanceDecreasingSummary", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).add(toBN(value)).toString());
         });
@@ -88,15 +88,15 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
             transaction = await MccClient.getTransaction(txId);
         });
 
-        it("should correctly parse sourceAddresses", async function () {
+        it("should correctly parse sourceAddresses", function () {
             expect(transaction.sourceAddresses).to.deep.equal([]);
         });
 
-        it("should correctly parse receivingAddresses", async function () {
+        it("should correctly parse receivingAddresses", function () {
             expect(transaction.receivingAddresses).to.deep.equal([addressPay]);
         });
 
-        it("should correctly parse spentAmounts", async function () {
+        it("should correctly parse spentAmounts", function () {
             expect(transaction.spentAmounts.length).to.eq(0);
         });
 
@@ -110,8 +110,8 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
 
-        it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressPay) });
+        it("should get balanceDecreasingSummary", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).sub(toBN(value)).toString());
         });
@@ -147,32 +147,32 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
             transaction = await MccClient.getTransaction(txId);
         });
 
-        it("should correctly parse sourceAddresses", async function () {
+        it("should correctly parse sourceAddresses", function () {
             expect(transaction.sourceAddresses).to.deep.equal([addressPay]);
         });
 
-        it("should correctly parse receivingAddresses", async function () {
+        it("should correctly parse receivingAddresses", function () {
             expect(transaction.receivingAddresses).to.deep.equal([addressRec]);
         });
 
-        it("should correctly parse spentAmounts", async function () {
+        it("should correctly parse spentAmounts", function () {
             const expected: AddressAmount[] = [{ address: addressPay, amount: toBN(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
-        it("should correctly parse receivedAmounts", async function () {
+        it("should correctly parse receivedAmounts", function () {
             const expected = [{ address: addressRec, amount: toBN(value) }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
 
-        it("should get balanceDecreasingSummary #1", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressPay) });
+        it("should get balanceDecreasingSummary #1", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).toString());
         });
 
-        it("should get balanceDecreasingSummary #2", async function () {
-            const summary = await transaction.balanceDecreasingSummary({ sourceAddressIndicator: standardAddressHash(addressRec) });
+        it("should get balanceDecreasingSummary #2", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressRec));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.NoSourceAddress);
         });
 

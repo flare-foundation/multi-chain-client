@@ -34,7 +34,7 @@ export interface objectConstructors<
     BlockCon extends BlockBase,
     FBlockCon extends FullBlockBase<TranCon>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    TranCon extends UtxoTransaction<any>
+    TranCon extends UtxoTransaction
 > {
     transactionConstructor: new (d: IUtxoGetTransactionRes, a?: IUtxoTransactionAdditionalData) => TranCon;
     fullBlockConstructor: new (d: IUtxoGetBlockRes) => FBlockCon;
@@ -49,7 +49,7 @@ export abstract class UtxoCore<
     BlockCon extends BlockBase,
     FBlockCon extends FullBlockBase<TranCon>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    TranCon extends UtxoTransaction<any>
+    TranCon extends UtxoTransaction
 > implements ReadRpcInterface<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>
 {
     client: AxiosInstance;

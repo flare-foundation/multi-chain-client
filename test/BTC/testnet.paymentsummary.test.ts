@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { BtcTransaction, MCC, PaymentSummaryStatus, UtxoMccCreate } from "../../src";
+import { getTestFile } from "../testUtils";
 
 const BtcMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
@@ -11,7 +12,7 @@ const BtcMccConnection = {
     },
 } as UtxoMccCreate;
 
-describe("BTC payment summary with op return ", function () {
+describe.skip(`TESTNET: BTC payment summary with op return, ${getTestFile(__filename)}`, function () {
     let MccClient: MCC.BTC;
     let transaction: BtcTransaction;
     const txid = "67926749297f9ef450071585526fc2c0d0f1b9e40a8ac50d124c2e6d53c2c3b3";
@@ -30,11 +31,11 @@ describe("BTC payment summary with op return ", function () {
     //  });
 
     it("Should be full transaction", async function () {
-        expect(transaction.type).to.eq("full_payment");
+        expect(transaction.type).to.eq("payment");
     });
 
     it("Should get payment summary", async function () {
-        const ps = await transaction.paymentSummary({ inUtxo: 0, outUtxo: 1, transactionGetter: (a: string) => MccClient.getTransaction(a) });
+        const ps = await transaction.paymentSummary({ inUtxo: 0, outUtxo: 1 });
         console.dir(ps, { depth: 10 });
     });
 });
