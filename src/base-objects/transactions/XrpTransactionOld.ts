@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { Payment, TransactionMetadata } from "xrpl";
+import { Payment, Transaction, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
@@ -8,17 +8,19 @@ import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
 import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash, toBN } from "../../utils/utils";
 import {
     AddressAmount,
+    BalanceDecreasingProps,
     BalanceDecreasingSummaryResponse,
     BalanceDecreasingSummaryStatus,
     PaymentSummaryProps,
     PaymentSummaryResponse,
     PaymentSummaryStatus,
     TransactionBase,
-} from "../TransactionBase";
+    TransactionGetterFunction,
+} from "../TransactionBaseOld";
 
 // @Managed()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
+export class XrpTransaction extends TransactionBase<XrpTransaction> {
     protected get data(): IXrpGetTransactionRes {
         return this.privateData as IXrpGetTransactionRes;
     }
@@ -438,7 +440,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public paymentSummary(props: PaymentSummaryProps): PaymentSummaryResponse {
+    public async paymentSummary<T extends XrpTransaction>(props: PaymentSummaryProps<XrpTransaction>): Promise<PaymentSummaryResponse> {
         if (this.type === "Payment" && this.isNativePayment) {
             // Is native transfer
             // Successful transaction of type payment always only one source and one receiving address
@@ -503,6 +505,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
 
                     oneToOne: true,
                     paymentReference: this.stdPaymentReference,
+                    isFull: true,
                 },
             };
         }
@@ -512,7 +515,9 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public balanceDecreasingSummary(sourceAddressIndicator: string): BalanceDecreasingSummaryResponse {
+    public async balanceDecreasingSummary<XrpTransaction>({
+        sourceAddressIndicator,
+    }: BalanceDecreasingProps<XrpTransaction>): Promise<BalanceDecreasingSummaryResponse> {
         if (!isValidBytes32Hex(sourceAddressIndicator)) {
             return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
         }
@@ -558,9 +563,40 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public async makeFull<XrpTransaction>(transactionGetter: TransactionGetterFunction<XrpTransaction>): Promise<void> {
+        return;
+    }
+
     //////////////////////////////
     //// Xrp specific methods ////
     //////////////////////////////
+
+    private get metaObject(): TransactionMetadata {
+        const noMetaError = new Error("Transaction meta is not available");
+        if (this.data.result.meta) {
+            if (typeof this.data.result.meta === "string") {
+                throw noMetaError;
+            } else {
+                return this.data.result.meta as TransactionMetadata;
+            }
+        }
+        // We handle this in the client, but transaction metadata is provided as different named properties depending if getting transactions from block or directly from transaction hash
+        if (
+            (
+                this.data.result as Transaction & {
+                    metaData?: TransactionMetadata;
+                }
+            ).metaData
+        ) {
+            return (
+                this.data.result as Transaction & {
+                    metaData?: TransactionMetadata;
+                }
+            ).metaData as TransactionMetadata;
+        }
+        throw noMetaError;
+    }
 
     public get isAccountCreate(): boolean {
         if (this.type === "Payment") {

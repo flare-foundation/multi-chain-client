@@ -31,7 +31,7 @@ export interface IUtxoScriptPubKey {
     asm: string;
     hex: string;
     reqSigs?: number;
-    type: string; // choices :  "witness_v0_keyhash",
+    type?: string; // choices :  "witness_v0_keyhash",
     addresses?: string[];
     address?: string;
 }
@@ -125,15 +125,15 @@ export interface IUtxoVoutTransaction {
 
 export interface IUtxoInBlockTransaction extends IIGetTransactionRes {
     txid: string;
-    hash: string;
-    version: number;
-    size: number;
-    vsize: number;
-    weight: number;
-    locktime: number;
+    hash?: string;
+    version?: number;
+    size?: number;
+    vsize?: number;
+    weight?: number;
+    locktime?: number;
     vin: IUtxoVinTransaction[];
     vout: IUtxoVoutTransaction[];
-    hex: string;
+    hex?: string;
 }
 
 export interface IUtxoGetTransactionRes extends IIGetTransactionRes {

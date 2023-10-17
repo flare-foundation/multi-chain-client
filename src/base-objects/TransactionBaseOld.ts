@@ -1,7 +1,16 @@
 import BN from "bn.js";
 import { TransactionSuccessStatus } from "../types/genericMccTypes";
 
-export type PaymentSummaryProps = {
+export type TransactionGetterFunction<T> = (txId: string) => Promise<T>;
+type SummaryBaseProps<T> = {
+    transactionGetter?: TransactionGetterFunction<T>;
+};
+
+export type BalanceDecreasingProps<T> = SummaryBaseProps<T> & {
+    sourceAddressIndicator: string;
+};
+
+export type PaymentSummaryProps<T> = SummaryBaseProps<T> & {
     inUtxo: number;
     outUtxo: number;
 };
@@ -77,12 +86,14 @@ export interface PaymentSummaryObject extends SummaryObjectBase {
     intendedReceivingAddress: string;
     intendedReceivingAmount: BN;
     oneToOne: boolean;
+    isFull: boolean;
 }
 
 export interface PaymentNonexistenceSummaryObject extends SummaryObjectBase {
     intendedSourceAddressHash: string;
     intendedSourceAddress: string;
     intendedSourceAmount: BN;
+    isFull: boolean;
 }
 
 export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
@@ -95,11 +106,15 @@ export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus
 export type PaymentNonexistenceSummaryResponse = TransactionSummaryBase<PaymentNonexistenceSummaryStatus, PaymentNonexistenceSummaryObject>;
 export abstract class TransactionBase<T> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected privateData: T;
+    protected privateData: any;
+    // we can add additional data about transaction to this object
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    protected privateAdditionalData: any;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(data: T) {
+    constructor(data: any, additionalData?: any) {
         this.privateData = data;
+        this.privateAdditionalData = additionalData;
     }
 
     /**
@@ -107,6 +122,13 @@ export abstract class TransactionBase<T> {
      */
     public get _data() {
         return this.privateData;
+    }
+
+    /**
+     * Exposing the private data for the derived classes (dev only/python like privatization)
+     */
+    public get _additionalData() {
+        return this.privateAdditionalData;
     }
 
     // Getters //
@@ -124,6 +146,11 @@ export abstract class TransactionBase<T> {
      * Flare specific standardized txid (hex encoded string of length 64 (32 bytes) without 0x prefix)
      */
     public abstract get stdTxid(): string;
+
+    /**
+     * Transaction Hash
+     */
+    public abstract get hash(): string;
 
     /**
      * Array of all references found in transactions
@@ -238,6 +265,13 @@ export abstract class TransactionBase<T> {
     // methods //
 
     /**
+     * Ensures that the transaction object has all the required information retrievable from current client
+     * Make
+     * @param client
+     */
+    public abstract makeFull(transactionGetter: TransactionGetterFunction<T>): Promise<void>;
+
+    /**
      * Provides payment summary for a given transaction.
      * It can only do so for well structured "native" payments, that come from one address and goes to one address (utxo is a bit special).
      * If payment can be successfully summarized, the response will contain a `PaymentSummaryObject`. and status of `PaymentSummaryStatus.Success`.
@@ -245,10 +279,11 @@ export abstract class TransactionBase<T> {
      * - connection to node is not stable or provided
      * - transaction data was corrupted when creating this object
      * - unhandled errors (usually indicates bugs in either this library or the underlying chain)
+     * @param props.client : Initialized mcc client for the underlying chain
      * @param props.inUtxo : Vin index for utxo chains and ignored on non utxo chains
      * @param props.outUtxo : Vout index for utxo chains and ignored on non utxo chains
      */
-    public abstract paymentSummary(props: PaymentSummaryProps): PaymentSummaryResponse;
+    public abstract paymentSummary(props: PaymentSummaryProps<T>): Promise<PaymentSummaryResponse>;
 
     /**
      * Provides balance decreasing summary for a given transaction.
@@ -258,7 +293,8 @@ export abstract class TransactionBase<T> {
      * - connection to node is not stable or provided
      * - transaction data was corrupted when creating this object
      * - unhandled errors (usually indicates bugs in either this library or the underlying chain)
-     * @param sourceAddressIndicator : AddressIndicator (vin index on utxo chains and standardized address hash on non utxo chains)
+     * @param props.client : Initialized mcc client for the underlying chain
+     * @param props.sourceAddressIndicator : AddressIndicator (vin index on utxo chains and standardized address hash on non utxo chains)
      */
-    public abstract balanceDecreasingSummary(sourceAddressIndicator: string): BalanceDecreasingSummaryResponse;
+    public abstract balanceDecreasingSummary(props: BalanceDecreasingProps<T>): Promise<BalanceDecreasingSummaryResponse>;
 }

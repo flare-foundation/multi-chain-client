@@ -3,38 +3,29 @@ import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 import { IUtxoGetTransactionRes, IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { ZERO_BYTES_32, isValidBytes32Hex, prefix0x, toBN, toHex, unPrefix0x } from "../../utils/utils";
+import { ZERO_BYTES_32, isValidBytes32Hex, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x } from "../../utils/utils";
 import { WordToOpcode } from "../../utils/utxoUtils";
-import { AddressAmount, TransactionBase } from "../TransactionBase";
+import {
+    AddressAmount,
+    BalanceDecreasingSummaryResponse,
+    BalanceDecreasingSummaryStatus,
+    PaymentSummaryProps,
+    PaymentSummaryResponse,
+    PaymentSummaryStatus,
+    TransactionBase,
+} from "../TransactionBase";
 
-export type UtxoTransactionTypeOptions = "coinbase" | "partial_payment" | "full_payment";
+export type UtxoTransactionTypeOptions = "coinbase" | "payment";
 // Transaction types and their description
 // - coinbase        : transaction that mints new coins
 // - payment         : what you get from node
 // - partial_payment : transaction with some vout of vins added to additional data
 // - full_payment    : transaction with vouts for all vins added to additional data
 //@Managed()
-export abstract class UtxoTransaction<T> extends TransactionBase<T> {
+export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactionRes> {
     protected get data(): IUtxoGetTransactionRes {
-        return this.privateData as IUtxoGetTransactionRes;
+        return this.privateData;
     }
-
-    protected get additionalData(): IUtxoTransactionAdditionalData | undefined {
-        return this.privateAdditionalData as IUtxoTransactionAdditionalData | undefined;
-    }
-
-    protected set additionalData(data: IUtxoTransactionAdditionalData | undefined) {
-        this.privateAdditionalData = data;
-    }
-
-    // constructor(data: IUtxoGetTransactionRes, additionalData?: IUtxoTransactionAdditionalData) {
-    //     super(data, additionalData);
-    //     this.data.vout.forEach((vout) => {
-    //         this.processOutput(vout);
-    //     });
-    //     this.synchronizeAdditionalData();
-    //     this.assertAdditionalData();
-    // }
 
     public get txid(): string {
         return this.data.txid;
@@ -42,10 +33,6 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
 
     public get stdTxid(): string {
         return unPrefix0x(this.txid);
-    }
-
-    public get hash(): string {
-        return this.data.hash;
     }
 
     public get reference(): string[] {
@@ -76,10 +63,11 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
             // Coinbase transactions mint coins
             return [undefined];
         }
-        if (!this.additionalData || !this.additionalData.vinouts) {
-            return [undefined];
+        {
+            return this.data.vin.map((vin) => {
+                return vin.prevout?.scriptPubKey.address; // are we sure that every prevout has an address
+            });
         }
-        return this.additionalData.vinouts.map((mapper: IUtxoVinVoutsMapper | undefined) => mapper?.vinvout?.scriptPubKey.address);
     }
 
     public get receivingAddresses(): (string | undefined)[] {
@@ -102,19 +90,22 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
     reducerFunctionVouts = (prev: BN, vout: IUtxoVoutTransaction) => prev.add(this.toBnValue(vout.value));
 
     public get fee(): BN {
-        if (this.type === "full_payment") {
-            if (!this.additionalData || !this.additionalData.vinouts) {
-                throw new mccError(mccErrorCode.InvalidTransaction, Error(`Transaction was not made full`));
+        switch (this.type) {
+            case "payment": {
+                let fee = new BN(0);
+                this.spentAmounts.forEach((addressAmount) => {
+                    fee.add(addressAmount.amount);
+                });
+                this.receivedAmounts.forEach((addressAmount) => {
+                    fee.sub(addressAmount.amount);
+                });
+                return fee;
             }
-            const inSum = this.additionalData.vinouts.reduce(this.reducerFunctionAdditionalDataVinOuts, toBN(0));
-            const outSum = this.data.vout.reduce(this.reducerFunctionVouts, toBN(0));
-            return inSum.sub(outSum);
+            case "coinbase": {
+                // Coinbase transactions mint coins
+                return toBN(0);
+            }
         }
-        if (this.type === "coinbase") {
-            // Coinbase transactions mint coins
-            return toBN(0);
-        }
-        throw new mccError(mccErrorCode.InvalidResponse, Error("fee can't be calculated for `payment` and `partial_payment` transaction types"));
     }
 
     public get feeSignerTotalAmount(): AddressAmount {
@@ -131,26 +122,18 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
             ];
         }
 
-        if (!this.additionalData || !this.additionalData.vinouts) {
-            return [
-                {
-                    amount: toBN(0),
-                } as AddressAmount,
-            ];
-        }
-
-        return this.additionalData.vinouts.map((mapper: IUtxoVinVoutsMapper | undefined) => {
+        return this.data.vin.map((mapper: IUtxoVinTransaction | undefined) => {
             let amount: BN;
             if (mapper == undefined) {
                 amount = toBN(0);
             } else {
-                amount = toBN(Math.round((mapper?.vinvout?.value || 0) * BTC_MDU).toFixed(0));
+                amount = toBN(Math.round((mapper?.prevout?.value || 0) * this.elementaryUnits.toNumber()).toFixed(0));
             }
 
             return {
-                address: mapper?.vinvout?.scriptPubKey?.address,
+                address: mapper?.prevout?.scriptPubKey?.address,
                 amount: amount,
-                utxo: mapper?.vinvout?.n,
+                utxo: mapper?.prevout?.n,
             } as AddressAmount;
         });
     }
@@ -177,24 +160,7 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
         if (this.data.vin.length === 0 || this.data.vin[0].coinbase) {
             return "coinbase";
         }
-        let hasUndefined = false;
-        let hasDefined = false;
-        if (!this.additionalData || !this.additionalData.vinouts) {
-            return "partial_payment";
-        }
-        for (let i = 0; i < this.additionalData.vinouts.length; i++) {
-            const vinOut = this.additionalData.vinouts[i];
-            if (vinOut === undefined) {
-                hasUndefined = true;
-            } else {
-                hasDefined = true;
-            }
-        }
-
-        if (hasDefined && !hasUndefined) {
-            return "full_payment";
-        }
-        return "partial_payment";
+        return "payment";
     }
 
     public get isNativePayment(): boolean {
@@ -202,12 +168,159 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
         return true;
     }
 
-    public get elementaryUnits(): BN {
-        return toBN(BTC_MDU);
-    }
-
     public get successStatus(): TransactionSuccessStatus {
         return TransactionSuccessStatus.SUCCESS;
+    }
+
+    public paymentSummary({ inUtxo, outUtxo }: PaymentSummaryProps): PaymentSummaryResponse {
+        try {
+            this.assertValidVinIndex(inUtxo);
+        } catch (e) {
+            return { status: PaymentSummaryStatus.InvalidInUtxo };
+        }
+        try {
+            this.assertValidVoutIndex(outUtxo);
+        } catch (e) {
+            return { status: PaymentSummaryStatus.InvalidOutUtxo };
+        }
+
+        if (this.type === "coinbase") {
+            return { status: PaymentSummaryStatus.Coinbase };
+        }
+        const spentAmount = this.spentAmounts[inUtxo];
+        if (!spentAmount.address) {
+            return { status: PaymentSummaryStatus.NoSpentAmountAddress };
+        }
+        const receiveAmount = this.receivedAmounts[outUtxo];
+        if (!receiveAmount.address) {
+            return { status: PaymentSummaryStatus.NoReceiveAmountAddress };
+        }
+
+        // Extract addresses from input and output fields
+        const sourceAddress = spentAmount.address;
+        const receivingAddress = receiveAmount.address;
+
+        // We will update this once we iterate over inputs and outputs if we have full transaction
+        let oneToOne: boolean = true;
+
+        let inFunds = toBN(0);
+        let returnFunds = toBN(0);
+        let outFunds = toBN(0);
+        let inFundsOfReceivingAddress = toBN(0);
+
+        for (const vinAmount of this.spentAmounts) {
+            if (sourceAddress && vinAmount.address === sourceAddress) {
+                inFunds = inFunds.add(vinAmount.amount);
+            }
+            if (receivingAddress && vinAmount.address === receivingAddress) {
+                inFundsOfReceivingAddress = inFundsOfReceivingAddress.add(vinAmount.amount);
+            }
+            if (oneToOne && vinAmount.address != sourceAddress && vinAmount.address != receivingAddress) {
+                oneToOne = false;
+            }
+        }
+        for (const voutAmount of this.receivedAmounts) {
+            if (sourceAddress && voutAmount.address === sourceAddress) {
+                returnFunds = returnFunds.add(voutAmount.amount);
+            }
+            if (receivingAddress && voutAmount.address === receivingAddress) {
+                outFunds = outFunds.add(voutAmount.amount);
+            }
+            // Outputs without address do not break one-to-one condition
+            if (oneToOne && !voutAmount.address && voutAmount.amount.gt(toBN(0))) {
+                oneToOne = false;
+            }
+            if (oneToOne && voutAmount.address && voutAmount.address != sourceAddress && voutAmount.address != receivingAddress) {
+                oneToOne = false;
+            }
+        }
+        return {
+            status: PaymentSummaryStatus.Success,
+            response: {
+                blockTimestamp: this.unixTimestamp,
+                transactionHash: this.stdTxid,
+                sourceAddressHash: standardAddressHash(sourceAddress),
+                sourceAddress,
+                receivingAddress,
+                receivingAddressHash: standardAddressHash(receivingAddress),
+                spentAmount: inFunds.sub(returnFunds),
+                receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
+                transactionStatus: this.successStatus,
+                paymentReference: this.stdPaymentReference,
+                intendedSourceAmount: inFunds.sub(returnFunds),
+                intendedReceivingAddressHash: standardAddressHash(receivingAddress),
+                intendedReceivingAddress: receivingAddress,
+                intendedReceivingAmount: outFunds.sub(inFundsOfReceivingAddress),
+                oneToOne,
+            },
+        };
+    }
+
+    public balanceDecreasingSummary(sourceAddressIndicator: string): BalanceDecreasingSummaryResponse {
+        // We expect sourceAddressIndicator to be utxo vin index (as hex string)
+        if (!isValidBytes32Hex(sourceAddressIndicator)) {
+            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
+        }
+        const vinIndex = parseInt(sourceAddressIndicator, 16);
+        if (isNaN(vinIndex)) {
+            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
+        }
+        try {
+            this.assertValidVinIndex(vinIndex);
+        } catch (e) {
+            return { status: BalanceDecreasingSummaryStatus.InvalidInUtxo };
+        }
+        const transactionType: UtxoTransactionTypeOptions = this.type;
+        switch (transactionType) {
+            case "coinbase": {
+                return { status: BalanceDecreasingSummaryStatus.Coinbase };
+            }
+            case "payment": {
+                const spentAmounts = this.spentAmounts;
+                const spentAmount = spentAmounts[vinIndex];
+                const sourceAddress = spentAmount.address;
+                if (sourceAddress) {
+                    let inFunds = toBN(0);
+                    let returnFunds = toBN(0);
+
+                    for (const vinAmount of this.spentAmounts) {
+                        if (vinAmount.address === sourceAddress) {
+                            inFunds = inFunds.add(vinAmount.amount);
+                        }
+                    }
+                    for (const voutAmount of this.receivedAmounts) {
+                        if (voutAmount.address === sourceAddress) {
+                            returnFunds = returnFunds.add(voutAmount.amount);
+                        }
+                    }
+                    return {
+                        status: BalanceDecreasingSummaryStatus.Success,
+                        response: {
+                            blockTimestamp: this.unixTimestamp,
+                            transactionHash: this.stdTxid,
+                            sourceAddressIndicator: sourceAddressIndicator,
+                            sourceAddressHash: standardAddressHash(sourceAddress),
+                            sourceAddress: sourceAddress,
+                            spentAmount: inFunds.sub(returnFunds),
+                            transactionStatus: this.successStatus,
+                            paymentReference: this.stdPaymentReference,
+                            isFull: true,
+                        },
+                    };
+                } else {
+                    // The input has no address, the type is wrongly extracted (Should not happen)
+                    return { status: BalanceDecreasingSummaryStatus.InvalidTransactionDataObject };
+                }
+                return { status: BalanceDecreasingSummaryStatus.Success }; // TODO: implement
+            }
+            default:
+                // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
+                // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+                ((_: never): void => {})(transactionType);
+        }
+
+        // We didn't find the address we are looking for
+        return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
     }
 
     ///////////////////////////////
@@ -232,22 +345,5 @@ export abstract class UtxoTransaction<T> extends TransactionBase<T> {
         if (voutIndex < 0 || voutIndex >= this.receivingAddresses.length) {
             throw new mccError(mccErrorCode.InvalidParameter, Error("Invalid vout index"));
         }
-    }
-
-    /**
-     * Extract vout on vout index. If vout index is not valid or data is corrupted, exception is thrown.
-     * @param voutIndex vout index
-     * @returns vout on vout index
-     */
-    extractVoutAt(voutIndex: number): IUtxoVoutTransaction {
-        this.assertValidVoutIndex(voutIndex);
-        const toReturn = this.data.vout[voutIndex];
-        if (toReturn.n !== voutIndex) {
-            throw new mccError(
-                mccErrorCode.InvalidParameter,
-                new Error(`Vin and vout transaction miss match; requested index ${voutIndex}, found index ${toReturn.n}`)
-            );
-        }
-        return toReturn;
     }
 }
