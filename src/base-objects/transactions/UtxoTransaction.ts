@@ -1,9 +1,9 @@
 import BN from "bn.js";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
-import { IUtxoGetTransactionRes, IUtxoTransactionAdditionalData, IUtxoVinTransaction, IUtxoVinVoutsMapper, IUtxoVoutTransaction } from "../../types/utxoTypes";
+import { IUtxoGetTransactionRes, IUtxoVinVoutsMapper, IUtxoVoutTransaction, hasPrevouts, isCoinbase } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { ZERO_BYTES_32, isValidBytes32Hex, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x } from "../../utils/utils";
+import { MccError, ZERO_BYTES_32, isValidBytes32Hex, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x } from "../../utils/utils";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import {
     AddressAmount,
@@ -59,15 +59,15 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     }
 
     public get sourceAddresses(): (string | undefined)[] {
-        if (this.type === "coinbase") {
+        if (isCoinbase(this.data)) {
             // Coinbase transactions mint coins
             return [undefined];
-        }
-        {
+        } else if (hasPrevouts(this.data)) {
             return this.data.vin.map((vin) => {
-                return vin.prevout?.scriptPubKey.address; // are we sure that every prevout has an address
+                return vin.prevout.scriptPubKey.address; // are we sure that every prevout has an address
             });
-        }
+            //this means our assumptions on the transaction data are faulty
+        } else throw MccError(`transaction ${this.txid} that does not have prevout and is not coinbase`);
     }
 
     public get receivingAddresses(): (string | undefined)[] {
@@ -85,9 +85,6 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         }
         return toBN(Math.round(value * BTC_MDU).toFixed(0));
     }
-    reducerFunctionAdditionalDataVinOuts = (prev: BN, vout: IUtxoVinVoutsMapper | undefined) => prev.add(this.toBnValue(vout?.vinvout?.value));
-    reducerFunctionPrevouts = (prev: BN, vin: IUtxoVinTransaction) => prev.add(this.toBnValue(vin?.prevout?.value));
-    reducerFunctionVouts = (prev: BN, vout: IUtxoVoutTransaction) => prev.add(this.toBnValue(vout.value));
 
     public get fee(): BN {
         switch (this.type) {
@@ -115,29 +112,29 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     }
 
     public get spentAmounts(): AddressAmount[] {
-        if (this.type === "coinbase") {
+        if (isCoinbase(this.data)) {
             // Coinbase transactions mint coins
             return [
                 {
                     amount: toBN(0),
                 } as AddressAmount,
             ];
-        }
+        } else if (hasPrevouts(this.data)) {
+            return this.data.vin.map((mapper) => {
+                let amount: BN;
+                if (mapper == undefined) {
+                    amount = toBN(0);
+                } else {
+                    amount = toBN(Math.round((mapper.prevout.value || 0) * this.elementaryUnits.toNumber()).toFixed(0));
+                }
 
-        return this.data.vin.map((mapper: IUtxoVinTransaction | undefined) => {
-            let amount: BN;
-            if (mapper == undefined) {
-                amount = toBN(0);
-            } else {
-                amount = toBN(Math.round((mapper?.prevout?.value || 0) * this.elementaryUnits.toNumber()).toFixed(0));
-            }
-
-            return {
-                address: mapper?.prevout?.scriptPubKey?.address,
-                amount: amount,
-                utxo: mapper?.prevout?.n,
-            } as AddressAmount;
-        });
+                return {
+                    address: mapper?.prevout?.scriptPubKey?.address,
+                    amount: amount,
+                    utxo: mapper?.vout,
+                } as AddressAmount;
+            });
+        } else throw MccError(`transaction ${this.txid} that does not have prevout and is not coinbase`);
     }
 
     public get intendedSpentAmounts(): AddressAmount[] {
@@ -159,10 +156,11 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     }
 
     public get type(): UtxoTransactionTypeOptions {
-        if (this.data.vin.length === 0 || this.data.vin[0].coinbase) {
+        if (isCoinbase(this.data)) {
             return "coinbase";
-        }
-        return "payment";
+        } else if (hasPrevouts(this.data)) {
+            return "payment";
+        } else throw MccError(`transaction ${this.txid} that does not have prevout and is not coinbase`);
     }
 
     public get isNativePayment(): boolean {

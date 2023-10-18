@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { SingleBar } from "cli-progress";
 import { XrpFullBlock } from "../../src/base-objects/fullBlocks/XrpFullBlock";
-import { MCC } from "../../src/index";
+import { MCC, retry } from "../../src/index";
 import {
     GETTERS_BASIC,
     GETTERS_LISTS,
@@ -23,7 +23,7 @@ const XRPMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe.skip(`XRP transactions in full block vs transactions from getTransaction (${getTestFile(__filename)})`, () => {
+describe(`XRP transactions in full block vs transactions from getTransaction (${getTestFile(__filename)})`, () => {
     const blockNumbersToCheck = [75798761, 78915959, getRandomNumber(70000000, 79362506)];
 
     for (const blockNumber of blockNumbersToCheck) {
@@ -63,7 +63,8 @@ describe.skip(`XRP transactions in full block vs transactions from getTransactio
                     // if (i != 83) {
                     //    continue;
                     // }
-                    const transObject = await client.getTransaction(transaction.txid);
+                    const transObject = await retry("get test transactions", () => client.getTransaction(transaction.txid));
+
                     // console.log(transObject.txid);
 
                     for (const getter of GETTERS_BASIC) {

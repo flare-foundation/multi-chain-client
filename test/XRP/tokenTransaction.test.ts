@@ -1,4 +1,4 @@
-import { MCC, PaymentSummaryStatus, toBN, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { MCC, PaymentSummaryStatus, retry, toBN, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -156,7 +156,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         describe(transData.description, function () {
             let transaction: XrpTransaction;
             before(async function () {
-                transaction = await MccClient.getTransaction(transData.txid);
+                transaction = await retry("get test transactions", () => MccClient.getTransaction(transData.txid));
             });
 
             it("Should find transaction in block ", function () {

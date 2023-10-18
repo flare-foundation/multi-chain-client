@@ -36,6 +36,14 @@ export interface IUtxoScriptPubKey {
     address?: string;
 }
 
+export interface IUtxoScriptPubKeyPrevout {
+    asm: string;
+    hex: string;
+    reqSigs?: number;
+    type?: string; // choices :  "witness_v0_keyhash",
+    address: string;
+}
+
 export interface UtxoVout {
     value: number;
     n: number;
@@ -100,21 +108,32 @@ export interface IUtxoGetBlockRes extends IUtxoGetBlockHeaderRes, IIGetBlockRes 
     nTx: number;
 }
 
-/**
- * Vin interface from transaction details requests
- */
-export interface IUtxoVinTransaction {
-    coinbase?: string;
+export interface IUtxoVinTransactionBasic {
     sequence: number;
-    txid?: string;
-    vout?: number;
-    prevout?: IUtxoVoutTransaction;
     scriptSig?: IUtxoScriptSig;
     txinwitness?: string[];
 }
+/**
+ * Vin interface from transaction of type coinbase
+ */
+export interface IUtxoVinTransactionCoinbase extends IUtxoVinTransactionBasic {
+    coinbase: string;
+}
 
-export interface IUtxoCoinbase {
-    coinbase?: string;
+/**
+ * Vin interface from transaction of type payment with prevouts
+ */
+export interface IUtxoVinTransactionPrevout extends IUtxoVinTransactionBasic {
+    txid: string;
+    vout: number;
+    prevout: IPrevout;
+}
+
+interface IPrevout {
+    generated?: boolean;
+    height?: number;
+    value: number;
+    scriptPubKey: IUtxoScriptPubKeyPrevout;
 }
 
 export interface IUtxoVoutTransaction {
@@ -123,7 +142,7 @@ export interface IUtxoVoutTransaction {
     scriptPubKey: IUtxoScriptPubKey;
 }
 
-export interface IUtxoInBlockTransaction extends IIGetTransactionRes {
+export interface IUtxoInBlockTransactionGen<T> extends IIGetTransactionRes {
     txid: string;
     hash?: string;
     version?: number;
@@ -131,12 +150,28 @@ export interface IUtxoInBlockTransaction extends IIGetTransactionRes {
     vsize?: number;
     weight?: number;
     locktime?: number;
-    vin: IUtxoVinTransaction[];
+    vin: T[];
     vout: IUtxoVoutTransaction[];
     hex?: string;
 }
 
-export interface IUtxoGetTransactionRes extends IIGetTransactionRes {
+export type IUtxoInBlockTransaction = IUtxoInBlockTransactionGen<IUtxoVinTransactionPrevout> | IUtxoInBlockTransactionGen<IUtxoVinTransactionCoinbase>;
+
+export function isCoinbase(tx: IUtxoInBlockTransaction): tx is IUtxoInBlockTransactionGen<IUtxoVinTransactionCoinbase> {
+    return (
+        (tx as IUtxoInBlockTransactionGen<IUtxoVinTransactionCoinbase>).vin[0] !== undefined &&
+        (tx as IUtxoInBlockTransactionGen<IUtxoVinTransactionCoinbase>).vin[0].coinbase !== undefined
+    );
+}
+
+export function hasPrevouts(tx: IUtxoInBlockTransaction): tx is IUtxoInBlockTransactionGen<IUtxoVinTransactionPrevout> {
+    return (
+        (tx as IUtxoInBlockTransactionGen<IUtxoVinTransactionPrevout>).vin[0] !== undefined &&
+        (tx as IUtxoInBlockTransactionGen<IUtxoVinTransactionPrevout>).vin[0].prevout !== undefined
+    );
+}
+
+export interface IUtxoGetTransactionResGen<T> extends IIGetTransactionRes {
     txid: string;
     hash: string;
     version: number;
@@ -144,7 +179,7 @@ export interface IUtxoGetTransactionRes extends IIGetTransactionRes {
     vsize: number;
     weight: number;
     locktime: number;
-    vin: IUtxoVinTransaction[];
+    vin: T[];
     vout: IUtxoVoutTransaction[];
     hex: string;
     blockhash: string;
@@ -152,6 +187,8 @@ export interface IUtxoGetTransactionRes extends IIGetTransactionRes {
     time: number;
     blocktime: number;
 }
+
+export type IUtxoGetTransactionRes = IUtxoGetTransactionResGen<IUtxoVinTransactionPrevout> | IUtxoGetTransactionResGen<IUtxoVinTransactionCoinbase>;
 
 export interface IUtxoGetAlternativeBlocksOptions {
     height_gte?: number; // We only want tips / blocks that happened after specified height
