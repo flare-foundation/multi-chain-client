@@ -1,16 +1,5 @@
-import { assert, expect } from "chai";
-import {
-    BtcTransaction,
-    MCC,
-    PaymentSummaryStatus,
-    standardAddressHash,
-    toBN,
-    toHex32Bytes,
-    traceManager,
-    TransactionSuccessStatus,
-    UtxoMccCreate,
-    UtxoTransaction,
-} from "../../src";
+import { expect } from "chai";
+import { BtcTransaction, MCC, PaymentSummaryStatus, standardAddressHash, toHex32Bytes, traceManager, TransactionSuccessStatus, UtxoMccCreate } from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -86,35 +75,35 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         });
 
         it("Should get fee ", function () {
-            expect(transaction.fee.toNumber()).to.eq(43300);
+            expect(transaction.fee).to.eq(BigInt(43300));
         });
 
         it("Should spend amount 0", function () {
             expect(transaction.spentAmounts.length).to.eq(3);
             expect(transaction.spentAmounts[0].address).to.eq("bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk");
-            expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(7424891554);
+            expect(transaction.spentAmounts[0].amount).to.eq(BigInt(7424891554));
         });
 
         it("Should spend amount 1", function () {
             expect(transaction.spentAmounts.length).to.eq(3);
             expect(transaction.spentAmounts[1].address).to.eq("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw");
-            expect(transaction.spentAmounts[1].amount.toNumber()).to.eq(7424900255);
+            expect(transaction.spentAmounts[1].amount).to.eq(BigInt(7424900255));
         });
 
         it("Should spend amount 2", function () {
             expect(transaction.spentAmounts.length).to.eq(3);
             expect(transaction.spentAmounts[2].address).to.eq("bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw");
-            expect(transaction.spentAmounts[2].amount.toNumber()).to.eq(7426316499);
+            expect(transaction.spentAmounts[2].amount).to.eq(BigInt(7426316499));
         });
 
         it("Should received amount ", function () {
             expect(transaction.receivedAmounts.length).to.eq(6);
             expect(transaction.receivedAmounts[0].address).to.eq("19Vxz7mg6YSgQhVB96YvXFsES1e8aXewHp");
-            expect(transaction.receivedAmounts[0].amount.toNumber()).to.eq(237272503);
+            expect(transaction.receivedAmounts[0].amount).to.eq(BigInt(237272503));
             expect(transaction.receivedAmounts[3].address).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
-            expect(transaction.receivedAmounts[3].amount.toNumber()).to.eq(7299851943);
+            expect(transaction.receivedAmounts[3].amount).to.eq(BigInt(7299851943));
             expect(transaction.receivedAmounts[4].address).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
-            expect(transaction.receivedAmounts[4].amount.toNumber()).to.eq(7299851943);
+            expect(transaction.receivedAmounts[4].amount).to.eq(BigInt(7299851943));
         });
 
         it("Should get type ", function () {
@@ -130,7 +119,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         });
 
         it("Should get elementary unit ", function () {
-            expect(transaction.elementaryUnits.toNumber()).to.eq(100000000);
+            expect(transaction.elementaryUnits).to.eq(100000000);
         });
 
         it("Should get success status ", function () {
@@ -148,8 +137,8 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             expect(resp.receivingAddress).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
             expect(resp.intendedReceivingAddress).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
 
-            expect(resp.receivedAmount.toNumber()).to.eq(2 * 7299851943);
-            expect(resp.intendedReceivingAmount.toNumber()).to.eq(2 * 7299851943);
+            expect(resp.receivedAmount).to.eq(BigInt(2 * 7299851943));
+            expect(resp.intendedReceivingAmount).to.eq(BigInt(2 * 7299851943));
         });
 
         it("Should make balance decreasing summary", function () {
@@ -162,7 +151,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             expect(resp.isFull).to.be.true;
             expect(resp.sourceAddress).to.eq("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw");
             expect(resp.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
-            expect(resp.spentAmount.toNumber()).to.eq(7424900255);
+            expect(resp.spentAmount).to.eq(BigInt(7424900255));
         });
     });
 
@@ -180,21 +169,21 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                 sourceAddresses: ["1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"],
                 receivingAddresses: ["1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg", undefined],
                 isFeeError: false,
-                fee: toBN(20000).toString(), // number as a string
+                fee: BigInt(20000).toString(), // number as a string
                 spentAmounts: [
                     {
                         address: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
-                        amount: toBN(220000),
+                        amount: BigInt(220000),
                     },
                 ],
                 receivedAmounts: [
                     {
                         address: undefined,
-                        amount: toBN(0),
+                        amount: BigInt(0),
                     },
                     {
                         address: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
-                        amount: toBN(200000),
+                        amount: BigInt(200000),
                     },
                 ],
                 type: "payment",
@@ -213,13 +202,13 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     sourceAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
                     receivingAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
                     receivingAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
-                    spentAmount: toBN(20000),
-                    receivedAmount: toBN(0),
+                    spentAmount: BigInt(20000),
+                    receivedAmount: BigInt(0),
                     paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                    intendedSourceAmount: toBN(20000),
+                    intendedSourceAmount: BigInt(20000),
                     intendedReceivingAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
                     intendedReceivingAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
-                    intendedReceivingAmount: toBN(-20000),
+                    intendedReceivingAmount: BigInt(-20000),
                     oneToOne: false,
                     transactionStatus: TransactionSuccessStatus.SUCCESS,
                 },
@@ -246,25 +235,25 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                 spentAmounts: [
                     {
                         address: "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
-                        amount: toBN(3533),
+                        amount: BigInt(3533),
                     },
                     {
                         address: "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu",
-                        amount: toBN(5130),
+                        amount: BigInt(5130),
                     },
                     {
                         address: "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
-                        amount: toBN(6664),
+                        amount: BigInt(6664),
                     },
                 ],
                 receivedAmounts: [
                     {
                         address: "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
-                        amount: toBN(2259),
+                        amount: BigInt(2259),
                     },
                     {
                         address: "14PbdXD3gRMnrrsP4CnS66fYKHSb1aawea",
-                        amount: toBN(12240),
+                        amount: BigInt(12240),
                     },
                 ],
                 type: "payment",
@@ -283,14 +272,14 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     sourceAddressHash: standardAddressHash("bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly"),
                     receivingAddress: "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
                     receivingAddressHash: standardAddressHash("bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"),
-                    spentAmount: toBN(3533),
-                    receivedAmount: toBN(2259 - 6664),
+                    spentAmount: BigInt(3533),
+                    receivedAmount: BigInt(2259 - 6664),
                     paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                    intendedSourceAmount: toBN(3533),
+                    intendedSourceAmount: BigInt(3533),
 
                     intendedReceivingAddressHash: standardAddressHash("bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"),
                     intendedReceivingAddress: "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
-                    intendedReceivingAmount: toBN(6664 - 2259),
+                    intendedReceivingAmount: BigInt(6664 - 2259),
                     oneToOne: false,
                 },
             },
@@ -313,23 +302,23 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                 receivingAddresses: ["1JvXhnHCi6XqcanvrZJ5s2Qiv4tsmm2UMy", undefined, undefined, undefined],
                 isFeeError: false,
                 fee: "0", // number as a string
-                spentAmounts: [{ address: undefined, amount: toBN(0) }],
+                spentAmounts: [{ address: undefined, amount: BigInt(0) }],
                 receivedAmounts: [
                     {
                         address: "1JvXhnHCi6XqcanvrZJ5s2Qiv4tsmm2UMy",
-                        amount: toBN(632706642),
+                        amount: BigInt(632706642),
                     },
                     {
                         address: undefined,
-                        amount: toBN(0),
+                        amount: BigInt(0),
                     },
                     {
                         address: undefined,
-                        amount: toBN(0),
+                        amount: BigInt(0),
                     },
                     {
                         address: undefined,
-                        amount: toBN(0),
+                        amount: BigInt(0),
                     },
                 ],
                 type: "coinbase",

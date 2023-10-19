@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, MCC, TransactionSuccessStatus, XrpNodeStatus, XrpTransaction, toBN } from "../../src";
+import { AddressAmount, MCC, TransactionSuccessStatus, XrpNodeStatus, XrpTransaction } from "../../src";
 import { AddressAmountEqual } from "../testUtils";
 
 const XRPMccConnection = {
@@ -26,7 +26,7 @@ describe("Xrp bottom block ", function () {
         const expected = [
             {
                 address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2",
-                amount: toBN(85),
+                amount: BigInt(85),
             },
         ];
         expect(AddressAmountEqual(intendedSpendAmounts, expected)).to.be.true;
@@ -37,7 +37,7 @@ describe("Xrp bottom block ", function () {
         const expected = [
             {
                 address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2",
-                amount: toBN(10),
+                amount: BigInt(10),
             },
         ];
         expect(AddressAmountEqual(spendAmount, expected)).to.be.true;
@@ -48,7 +48,7 @@ describe("Xrp bottom block ", function () {
         const expected = [
             {
                 address: "rLCq1KvoCYeMj4H8hsRFrfPYHCRLLYDHdU",
-                amount: toBN(75),
+                amount: BigInt(75),
             },
         ];
         expect(AddressAmountEqual(intendedSpendAmounts, expected)).to.be.true;

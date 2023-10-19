@@ -1,4 +1,4 @@
-import { MCC, PaymentSummaryStatus, retry, toBN, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { MCC, PaymentSummaryStatus, retry, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -43,7 +43,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
                 spentAmounts: [
                     {
                         address: "rBrY6tLYMYYRRFAXwKtZoFYF6kpb7ZCore",
-                        amount: toBN(10000),
+                        amount: BigInt(10000),
                     },
                 ],
                 receivedAmounts: [],
@@ -74,7 +74,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
                 spentAmounts: [
                     {
                         address: "rMNTSXzmWmvMHGRC7QKNfdJycTPG7WxE7e",
-                        amount: toBN(50),
+                        amount: BigInt(50),
                     },
                 ],
                 receivedAmounts: [],
@@ -105,7 +105,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
                 spentAmounts: [
                     {
                         address: "rBy7gEjA6AJytwZAUKYfXvGAf5Y1koFCX1",
-                        amount: toBN(20),
+                        amount: BigInt(20),
                     },
                 ],
                 receivedAmounts: [],
@@ -136,7 +136,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
                 spentAmounts: [
                     {
                         address: "rP6JLXtRNs3tjeYnn7zUHpbfLjuyBXqhwF",
-                        amount: toBN(10),
+                        amount: BigInt(10),
                     },
                 ],
                 receivedAmounts: [],

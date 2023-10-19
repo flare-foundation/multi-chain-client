@@ -71,7 +71,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get fee ", function () {
-            expect(transaction.fee.toNumber()).to.eq(20);
+            expect(transaction.fee).to.eq(BigInt(20));
         });
 
         it("Should received amount ", function () {
@@ -91,7 +91,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get elementary unit ", function () {
-            expect(transaction.elementaryUnits.toNumber()).to.eq(1000000);
+            expect(transaction.elementaryUnits).to.eq(1000000);
         });
 
         it("Should get success status ", function () {
@@ -106,7 +106,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         it("Should spend amount ", async function () {
             expect(transaction.spentAmounts.length).to.eq(1);
             expect(transaction.spentAmounts[0].address).to.eq("rETx8GBiH6fxhTcfHM9fGeyShqxozyD3xe");
-            expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(20);
+            expect(transaction.spentAmounts[0].amount).to.eq(BigInt(20));
         });
     });
 
@@ -155,13 +155,13 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get fee ", async function () {
-            expect(transaction.fee.toNumber()).to.eq(20);
+            expect(transaction.fee).to.eq(BigInt(20));
         });
 
         it("Should spend amount ", async function () {
             expect(transaction.spentAmounts.length).to.eq(1);
             expect(transaction.spentAmounts[0].address).to.eq("rBy7gEjA6AJytwZAUKYfXvGAf5Y1koFCX1");
-            expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(20);
+            expect(transaction.spentAmounts[0].amount).to.eq(BigInt(20));
         });
 
         it("Should received amount ", async function () {
@@ -181,7 +181,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get elementary unit ", function () {
-            expect(transaction.elementaryUnits.toNumber()).to.eq(1000000);
+            expect(transaction.elementaryUnits).to.eq(1000000);
         });
 
         it("Should get success status ", function () {
@@ -243,19 +243,19 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get fee ", function () {
-            expect(transaction.fee.toNumber()).to.eq(45);
+            expect(transaction.fee).to.eq(BigInt(45));
         });
 
         it("Should spend amount ", function () {
             expect(transaction.spentAmounts.length).to.eq(1);
             expect(transaction.spentAmounts[0].address).to.eq("r3zUhJWabAMMLT5n631r2wDh9RP3dN1bRy");
-            expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(342390045);
+            expect(transaction.spentAmounts[0].amount).to.eq(BigInt(342390045));
         });
 
         it("Should received amount ", function () {
             expect(transaction.receivedAmounts.length).to.eq(1);
             expect(transaction.receivedAmounts[0].address).to.eq("rpE6gE8jEN1trDwQwe47VmgDL5y6m3XX2n");
-            expect(transaction.receivedAmounts[0].amount.toNumber()).to.eq(342390000);
+            expect(transaction.receivedAmounts[0].amount).to.eq(BigInt(342390000));
         });
 
         it("Should get type ", function () {
@@ -271,7 +271,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get elementary unit ", function () {
-            expect(transaction.elementaryUnits.toNumber()).to.eq(1000000);
+            expect(transaction.elementaryUnits).to.eq(1000000);
         });
 
         it("Should get success status ", function () {
@@ -284,8 +284,8 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(summary.response).to.exist;
             expect(summary.response!.sourceAddress).to.eq("r3zUhJWabAMMLT5n631r2wDh9RP3dN1bRy");
             expect(summary.response!.receivingAddress).to.eq("rpE6gE8jEN1trDwQwe47VmgDL5y6m3XX2n");
-            expect(summary.response!.spentAmount?.toNumber()).to.eq(342390045);
-            expect(summary.response!.receivedAmount?.toNumber()).to.eq(342390000);
+            expect(summary.response!.spentAmount).to.eq(BigInt(342390045));
+            expect(summary.response!.receivedAmount).to.eq(BigInt(342390000));
             expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
             expect(summary.response!.oneToOne).to.eq(true);
         });
@@ -337,13 +337,13 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get fee ", function () {
-            expect(transaction.fee.toNumber()).to.eq(10);
+            expect(transaction.fee).to.eq(BigInt(10));
         });
 
         it("Should spend amount ", function () {
             expect(transaction.spentAmounts.length).to.eq(1);
             expect(transaction.spentAmounts[0].address).to.eq("rP6JLXtRNs3tjeYnn7zUHpbfLjuyBXqhwF");
-            expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(10);
+            expect(transaction.spentAmounts[0].amount).to.eq(BigInt(10));
         });
 
         it("Should received amount ", function () {
@@ -363,7 +363,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get elementary unit ", function () {
-            expect(transaction.elementaryUnits.toNumber()).to.eq(1000000);
+            expect(transaction.elementaryUnits).to.eq(1000000);
         });
 
         it("Should get success status ", function () {

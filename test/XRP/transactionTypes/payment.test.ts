@@ -9,7 +9,6 @@ import {
     TransactionSuccessStatus,
     XrpTransaction,
     standardAddressHash,
-    toBN,
     traceManager,
 } from "../../../src";
 import { AddressAmountEqual, getTestFile } from "../../testUtils";
@@ -45,7 +44,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse spentAmounts", function () {
-            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("10") }];
+            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: BigInt("10") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -54,7 +53,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get intendant spent amount", function () {
-            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("10") }];
+            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: BigInt("10") }];
             const intSpnAmt = transaction.intendedSpentAmounts;
             assert(AddressAmountEqual(intSpnAmt, expected));
         });
@@ -95,11 +94,11 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         // });
 
         // it.skip("should correctly parse assetSpentAmounts", async function () {
-        //    expect(transaction.assetSpentAmounts).to.deep.equal([{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("1") }]);
+        //    expect(transaction.assetSpentAmounts).to.deep.equal([{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: BigInt("1") }]);
         // });
 
         // it.skip("should correctly parse assetReceivedAmounts", async function () {
-        //    expect(transaction.assetReceivedAmounts).to.deep.equal([{ address: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX", amount: toBN("1") }]);
+        //    expect(transaction.assetReceivedAmounts).to.deep.equal([{ address: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX", amount: BigInt("1") }]);
         // });
     });
 
@@ -119,23 +118,23 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: "rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5", amount: toBN("1400000010") }];
+            const expected = [{ address: "rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5", amount: BigInt("1400000010") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
         it("should correctly parse receivedAmounts", async function () {
-            const expected = [{ address: "r14f8Luu4dYKzNEwFYV2KfA74YZcWVS5F", amount: toBN("1400000000") }];
+            const expected = [{ address: "r14f8Luu4dYKzNEwFYV2KfA74YZcWVS5F", amount: BigInt("1400000000") }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
 
         it("should get intendant spent amount", function () {
-            const expected = [{ address: "rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5", amount: toBN("1400000010") }];
+            const expected = [{ address: "rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5", amount: BigInt("1400000010") }];
             const intSpnAmt = transaction.intendedSpentAmounts;
             assert(AddressAmountEqual(intSpnAmt, expected));
         });
 
         it("should get intendant received amount", function () {
-            const expected = [{ address: "r14f8Luu4dYKzNEwFYV2KfA74YZcWVS5F", amount: toBN("1400000000") }];
+            const expected = [{ address: "r14f8Luu4dYKzNEwFYV2KfA74YZcWVS5F", amount: BigInt("1400000000") }];
             const intRecAmt = transaction.intendedReceivedAmounts;
             assert(AddressAmountEqual(intRecAmt, expected));
         });
@@ -173,23 +172,23 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse spentAmounts", function () {
-            const expected = [{ address: "rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p", amount: toBN("39") }];
+            const expected = [{ address: "rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p", amount: BigInt("39") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
         it("should correctly parse receivedAmounts", function () {
-            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("27") }];
+            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: BigInt("27") }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
 
         it("should get intendant spent amount", function () {
-            const expected = [{ address: "rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p", amount: toBN("39") }];
+            const expected = [{ address: "rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p", amount: BigInt("39") }];
             const intSpnAmt = transaction.intendedSpentAmounts;
             assert(AddressAmountEqual(intSpnAmt, expected));
         });
 
         it("should get intendant received amount", function () {
-            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("27") }];
+            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: BigInt("27") }];
             const intRecAmt = transaction.intendedReceivedAmounts;
             assert(AddressAmountEqual(intRecAmt, expected));
         });
@@ -268,7 +267,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
         it("Should get spentAmounts", function () {
             const spentAmounts = transaction.spentAmounts;
-            assert(AddressAmountEqual(spentAmounts, [{ address: "r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB", amount: toBN(10) }]));
+            assert(AddressAmountEqual(spentAmounts, [{ address: "r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB", amount: BigInt(10) }]));
         });
 
         it("Should get receivingAddress", function () {
@@ -282,7 +281,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get intendant spent amount", function () {
-            const expected = [{ address: "r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB", amount: toBN(10) }];
+            const expected = [{ address: "r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB", amount: BigInt(10) }];
             const intSpnAmt = transaction.intendedSpentAmounts;
             assert(AddressAmountEqual(intSpnAmt, expected));
         });
@@ -340,7 +339,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
         it("Should get spentAmounts", function () {
             const spentAmounts = transaction.spentAmounts;
-            assert(AddressAmountEqual(spentAmounts, [{ address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2", amount: toBN(10) }]));
+            assert(AddressAmountEqual(spentAmounts, [{ address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2", amount: BigInt(10) }]));
         });
 
         it("Should get receivingAddress", function () {
@@ -354,13 +353,13 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get intendant spent amount", function () {
-            const expected = [{ address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2", amount: toBN(22) }];
+            const expected = [{ address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2", amount: BigInt(22) }];
             const intSpnAmt = transaction.intendedSpentAmounts;
             assert(AddressAmountEqual(intSpnAmt, expected));
         });
 
         it("should get intendant received amount", function () {
-            const expected = [{ address: "rLCq1KvoCYeMj4H8hsRFrfPYHCRLLYDHdU", amount: toBN(12) }];
+            const expected = [{ address: "rLCq1KvoCYeMj4H8hsRFrfPYHCRLLYDHdU", amount: BigInt(12) }];
             const intRecAmt = transaction.intendedReceivedAmounts;
             assert(AddressAmountEqual(intRecAmt, expected));
         });

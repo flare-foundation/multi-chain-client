@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
+import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, traceManager } from "../../../src";
 import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -36,7 +36,7 @@ describe(`CheckCash type (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse spentAmounts", function () {
-            const expected = [{ address: "rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am", amount: toBN("12") }];
+            const expected = [{ address: "rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am", amount: BigInt("12") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected), "Only the fee is payed in xrp").to.be.true;
         });
 

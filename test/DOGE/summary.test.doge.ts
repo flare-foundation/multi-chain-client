@@ -25,7 +25,7 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
             const summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             assert(summary.response);
-            expect(summary.response.spentAmount.toNumber()).to.eq(209645600000);
+            expect(summary.response.spentAmount).to.eq(BigInt(209645600000));
             expect(summary.response?.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
         });
 
@@ -35,7 +35,7 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
             assert(summary.response);
             assert(summary.response?.isFull);
             expect(summary.response?.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
-            expect(summary.response?.spentAmount.toNumber()).to.eq(209645600000);
+            expect(summary.response?.spentAmount).to.eq(BigInt(209645600000));
         });
     });
 
@@ -52,7 +52,7 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
             const summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 0 });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             assert(summary.response);
-            expect(summary.response.spentAmount.toNumber()).to.eq(209645600000);
+            expect(summary.response.spentAmount).to.eq(BigInt(209645600000));
             expect(summary.response?.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
         });
 
@@ -62,7 +62,7 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
             assert(summary.response);
             assert(summary.response?.isFull);
             expect(summary.response?.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
-            expect(summary.response?.spentAmount.toNumber()).to.eq(209645600000);
+            expect(summary.response?.spentAmount).to.eq(BigInt(209645600000));
         });
     });
 
@@ -91,7 +91,7 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             assert(summary.response);
             expect(summary.response?.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
-            expect(summary.response?.spentAmount.toNumber()).to.eq(476276000000);
+            expect(summary.response?.spentAmount).to.eq(BigInt(476276000000));
         });
     });
 });

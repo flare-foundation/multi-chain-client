@@ -61,23 +61,23 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get fee ", async function () {
-            expect(transaction.fee.toNumber()).to.eq(40000);
+            expect(transaction.fee).to.eq(BigInt(40000));
         });
 
         it("Should spend amount ", async function () {
             expect(transaction.spentAmounts.length).to.eq(2);
             expect(transaction.spentAmounts[0].address).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
-            expect(transaction.spentAmounts[0].amount.toNumber()).to.eq(400000000);
+            expect(transaction.spentAmounts[0].amount).to.eq(BigInt(400000000));
             expect(transaction.spentAmounts[1].address).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
-            expect(transaction.spentAmounts[1].amount.toNumber()).to.eq(400000000);
+            expect(transaction.spentAmounts[1].amount).to.eq(BigInt(400000000));
         });
 
         it("Should received amount ", async function () {
             expect(transaction.receivedAmounts.length).to.eq(2);
             expect(transaction.receivedAmounts[0].address).to.eq("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
-            expect(transaction.receivedAmounts[0].amount.toNumber()).to.eq(494000000);
+            expect(transaction.receivedAmounts[0].amount).to.eq(BigInt(494000000));
             expect(transaction.receivedAmounts[1].address).to.eq("bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej");
-            expect(transaction.receivedAmounts[1].amount.toNumber()).to.eq(305960000);
+            expect(transaction.receivedAmounts[1].amount).to.eq(BigInt(305960000));
         });
 
         it("Should get type ", async function () {
@@ -93,7 +93,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get elementary unit ", async function () {
-            expect(transaction.elementaryUnits.toNumber()).to.eq(100000000);
+            expect(transaction.elementaryUnits).to.eq(100000000);
         });
 
         it("Should get success status ", async function () {
@@ -108,8 +108,8 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
 
             expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
             expect(summary.response!.receivingAddress).to.eq("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
-            expect(summary.response!.spentAmount?.toNumber()).to.eq(800000000);
-            expect(summary.response!.receivedAmount?.toNumber()).to.eq(494000000);
+            expect(summary.response!.spentAmount).to.eq(BigInt(800000000));
+            expect(summary.response!.receivedAmount).to.eq(BigInt(494000000));
             expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
             expect(summary.response!.oneToOne).to.eq(false);
         });
@@ -122,8 +122,8 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
 
             expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
             expect(summary.response!.receivingAddress).to.eq("bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej");
-            expect(summary.response!.spentAmount?.toNumber()).to.eq(800000000);
-            expect(summary.response!.receivedAmount?.toNumber()).to.eq(305960000);
+            expect(summary.response!.spentAmount).to.eq(BigInt(800000000));
+            expect(summary.response!.receivedAmount).to.eq(BigInt(305960000));
             expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
             expect(summary.response!.oneToOne).to.eq(false);
         });
@@ -135,8 +135,8 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
 
             expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
             expect(summary.response!.receivingAddress).to.eq("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
-            expect(summary.response!.spentAmount?.toNumber()).to.eq(800000000);
-            expect(summary.response!.receivedAmount?.toNumber()).to.eq(494000000);
+            expect(summary.response!.spentAmount).to.eq(BigInt(800000000));
+            expect(summary.response!.receivedAmount).to.eq(BigInt(494000000));
             expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
             expect(summary.response!.oneToOne).to.eq(false);
         });
@@ -148,8 +148,8 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
 
             expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
             expect(summary.response!.receivingAddress).to.eq("bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej");
-            expect(summary.response!.spentAmount?.toNumber()).to.eq(800000000);
-            expect(summary.response!.receivedAmount?.toNumber()).to.eq(305960000);
+            expect(summary.response!.spentAmount).to.eq(BigInt(800000000));
+            expect(summary.response!.receivedAmount).to.eq(BigInt(305960000));
             expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
             expect(summary.response!.oneToOne).to.eq(false);
         });

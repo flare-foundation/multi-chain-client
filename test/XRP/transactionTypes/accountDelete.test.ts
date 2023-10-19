@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
+import { BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, traceManager } from "../../../src";
 import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -34,19 +34,19 @@ describe(`Account delete type (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse spentAmounts", function () {
-            const expected = [{ address: "rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre", amount: toBN("2000000").add(toBN("12665795")) }];
+            const expected = [{ address: "rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre", amount: BigInt("2000000") + BigInt("12665795") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
         it("should correctly parse receivedAmounts", function () {
-            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("12665795") }];
+            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: BigInt("12665795") }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
 
         it("should get balanceDecreasingSummary", function () {
             const summary = transaction.balanceDecreasingSummary(standardAddressHash("rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre"));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
-            expect(summary.response!.spentAmount.toString()).to.eq(toBN("2000000").add(toBN("12665795")).toString());
+            expect(summary.response!.spentAmount).to.eq(BigInt("2000000") + BigInt("12665795"));
         });
     });
 });

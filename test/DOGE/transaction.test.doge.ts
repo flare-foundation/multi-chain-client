@@ -1,5 +1,5 @@
-import { assert, expect } from "chai";
-import { DogeTransaction, MCC, PaymentSummaryStatus, toBN, traceManager, TransactionSuccessStatus, UtxoMccCreate, UtxoTransaction } from "../../src";
+import { expect } from "chai";
+import { DogeTransaction, MCC, PaymentSummaryStatus, traceManager, TransactionSuccessStatus, UtxoMccCreate } from "../../src";
 import { transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -50,17 +50,17 @@ describe("Transaction DOGE base test ", function () {
                 spentAmounts: [
                     {
                         address: undefined,
-                        amount: toBN(0),
+                        amount: BigInt(0),
                     },
                 ],
                 receivedAmounts: [
                     {
                         address: "DPcBYzf5vGemYGtWK6BZbvHqvCSAzwpscv",
-                        amount: toBN(27791743986),
+                        amount: BigInt(27791743986),
                     },
                     {
                         address: "9theYDTPbCniM4Rdnza3RdeCw4d1H68sDz",
-                        amount: toBN(1677708425369),
+                        amount: BigInt(1677708425369),
                     },
                 ],
                 type: "partial_payment",
@@ -90,13 +90,13 @@ describe("Transaction DOGE base test ", function () {
                 spentAmounts: [
                     {
                         address: undefined,
-                        amount: toBN(0),
+                        amount: BigInt(0),
                     },
                 ],
                 receivedAmounts: [
                     {
                         address: "DMr3fEiVrPWFpoCWS958zNtqgnFb7QWn9D",
-                        amount: toBN(1001181448000),
+                        amount: BigInt(1001181448000),
                     },
                 ],
                 type: "coinbase",

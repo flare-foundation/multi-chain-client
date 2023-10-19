@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, XrpTransaction, toBN, traceManager } from "../../../src";
+import { MCC, XrpTransaction, traceManager } from "../../../src";
 import { AddressAmountEqual } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -33,12 +33,12 @@ describe.skip("<Type name> type", function () {
         });
 
         it("should correctly parse spentAmounts", function () {
-            const expected = [{ address: "<address>", amount: toBN("1") }];
+            const expected = [{ address: "<address>", amount: BigInt("1") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
         it("should correctly parse receivedAmounts", function () {
-            const expected = [{ address: "<address>", amount: toBN("1") }];
+            const expected = [{ address: "<address>", amount: BigInt("1") }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
     });

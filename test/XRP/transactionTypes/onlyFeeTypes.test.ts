@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, MCC, XrpTransaction, toBN, traceManager } from "../../../src";
+import { AddressAmount, MCC, XrpTransaction, traceManager } from "../../../src";
 import { AddressAmountEqual } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -33,7 +33,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("10") }];
+            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: BigInt("10") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -75,7 +75,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: "r4uZkneFvKrbNVJgtB3tBJooMBryzySnEa", amount: toBN("12") }];
+            const expected = [{ address: "r4uZkneFvKrbNVJgtB3tBJooMBryzySnEa", amount: BigInt("12") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -100,7 +100,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: toBN("10") }];
+            const expected = [{ address: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", amount: BigInt("10") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -128,7 +128,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: address, amount: toBN(fee) }];
+            const expected = [{ address: address, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -157,7 +157,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: address, amount: toBN(fee) }];
+            const expected = [{ address: address, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -186,7 +186,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: address, amount: toBN(fee) }];
+            const expected = [{ address: address, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -215,7 +215,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: address, amount: toBN(fee) }];
+            const expected = [{ address: address, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -244,7 +244,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: address, amount: toBN(fee) }];
+            const expected = [{ address: address, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -273,7 +273,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: address, amount: toBN(fee) }];
+            const expected = [{ address: address, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -302,7 +302,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: address, amount: toBN(fee) }];
+            const expected = [{ address: address, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -331,7 +331,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: address, amount: toBN(fee) }];
+            const expected = [{ address: address, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -360,7 +360,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: address, amount: toBN(fee) }];
+            const expected = [{ address: address, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -389,7 +389,7 @@ describe("Type where no xrp or assets are transferred", function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: address, amount: toBN(fee) }];
+            const expected = [{ address: address, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 

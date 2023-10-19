@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
+import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, traceManager } from "../../../src";
 import { AddressAmountEqual, getTestFile, singleAddressAmountEqual } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -42,7 +42,7 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse spentAmounts", function () {
-            const expected = [{ address: addressPay, amount: toBN(fee).add(toBN(value)) }];
+            const expected = [{ address: addressPay, amount: BigInt(fee) + BigInt(value) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -54,7 +54,7 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
         it("should get balanceDecreasingSummary", function () {
             const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
-            expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).add(toBN(value)).toString());
+            expect(summary.response!.spentAmount).to.eq(BigInt(fee) + BigInt(value));
         });
 
         // // Token transfers
@@ -101,19 +101,19 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse feeSignerTotalAmount address amount", async function () {
-            const expected = { address: addressPay, amount: toBN(fee).sub(toBN(value)) };
+            const expected = { address: addressPay, amount: BigInt(fee) - BigInt(value) };
             expect(singleAddressAmountEqual(transaction.feeSignerTotalAmount, expected)).to.be.true;
         });
 
         it("should correctly parse receivedAmounts", async function () {
-            const expected = [{ address: addressPay, amount: toBN(value).sub(toBN(fee)) }];
+            const expected = [{ address: addressPay, amount: BigInt(value) - BigInt(fee) }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
 
         it("should get balanceDecreasingSummary", function () {
             const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
-            expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).sub(toBN(value)).toString());
+            expect(summary.response!.spentAmount).to.eq(BigInt(fee) - BigInt(value));
         });
 
         // // Token transfers
@@ -156,19 +156,19 @@ describe(`Escrow types (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse spentAmounts", function () {
-            const expected: AddressAmount[] = [{ address: addressPay, amount: toBN(fee) }];
+            const expected: AddressAmount[] = [{ address: addressPay, amount: BigInt(fee) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
         it("should correctly parse receivedAmounts", function () {
-            const expected = [{ address: addressRec, amount: toBN(value) }];
+            const expected = [{ address: addressRec, amount: BigInt(value) }];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
 
         it("should get balanceDecreasingSummary #1", function () {
             const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
-            expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).toString());
+            expect(summary.response!.spentAmount.toString()).to.eq(BigInt(fee).toString());
         });
 
         it("should get balanceDecreasingSummary #2", function () {

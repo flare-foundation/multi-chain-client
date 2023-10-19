@@ -7,7 +7,6 @@ import {
     TransactionSuccessStatus,
     XrpTransaction,
     standardAddressHash,
-    toBN,
     traceManager,
 } from "../../src";
 import { AddressAmountEqual } from "../testUtils";
@@ -41,12 +40,12 @@ describe("Failed transactions", function () {
         });
 
         it("Should get intendedSpentAmounts", function () {
-            const expected: AddressAmount[] = [{ address: "rKbb74HAdKBWPyJC6Q7p8m2BMrBgRs5uWT", amount: toBN("142") }];
+            const expected: AddressAmount[] = [{ address: "rKbb74HAdKBWPyJC6Q7p8m2BMrBgRs5uWT", amount: BigInt("142") }];
             assert(AddressAmountEqual(transaction.intendedSpentAmounts, expected));
         });
 
         it("Should get intendedReceivedAmounts", function () {
-            const expected: AddressAmount[] = [{ address: "rfLyN2k3KShu6kEuXgzQsmiK4xRLsaU8Ad", amount: toBN("42") }];
+            const expected: AddressAmount[] = [{ address: "rfLyN2k3KShu6kEuXgzQsmiK4xRLsaU8Ad", amount: BigInt("42") }];
             assert(AddressAmountEqual(transaction.intendedReceivedAmounts, expected));
         });
 

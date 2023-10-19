@@ -1,9 +1,8 @@
-import BN from "bn.js";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
-import { IUtxoGetTransactionRes, IUtxoVinVoutsMapper, IUtxoVoutTransaction, hasPrevouts, isCoinbase } from "../../types/utxoTypes";
+import { IUtxoGetTransactionRes, IUtxoVoutTransaction, hasPrevouts, isCoinbase } from "../../types/utxoTypes";
 import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { MccError, ZERO_BYTES_32, isValidBytes32Hex, prefix0x, standardAddressHash, toBN, toHex, unPrefix0x } from "../../utils/utils";
+import { MccError, ZERO_BYTES_32, isValidBytes32Hex, prefix0x, standardAddressHash, toHex, unPrefix0x } from "../../utils/utils";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import {
     AddressAmount,
@@ -79,30 +78,35 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         return this.data.vout.map((vout: IUtxoVoutTransaction) => vout.scriptPubKey.address);
     }
 
-    toBnValue(value: number | undefined): BN {
+    /**
+     *
+     * @param value is stored in decimal with 1 representing the basic unit (BTC)
+     * @returns
+     */
+    toBigIntValue(value: number | undefined): bigint {
         if (value === undefined) {
-            return toBN(0);
+            return BigInt(0);
         }
-        return toBN(Math.round(value * BTC_MDU).toFixed(0));
+        return BigInt(Math.round(value * BTC_MDU).toFixed(0));
     }
 
-    public get fee(): BN {
+    public get fee(): bigint {
         switch (this.type) {
             case "payment": {
-                let fee = new BN(0);
+                let fee = BigInt(0);
 
                 this.spentAmounts.forEach((addressAmount) => {
-                    fee = fee.add(addressAmount.amount);
+                    fee = fee + addressAmount.amount;
                 });
 
                 this.receivedAmounts.forEach((addressAmount) => {
-                    fee = fee.sub(addressAmount.amount);
+                    fee = fee - addressAmount.amount;
                 });
                 return fee;
             }
             case "coinbase": {
                 // Coinbase transactions mint coins
-                return toBN(0);
+                return BigInt(0);
             }
         }
     }
@@ -116,16 +120,16 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             // Coinbase transactions mint coins
             return [
                 {
-                    amount: toBN(0),
+                    amount: BigInt(0),
                 } as AddressAmount,
             ];
         } else if (hasPrevouts(this.data)) {
             return this.data.vin.map((mapper) => {
-                let amount: BN;
+                let amount: bigint;
                 if (mapper == undefined) {
-                    amount = toBN(0);
+                    amount = BigInt(0);
                 } else {
-                    amount = toBN(Math.round((mapper.prevout.value || 0) * this.elementaryUnits.toNumber()).toFixed(0));
+                    amount = this.toBigIntValue(mapper.prevout.value || 0);
                 }
 
                 return {
@@ -145,7 +149,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         return this.data.vout.map((vout: IUtxoVoutTransaction) => {
             return {
                 address: vout.scriptPubKey.address,
-                amount: this.toBnValue(vout.value),
+                amount: this.toBigIntValue(vout.value),
                 utxo: vout.n,
             } as AddressAmount;
         });
@@ -203,17 +207,17 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         // We will update this once we iterate over inputs and outputs if we have full transaction
         let oneToOne: boolean = true;
 
-        let inFunds = toBN(0);
-        let returnFunds = toBN(0);
-        let outFunds = toBN(0);
-        let inFundsOfReceivingAddress = toBN(0);
+        let inFunds = BigInt(0);
+        let returnFunds = BigInt(0);
+        let outFunds = BigInt(0);
+        let inFundsOfReceivingAddress = BigInt(0);
 
         for (const vinAmount of this.spentAmounts) {
             if (sourceAddress && vinAmount.address === sourceAddress) {
-                inFunds = inFunds.add(vinAmount.amount);
+                inFunds = inFunds + vinAmount.amount;
             }
             if (receivingAddress && vinAmount.address === receivingAddress) {
-                inFundsOfReceivingAddress = inFundsOfReceivingAddress.add(vinAmount.amount);
+                inFundsOfReceivingAddress = inFundsOfReceivingAddress + vinAmount.amount;
             }
             if (oneToOne && vinAmount.address != sourceAddress && vinAmount.address != receivingAddress) {
                 oneToOne = false;
@@ -221,13 +225,13 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         }
         for (const voutAmount of this.receivedAmounts) {
             if (sourceAddress && voutAmount.address === sourceAddress) {
-                returnFunds = returnFunds.add(voutAmount.amount);
+                returnFunds = returnFunds + voutAmount.amount;
             }
             if (receivingAddress && voutAmount.address === receivingAddress) {
-                outFunds = outFunds.add(voutAmount.amount);
+                outFunds = outFunds + voutAmount.amount;
             }
             // Outputs without address do not break one-to-one condition
-            if (oneToOne && !voutAmount.address && voutAmount.amount.gt(toBN(0))) {
+            if (oneToOne && !voutAmount.address && voutAmount.amount >= BigInt(0)) {
                 oneToOne = false;
             }
             if (oneToOne && voutAmount.address && voutAmount.address != sourceAddress && voutAmount.address != receivingAddress) {
@@ -243,14 +247,14 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                 sourceAddress,
                 receivingAddress,
                 receivingAddressHash: standardAddressHash(receivingAddress),
-                spentAmount: inFunds.sub(returnFunds),
-                receivedAmount: outFunds.sub(inFundsOfReceivingAddress),
+                spentAmount: inFunds - returnFunds,
+                receivedAmount: outFunds - inFundsOfReceivingAddress,
                 transactionStatus: this.successStatus,
                 paymentReference: this.stdPaymentReference,
-                intendedSourceAmount: inFunds.sub(returnFunds),
+                intendedSourceAmount: inFunds - returnFunds,
                 intendedReceivingAddressHash: standardAddressHash(receivingAddress),
                 intendedReceivingAddress: receivingAddress,
-                intendedReceivingAmount: outFunds.sub(inFundsOfReceivingAddress),
+                intendedReceivingAmount: outFunds - inFundsOfReceivingAddress,
                 oneToOne,
             },
         };
@@ -280,17 +284,17 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                 const spentAmount = spentAmounts[vinIndex];
                 const sourceAddress = spentAmount.address;
                 if (sourceAddress) {
-                    let inFunds = toBN(0);
-                    let returnFunds = toBN(0);
+                    let inFunds = BigInt(0);
+                    let returnFunds = BigInt(0);
 
                     for (const vinAmount of this.spentAmounts) {
                         if (vinAmount.address === sourceAddress) {
-                            inFunds = inFunds.add(vinAmount.amount);
+                            inFunds = inFunds + vinAmount.amount;
                         }
                     }
                     for (const voutAmount of this.receivedAmounts) {
                         if (voutAmount.address === sourceAddress) {
-                            returnFunds = returnFunds.add(voutAmount.amount);
+                            returnFunds = returnFunds + voutAmount.amount;
                         }
                     }
                     return {
@@ -301,7 +305,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                             sourceAddressIndicator: sourceAddressIndicator,
                             sourceAddressHash: standardAddressHash(sourceAddress),
                             sourceAddress: sourceAddress,
-                            spentAmount: inFunds.sub(returnFunds),
+                            spentAmount: inFunds - returnFunds,
                             transactionStatus: this.successStatus,
                             paymentReference: this.stdPaymentReference,
                             isFull: true,

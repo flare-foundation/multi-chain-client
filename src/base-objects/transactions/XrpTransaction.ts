@@ -1,11 +1,10 @@
-import BN from "bn.js";
 import { Payment, TransactionMetadata } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 import { IXrpGetTransactionRes, XrpTransactionStatusPrefixes, XrpTransactionStatusTec, XrpTransactionTypeUnion } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
-import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash, toBN } from "../../utils/utils";
+import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash } from "../../utils/utils";
 import {
     AddressAmount,
     BalanceDecreasingSummaryResponse,
@@ -86,12 +85,12 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         return receivingAddresses;
     }
 
-    public get fee(): BN {
+    public get fee(): bigint {
         /* istanbul ignore if */
         if (!this.data.result.Fee) {
-            return toBN(0);
+            return BigInt(0);
         }
-        return toBN(this.data.result.Fee);
+        return BigInt(this.data.result.Fee);
     }
 
     public get feeSignerTotalAmount(): AddressAmount {
@@ -109,14 +108,14 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
             if (receivedAmount.address === feeSigner) {
                 const { amount, ...rest } = receivedAmount;
                 return {
-                    amount: amount.neg(),
+                    amount: -amount,
                     ...rest,
                 };
             }
         }
         // You cash a check for exactly fee amount
         return {
-            amount: toBN(0),
+            amount: BigInt(0),
             address: feeSigner,
         };
     }
@@ -137,11 +136,11 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     node.ModifiedNode.PreviousFields.Balance
                 ) {
                     // TODO: this is due to xrpl.js lib mistakes
-                    const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
-                    if (diff.lt(toBN(0))) {
+                    const diff = BigInt(node.ModifiedNode.FinalFields.Balance as string) - BigInt(node.ModifiedNode.PreviousFields.Balance as string);
+                    if (diff < BigInt(0)) {
                         spendAmounts.push({
                             address: node.ModifiedNode.FinalFields.Account as string,
-                            amount: diff.neg(),
+                            amount: -diff,
                         });
                     }
                 }
@@ -156,21 +155,21 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                         if (node.DeletedNode.FinalFields.Balance) {
                             // TODO: this is due to xrpl.js lib mistakes
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            const diff = toBN(node.DeletedNode.FinalFields.Balance as string).sub(
+                            const diff =
+                                BigInt(node.DeletedNode.FinalFields.Balance as string) -
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                toBN(((node.DeletedNode as any).PreviousFields as any).Balance as string)
-                            );
-                            if (diff.lt(toBN(0))) {
+                                BigInt(((node.DeletedNode as any).PreviousFields as any).Balance as string);
+                            if (diff < BigInt(0)) {
                                 spendAmounts.push({
                                     address: node.DeletedNode.FinalFields.Account as string,
-                                    amount: diff.neg(),
+                                    amount: -diff,
                                 });
                             }
                         } else {
                             // TODO: this is due to xrpl.js lib mistakes
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-                            const diff = toBN(((node.DeletedNode as any).PreviousFields as any).Balance as string);
-                            if (diff.gt(toBN(0))) {
+                            const diff = BigInt(((node.DeletedNode as any).PreviousFields as any).Balance as string);
+                            if (diff > BigInt(0)) {
                                 spendAmounts.push({
                                     address: node.DeletedNode.FinalFields.Account as string,
                                     amount: diff,
@@ -220,7 +219,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                         return [
                             {
                                 address: payment.Account,
-                                amount: toBN(payment.Amount).add(this.fee),
+                                amount: BigInt(payment.Amount) + this.fee,
                             },
                         ];
                     } // Token transfer since Amount is IssuedCurrencyAmount
@@ -245,12 +244,6 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
             default:
                 // TODO: what should be returned here?
                 throw new Error(`Intended spend amounts for transaction type ${this.type} are not implemented`);
-            // return [
-            //    {
-            //       address: this.sourceAddresses[0],
-            //       amount: toBN(this.fee),
-            //    },
-            // ];
         }
     }
 
@@ -270,8 +263,8 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     node.ModifiedNode.PreviousFields.Balance
                 ) {
                     // TODO: this is due to xrpl.js lib mistakes
-                    const diff = toBN(node.ModifiedNode.FinalFields.Balance as string).sub(toBN(node.ModifiedNode.PreviousFields.Balance as string));
-                    if (diff.gt(toBN(0))) {
+                    const diff = BigInt(node.ModifiedNode.FinalFields.Balance as string) - BigInt(node.ModifiedNode.PreviousFields.Balance as string);
+                    if (diff > BigInt(0)) {
                         receivedAmounts.push({
                             address: node.ModifiedNode.FinalFields.Account as string,
                             amount: diff,
@@ -283,7 +276,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     if (node.CreatedNode.NewFields.Balance) {
                         receivedAmounts.push({
                             address: node.CreatedNode.NewFields.Account as string,
-                            amount: toBN(node.CreatedNode.NewFields.Balance as string),
+                            amount: BigInt(node.CreatedNode.NewFields.Balance as string),
                         });
                     }
                 }
@@ -308,7 +301,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                         return [
                             {
                                 address: payment.Destination,
-                                amount: toBN(payment.Amount),
+                                amount: BigInt(payment.Amount),
                             },
                         ];
                     }
@@ -342,9 +335,9 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         return "";
     }
 
-    public get elementaryUnits(): BN {
+    public get elementaryUnits(): number {
         // TODO this is dependent on currency we are using
-        return toBN(XRP_MDU);
+        return XRP_MDU;
     }
 
     public get successStatus(): TransactionSuccessStatus {
@@ -492,14 +485,14 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     receivingAddress: receiveAddress,
                     spentAmount: spendAmount.amount,
                     // TODO: Check if intended sent value can be set
-                    receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : toBN(0),
+                    receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : BigInt(0),
                     transactionStatus: this.successStatus,
                     // For transactions that are not successful but still in block
-                    intendedSourceAmount: toBN(intendedSpendAmounts.amount),
+                    intendedSourceAmount: BigInt(intendedSpendAmounts.amount),
 
                     intendedReceivingAddressHash: standardAddressHash(intendedReceivedAmounts.address),
                     intendedReceivingAddress: intendedReceivedAmounts.address,
-                    intendedReceivingAmount: toBN(intendedReceivedAmounts.amount),
+                    intendedReceivingAmount: BigInt(intendedReceivedAmounts.amount),
 
                     oneToOne: true,
                     paymentReference: this.stdPaymentReference,

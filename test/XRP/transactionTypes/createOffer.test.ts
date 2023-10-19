@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
+import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, traceManager } from "../../../src";
 import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -36,7 +36,7 @@ describe(`createOffer type (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse spentAmounts", function () {
-            const expected = [{ address: sourceAddress, amount: toBN("12") }];
+            const expected = [{ address: sourceAddress, amount: BigInt("12") }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 

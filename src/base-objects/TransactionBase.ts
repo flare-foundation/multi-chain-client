@@ -12,8 +12,8 @@ export type PaymentSummaryProps = {
 
 export interface AddressAmount {
     address?: string;
-    amount: BN;
-    elementaryUnits?: BN; // if undefined the transaction elementaryUnits getter is the elementary unit
+    amount: bigint;
+    elementaryUnits?: bigint; // if undefined the transaction elementaryUnits getter is the elementary unit
     utxo?: number;
 }
 
@@ -63,7 +63,7 @@ interface SummaryObjectBase {
     transactionHash: string;
     sourceAddressHash: string;
     sourceAddress: string;
-    spentAmount: BN;
+    spentAmount: bigint;
     paymentReference: string;
     transactionStatus: TransactionSuccessStatus;
 }
@@ -71,18 +71,18 @@ interface SummaryObjectBase {
 export interface PaymentSummaryObject extends SummaryObjectBase {
     receivingAddressHash: string;
     receivingAddress: string;
-    receivedAmount: BN;
-    intendedSourceAmount: BN;
+    receivedAmount: bigint;
+    intendedSourceAmount: bigint;
     intendedReceivingAddressHash: string;
     intendedReceivingAddress: string;
-    intendedReceivingAmount: BN;
+    intendedReceivingAmount: bigint;
     oneToOne: boolean;
 }
 
 export interface PaymentNonexistenceSummaryObject extends SummaryObjectBase {
     intendedSourceAddressHash: string;
     intendedSourceAddress: string;
-    intendedSourceAmount: BN;
+    intendedSourceAmount: bigint;
 }
 
 export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
@@ -162,7 +162,7 @@ export abstract class TransactionBase<T> {
     /**
      * Gets transaction fee. In some cases it can revert, since fee is not possible to calculate.
      */
-    public abstract get fee(): BN;
+    public abstract get fee(): bigint;
 
     /**
      * Gets transaction fee in elementary units (e.g. satoshi, microalgo, ...) and the address that paid the fee.
@@ -228,7 +228,7 @@ export abstract class TransactionBase<T> {
     /**
      * Amount of elementary units that constitute one basic unit of currency on an underlying chain (e.g. 1 BTC = 10^8 satoshis)
      */
-    public abstract get elementaryUnits(): BN;
+    public abstract get elementaryUnits(): number;
 
     /**
      * Returns transaction success status.

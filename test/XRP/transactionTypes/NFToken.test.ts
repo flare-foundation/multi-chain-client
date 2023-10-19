@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, toBN, traceManager } from "../../../src";
+import { BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, traceManager } from "../../../src";
 import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -44,14 +44,14 @@ describe(`NFTokens types (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse spentAmounts", async function () {
-            const expected = [{ address: addressBuy, amount: toBN(value) }];
+            const expected = [{ address: addressBuy, amount: BigInt(value) }];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
         it("should correctly parse receivedAmounts", async function () {
             const expected = [
-                { address: minter, amount: toBN(minterFee) },
-                { address: addressSell, amount: toBN(value).sub(toBN(fee)).sub(toBN(minterFee)) },
+                { address: minter, amount: BigInt(minterFee) },
+                { address: addressSell, amount: BigInt(value) - BigInt(fee) - BigInt(minterFee) },
             ];
             expect(AddressAmountEqual(transaction.receivedAmounts, expected)).to.be.true;
         });
@@ -59,13 +59,13 @@ describe(`NFTokens types (${getTestFile(__filename)})`, function () {
         it("should get balanceDecreasingSummary #1", function () {
             const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressSell));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
-            expect(summary.response!.spentAmount.toString()).to.eq(toBN(fee).sub(toBN(value)).add(toBN(minterFee)).toString());
+            expect(summary.response!.spentAmount).to.eq(BigInt(fee) - BigInt(value) + BigInt(minterFee));
         });
 
         it("should get balanceDecreasingSummary #2", function () {
             const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressBuy));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
-            expect(summary.response!.spentAmount.toString()).to.eq(toBN(value).toString());
+            expect(summary.response!.spentAmount.toString()).to.eq(BigInt(value).toString());
         });
 
         // // Token transfers
