@@ -132,12 +132,12 @@ export interface IUtxoVinTransactionPrevout extends IUtxoVinTransactionBasic {
 interface IPrevout {
     generated?: boolean;
     height?: number;
-    value: number;
+    value: number | string;
     scriptPubKey: IUtxoScriptPubKeyPrevout;
 }
 
 export interface IUtxoVoutTransaction {
-    value: number;
+    value: number | string;
     n: number;
     scriptPubKey: IUtxoScriptPubKey;
 }

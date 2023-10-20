@@ -1,6 +1,5 @@
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 import { IUtxoGetTransactionRes, IUtxoVoutTransaction, hasPrevouts, isCoinbase } from "../../types/utxoTypes";
-import { BTC_MDU } from "../../utils/constants";
 import { mccError, mccErrorCode } from "../../utils/errors";
 import { MccError, ZERO_BYTES_32, isValidBytes32Hex, prefix0x, standardAddressHash, toHex, unPrefix0x } from "../../utils/utils";
 import { WordToOpcode } from "../../utils/utxoUtils";
@@ -13,7 +12,6 @@ import {
     PaymentSummaryStatus,
     TransactionBase,
 } from "../TransactionBase";
-import { isNumber } from "util";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment";
 // Transaction types and their description
@@ -94,7 +92,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             valueStr = valueStr.replace(".", "");
             return BigInt(valueStr);
         } else {
-            let split = value.split(".");
+            const split = value.split(".");
             if (split.length == 1) return BigInt(value);
             else if (split.length == 2) {
                 const valueStr = split[0].concat(split[1].padEnd(this.elementaryUnits, "0"));
