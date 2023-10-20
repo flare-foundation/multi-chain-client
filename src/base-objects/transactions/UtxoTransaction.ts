@@ -13,6 +13,7 @@ import {
     PaymentSummaryStatus,
     TransactionBase,
 } from "../TransactionBase";
+import { isNumber } from "util";
 
 export type UtxoTransactionTypeOptions = "coinbase" | "payment";
 // Transaction types and their description
@@ -78,16 +79,29 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         return this.data.vout.map((vout: IUtxoVoutTransaction) => vout.scriptPubKey.address);
     }
 
+    abstract get elementaryUnitsExponent(): number;
+
     /**
-     *
+     * Returns value in minimal devisable units
      * @param value is stored in decimal with 1 representing the basic unit (BTC)
      * @returns
      */
-    toBigIntValue(value: number | undefined): bigint {
+    toBigIntValue(value: number | string | undefined): bigint {
         if (value === undefined) {
             return BigInt(0);
+        } else if (typeof value == "number") {
+            let valueStr = value.toFixed(this.elementaryUnitsExponent);
+            valueStr = valueStr.replace(".", "");
+            return BigInt(valueStr);
+        } else {
+            let split = value.split(".");
+            if (split.length == 1) return BigInt(value);
+            else if (split.length == 2) {
+                const valueStr = split[0].concat(split[1].padEnd(this.elementaryUnits, "0"));
+                return BigInt(valueStr);
+            }
+            throw Error(`${value} is not a valid numeric string or number`);
         }
-        return BigInt(Math.round(value * BTC_MDU).toFixed(0));
     }
 
     public get fee(): bigint {

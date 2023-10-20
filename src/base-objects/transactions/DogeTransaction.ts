@@ -8,4 +8,8 @@ export class DogeTransaction extends UtxoTransaction {
     public get elementaryUnits(): number {
         return DOGE_MDU;
     }
+
+    public get elementaryUnitsExponent(): number {
+        return 8;
+    }
 }

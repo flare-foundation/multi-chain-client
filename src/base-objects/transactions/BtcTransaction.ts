@@ -8,4 +8,8 @@ export class BtcTransaction extends UtxoTransaction {
     public get elementaryUnits(): number {
         return BTC_MDU;
     }
+
+    public get elementaryUnitsExponent(): number {
+        return 8;
+    }
 }
