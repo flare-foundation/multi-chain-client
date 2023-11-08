@@ -109,10 +109,8 @@ export interface getTransactionOptions {
 export enum ChainType {
     invalid = -1,
     BTC = 0,
-    LTC = 1,
     DOGE = 2,
     XRP = 3,
-    ALGO = 4,
     // ... make sure IDs are the same as in Flare node
 }
 

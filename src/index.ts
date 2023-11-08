@@ -7,7 +7,6 @@ export * from "./base-objects/TransactionBase";
 export * from "./module";
 // Types
 export * from "./types";
-export * from "./utils/algoUtils";
 // Constants
 export * from "./utils/constants";
 // managed

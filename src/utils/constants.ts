@@ -22,9 +22,6 @@ export const DOGE_MDU = 1e8;
 // Ripple drops 1_000_000
 export const XRP_MDU = 1e6;
 
-// Microalgo
-export const ALGO_MDU = 1e6;
-
 ////////////////////////////////
 // TIME DELTA TRANSFORMATIONS //
 ////////////////////////////////
@@ -35,7 +32,5 @@ export const XRP_UTD = 946684800;
 // Native token names //
 ////////////////////////
 export const XRP_NATIVE_TOKEN_NAME = "XRP";
-export const ALGO_NATIVE_TOKEN_NAME = "ALGO";
 export const BTC_NATIVE_TOKEN_NAME = "BTC";
-export const LTC_NATIVE_TOKEN_NAME = "LTC";
 export const DOGE_NATIVE_TOKEN_NAME = "DOGE";
