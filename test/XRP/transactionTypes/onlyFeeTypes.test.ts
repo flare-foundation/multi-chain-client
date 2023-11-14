@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { AddressAmount, MCC, XrpTransaction, traceManager } from "../../../src";
-import { AddressAmountEqual } from "../../testUtils";
+import { AddressAmount, MCC, XrpTransaction, retry, traceManager } from "../../../src";
+import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
     url: process.env.XRP_URL || "https://xrplcluster.com",
@@ -9,7 +9,7 @@ const XRPMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("Type where no xrp or assets are transferred", function () {
+describe(`Type where no xrp or assets are transferred, ${getTestFile(__filename)}`, function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
@@ -21,7 +21,7 @@ describe("Type where no xrp or assets are transferred", function () {
     describe("AccountSet", function () {
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await MccClient.getTransaction("327FD263132A4D08170E1B01FE1BB2E21D0126CE58165C97A9173CA9551BCD70");
+            transaction = await retry("", () => MccClient.getTransaction("327FD263132A4D08170E1B01FE1BB2E21D0126CE58165C97A9173CA9551BCD70"));
         });
 
         it("should correctly parse sourceAddresses", async function () {
