@@ -1,116 +1,110 @@
 {
-   "name": "@flarenetwork/mcc",
-   "version": "3.4.0-beta.1",
-   "description": "Multi chain client",
-   "main": "dist/src/index.js",
-   "types": "dist/src/index.d.ts",
-   "author": "Flare Networks",
-   "homepage": "https://github.com/flare-foundation/multi-chain-client",
-   "repository": {
-      "type": "git",
-      "url": "https://github.com/flare-foundation/multi-chain-client"
-   },
-   "license": "MIT",
-   "prettier": {
-      "printWidth": 160,
-      "semi": true,
-      "singleQuote": false,
-      "trailingComma": "es5",
-      "tabWidth": 4
-   },
-   "nyc": {
-      "extends": "@istanbuljs/nyc-config-typescript",
-      "check-coverage": true,
-      "all": true,
-      "sourceMap": true,
-      "include": [
-         "src/**/*.ts"
-      ],
-      "exclude": [
-         "src/types",
-         "src/axios-rate-limiter",
-         "src/utils/typeReflection.ts",
-         "src/utils/retry.ts",
-         "src/base-objects/blocks/AlgoBlock.ts",
-         "src/base-objects/blocks/AlgoIndexerBlock.ts",
-         "src/base-objects/status/AlgoStatus.ts",
-         "src/base-objects/transactions/AlgoIndexerTransaction.ts",
-         "src/base-objects/transactions/AlgoTransaction.ts",
-         "src/chain-clients/AlgoRpcImplementation.ts",
-         "src/types/algoTypes.ts",
-         "src/utils/algoUtils.ts"
-      ],
-      "reporter": [
-         "html",
-         "lcov",
-         "text",
-         "text-summary"
-      ],
-      "report-dir": "coverage"
-   },
-   "files": [
-      "/dist",
-      "/src"
-   ],
-   "scripts": {
-      "----------PREBUILD-HEALTH-CHECKS----------": "----------PREBUILD-HEALTH-CHECKS----------",
-      "health_check:xrpl_OLD": "yarn ts-node src/scripts/xrplJsTransactionTypesCheck.ts",
-      "----------BUILD----------": "----------BUILD----------",
-      "prebuild": "rimraf dist",
-      "build": "tsc --allowJs",
-      "----------PUBLISH----------": "----------PUBLISH----------",
-      "publish": "echo npm publish",
-      "pack": "npm pack",
-      "----------TEST----------": "----------TEST----------",
-      "test": "mocha -r ts-node/register -r dotenv/config --require source-map-support/register -t 1000000",
-      "test:xrp": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/XRP/**/*.test.ts\" ",
-      "test:doge": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/DOGE/**/*.test.ts\" ",
-      "test:btc": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/BTC/**/*.test.ts\" ",
-      "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/**/*.test.ts\" ",
-      "test:coverage": "yarn nyc yarn test:all",
-      "----------TESTNET-LOGIC-CHECK----------": "----------TESTNET-LOGIC-CHECK----------",
-      "run_test_chain": "yarn ts-node -r dotenv/config"
-   },
-   "dependencies": {
-      "@msgpack/msgpack": "^2.8.0",
-      "algo-msgpack-with-bigint": "2.1.1",
-      "algosdk": "2.2.0",
-      "axios": "0.27.2",
-      "axios-retry": "3.2.5",
-      "base32.js": "0.1.0",
-      "camelcase": "6.3.0",
-      "fast-safe-stringify": "2.1.1",
-      "js-sha512": "0.8.0",
-      "msgpack-lite": "^0.1.26",
-      "ripple-address-codec": "4.2.4",
-      "web3": "1.9.0",
-      "xrpl": "2.7.0"
-   },
-   "devDependencies": {
-      "@istanbuljs/nyc-config-typescript": "1.0.2",
-      "@types/chai": "4.3.1",
-      "@types/chai-as-promised": "7.1.5",
-      "@types/cli-progress": "^3.11.0",
-      "@types/mocha": "9.1.1",
-      "@types/node": "17.0.42",
-      "@types/sinon": "10.0.13",
-      "@typescript-eslint/eslint-plugin": "^5.41.0",
-      "@typescript-eslint/parser": "^5.41.0",
-      "axios-mock-adapter": "^1.21.2",
-      "chai": "4.3.6",
-      "chai-as-promised": "^7.1.1",
-      "cli-progress": "^3.12.0",
-      "dotenv": "16.0.1",
-      "dpdm": "^3.13.1",
-      "eslint": "^8.26.0",
-      "eslint-plugin-prettier": "^4.2.1",
-      "mocha": "9.2.2",
-      "nyc": "15.1.0",
-      "prettier": "2.6.2",
-      "sinon": "15.0.2",
-      "source-map-support": "0.5.21",
-      "test-console": "2.0.0",
-      "ts-node": "10.8.0",
-      "typescript": "4.7.3"
-   }
+    "name": "@flarenetwork/mcc",
+    "version": "3.4.0",
+    "description": "Multi chain client",
+    "main": "dist/src/index.js",
+    "types": "dist/src/index.d.ts",
+    "author": "Flare Networks",
+    "homepage": "https://github.com/flare-foundation/multi-chain-client",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/flare-foundation/multi-chain-client"
+    },
+    "license": "MIT",
+    "prettier": {
+        "printWidth": 160,
+        "semi": true,
+        "singleQuote": false,
+        "trailingComma": "es5",
+        "tabWidth": 4
+    },
+    "nyc": {
+        "extends": "@istanbuljs/nyc-config-typescript",
+        "check-coverage": true,
+        "all": true,
+        "sourceMap": true,
+        "include": [
+            "src/**/*.ts"
+        ],
+        "exclude": [
+            "src/types",
+            "src/axios-rate-limiter",
+            "src/utils/typeReflection.ts",
+            "src/utils/retry.ts",
+            "src/base-objects/blocks/AlgoBlock.ts",
+            "src/base-objects/blocks/AlgoIndexerBlock.ts",
+            "src/base-objects/status/AlgoStatus.ts",
+            "src/base-objects/transactions/AlgoIndexerTransaction.ts",
+            "src/base-objects/transactions/AlgoTransaction.ts",
+            "src/chain-clients/AlgoRpcImplementation.ts",
+            "src/types/algoTypes.ts",
+            "src/utils/algoUtils.ts"
+        ],
+        "reporter": [
+            "html",
+            "lcov",
+            "text",
+            "text-summary"
+        ],
+        "report-dir": "coverage"
+    },
+    "files": [
+        "/dist",
+        "/src"
+    ],
+    "scripts": {
+        "----------PREBUILD-HEALTH-CHECKS----------": "----------PREBUILD-HEALTH-CHECKS----------",
+        "health_check:xrpl_OLD": "yarn ts-node src/scripts/xrplJsTransactionTypesCheck.ts",
+        "----------BUILD----------": "----------BUILD----------",
+        "prebuild": "rimraf dist",
+        "build": "tsc --allowJs",
+        "----------PUBLISH----------": "----------PUBLISH----------",
+        "publish": "echo npm publish",
+        "pack": "npm pack",
+        "----------TEST----------": "----------TEST----------",
+        "test": "mocha -r ts-node/register -r dotenv/config --require source-map-support/register -t 1000000",
+        "test:xrp": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/XRP/**/*.test.ts\" ",
+        "test:doge": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/DOGE/**/*.test.ts\" ",
+        "test:btc": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/BTC/**/*.test.ts\" ",
+        "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/**/*.test.ts\" ",
+        "test:coverage": "yarn nyc yarn test:all",
+        "----------TESTNET-LOGIC-CHECK----------": "----------TESTNET-LOGIC-CHECK----------",
+        "run_test_chain": "yarn ts-node -r dotenv/config"
+    },
+    "dependencies": {
+        "axios": "0.27.2",
+        "axios-retry": "3.2.5",
+        "camelcase": "6.3.0",
+        "fast-safe-stringify": "2.1.1",
+        "ripple-address-codec": "4.2.4",
+        "web3": "1.9.0",
+        "xrpl": "2.7.0"
+    },
+    "devDependencies": {
+        "@istanbuljs/nyc-config-typescript": "1.0.2",
+        "@types/chai": "4.3.1",
+        "@types/chai-as-promised": "7.1.5",
+        "@types/cli-progress": "^3.11.0",
+        "@types/mocha": "9.1.1",
+        "@types/node": "17.0.42",
+        "@types/sinon": "10.0.13",
+        "@typescript-eslint/eslint-plugin": "^5.41.0",
+        "@typescript-eslint/parser": "^5.41.0",
+        "axios-mock-adapter": "^1.21.2",
+        "chai": "4.3.6",
+        "chai-as-promised": "^7.1.1",
+        "cli-progress": "^3.12.0",
+        "dotenv": "16.0.1",
+        "dpdm": "^3.13.1",
+        "eslint": "^8.26.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "mocha": "9.2.2",
+        "nyc": "15.1.0",
+        "prettier": "2.6.2",
+        "sinon": "15.0.2",
+        "source-map-support": "0.5.21",
+        "test-console": "2.0.0",
+        "ts-node": "10.8.0",
+        "typescript": "4.7.3"
+    }
 }
