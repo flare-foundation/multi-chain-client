@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, ZERO_BYTES_32, standardAddressHash, traceManager } from "../../src";
+import { MCC, ZERO_BYTES_32, retry, standardAddressHash, traceManager } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const XRPMccConnection = {
@@ -20,7 +20,7 @@ describe(`Balance decreasing summary tests, ${getTestFile(__filename)}`, functio
 
     it("Should be able to extract balance decreasing", async function () {
         const tx_id = "27D592539E1FB00E8E4C4B6022729CB5559DE94AA2285AE510664A7E0891B3DB";
-        const transaction = await MccClient.getTransaction(tx_id);
+        const transaction = await retry("nekej", () => MccClient.getTransaction(tx_id));
         const dec = transaction.balanceDecreasingSummary(standardAddressHash("r4s3spDTkS5xZoQujwEzbjgep3NUPTiHyq"));
         expect(dec.status).to.eq("success");
         if (dec.response) {

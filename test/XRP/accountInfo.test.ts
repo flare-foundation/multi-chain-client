@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, SpecialAddresses, traceManager } from "../../src";
+import { MCC, SpecialAddresses, retry, traceManager } from "../../src";
 import { mccSettings } from "../../src/global-settings/globalSettings";
 import { processFlags } from "../../src/utils/xrpUtils";
 import { getTestFile } from "../testUtils";
@@ -17,7 +17,7 @@ const XRPMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe("Xrpl account test mainnet ", function () {
+describe(`Xrpl account test mainnet, ${getTestFile(__filename)}`, function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
@@ -59,7 +59,7 @@ describe("Xrpl account test mainnet ", function () {
 
         it(`Should get account info 3 `, async () => {
             const acc = "rMv1dFonUTJo4qeQDmmCuz3cXPsxy9AiHz";
-            const info = await MccClient.getAccountInfo(acc);
+            const info = await retry("", () => MccClient.getAccountInfo(acc));
             // Get the flags
             const flags = processFlags(info.result.account_data.Flags);
             expect(flags.length).to.eq(0);
