@@ -95,7 +95,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             const split = value.split(".");
             if (split.length == 1) return BigInt(value);
             else if (split.length == 2) {
-                const valueStr = split[0].concat(split[1].padEnd(this.elementaryUnits, "0"));
+                const valueStr = split[0].concat(split[1].padEnd(this.elementaryUnitsExponent, "0"));
                 return BigInt(valueStr);
             }
             throw Error(`${value} is not a valid numeric string or number`);
@@ -143,7 +143,6 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                 } else {
                     amount = this.toBigIntValue(mapper.prevout.value || 0);
                 }
-
                 return {
                     address: mapper?.prevout?.scriptPubKey?.address,
                     amount: amount,
@@ -204,6 +203,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             return { status: PaymentSummaryStatus.Coinbase };
         }
         const spentAmount = this.spentAmounts[inUtxo];
+
         if (!spentAmount.address) {
             return { status: PaymentSummaryStatus.NoSpentAmountAddress };
         }
