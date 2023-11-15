@@ -1,6 +1,7 @@
+import MockAdapter from "axios-mock-adapter";
 import { expect } from "chai";
 import { MCC, UtxoMccCreate } from "../../../src";
-import MockAdapter from "axios-mock-adapter";
+import { getTestFile } from "../../testUtils";
 
 const DogeMccConnection = {
     url: process.env.DOGE_URL || "",
@@ -8,7 +9,7 @@ const DogeMccConnection = {
     password: process.env.DOGE_PASSWORD || "",
 } as UtxoMccCreate;
 
-describe("Chain tips test ", function () {
+describe(`Chain tips test (${getTestFile(__filename)})`, function () {
     let MccClient: MCC.DOGE;
     let mock: MockAdapter;
     before(async function () {

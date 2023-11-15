@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { DogeTransaction, IUtxoVinVoutsMapper, MCC, PaymentSummaryStatus, UtxoMccCreate, toBN } from "../../src";
+import { DogeTransaction, MCC, PaymentSummaryStatus, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const DogeMccConnection = {

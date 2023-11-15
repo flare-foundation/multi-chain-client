@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { MCC, UtxoMccCreate } from "../../src";
+import { getTestFile } from "../testUtils";
 
 const DogeMccConnection = {
     url: process.env.DOGE_URL || "",
@@ -8,7 +9,7 @@ const DogeMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
-describe("Chain tips test ", function () {
+describe(`Chain tips test (${getTestFile(__filename)})`, function () {
     let MccClient: MCC.DOGE;
     before(async function () {
         MccClient = new MCC.DOGE(DogeMccConnection);

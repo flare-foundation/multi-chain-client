@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, XrpNodeStatus } from "../../src";
+import { MCC, XrpNodeStatus, retry } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const XRPMccConnection = {
@@ -18,7 +18,7 @@ describe(`Block Xrp base test (${getTestFile(__filename)})`, function () {
 
     before(async function () {
         MccClient = new MCC.XRP(XRPMccConnection);
-        status = await MccClient.getNodeStatus();
+        status = await retry("", () => MccClient.getNodeStatus());
     });
 
     it("Should get status version ", async function () {
@@ -39,7 +39,7 @@ describe(`Block Xrp base test (${getTestFile(__filename)})`, function () {
     });
 });
 
-describe("Xrp bottom block ", function () {
+describe(`Xrp bottom block (${getTestFile(__filename)})`, function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
@@ -47,7 +47,7 @@ describe("Xrp bottom block ", function () {
     });
 
     it("Should get status version ", async function () {
-        const bottom = await MccClient.getBottomBlockHeight();
+        const bottom = await retry("", () => MccClient.getBottomBlockHeight());
         expect(bottom).to.greaterThanOrEqual(32_570);
     });
 });

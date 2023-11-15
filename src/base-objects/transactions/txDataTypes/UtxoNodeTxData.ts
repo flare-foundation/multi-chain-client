@@ -75,9 +75,3 @@ interface UtxoScriptSig {
     asm: string;
     hex: string;
 }
-
-export interface BtcTxData extends UtxoTxData<VinPrev | VinCoinbase, ScriptPubKeyBTC> {}
-
-interface DogeIndexTxData extends UtxoTxData<VinPrev | VinCoinbase, ScriptPubKeyBTC> {}
-
-interface DogeTxData extends UtxoTxData<VinNormal | VinCoinbase, ScriptPubKeyDoge> {}
