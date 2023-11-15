@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import BN from "bn.js";
-import Web3 from "web3";
-import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { TextDecoder } from "util";
+import { toHex as W3ToHex, keccak256, padLeft } from "web3-utils";
+import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const safeStringify = require("fast-safe-stringify");
 
@@ -46,8 +45,8 @@ export function isPrefixed0x(tx: string) {
     return tx.startsWith("0x") ? true : false;
 }
 
-export function toHex(x: string | number | BN): string {
-    return Web3.utils.toHex(x);
+export function toHex(x: string | number): string {
+    return W3ToHex(Number(x));
 }
 
 // Convert a hex string to a byte array (???ALGO SPECIFIC???)
@@ -57,26 +56,8 @@ export function hexToBytes(hex: string): Uint8Array {
     return new Uint8Array(bytes);
 }
 
-export function toHex32Bytes(x: string | number | BN): string {
-    return Web3.utils.padLeft(toHex(x), 64);
-}
-
-export function toBN(x: string | number | BN, toZeroIfFails = false) {
-    if (x && x.constructor && x.constructor.name === "BN") return x as BN;
-    try {
-        return Web3.utils.toBN(x as any);
-    } catch (e) {
-        if (toZeroIfFails) {
-            return Web3.utils.toBN(0);
-        }
-        throw MccError(e);
-    }
-}
-
-export function toNumber(x: number | BN | undefined | null) {
-    if (x === undefined || x === null) return undefined;
-    if (x && x.constructor && x.constructor.name === "BN") return (x as BN).toNumber();
-    return x as number;
+export function toHex32Bytes(x: string | number): string {
+    return padLeft(toHex(x), 64);
 }
 
 export function isValidBytes32Hex(address: string) {
@@ -162,5 +143,5 @@ export function fillWithDefault(partialMccLogging: MccLoggingOptions): MccLoggin
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export function standardAddressHash(address: string): string {
-    return Web3.utils.keccak256(address);
+    return keccak256(address);
 }

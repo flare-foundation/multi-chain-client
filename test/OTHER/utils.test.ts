@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import Web3 from "web3";
 import {
     defaultExceptionCallback,
     defaultLoggingCallback,
@@ -9,11 +8,10 @@ import {
     getSimpleRandom,
     isPrefixed0x,
     sleepMs,
-    toBN,
     toHex,
-    toNumber,
     unPrefix0x,
 } from "../../src";
+import { getTestFile } from "../testUtils";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const stdout = require("test-console").stdout;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -23,7 +21,7 @@ const chai = require("chai");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require("chai-as-promised"));
 
-describe("Utils tests ", () => {
+describe(`Utils tests ,(${getTestFile(__filename)})`, () => {
     it("should return '0x0' if no tx", () => {
         const expected = "0x0";
         const res = unPrefix0x("");
@@ -35,60 +33,16 @@ describe("Utils tests ", () => {
         expect(res).to.be.false;
     });
 
-    it("should return undefined", () => {
-        const expected = undefined;
-        const res = toNumber(undefined);
-        expect(res).to.be.equal(expected);
-    });
-
-    it("should return undefined", () => {
-        const expected = undefined;
-        const res = toNumber(null);
-        expect(res).to.be.equal(expected);
-    });
-
-    it("should return number", () => {
-        const expected = 1;
-        const res = toNumber(expected);
-        expect(res).to.be.equal(expected);
-    });
-
-    it("should return number", () => {
-        const expected = 1;
-        const res = toNumber(Web3.utils.toBN(1));
-        expect(res).to.be.equal(expected);
-    });
-
-    it("should return error", () => {
-        const fn = () => {
-            return toBN(1.0194e21, false);
-        };
-        expect(fn).to.throw(Error);
-    });
-
-    it("should return 0", () => {
-        const expected = Web3.utils.toBN(0);
-        const res = toBN(1.0194e21, true);
-        expect(res).to.be.eql(expected);
-    });
-
-    it("should return BN", () => {
-        const expected = Web3.utils.toBN(1);
-        const res = toBN(expected);
-        expect(res).to.be.eql(expected);
-    });
-
-    it("should return hex", () => {
+    it("should return hex 2022 as string", () => {
         expect(toHex("2022")).to.be.eq("0x7e6");
     });
 
-    it("should return hex 2", () => {
-        expect(toHex(2022)).to.be.eq("0x7e6");
+    it("should return hex 10 as string", () => {
+        expect(toHex("10")).to.be.eq("0xa");
     });
 
-    it("should return hex 3", () => {
-        const bn = Web3.utils.toBN(toHex(2022));
-        expect(toHex(bn)).to.be.eq("0x7e6");
+    it("should return hex 2022 as number", () => {
+        expect(toHex(2022)).to.be.eq("0x7e6");
     });
 
     it("should return defaultMccLoggingObject", () => {
