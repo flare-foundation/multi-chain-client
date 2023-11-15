@@ -74,7 +74,6 @@
     "dependencies": {
         "axios": "0.27.2",
         "axios-retry": "3.2.5",
-        "camelcase": "6.3.0",
         "fast-safe-stringify": "2.1.1",
         "ripple-address-codec": "4.2.4",
         "web3": "1.9.0",

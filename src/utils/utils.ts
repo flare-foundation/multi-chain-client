@@ -4,8 +4,6 @@ import Web3 from "web3";
 import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
 import { TextDecoder } from "util";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const camelCase = require("camelcase");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const safeStringify = require("fast-safe-stringify");
 
 export const ZERO_BYTES_32 = "0x0000000000000000000000000000000000000000000000000000000000000000";
@@ -79,36 +77,6 @@ export function toNumber(x: number | BN | undefined | null) {
     if (x === undefined || x === null) return undefined;
     if (x && x.constructor && x.constructor.name === "BN") return (x as BN).toNumber();
     return x as number;
-}
-
-export function toCamelCase(obj: object): object {
-    const camelObject: any = {};
-    for (const prop in obj) {
-        if (typeof (obj as any)[prop] == "object") {
-            camelObject[camelCase(prop)] = toCamelCase((obj as any)[prop]);
-        } else {
-            camelObject[camelCase(prop)] = (obj as any)[prop];
-        }
-    }
-    return camelObject;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-inferrable-types
-export function camelToSnakeCase(str: string, splitWith: string = "-") {
-    return str.replace(/[A-Z]/g, (letter) => `${splitWith}${letter.toLowerCase()}`);
-}
-
-// eslint-disable-next-line @typescript-eslint/no-inferrable-types
-export function toSnakeCase(obj: object, splitWith: string = "-"): object {
-    const camelObject: any = {};
-    for (const prop in obj) {
-        if (typeof (obj as any)[prop] == "object") {
-            camelObject[camelToSnakeCase(camelCase(prop), splitWith)] = toSnakeCase((obj as any)[prop], splitWith);
-        } else {
-            camelObject[camelToSnakeCase(camelCase(prop), splitWith)] = (obj as any)[prop];
-        }
-    }
-    return camelObject;
 }
 
 export function isValidBytes32Hex(address: string) {

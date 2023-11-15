@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import Web3 from "web3";
 import {
-    camelToSnakeCase,
     defaultExceptionCallback,
     defaultLoggingCallback,
     defaultMccLoggingObject,
@@ -13,7 +12,6 @@ import {
     toBN,
     toHex,
     toNumber,
-    toSnakeCase,
     unPrefix0x,
 } from "../../src";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -59,32 +57,6 @@ describe("Utils tests ", () => {
         const expected = 1;
         const res = toNumber(Web3.utils.toBN(1));
         expect(res).to.be.equal(expected);
-    });
-
-    it("should return snakecase", () => {
-        const expected = "this-is-my-project";
-        const res = camelToSnakeCase("thisIsMyProject");
-        expect(res).to.be.equal(expected);
-    });
-
-    it("should return snakecase from camelcase", () => {
-        const expected = "this:is:my:project";
-        const res = camelToSnakeCase("thisIsMyProject", ":");
-        expect(res).to.be.equal(expected);
-    });
-
-    it("should return snakecase", () => {
-        const expected = { "first:argument": "thisIsMyProject", "second:argument": 2, 3: { "deep:argument": "deepProject" } };
-        const obj = { firstArgument: "thisIsMyProject", secondArgument: 2, 3: { deepArgument: "deepProject" } };
-        const res = toSnakeCase(obj, ":");
-        expect(res).to.be.eql(expected);
-    });
-
-    it("should return snakecase", () => {
-        const expected = { "first-argument": "thisIsMyProject", "second-argument": 2, 3: { "deep-argument": "deepProject" } };
-        const obj = { firstArgument: "thisIsMyProject", secondArgument: 2, 3: { deepArgument: "deepProject" } };
-        const res = toSnakeCase(obj);
-        expect(res).to.be.eql(expected);
     });
 
     it("should return error", () => {
