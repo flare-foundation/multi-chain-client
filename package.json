@@ -72,9 +72,9 @@
         "run_test_chain": "yarn ts-node -r dotenv/config"
     },
     "dependencies": {
-        "axios": "0.27.2",
-        "axios-retry": "3.2.5",
-        "fast-safe-stringify": "2.1.1",
+        "axios": "^1.6.2",
+        "axios-retry": "^3.9.1",
+        "fast-safe-stringify": "^2.1.1",
         "ripple-address-codec": "4.2.4",
         "web3-utils": "^4.0.7",
         "xrpl": "2.7.0"
