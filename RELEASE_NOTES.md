@@ -1,3 +1,9 @@
+# 4.0.0
+* Adaptation of full indexing on transaction and block objects on BTC and DOGE
+  * Every UTXO transaction now has all inputs and outputs with their values
+  * All summary methods now assume that feature
+* Removed BN dependency and added BigInt dependency where necessary
+
 # 3.2.0
 - Removed un-maintained instances for ALGO and LTC
 - Added the support for BTC version 25 (full tx verbosity)
