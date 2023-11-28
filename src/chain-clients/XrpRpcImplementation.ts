@@ -89,8 +89,9 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
         });
         xrp_ensure_data(res.data);
         try {
-            const Ledgers = res.data.result.state.complete_ledgers.split(",").sort();
-            return parseInt(Ledgers[Ledgers.length - 1].split("-")[0]);
+            const startBlocks = res.data.result.state.complete_ledgers.split(",").map((range: string) => Number(range.split("-")[0]));
+
+            return startBlocks.sort((a: number, b: number) => b - a)[0];
         } catch (e) {
             throw new mccOutsideError(e);
         }
