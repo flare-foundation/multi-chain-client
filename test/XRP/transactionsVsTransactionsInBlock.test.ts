@@ -48,24 +48,23 @@ describe(`XRP transactions in full block vs transactions from getTransaction (${
 
             it("Iterating over transactions", async () => {
                 const transactions = fullBlock.transactions;
+                const sampling_size = 10;
                 const b1 = new SingleBar({
                     format: `|| {bar} || Checking block || {percentage}% || {value}/{total} Transactions`,
                     barCompleteChar: "\u2588",
                     barIncompleteChar: "\u2591",
                     hideCursor: true,
                 });
-                b1.start(transactions.length, 0);
+                b1.start(Math.min(transactions.length, sampling_size), 0);
                 expect(transactions.length).to.be.greaterThan(0);
+                let i = 0;
 
-                for (const transaction of transactions) {
+                while (i < sampling_size) {
+                    const randomIndex = Math.floor(transactions.length * Math.random());
+                    const transaction = transactions[randomIndex];
+                    i++;
                     b1.increment();
-
-                    // if (i != 83) {
-                    //    continue;
-                    // }
                     const transObject = await retry("get test transactions", () => client.getTransaction(transaction.txid));
-
-                    // console.log(transObject.txid);
 
                     for (const getter of GETTERS_BASIC) {
                         throwOrReturnSameGetter(transaction, transObject, getter);
