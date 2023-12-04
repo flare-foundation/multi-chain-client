@@ -59,7 +59,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         });
 
         it("Should get transaction timestamp ", function () {
-            expect(transaction.unixTimestamp).to.eq(1647613710);
+            expect(transaction.unixTimestamp).to.eq(1647612368);
         });
 
         it("Should get source address ", function () {
@@ -165,7 +165,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                 hash: "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684",
                 reference: ["636861726c6579206c6f766573206865696469"],
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                unixTimestamp: 1404107109,
+                unixTimestamp: 1404102830,
                 sourceAddresses: ["1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"],
                 receivingAddresses: ["1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg", undefined],
                 isFeeError: false,
@@ -196,7 +196,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             summary: {
                 status: PaymentSummaryStatus.Success,
                 response: {
-                    blockTimestamp: 1404107109,
+                    blockTimestamp: 1404102830,
                     transactionHash: "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684",
                     sourceAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
                     sourceAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
@@ -223,7 +223,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                 hash: "dda6777e407602bcec51963278b071a95a3a3f382fb73429ab203769d658da08",
                 reference: [],
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                unixTimestamp: 1647547988,
+                unixTimestamp: 1647544324,
                 sourceAddresses: [
                     "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
                     "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu",
@@ -266,7 +266,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                 status: PaymentSummaryStatus.Success,
                 response: {
                     transactionStatus: TransactionSuccessStatus.SUCCESS,
-                    blockTimestamp: 1647547988,
+                    blockTimestamp: 1647544324,
                     transactionHash: "16920c5619b4c43fd5c9c0fc594153f2bf1a80c930238a8ee870aece0bc7cc59",
                     sourceAddress: "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
                     sourceAddressHash: standardAddressHash("bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly"),
@@ -297,7 +297,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     "52534b424c4f434b3ab51f35a72153280cffb0721d9196f11c4830ebf63866e84ce24fae2c003e4e48",
                 ],
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                unixTimestamp: 1644814708,
+                unixTimestamp: 1644813194,
                 sourceAddresses: [undefined],
                 receivingAddresses: ["1JvXhnHCi6XqcanvrZJ5s2Qiv4tsmm2UMy", undefined, undefined, undefined],
                 isFeeError: false,

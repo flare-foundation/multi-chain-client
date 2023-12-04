@@ -28,7 +28,7 @@ export abstract class UtxoBlock extends BlockBase {
     }
 
     public get unixTimestamp(): number {
-        return this.data.time;
+        return this.data.mediantime;
     }
 
     public get transactionIds(): string[] {

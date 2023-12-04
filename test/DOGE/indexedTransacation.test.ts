@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { BalanceDecreasingSummaryStatus, DogeTransaction, PaymentSummaryStatus, ZERO_BYTES_32 } from "../../src";
+import { getTestFile } from "../testUtils";
 
 const json = {
     txid: "314201bdcf89846333712220ee6e7eb92f0938f62008e5315f93d54db27230d8",
@@ -25,6 +26,7 @@ const json = {
         },
     ],
     blocktime: 1700023314,
+    mediantime: 1700023314,
     hash: "314201bdcf89846333712220ee6e7eb92f0938f62008e5315f93d54db27230d8",
     version: 1,
     size: 0,
@@ -51,11 +53,11 @@ const json = {
     ],
 };
 
-describe("doge indexed transaction test", function () {
+describe(`doge indexed transaction test ,(${getTestFile(__filename)})`, function () {
     const tx = new DogeTransaction(json);
 
     it("should compute payment summary", function () {
-        let summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+        const summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 0 });
 
         expect(summary).to.not.be.undefined;
         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
@@ -65,7 +67,7 @@ describe("doge indexed transaction test", function () {
     });
 
     it("should compute payment summary", function () {
-        let summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 1 });
+        const summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 1 });
 
         expect(summary).to.not.be.undefined;
         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
@@ -75,7 +77,7 @@ describe("doge indexed transaction test", function () {
     });
 
     it("should compute balance decreasing summary", function () {
-        let summary = tx.balanceDecreasingSummary(ZERO_BYTES_32);
+        const summary = tx.balanceDecreasingSummary(ZERO_BYTES_32);
 
         expect(summary).to.not.be.undefined;
         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);

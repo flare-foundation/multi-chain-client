@@ -53,7 +53,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     }
 
     public get unixTimestamp(): number {
-        return this.data.blocktime;
+        return this.data.mediantime || -1;
     }
 
     public get sourceAddresses(): (string | undefined)[] {

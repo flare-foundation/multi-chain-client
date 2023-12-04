@@ -38,7 +38,7 @@ describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function
         expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.Success);
         if (dec.response) {
             const decRes = dec.response;
-            expect(decRes.blockTimestamp).to.eq(1404107109);
+            expect(decRes.blockTimestamp).to.eq(1404102830);
             expect(decRes.transactionHash).to.eq("8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684");
             expect(decRes.sourceAddressHash).to.eq(standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"));
             expect(decRes.sourceAddress).to.eq("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg");
@@ -55,7 +55,7 @@ describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function
         expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.Success);
         if (dec.response) {
             const decRes = dec.response;
-            expect(decRes.blockTimestamp).to.eq(1682056438);
+            expect(decRes.blockTimestamp).to.eq(1682054360);
             expect(decRes.transactionHash).to.eq("5e245d1c690b9a5686414b3c486500c6bd1ddbc6a37eb70be2cf81639b39c1d4");
             expect(decRes.sourceAddressHash).to.eq(standardAddressHash("1Lm4XEmHNsNCeKdPS7bc4RGHdAAtBjBjtF"));
             expect(decRes.sourceAddress).to.eq("1Lm4XEmHNsNCeKdPS7bc4RGHdAAtBjBjtF");
@@ -72,7 +72,7 @@ describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function
         expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.Success);
         if (dec.response) {
             const decRes = dec.response;
-            expect(decRes.blockTimestamp).to.eq(1682063799);
+            expect(decRes.blockTimestamp).to.eq(1682061701);
             expect(decRes.transactionHash).to.eq("64238c5599bf0bda690db001172a9e142e8b2b9a542e747570c191788a585d1e");
             expect(decRes.sourceAddressHash).to.eq(standardAddressHash("bc1q32sxnq5hecdurfzgzp5x0zh8du86v9x84wdqdx"));
             expect(decRes.sourceAddress).to.eq("bc1q32sxnq5hecdurfzgzp5x0zh8du86v9x84wdqdx");

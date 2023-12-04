@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { MCC, traceManager, UtxoMccCreate } from "../../src";
+import { getTestFile } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -13,7 +14,7 @@ const DogeMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
-describe("DOGE mainnet client tests", () => {
+describe(`DOGE mainnet client tests ,(${getTestFile(__filename)})`, () => {
     before(async function () {
         this.timeout(10000); // set timeout to 10 sec from 2 sec
         traceManager.displayStateOnException = false;

@@ -22,6 +22,7 @@ describe(`Block Btc base test ${getTestFile(__filename)}`, function () {
     before(async function () {
         MccClient = new MCC.BTC(BtcMccConnection);
         block = await MccClient.getBlock(blockNumber);
+        // https://blockchair.com/bitcoin/block/729409
     });
 
     it("Should get block", async function () {
@@ -49,7 +50,7 @@ describe(`Block Btc base test ${getTestFile(__filename)}`, function () {
     });
 
     it("Should get block timestamp ", async function () {
-        expect(block.unixTimestamp).to.eq(1648480352);
+        expect(block.unixTimestamp).to.eq(1648479692);
     });
 
     it("Should get transaction ids ", async function () {

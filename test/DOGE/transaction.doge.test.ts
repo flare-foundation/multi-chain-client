@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { DogeTransaction, MCC, PaymentSummaryStatus, traceManager, TransactionSuccessStatus, UtxoMccCreate } from "../../src";
-import { transactionTestCases } from "../testUtils";
+import { getTestFile, transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -14,7 +14,7 @@ const DogeMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
-describe("Transaction DOGE base test ", function () {
+describe(`Transaction DOGE base test ,(${getTestFile(__filename)})`, function () {
     let MccClient: MCC.DOGE;
 
     before(async function () {
@@ -42,7 +42,7 @@ describe("Transaction DOGE base test ", function () {
                 hash: "de07c395ab9e3d987f13f72ee71f0b3ba4217c3b4df6f9dd928fe579c014b90e",
                 reference: [],
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                unixTimestamp: 1647899747,
+                unixTimestamp: 1647899399,
                 sourceAddresses: [undefined],
                 receivingAddresses: ["DPcBYzf5vGemYGtWK6BZbvHqvCSAzwpscv", "9theYDTPbCniM4Rdnza3RdeCw4d1H68sDz"],
                 isFeeError: true,
@@ -82,7 +82,7 @@ describe("Transaction DOGE base test ", function () {
                 hash: "9d863418ef3761eb45fd38eea5074965efa1266694a8b2826d5ce148aa564095",
                 reference: [],
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
-                unixTimestamp: 1647899747,
+                unixTimestamp: 1647899399,
                 sourceAddresses: [undefined],
                 receivingAddresses: ["DMr3fEiVrPWFpoCWS958zNtqgnFb7QWn9D"],
                 isFeeError: false,

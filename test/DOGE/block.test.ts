@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { MCC, UtxoBlock, UtxoMccCreate } from "../../src";
+import { getTestFile } from "../testUtils";
 
 const DogeMccConnection = {
     url: process.env.DOGE_URL || "",
@@ -8,7 +9,7 @@ const DogeMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
-describe("Block DOGE base test ", function () {
+describe(`Block DOGE base test ,(${getTestFile(__filename)})`, function () {
     let MccClient: MCC.DOGE;
     let block: UtxoBlock;
     const blockHush = "e36e336dbf7854b80d48e34ff62390b34ba18e604bdfd0c5b2bd4b61580aa8c4";
@@ -35,7 +36,7 @@ describe("Block DOGE base test ", function () {
     });
 
     it("Should get block timestamp ", function () {
-        expect(block.unixTimestamp).to.eq(1647901396);
+        expect(block.unixTimestamp).to.eq(1647901036);
     });
 
     it("Should get transaction ids ", function () {

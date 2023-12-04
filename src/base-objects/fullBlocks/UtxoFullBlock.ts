@@ -19,7 +19,7 @@ export class UtxoFullBlock<T extends UtxoTransaction> extends UtxoBlock implemen
         for (const txData of this.data.tx) {
             const modifiedTxData = {
                 blockhash: this.stdBlockHash,
-                time: this.unixTimestamp,
+                mediantime: this.unixTimestamp,
                 confirmations: this.data.confirmations, // NOTE: can be -1 if block not on main chain
                 blocktime: this.unixTimestamp,
                 ...txData,

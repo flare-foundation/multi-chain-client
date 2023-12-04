@@ -45,7 +45,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
 
         it("Should get transaction timestamp ", async function () {
             // From https://blockstream.info/tx/4d58bd737d87eb2011ba7e0d33d3a0c8f94f13020dd096f8d1b96849c9660a53
-            expect(transaction.unixTimestamp).to.eq(1650342330);
+            expect(transaction.unixTimestamp).to.eq(1650338932);
         });
 
         it("Should get source address ", async function () {

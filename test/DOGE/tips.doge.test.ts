@@ -9,7 +9,7 @@ const DogeMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
-describe(`Chain tips test (${getTestFile(__filename)})`, function () {
+describe(`Chain tips test ,(${getTestFile(__filename)})`, function () {
     let MccClient: MCC.DOGE;
     before(async function () {
         MccClient = new MCC.DOGE(DogeMccConnection);

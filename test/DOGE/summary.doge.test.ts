@@ -15,7 +15,6 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
     describe("full attestation with one vin", function () {
         let tx: DogeTransaction;
         const txId = "2a75d84e2dd7538753b2215b124eb9845f4374944e2dd03d96ed7cdbca0bbf85";
-        const getter = (a: string) => MccClient.getTransaction(a);
 
         before(async function () {
             tx = await MccClient.getTransaction(txId);
@@ -42,7 +41,6 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
     describe("transaction with one vin, without making full", function () {
         let tx: DogeTransaction;
         const txId = "2a75d84e2dd7538753b2215b124eb9845f4374944e2dd03d96ed7cdbca0bbf85";
-        const getter = (a: string) => MccClient.getTransaction(a);
 
         before(async function () {
             tx = await MccClient.getTransaction(txId);
@@ -69,7 +67,6 @@ describe(`Transaction summaries, ${getTestFile(__filename)}`, function () {
     describe("partial attestation", function () {
         let tx: DogeTransaction;
         const txId = "04292a205004589cbb8223bee8d0d1580846e1e8fb35c4db19d77f1dda126ddd";
-        const getter = (a: string) => MccClient.getTransaction(a);
 
         before(async function () {
             tx = await MccClient.getTransaction(txId);

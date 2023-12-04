@@ -231,8 +231,12 @@ export abstract class UtxoCore<
             throw new mccError(mccErrorCode.InvalidTransaction);
         }
         utxo_ensure_data(res.data);
-
-        return new this.constructors.transactionConstructor(res.data.result);
+        const blockHeaderBase = await this.getBlockHeaderBase(res.data.result.blockhash);
+        const transactionData = {
+            mediantime: blockHeaderBase.mediantime,
+            ...res.data.result,
+        };
+        return new this.constructors.transactionConstructor(transactionData);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
