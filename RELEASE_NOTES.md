@@ -3,6 +3,7 @@
   * Every UTXO transaction now has all inputs and outputs with their values
   * All summary methods now assume that feature
 * Removed BN dependency and added BigInt dependency where necessary
+* Using median time on BTC and DOGE chains
 
 # 3.2.0
 - Removed un-maintained instances for ALGO and LTC
