@@ -49,7 +49,7 @@ describe(`Block Btc base test ${getTestFile(__filename)}`, function () {
         expect(block.stdPreviousBlockHash).to.eq("000000000000000000007ee33acfbaa658c2d3c2c217b89e0f515d01a2a273c3");
     });
 
-    it("Should get block timestamp ", async function () {
+    it("Should get block timestamp (mediantime)", async function () {
         expect(block.unixTimestamp).to.eq(1648479692);
     });
 

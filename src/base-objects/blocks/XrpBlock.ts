@@ -27,6 +27,9 @@ export class XrpBlock extends BlockBase {
         return this.previousBlockHash;
     }
 
+    /**
+     * Gets the close_time of a block converted to unix time
+     */
     public get unixTimestamp(): number {
         return XRP_UTD + this.data.result.ledger.close_time;
     }

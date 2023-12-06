@@ -51,7 +51,7 @@ describe(`Block Header BTC getters ,(${getTestFile(__filename)})`, function () {
         expect(blockHeader.number).to.eq(819120);
     });
 
-    it("Should test timestamp getter ", async function () {
+    it("Should test timestamp (mediantime) getter ", async function () {
         expect(blockHeader.unixTimestamp).to.eq(1701344823);
     });
 

@@ -27,6 +27,9 @@ export abstract class UtxoBlock extends BlockBase {
         return this.data.previousblockhash;
     }
 
+    /**
+     * Gets the mediantime of a block
+     */
     public get unixTimestamp(): number {
         return this.data.mediantime;
     }

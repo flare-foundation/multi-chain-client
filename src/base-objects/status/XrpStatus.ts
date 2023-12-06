@@ -20,7 +20,7 @@ export class XrpNodeStatus extends NodeStatusBase<ServerStateResponse> {
     }
 
     public get isSynced(): boolean {
-        if ((this.data.result.state.complete_ledgers = "empty")) return false;
+        if (this.data.result.state.complete_ledgers == "empty") return false;
         return ["full", "validating", "proposing"].includes(this.state);
     }
 }
