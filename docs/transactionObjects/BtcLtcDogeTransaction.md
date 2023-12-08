@@ -154,7 +154,6 @@ All transactions on bitcoin network are native payment transactions
 ### currencyName
 
 Bitcoin: BTC
-Litecoin: LTC
 DOGECOIN: DOGE
 
 ### elementaryUnits
