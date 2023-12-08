@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, UtxoMccCreate } from "../../src";
+import { MCC, UtxoMccCreate, retry } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const DogeMccConnection = {
@@ -16,12 +16,12 @@ describe(`Chain tips test ,(${getTestFile(__filename)})`, function () {
     });
 
     it("Should get only latest tips ", async function () {
-        const tips = await MccClient.getBlockTips(4_045_000);
+        const tips = await retry("", () => MccClient.getBlockTips(4_045_000));
         expect(tips.length).to.greaterThanOrEqual(70);
     });
 
     it("Should get latest orphaned block ", async function () {
-        const tips = await MccClient.getBlockTips(0);
+        const tips = await retry("", () => MccClient.getBlockTips(0));
         let latest = tips.length > 0 ? tips[0] : undefined;
         let latestH = 0;
         for (const tip of tips) {
@@ -36,7 +36,7 @@ describe(`Chain tips test ,(${getTestFile(__filename)})`, function () {
     });
 
     it("Should get tips and all blocks to certain height ", async function () {
-        const tips = await MccClient.getTopLiteBlocks(5);
+        const tips = await retry("", () => MccClient.getTopLiteBlocks(5));
         // Most of the time eq
         // console.log(tips);
 
