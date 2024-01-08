@@ -7,6 +7,8 @@ import {
     AddressAmount,
     BalanceDecreasingSummaryResponse,
     BalanceDecreasingSummaryStatus,
+    PaymentNonexistenceSummaryResponse,
+    PaymentNonexistenceSummaryStatus,
     PaymentSummaryProps,
     PaymentSummaryResponse,
     PaymentSummaryStatus,
@@ -339,6 +341,59 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
     }
 
+    public paymentNonexistenceSummary(outUtxo: number): PaymentNonexistenceSummaryResponse {
+        try {
+            this.assertValidVoutIndex(outUtxo);
+        } catch (e) {
+            return { status: PaymentNonexistenceSummaryStatus.InvalidOutUtxo };
+        }
+
+        if (this.type === "coinbase") {
+            return { status: PaymentNonexistenceSummaryStatus.Coinbase };
+        }
+
+        const receiveAmount = this.receivedAmounts[outUtxo];
+        if (!receiveAmount.address) {
+            return { status: PaymentNonexistenceSummaryStatus.NoReceiveAmountAddress };
+        }
+
+        // Extract addresses from input and output fields
+        const receivingAddress = receiveAmount.address;
+
+        // We will update this once we iterate over inputs and outputs if we have full transaction
+        let oneToOne: boolean = true;
+
+        let inFunds = BigInt(0);
+        let returnFunds = BigInt(0);
+        let outFunds = BigInt(0);
+        let inFundsOfReceivingAddress = BigInt(0);
+
+        for (const vinAmount of this.spentAmounts) {
+            if (receivingAddress && vinAmount.address === receivingAddress) {
+                inFundsOfReceivingAddress = inFundsOfReceivingAddress + vinAmount.amount;
+            }
+        }
+        for (const voutAmount of this.receivedAmounts) {
+            if (receivingAddress && voutAmount.address === receivingAddress) {
+                outFunds = outFunds + voutAmount.amount;
+            }
+        }
+        return {
+            status: PaymentNonexistenceSummaryStatus.Success,
+            response: {
+                blockTimestamp: this.unixTimestamp,
+                transactionHash: this.stdTxid,
+                receivingAddress,
+                receivingAddressHash: standardAddressHash(receivingAddress),
+                receivedAmount: outFunds - inFundsOfReceivingAddress,
+                transactionStatus: this.successStatus,
+                paymentReference: this.stdPaymentReference,
+                intendedReceivingAddressHash: standardAddressHash(receivingAddress),
+                intendedReceivingAddress: receivingAddress,
+                intendedReceivingAmount: outFunds - inFundsOfReceivingAddress,
+            },
+        };
+    }
     ///////////////////////////////
     //// Utxo specific methods ////
     ///////////////////////////////

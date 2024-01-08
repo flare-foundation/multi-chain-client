@@ -9,6 +9,8 @@ import {
     AddressAmount,
     BalanceDecreasingSummaryResponse,
     BalanceDecreasingSummaryStatus,
+    PaymentNonexistenceSummaryResponse,
+    PaymentNonexistenceSummaryStatus,
     PaymentSummaryProps,
     PaymentSummaryResponse,
     PaymentSummaryStatus,
@@ -549,6 +551,62 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         }
         // We didn't find the address we are looking for
         return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
+    }
+
+    public paymentNonexistenceSummary(): PaymentNonexistenceSummaryResponse {
+        if (this.type === "Payment" && this.isNativePayment) {
+            // Is native transfer
+            // Successful transaction of type payment always only one source and one receiving address
+            if (TransactionSuccessStatus.SUCCESS && this.receivedAmounts.length !== 1) {
+                return {
+                    status: PaymentNonexistenceSummaryStatus.UnexpectedNumberOfParticipants,
+                };
+            }
+            const receiveAmount = this.receivedAmounts[0];
+
+            const receiveAddress = receiveAmount && receiveAmount.address ? receiveAmount.address : "";
+
+            // Successful payment transaction always has a receiving address
+            if (TransactionSuccessStatus.SUCCESS && receiveAddress) {
+                return {
+                    status: PaymentNonexistenceSummaryStatus.NoReceiveAmountAddress,
+                };
+            }
+            if (this.intendedReceivedAmounts.length !== 1) {
+                return {
+                    status: PaymentNonexistenceSummaryStatus.UnexpectedNumberOfParticipants,
+                };
+            }
+            const intendedReceivedAmounts = this.intendedReceivedAmounts[0];
+
+            if (!intendedReceivedAmounts.address) {
+                return {
+                    status: PaymentNonexistenceSummaryStatus.NoIntendedReceiveAmountAddress,
+                };
+            }
+
+            return {
+                status: PaymentNonexistenceSummaryStatus.Success,
+                response: {
+                    blockTimestamp: this.unixTimestamp,
+                    transactionHash: this.stdTxid,
+                    receivingAddressHash: receiveAddress ? standardAddressHash(receiveAddress) : ZERO_BYTES_32,
+                    receivingAddress: receiveAddress,
+                    receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : BigInt(0),
+                    transactionStatus: this.successStatus,
+                    // For transactions that are not successful but still in block
+                    intendedReceivingAddress: intendedReceivedAmounts.address,
+                    intendedReceivingAddressHash: intendedReceivedAmounts.address ? standardAddressHash(intendedReceivedAmounts.address) : ZERO_BYTES_32,
+
+                    intendedReceivingAmount: BigInt(intendedReceivedAmounts.amount),
+
+                    paymentReference: this.stdPaymentReference,
+                },
+            };
+        }
+        return {
+            status: PaymentNonexistenceSummaryStatus.NotNativePayment,
+        };
     }
 
     //////////////////////////////

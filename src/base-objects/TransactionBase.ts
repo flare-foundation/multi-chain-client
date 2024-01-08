@@ -26,9 +26,9 @@ export enum PaymentNonexistenceSummaryStatus {
     Coinbase = "coinbase",
     NotNativePayment = "notNativePayment",
     UnexpectedNumberOfParticipants = "unexpectedNumberOfParticipants",
-    InvalidInUtxo = "invalidInUtxo",
-    NoSpentAmountAddress = "noSpentAmountAddress",
-    NoIntendedSpentAmountAddress = "noIntendedSpentAmountAddress",
+    NoReceiveAmountAddress = "noReceiveAmountAddress",
+    NoIntendedReceiveAmountAddress = "noIntendedReceiveAmountAddress",
+    InvalidOutUtxo = "invalidOutUtxo",
 }
 
 export enum PaymentSummaryStatus {
@@ -78,10 +78,17 @@ export interface PaymentSummaryObject extends SummaryObjectBase {
     oneToOne: boolean;
 }
 
-export interface PaymentNonexistenceSummaryObject extends SummaryObjectBase {
-    intendedSourceAddressHash: string;
-    intendedSourceAddress: string;
-    intendedSourceAmount: bigint;
+export interface PaymentNonexistenceSummaryObject {
+    blockTimestamp: number;
+    transactionHash: string;
+    receivingAddressHash: string;
+    receivingAddress: string;
+    receivedAmount: bigint;
+    intendedReceivingAddressHash: string;
+    intendedReceivingAddress: string;
+    intendedReceivingAmount: bigint;
+    paymentReference: string;
+    transactionStatus: TransactionSuccessStatus;
 }
 
 export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
@@ -260,4 +267,6 @@ export abstract class TransactionBase<T> {
      * @param sourceAddressIndicator : AddressIndicator (vin index on utxo chains and standardized address hash on non utxo chains)
      */
     public abstract balanceDecreasingSummary(sourceAddressIndicator: string): BalanceDecreasingSummaryResponse;
+
+    public abstract paymentNonexistenceSummary(outUtxo?: number): PaymentNonexistenceSummaryResponse;
 }
