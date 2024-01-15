@@ -103,6 +103,11 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
         });
 
+        it("Should get payment summary ", function () {
+            const summary = transaction.paymentNonexistenceSummary();
+            expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
+        });
+
         it("Should spend amount ", async function () {
             expect(transaction.spentAmounts.length).to.eq(1);
             expect(transaction.spentAmounts[0].address).to.eq("rETx8GBiH6fxhTcfHM9fGeyShqxozyD3xe");

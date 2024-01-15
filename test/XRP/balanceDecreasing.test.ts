@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, ZERO_BYTES_32, retry, standardAddressHash, traceManager } from "../../src";
+import { MCC, PaymentNonexistenceSummaryStatus, ZERO_BYTES_32, retry, standardAddressHash, traceManager } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const XRPMccConnection = {
@@ -9,7 +9,7 @@ const XRPMccConnection = {
     apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
-describe(`Balance decreasing summary tests, ${getTestFile(__filename)}`, function () {
+describe(`summary tests, ${getTestFile(__filename)}`, function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
@@ -36,5 +36,17 @@ describe(`Balance decreasing summary tests, ${getTestFile(__filename)}`, functio
         }
     });
 
-    // TODO: explore how this should be handled
+    it("Should be able to compute nonexistence summary", async function () {
+        const tx_id = "27D592539E1FB00E8E4C4B6022729CB5559DE94AA2285AE510664A7E0891B3DB";
+        const transaction = await retry("nekej", () => MccClient.getTransaction(tx_id));
+        const summary = transaction.paymentNonexistenceSummary();
+        expect(summary.status).to.eq(PaymentNonexistenceSummaryStatus.Success);
+        if (summary.response) {
+            const decRes = summary.response;
+            expect(decRes.blockTimestamp).to.eq(1681890461);
+            expect(decRes.transactionHash).to.eq(tx_id);
+            expect(decRes.paymentReference).to.eq(ZERO_BYTES_32);
+            expect(decRes.receivedAmount).to.eq(3008927646n);
+        }
+    });
 });

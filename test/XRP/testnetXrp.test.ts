@@ -40,7 +40,7 @@ describe("XRP testnet client tests", () => {
         });
 
         it("Should return InvalidBlock if block does not exist", async () => {
-            let n = 85_000_000;
+            let n = 85_000_0000;
             let block = client.getBlock(n);
             await expect(block).to.be.rejectedWith("InvalidBlock");
             n *= 100;
