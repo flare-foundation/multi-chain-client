@@ -1,6 +1,6 @@
 {
     "name": "@flarenetwork/mcc",
-    "version": "4.0.1",
+    "version": "4.0.1-beta.0",
     "description": "Multi chain client",
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
@@ -72,7 +72,7 @@
         "run_test_chain": "yarn ts-node -r dotenv/config"
     },
     "dependencies": {
-        "axios": "^1.6.2",
+        "axios": "^1.6.7",
         "axios-retry": "^3.9.1",
         "fast-safe-stringify": "^2.1.1",
         "ripple-address-codec": "^4.3.1",
@@ -89,7 +89,7 @@
         "@types/sinon": "10.0.13",
         "@typescript-eslint/eslint-plugin": "^5.41.0",
         "@typescript-eslint/parser": "^5.41.0",
-        "axios-mock-adapter": "^1.21.2",
+        "axios-mock-adapter": "^1.22.0",
         "chai": "4.3.6",
         "chai-as-promised": "^7.1.1",
         "cli-progress": "^3.12.0",

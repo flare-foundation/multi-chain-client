@@ -10,12 +10,6 @@ MCC or Multi-Chain Client is a Typescript library that allows querying nodes fro
 
 We recommend to deploy nodes from our docker [repo](https://github.com/flare-foundation/connected-chains-docker)
 
-Currently supported versions of nodes
-- BTC = [  ]
-- DOGE = [  ]
-- XRP = [ ]
-
-
 
 ## Documentation (outdated)
 
