@@ -360,21 +360,16 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         // Extract addresses from input and output fields
         const receivingAddress = receiveAmount.address;
 
-        // We will update this once we iterate over inputs and outputs if we have full transaction
-        let oneToOne: boolean = true;
-
-        let inFunds = BigInt(0);
-        let returnFunds = BigInt(0);
         let outFunds = BigInt(0);
         let inFundsOfReceivingAddress = BigInt(0);
 
         for (const vinAmount of this.spentAmounts) {
-            if (receivingAddress && vinAmount.address === receivingAddress) {
+            if (vinAmount.address === receivingAddress) {
                 inFundsOfReceivingAddress = inFundsOfReceivingAddress + vinAmount.amount;
             }
         }
         for (const voutAmount of this.receivedAmounts) {
-            if (receivingAddress && voutAmount.address === receivingAddress) {
+            if (voutAmount.address === receivingAddress) {
                 outFunds = outFunds + voutAmount.amount;
             }
         }
