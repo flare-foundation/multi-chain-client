@@ -21,7 +21,7 @@ export function xrp_ensure_data(data: any) {
         throw MccError(data);
     }
     if (data.result.status === "success" && data.result.ledger && data.result.closed === false) {
-        throw new mccError(mccErrorCode.InvalidBlock);
+        throw new mccError(mccErrorCode.InvalidBlock); //the ledger is proposed but not closed yet
     }
 }
 
