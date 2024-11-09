@@ -74,6 +74,7 @@
     "dependencies": {
         "axios": "^1.6.7",
         "axios-retry": "^3.9.1",
+        "ethers": "^6.13.4",
         "fast-safe-stringify": "^2.1.1",
         "ripple-address-codec": "^4.3.1",
         "web3-utils": "^4.0.7",
