@@ -483,6 +483,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     transactionHash: this.stdTxid,
                     sourceAddress: spendAmount.address,
                     sourceAddressHash: standardAddressHash(spendAmount.address),
+                    sourceAddressesRoot: this.sourceAddressesRoot,
                     receivingAddressHash: receiveAddress ? standardAddressHash(receiveAddress) : ZERO_BYTES_32,
                     receivingAddress: receiveAddress,
                     spentAmount: spendAmount.amount,
@@ -590,6 +591,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                 response: {
                     blockTimestamp: this.unixTimestamp,
                     transactionHash: this.stdTxid,
+                    sourceAddressesRoot: this.sourceAddressesRoot,
                     receivingAddressHash: receiveAddress ? standardAddressHash(receiveAddress) : ZERO_BYTES_32,
                     receivingAddress: receiveAddress,
                     receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : BigInt(0),

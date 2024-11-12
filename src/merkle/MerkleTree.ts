@@ -22,6 +22,7 @@
  */
 
 import { BytesLike, ethers } from "ethers";
+import { ZERO_BYTES_32 } from "../utils/utils";
 
 const coder = ethers.AbiCoder.defaultAbiCoder();
 
@@ -221,8 +222,14 @@ function decodeAsciiString(str: string) {
     return encoder.encode(str)
 }
 
-export function fromAddressStrings(addresses: string[]): MerkleTree {
-    const hashedAddresse = addresses.map((address: string) => singleHash(singleHash(decodeAsciiString(address))));
-    return new MerkleTree(hashedAddresse)
-    
+export function merkleTreeFromAddressStrings(addresses: (string | undefined)[]): MerkleTree {
+    const hashedAddresses = []
+    for(const address of addresses) {
+        if(address === undefined){
+            hashedAddresses.push(ZERO_BYTES_32)
+        } else {
+            hashedAddresses.push(singleHash(singleHash(decodeAsciiString(address))))
+        }
+    }
+    return new MerkleTree(hashedAddresses)
 }

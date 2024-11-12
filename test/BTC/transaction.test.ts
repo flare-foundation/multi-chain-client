@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BtcTransaction, MCC, PaymentSummaryStatus, standardAddressHash, toHex32Bytes, traceManager, TransactionSuccessStatus, UtxoMccCreate } from "../../src";
+import { BtcTransaction, MCC, PaymentSummaryStatus, standardAddressHash, toHex32Bytes, traceManager, TransactionSuccessStatus, UtxoMccCreate, ZERO_BYTES_32 } from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -167,6 +167,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 unixTimestamp: 1404102830,
                 sourceAddresses: ["1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"],
+                sourceAddressesRoot: "0xbb052ee44b59f79ae01cd1781d4c9915b0f71b44aa878508a3cede92ce1e29d5",
                 receivingAddresses: ["1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg", undefined],
                 isFeeError: false,
                 fee: BigInt(20000).toString(), // number as a string
@@ -200,6 +201,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     transactionHash: "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684",
                     sourceAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
                     sourceAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
+                    sourceAddressesRoot: "0xbb052ee44b59f79ae01cd1781d4c9915b0f71b44aa878508a3cede92ce1e29d5",
                     receivingAddress: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
                     receivingAddressHash: standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"),
                     spentAmount: BigInt(20000),
@@ -229,6 +231,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu",
                     "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
                 ],
+                sourceAddressesRoot: "0xdc96221dab4472356b548379f5babde3efee164827c45f19012cc268a3939c9f",
                 receivingAddresses: ["bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc", "14PbdXD3gRMnrrsP4CnS66fYKHSb1aawea"],
                 isFeeError: false,
                 fee: "828", // number as a string
@@ -270,6 +273,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     transactionHash: "16920c5619b4c43fd5c9c0fc594153f2bf1a80c930238a8ee870aece0bc7cc59",
                     sourceAddress: "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
                     sourceAddressHash: standardAddressHash("bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly"),
+                    sourceAddressesRoot: "0xdc96221dab4472356b548379f5babde3efee164827c45f19012cc268a3939c9f",
                     receivingAddress: "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
                     receivingAddressHash: standardAddressHash("bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"),
                     spentAmount: BigInt(3533),
@@ -299,6 +303,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 unixTimestamp: 1644813194,
                 sourceAddresses: [undefined],
+                sourceAddressesRoot: ZERO_BYTES_32,
                 receivingAddresses: ["1JvXhnHCi6XqcanvrZJ5s2Qiv4tsmm2UMy", undefined, undefined, undefined],
                 isFeeError: false,
                 fee: "0", // number as a string
@@ -379,6 +384,10 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                 for (let i = 0; i < a.length; i++) {
                     expect(a[i]).to.eq(b[i]);
                 }
+            });
+
+            it("Should get source address root ", function () {
+                expect(transaction.sourceAddressesRoot).to.eq(transData.expect.sourceAddressesRoot)
             });
 
             it("Should get receiving address ", function () {

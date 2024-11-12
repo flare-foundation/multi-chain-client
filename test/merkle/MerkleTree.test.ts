@@ -1,6 +1,7 @@
 import { assert, expect } from "chai";
 import { ethers } from "ethers";
-import { commitHash, fromAddressStrings, MerkleTree, verifyWithMerkleProof } from "../../src/merkle/MerkleTree";
+import { ZERO_BYTES_32 } from "../../src";
+import { commitHash, MerkleTree, merkleTreeFromAddressStrings, verifyWithMerkleProof } from "../../src/merkle/MerkleTree";
 
 describe(`Merkle Tree`, () => {
     const makeHashes = (i: number, shiftSeed = 0) => new Array(i).fill(0).map((x, i) => ethers.keccak256(ethers.toBeHex(shiftSeed + i)));
@@ -86,7 +87,7 @@ describe(`Merkle Tree`, () => {
         });
     });
 
-    describe("Merkle tree for source addresses root XRP", async () => {
+    describe("Merkle tree for source addresses", async () => {
         const testCases = [
             "r8w3LYVt7K5RYKRUpNfXrqQ1ZzXAvrvPezku0GMcOfa",
             "TCUtQWRHBdcWVdC7JKRWt0nVPxHY4WYBqPppUS3P",
@@ -174,11 +175,66 @@ describe(`Merkle Tree`, () => {
         ];
 
         for (let i = 0; i < testCases.length; i++) {
-            it(`Test addresses up to ${i + 1}`, async () => {
-                const testcase = testCases.slice(0, i+1);
-                const tree = fromAddressStrings(testcase);
-                assert(tree.root == testCasesRoots[i], "Merkle tree missmatch");
+            it(`XRP Test addresses up to ${i + 1}`, async () => {
+                const testcase = testCases.slice(0, i + 1);
+                const tree = merkleTreeFromAddressStrings(testcase);
+                expect(tree.root).to.eq(testCasesRoots[i]);
             });
         }
     });
+
+    describe("Merkle tree for source addresses root XRP", async () => {
+        interface MerkleRootTestCase {
+            testTitle: string,
+            testCase: (string | undefined)[];
+            expectedRoot: string | undefined;
+        }
+
+        const testCases: MerkleRootTestCase[] = [
+            {
+                testTitle: "Only undefined address",
+                testCase: [undefined],
+                expectedRoot: ZERO_BYTES_32,
+            },
+            {
+                testTitle: "Multiple and only undefined address",
+                testCase: [undefined, undefined],
+                expectedRoot: ZERO_BYTES_32,
+            },
+            {
+                testTitle: "Address and undefined address",
+                testCase:["r8w3LYVt7K5RYKRUpNfXrqQ1ZzXAvrvPezku0GMcOfa", undefined],
+                expectedRoot: "0x548cfe8a3dc9b445c74c1edb403abcabb15d7533a66850f482a1a7554c1a4215"
+            },
+            {
+                testTitle: "Empty source addresses",
+                testCase: [],
+                expectedRoot: undefined,
+            },
+            {
+                testTitle: "Btc example 1",
+                testCase: ["bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly", "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu", "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"],
+                expectedRoot: "0xdc96221dab4472356b548379f5babde3efee164827c45f19012cc268a3939c9f",
+            },
+            {
+                testTitle: "Btc example 2",
+                testCase: ["1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"],
+                expectedRoot: "0xbb052ee44b59f79ae01cd1781d4c9915b0f71b44aa878508a3cede92ce1e29d5",
+            },
+            {
+                testTitle: "Btc example with undefinde",
+                testCase: ["bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly", undefined, "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu", "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"],
+                expectedRoot: "0x4beda020263f1c5b6c08b98d1f883bda586c1d290b12e1985de2953303af5f64",
+            },
+
+            
+        ];
+
+        for(const testC of testCases){
+            it(testC.testTitle, async () => {
+                const tree = merkleTreeFromAddressStrings(testC.testCase);
+                expect(tree.root).to.eq(testC.expectedRoot);
+            })
+        }
+     });
 });

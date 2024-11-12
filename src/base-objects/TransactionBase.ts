@@ -1,4 +1,6 @@
+import { merkleTreeFromAddressStrings } from "../merkle/MerkleTree";
 import { TransactionSuccessStatus } from "../types/genericMccTypes";
+import { ZERO_BYTES_32 } from "../utils/utils";
 
 export type PaymentSummaryProps = {
     inUtxo: number;
@@ -68,6 +70,7 @@ interface SummaryObjectBase {
 }
 
 export interface PaymentSummaryObject extends SummaryObjectBase {
+    sourceAddressesRoot: string;
     receivingAddressHash: string;
     receivingAddress: string;
     receivedAmount: bigint;
@@ -81,6 +84,7 @@ export interface PaymentSummaryObject extends SummaryObjectBase {
 export interface PaymentNonexistenceSummaryObject {
     blockTimestamp: number;
     transactionHash: string;
+    sourceAddressesRoot: string;
     receivingAddressHash: string;
     receivingAddress: string;
     receivedAmount: bigint;
@@ -157,6 +161,10 @@ export abstract class TransactionBase<T> {
     Some addresses may be undefined, either due to non-existence on specific inputs or due to not being fetched from the outputs of the corresponding input transactions.
     */
     public abstract get sourceAddresses(): (string | undefined)[];
+
+    public get sourceAddressesRoot(): string {
+        return merkleTreeFromAddressStrings(this.sourceAddresses).root || ZERO_BYTES_32;
+    }
 
     /**
      * Array of a receiving addresses. In account-based chains only one address in present.

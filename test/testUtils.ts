@@ -241,6 +241,7 @@ export interface expectTransactionTestCase {
     stdPaymentReference: string;
     unixTimestamp: number;
     sourceAddresses: (string | undefined)[];
+    sourceAddressesRoot: string,
     receivingAddresses: (string | undefined)[];
     isFeeError: boolean;
     fee: string; // number as a string or error string if error is expected
