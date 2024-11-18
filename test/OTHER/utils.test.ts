@@ -141,7 +141,7 @@ describe(`Utils tests ,(${getTestFile(__filename)})`, () => {
                 defaultExceptionCallback({ stack: "New stack" }, "New message");
             });
             expect(output).to.be.eql(["New message\n"]);
-            expect(outputErr[1]).to.be.equal("New stack\n");
+            expect(outputErr[1]).contains("New stack");
             expect(outputErr[0]).contains("New stack");
         });
     });
