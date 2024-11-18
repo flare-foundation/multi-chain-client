@@ -24,7 +24,7 @@ describe(`Block Xrp base test (${getTestFile(__filename)})`, function () {
     it("Should get status version ", async function () {
         const version = status.version.split("_");
         console.log(version);
-        expect(version[0]).to.be.oneOf(["1.9.1", "1.8.5", "1.9.4", "1.10.0", "1.10.1", "1.11.0", "1.12.0", "2.0.1"]);
+        expect(version[0]).to.be.oneOf(["2.2.2"]);
     });
 
     it("Should get status state ", async function () {

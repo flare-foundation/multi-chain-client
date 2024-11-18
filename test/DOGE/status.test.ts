@@ -20,7 +20,7 @@ describe(`Block DOGE base test ,(${getTestFile(__filename)})`, function () {
 
     it("Should get status version ", async function () {
         const version = status.version.split("_");
-        expect(version[0]).to.be.oneOf(["1140500", "1140600"]);
+        expect(version[0]).to.be.oneOf(["1140500", "1140600", "1140800"]);
     });
 
     it("Should get status state ", async function () {
