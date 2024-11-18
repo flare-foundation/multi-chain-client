@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-const HARDCODED_EXPECTED_TRANSACTIONS_COUNT = 24;
+const HARDCODED_EXPECTED_TRANSACTIONS_COUNT = 44;
 
 export async function checkTransactionTypes(): Promise<boolean> {
     // Iterate over all files in folder that end with .d.ts
@@ -42,7 +42,7 @@ export async function checkTransactionTypes(): Promise<boolean> {
     }
 
     if (transactionTypes.length !== HARDCODED_EXPECTED_TRANSACTIONS_COUNT) {
-        console.log("Expected transaction types count does not match actual count");
+        console.log(`Expected transaction types count does not match actual count. Expected: ${HARDCODED_EXPECTED_TRANSACTIONS_COUNT}, actuall: ${transactionTypes.length}`);
         return false;
     }
 
