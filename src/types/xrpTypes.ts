@@ -104,7 +104,27 @@ export type XrpTransactionTypeUnion =
     | "SetRegularKey"
     | "SignerListSet"
     | "TicketCreate"
-    | "TrustSet";
+    | "TrustSet"
+    | "SetFee"
+    | "AMMBid"
+    | "AMMCreate"
+    | "AMMDelete"
+    | "AMMDeposit"
+    | "AMMVote"
+    | "AMMWithdraw"
+    | "Clawback"
+    | "DIDDelete"
+    | "DIDSet"
+    | "XChainAccountCreateCommit"
+    | "XChainAddAccountCreateAttestation"
+    | "XChainAddClaimAttestation"
+    | "XChainClaim"
+    | "XChainCommit"
+    | "XChainCreateBridge"
+    | "XChainCreateClaimID"
+    | "XChainModifyBridge"
+    | "EnableAmendment"
+    | "UNLModify";
 
 // Flags
 // maybe one day https://github.com/ripple/rippled/issues/2457
