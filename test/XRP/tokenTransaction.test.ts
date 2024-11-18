@@ -37,6 +37,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 unixTimestamp: 1654092632,
                 sourceAddresses: ["rBrY6tLYMYYRRFAXwKtZoFYF6kpb7ZCore"],
+                sourceAddressesRoot: "0x2f4c68c4164a962d468629187815054f2501155079be82ff1f9eb932ce494547",
                 receivingAddresses: [],
                 isFeeError: false,
                 fee: "10000", // number as a string
@@ -68,6 +69,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 unixTimestamp: 1654092640,
                 sourceAddresses: ["rMNTSXzmWmvMHGRC7QKNfdJycTPG7WxE7e"],
+                sourceAddressesRoot: "0x5d98ed608711f48b6725eb050677c517f5e621f4ff1f1159ffdb491a7ba58d4c",
                 receivingAddresses: [],
                 isFeeError: false,
                 fee: "50", // number as a string
@@ -99,6 +101,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 unixTimestamp: 1654096800,
                 sourceAddresses: ["rBy7gEjA6AJytwZAUKYfXvGAf5Y1koFCX1"],
+                sourceAddressesRoot: "0xc7d20587c32cd6d71fd2dcce451dc5480f4d80b75a4909c41bc1fb1d55b350ef",
                 receivingAddresses: [],
                 isFeeError: false,
                 fee: "20", // number as a string
@@ -130,6 +133,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
                 stdPaymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
                 unixTimestamp: 1646141781,
                 sourceAddresses: ["rP6JLXtRNs3tjeYnn7zUHpbfLjuyBXqhwF"],
+                sourceAddressesRoot: "0x98b81aac3bb21450ad887d3a06fcbff832299c19aba6386a508dee9600a038f5",
                 receivingAddresses: [],
                 isFeeError: false,
                 fee: "10", // number as a string
@@ -199,6 +203,10 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
                 for (let i = 0; i < a.length; i++) {
                     expect(a[i]).to.eq(b[i]);
                 }
+            });
+
+            it("Should get source address root ", async function () {
+                expect(transaction.sourceAddressesRoot).to.eq(transData.expect.sourceAddressesRoot);
             });
 
             it("Should get receiving address ", async function () {
