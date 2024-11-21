@@ -1,6 +1,6 @@
 {
     "name": "@flarenetwork/mcc",
-    "version": "4.1.0-beta.1",
+    "version": "4.1.0",
     "description": "Multi chain client",
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
