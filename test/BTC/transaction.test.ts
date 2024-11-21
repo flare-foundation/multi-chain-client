@@ -542,8 +542,27 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         //     await expect(transaction.vinVoutAt(0)).to.be.rejected;
         // });
     });
-});
 
+    describe("Transactions sourceAddressesRoot", function () {
+        const tx_cb_id = "0x203a8c661a241d25b1ea1da6fa36732118f39e169c22e227c68199ab729ab1ec";
+        const tx_id = "0xf5d78b32b1684f040c5142bd6a814f391a216dc39848c4c3e4cfd3f02336b1c9";
+        let tx_cb: BtcTransaction;
+        let tx: BtcTransaction;
+
+        before(async () => {
+            tx_cb = await MccClient.getTransaction(tx_cb_id);
+            tx = await MccClient.getTransaction(tx_id);
+        });
+
+        it("Should get same sourceAddressesRoot as UTXO Indexer 1", function () {
+            expect(tx_cb.sourceAddressesRoot).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+        });
+
+        it("Should get same sourceAddressesRoot as UTXO Indexer 2", function () {
+            expect(tx.sourceAddressesRoot).to.eq("0x23699dbbba39d81c44489afe2da832f67038c710fbfb04a2be5a1a0e663da6be");
+        });
+    });
+});
 // TODO special transactions
 
 // https://www.blockchain.com/btc/tx/56214420a7c4dcc4832944298d169a75e93acf9721f00656b2ee0e4d194f9970
