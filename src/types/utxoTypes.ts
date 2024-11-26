@@ -185,8 +185,8 @@ export interface IUtxoGetTransactionResGen<T> extends IIGetTransactionRes {
     blockhash: string;
     confirmations: number;
     time: number;
-    blocktime: number;
-    mediantime?: number;
+    // blocktime: number;
+    mediantime: number;
 }
 
 export type IUtxoGetTransactionRes = IUtxoGetTransactionResGen<IUtxoVinTransactionPrevout> | IUtxoGetTransactionResGen<IUtxoVinTransactionCoinbase>;
