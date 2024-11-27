@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BalanceDecreasingSummaryStatus, DogeTransaction, PaymentSummaryStatus, ZERO_BYTES_32 } from "../../src";
+import { BalanceDecreasingSummaryStatus, DogeTransaction, PaymentSummaryStatus, standardAddressHash } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const json = {
@@ -77,7 +77,7 @@ describe(`doge indexed transaction test ,(${getTestFile(__filename)})`, function
     });
 
     it("should compute balance decreasing summary", function () {
-        const summary = tx.balanceDecreasingSummary(ZERO_BYTES_32);
+        const summary = tx.balanceDecreasingSummary(standardAddressHash("2MytwDpHWpdoVYQ7JzYwBPxQ5XsEdiV7udZ"));
 
         expect(summary).to.not.be.undefined;
         expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);

@@ -7,10 +7,6 @@ export type PaymentSummaryProps = {
     outUtxo: number;
 };
 
-// export type paymentNonexistenceSummaryProps<T> = SummaryBaseProps<T> & {
-//     inUtxo: number;
-// };
-
 export interface AddressAmount {
     address?: string;
     amount: bigint;
@@ -45,15 +41,12 @@ export enum PaymentSummaryStatus {
     InvalidOutUtxo = "invalidOutUtxo",
     NoReceiveAmountAddress = "noReceiveAmountAddress",
     NoIntendedReceiveAmountAddress = "noIntendedReceiveAmountAddress",
-
-    // NoTransactionGetterProvided = "NoTransactionGetterProvided",
 }
 
 export enum BalanceDecreasingSummaryStatus {
     Success = "success",
     Coinbase = "coinbase",
-    InvalidInUtxo = "invalidInUtxo",
-    InvalidTransactionDataObject = "InvalidTransactionDataObject", // TODO: only possible on BTC
+    InvalidTransactionDataObject = "InvalidTransactionDataObject",
     NoSourceAddress = "noSourceAddress",
     NotValidSourceAddressFormat = "notValidSourceAddressFormat",
 }

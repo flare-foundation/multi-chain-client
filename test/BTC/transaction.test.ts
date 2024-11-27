@@ -1,5 +1,14 @@
 import { expect } from "chai";
-import { BtcTransaction, MCC, PaymentSummaryStatus, standardAddressHash, toHex32Bytes, traceManager, TransactionSuccessStatus, UtxoMccCreate, ZERO_BYTES_32 } from "../../src";
+import {
+    BtcTransaction,
+    MCC,
+    PaymentSummaryStatus,
+    standardAddressHash,
+    traceManager,
+    TransactionSuccessStatus,
+    UtxoMccCreate,
+    ZERO_BYTES_32,
+} from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -141,8 +150,8 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             expect(resp.intendedReceivingAmount).to.eq(BigInt(2 * 7299851943));
         });
 
-        it("Should make balance decreasing summary", function () {
-            const summary = transaction.balanceDecreasingSummary(toHex32Bytes(1));
+        it("Should make balance decreasing summary for acc at vin 1", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw"));
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
 
@@ -152,6 +161,32 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             expect(resp.sourceAddress).to.eq("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw");
             expect(resp.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
             expect(resp.spentAmount).to.eq(BigInt(7424900255));
+        });
+
+        it("Should make balance decreasing summary for acc at vin 0", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk"));
+
+            expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+
+            const resp = summary.response!;
+
+            expect(resp.isFull).to.be.true;
+            expect(resp.sourceAddress).to.eq("bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk");
+            expect(resp.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
+            expect(resp.spentAmount).to.eq(BigInt(7424891554));
+        });
+
+        it("Should make balance decreasing summary for acc at vin 2", function () {
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash("bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw"));
+
+            expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+
+            const resp = summary.response!;
+
+            expect(resp.isFull).to.be.true;
+            expect(resp.sourceAddress).to.eq("bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw");
+            expect(resp.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
+            expect(resp.spentAmount).to.eq(BigInt(7426316499));
         });
     });
 
@@ -387,7 +422,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             });
 
             it("Should get source address root ", function () {
-                expect(transaction.sourceAddressesRoot).to.eq(transData.expect.sourceAddressesRoot)
+                expect(transaction.sourceAddressesRoot).to.eq(transData.expect.sourceAddressesRoot);
             });
 
             it("Should get receiving address ", function () {

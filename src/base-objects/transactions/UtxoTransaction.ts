@@ -276,18 +276,8 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     }
 
     public balanceDecreasingSummary(sourceAddressIndicator: string): BalanceDecreasingSummaryResponse {
-        // We expect sourceAddressIndicator to be utxo vin index (as hex string)
         if (!isValidBytes32Hex(sourceAddressIndicator)) {
             return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
-        }
-        const vinIndex = parseInt(sourceAddressIndicator, 16);
-        if (isNaN(vinIndex)) {
-            return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
-        }
-        try {
-            this.assertValidVinIndex(vinIndex);
-        } catch (e) {
-            return { status: BalanceDecreasingSummaryStatus.InvalidInUtxo };
         }
         const transactionType: UtxoTransactionTypeOptions = this.type;
         switch (transactionType) {
@@ -295,31 +285,37 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                 return { status: BalanceDecreasingSummaryStatus.Coinbase };
             }
             case "payment": {
-                const spentAmounts = this.spentAmounts;
-                const spentAmount = spentAmounts[vinIndex];
-                const sourceAddress = spentAmount.address;
-                if (sourceAddress) {
-                    let inFunds = BigInt(0);
-                    let returnFunds = BigInt(0);
+                let foundAddress = undefined;
 
-                    for (const vinAmount of this.spentAmounts) {
-                        if (vinAmount.address === sourceAddress) {
-                            inFunds = inFunds + vinAmount.amount;
-                        }
+                let inFunds = BigInt(0);
+                let returnFunds = BigInt(0);
+
+                for (const vinAmount of this.spentAmounts) {
+                    if (
+                        vinAmount.address &&
+                        unPrefix0x(standardAddressHash(vinAmount.address)).toLowerCase() === unPrefix0x(sourceAddressIndicator).toLowerCase()
+                    ) {
+                        foundAddress = vinAmount.address;
+                        inFunds = inFunds + vinAmount.amount;
                     }
-                    for (const voutAmount of this.receivedAmounts) {
-                        if (voutAmount.address === sourceAddress) {
-                            returnFunds = returnFunds + voutAmount.amount;
-                        }
+                }
+                for (const voutAmount of this.receivedAmounts) {
+                    if (
+                        voutAmount.address &&
+                        unPrefix0x(standardAddressHash(voutAmount.address)).toLowerCase() === unPrefix0x(sourceAddressIndicator).toLowerCase()
+                    ) {
+                        returnFunds = returnFunds + voutAmount.amount;
                     }
+                }
+                if (foundAddress) {
                     return {
                         status: BalanceDecreasingSummaryStatus.Success,
                         response: {
                             blockTimestamp: this.unixTimestamp,
                             transactionHash: this.stdTxid,
                             sourceAddressIndicator: sourceAddressIndicator,
-                            sourceAddressHash: standardAddressHash(sourceAddress),
-                            sourceAddress: sourceAddress,
+                            sourceAddressHash: standardAddressHash(foundAddress),
+                            sourceAddress: foundAddress,
                             spentAmount: inFunds - returnFunds,
                             transactionStatus: this.successStatus,
                             paymentReference: this.stdPaymentReference,
@@ -327,10 +323,8 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                         },
                     };
                 } else {
-                    // The input has no address, the type is wrongly extracted (Should not happen)
-                    return { status: BalanceDecreasingSummaryStatus.InvalidTransactionDataObject };
+                    return { status: BalanceDecreasingSummaryStatus.NoSourceAddress };
                 }
-                return { status: BalanceDecreasingSummaryStatus.Success }; // TODO: implement
             }
             default:
                 // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases

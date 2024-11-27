@@ -4,7 +4,7 @@ import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/mode
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 import { IXrpGetTransactionRes, XrpTransactionStatusPrefixes, XrpTransactionStatusTec, XrpTransactionTypeUnion } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
-import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash } from "../../utils/utils";
+import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash, unPrefix0x } from "../../utils/utils";
 import {
     AddressAmount,
     BalanceDecreasingSummaryResponse,
@@ -507,14 +507,16 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public balanceDecreasingSummary(sourceAddressIndicator: string): BalanceDecreasingSummaryResponse {
         if (!isValidBytes32Hex(sourceAddressIndicator)) {
             return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
         }
         const spentAmounts = this.spentAmounts;
         for (const spendAmount of spentAmounts) {
-            if (spendAmount.address && standardAddressHash(spendAmount.address) === sourceAddressIndicator) {
+            if (
+                spendAmount.address &&
+                unPrefix0x(standardAddressHash(spendAmount.address)).toLowerCase() === unPrefix0x(sourceAddressIndicator).toLowerCase()
+            ) {
                 // We found the address we are looking for
                 return {
                     status: BalanceDecreasingSummaryStatus.Success,
