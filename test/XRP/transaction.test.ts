@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
-import { MCC, PaymentSummaryStatus, traceManager, TransactionSuccessStatus } from "../../src";
-import { getTestFile } from "../testUtils";
-import { TransactionMetadata } from "xrpl";
-import { XrpTransaction } from "../../src/base-objects";
 import { assert } from "console";
+import { TransactionMetadata } from "xrpl";
+import { MCC, PaymentSummaryStatus, traceManager, TransactionSuccessStatus } from "../../src";
+import { XrpTransaction } from "../../src/base-objects";
+import { getTestFile } from "../testUtils";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -459,4 +459,36 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             await expect(MccClient.getTransaction("93D194C45CC60B2C17B8747BA50F1C028B637CFD9C5813918DBA73D2C21C2F20")).to.be.rejected;
         });
     });
+
+    describe("Transactions sourceAddressesRoot (for testnet)", function () {
+        const XRPTestnetMccConnection = {
+            url: process.env.XRP_URL_TESTNET || "",
+            username: process.env.XRP_USERNAME || "",
+            password: process.env.XRP_PASSWORD || "",
+            apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
+        };
+        let transaction: XrpTransaction;
+
+        before(async function () {
+            MccClient = new MCC.XRP(XRPTestnetMccConnection);
+        });
+
+        it("Should get same sourceAddressesRoot for xrp transaction as xrp indexer (test 1)", async function () {
+            const tx_id = "1f572e746a69edde0c134824491567cc438cfb18a40aa0fd321e8143e70e9064";
+            transaction = await MccClient.getTransaction(tx_id);
+            expect(transaction.sourceAddressesRoot).to.eq("0x674fa9a46079864ce1744486bd1a7069794c8aade76b2d0424c4e716fba4f4ef");
+        });
+        it("Should get same sourceAddressesRoot for xrp transaction as xrp indexer (test 2)", async function () {
+            const tx_id = "53040eb07116518d9866e3e6de504aa718f162b19a441e80c5045f68492b385b";
+            transaction = await MccClient.getTransaction(tx_id);
+            expect(transaction.sourceAddressesRoot).to.eq("0x7c7efcd5e28a5f7b9b5ade3dd16008deaae30e3588d854be8e0dff1cad3c5aa0");
+        });
+        it("Should get same sourceAddressesRoot for xrp transaction as xrp indexer (test 3)", async function () {
+            const tx_id = "6a460d8c7919608c1d10883c6d9ad9d48c9e82b7058969039d94f42c7cfe49bf";
+            transaction = await MccClient.getTransaction(tx_id);
+            expect(transaction.sourceAddressesRoot).to.eq("0xcdbdabb5f4dbb023c42a28a0c63ec021e55727f4e9b67f94b8ce06de5c35083f");
+        });
+
+    });
+
 });
