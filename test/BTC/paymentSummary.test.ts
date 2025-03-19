@@ -34,7 +34,7 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get invalid in utxo error", async function () {
-            const error = await transaction.paymentSummary({
+            const error = transaction.paymentSummary({
                 inUtxo: -1,
                 outUtxo: 0,
             });
@@ -44,7 +44,7 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get invalid out utxo error", async function () {
-            const error = await transaction.paymentSummary({
+            const error = transaction.paymentSummary({
                 inUtxo: 0,
                 outUtxo: -1,
             });
@@ -67,7 +67,7 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get invalid in utxo error", async function () {
-            const error = await transaction.paymentSummary({
+            const error = transaction.paymentSummary({
                 inUtxo: 0,
                 outUtxo: 0,
             });
@@ -90,7 +90,7 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get invalid in utxo error", async function () {
-            const error = await transaction1.paymentSummary({
+            const error = transaction1.paymentSummary({
                 inUtxo: 0,
                 outUtxo: 0,
             });

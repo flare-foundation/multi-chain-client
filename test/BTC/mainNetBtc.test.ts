@@ -106,28 +106,28 @@ describe("BTC mainnet client tests", () => {
     });
 
     describe("BTC ChainTips", async function () {
-        it("basic chaintips ", async function () {
+        it("basic chainTips ", async function () {
             const BtcRpc = new MCC.BTC(BtcMccConnection);
-            const chaintips = await BtcRpc.getTopBlocks();
-            expect(chaintips.length).to.greaterThanOrEqual(3);
+            const chainTips = await BtcRpc.getTopBlocks();
+            expect(chainTips.length).to.greaterThanOrEqual(3);
         });
 
-        it("full chaintips ", async function () {
+        it("full chainTips ", async function () {
             const BtcRpc = new MCC.BTC(BtcMccConnection);
-            const chaintips = await BtcRpc.getTopBlocks({ all_blocks: true });
-            expect(chaintips.length).to.greaterThanOrEqual(3);
+            const chainTips = await BtcRpc.getTopBlocks({ all_blocks: true });
+            expect(chainTips.length).to.greaterThanOrEqual(3);
         });
 
-        it("chaintips after ", async function () {
+        it("chainTips after ", async function () {
             const BtcRpc = new MCC.BTC(BtcMccConnection);
-            const chaintips = await BtcRpc.getTopBlocks({ height_gte: 706_000 });
-            expect(chaintips.length).to.greaterThanOrEqual(2);
+            const chainTips = await BtcRpc.getTopBlocks({ height_gte: 706_000 });
+            expect(chainTips.length).to.greaterThanOrEqual(2);
         });
 
-        it("chaintips after ", async function () {
+        it("chainTips after ", async function () {
             const BtcRpc = new MCC.BTC(BtcMccConnection);
-            const chaintips = await BtcRpc.getTopBlocks({ height_gte: 706_000, all_blocks: true });
-            expect(chaintips.length).to.greaterThanOrEqual(2);
+            const chainTips = await BtcRpc.getTopBlocks({ height_gte: 706_000, all_blocks: true });
+            expect(chainTips.length).to.greaterThanOrEqual(2);
         });
 
         it("All Block tips ", async function () {

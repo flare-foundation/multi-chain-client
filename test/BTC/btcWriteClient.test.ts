@@ -15,7 +15,7 @@ export function round_for_ltc(input: number) {
 export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: string, from: string, to: string) {
     const unspent = await RPC.listUnspentTransactions(fromWalletLabel);
     const vin = [];
-    const vinaddresses = [];
+    const vinAddresses = [];
     let unspentAmount = 0;
     for (const utx of unspent) {
         if (utx.address == from) {
@@ -23,7 +23,7 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
                 txid: utx.txid,
                 vout: utx.vout,
             });
-            vinaddresses.push(utx.address);
+            vinAddresses.push(utx.address);
             unspentAmount += utx.amount;
         }
     }
@@ -38,11 +38,11 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
         { address: from, amount: round_for_ltc(unspentAmount - test_amount - gas) },
     ];
     const a = await RPC.createRawTransaction(fromWalletLabel, vin, vout);
-    const signkeys = [];
-    for (const add of vinaddresses) {
-        signkeys.push(await RPC.getPrivateKey(fromWalletLabel, add));
+    const signKeys = [];
+    for (const add of vinAddresses) {
+        signKeys.push(await RPC.getPrivateKey(fromWalletLabel, add));
     }
-    const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
+    const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signKeys);
     const txId = await RPC.sendRawTransactionInBlock(fromWalletLabel, signedTx.hex);
     return txId;
 }
@@ -51,7 +51,7 @@ export async function sendMinimalUTXOTransaction(RPC: any, fromWalletLabel: stri
 export async function sendUtxoTransaction(RPC: any, fromWalletLabel: string, from: string, to: string, amount: number, gas: number = 1e-5) {
     const unspent = await RPC.listUnspentTransactions(fromWalletLabel);
     const vin = [];
-    const vinaddresses = [];
+    const vinAddresses = [];
     let unspentAmount = 0;
     for (const utx of unspent) {
         if (utx.address == from) {
@@ -59,7 +59,7 @@ export async function sendUtxoTransaction(RPC: any, fromWalletLabel: string, fro
                 txid: utx.txid,
                 vout: utx.vout,
             });
-            vinaddresses.push(utx.address);
+            vinAddresses.push(utx.address);
             unspentAmount += utx.amount;
         }
     }
@@ -73,11 +73,11 @@ export async function sendUtxoTransaction(RPC: any, fromWalletLabel: string, fro
         { address: from, amount: round_for_ltc(unspentAmount - test_amount - gas) },
     ];
     const a = await RPC.createRawTransaction(fromWalletLabel, vin, vout);
-    const signkeys = [];
-    for (const add of vinaddresses) {
-        signkeys.push(await RPC.getPrivateKey(fromWalletLabel, add));
+    const signKeys = [];
+    for (const add of vinAddresses) {
+        signKeys.push(await RPC.getPrivateKey(fromWalletLabel, add));
     }
-    const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signkeys);
+    const signedTx = await RPC.signRawTransaction(fromWalletLabel, a, signKeys);
     // const txId = await RPC.sendRawTransactionInBlock(fromWalletLabel, signedTx.hex);
     const txId = await RPC.sendRawTransaction(fromWalletLabel, signedTx.hex);
     return txId;

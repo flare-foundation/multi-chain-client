@@ -151,14 +151,14 @@ export class TraceCall {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    verbose(obj: any, verbose: boolean = true, maxlength = 32): string {
+    verbose(obj: any, verbose: boolean = true, maxLength = 32): string {
         const text = this.stringifyObject(obj);
 
         if (verbose) return text;
 
-        if (text.length <= maxlength) return text;
+        if (text.length <= maxLength) return text;
 
-        const halve = maxlength / 2 - 2;
+        const halve = maxLength / 2 - 2;
 
         return text.substring(0, halve) + "..." + text.substring(text.length - halve);
     }

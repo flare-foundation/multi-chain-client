@@ -26,7 +26,7 @@ describe(`Block BTC base test ,(${getTestFile(__filename)})`, function () {
 
     it("Should get status version ", async function () {
         const version = status.version.split("_");
-        expect(version[0]).to.be.oneOf(["280000"]);  // 280000 is the version of the node that suports vout in vins for the transaction
+        expect(version[0]).to.be.oneOf(["280000"]); // 280000 is the version of the node that supports vout in vins for the transaction
     });
 
     it("Should get status state ", async function () {
