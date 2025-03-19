@@ -499,6 +499,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
 
                     oneToOne: true,
                     paymentReference: this.stdPaymentReference,
+                    toOne: true,
                 },
             };
         }
@@ -605,6 +606,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     intendedReceivingAmount: BigInt(intendedReceivedAmounts.amount),
 
                     paymentReference: this.stdPaymentReference,
+                    toOne: true,
                 },
             };
         }

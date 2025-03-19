@@ -220,6 +220,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
 
         // We will update this once we iterate over inputs and outputs if we have full transaction
         let oneToOne: boolean = true;
+        let numOfOutputs = 0;
 
         let inFunds = BigInt(0);
         let returnFunds = BigInt(0);
@@ -243,6 +244,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             }
             if (receivingAddress && voutAmount.address === receivingAddress) {
                 outFunds = outFunds + voutAmount.amount;
+                numOfOutputs++;
             }
             // Outputs without address do not break one-to-one condition
             if (oneToOne && !voutAmount.address && voutAmount.amount >= BigInt(0)) {
@@ -271,6 +273,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                 intendedReceivingAddress: receivingAddress,
                 intendedReceivingAmount: outFunds - inFundsOfReceivingAddress,
                 oneToOne,
+                toOne: numOfOutputs == 1,
             },
         };
     }
@@ -357,15 +360,17 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
 
         let outFunds = BigInt(0);
         let inFundsOfReceivingAddress = BigInt(0);
+        let nuOfOuts = 0;
 
         for (const vinAmount of this.spentAmounts) {
             if (vinAmount.address === receivingAddress) {
-                inFundsOfReceivingAddress = inFundsOfReceivingAddress + vinAmount.amount;
+                inFundsOfReceivingAddress += vinAmount.amount;
             }
         }
         for (const voutAmount of this.receivedAmounts) {
             if (voutAmount.address === receivingAddress) {
-                outFunds = outFunds + voutAmount.amount;
+                outFunds += voutAmount.amount;
+                nuOfOuts++;
             }
         }
         return {
@@ -382,6 +387,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                 intendedReceivingAddressHash: standardAddressHash(receivingAddress),
                 intendedReceivingAddress: receivingAddress,
                 intendedReceivingAmount: outFunds - inFundsOfReceivingAddress,
+                toOne: nuOfOuts == 1,
             },
         };
     }

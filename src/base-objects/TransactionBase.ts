@@ -72,6 +72,7 @@ export interface PaymentSummaryObject extends SummaryObjectBase {
     intendedReceivingAddress: string;
     intendedReceivingAmount: bigint;
     oneToOne: boolean;
+    toOne: boolean;
 }
 
 export interface PaymentNonexistenceSummaryObject {
@@ -86,6 +87,7 @@ export interface PaymentNonexistenceSummaryObject {
     intendedReceivingAmount: bigint;
     paymentReference: string;
     transactionStatus: TransactionSuccessStatus;
+    toOne: boolean;
 }
 
 export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {

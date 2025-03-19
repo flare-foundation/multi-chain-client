@@ -135,7 +135,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             expect(transaction.successStatus).to.eq(0);
         });
 
-        it("should make payment summmary", function () {
+        it("should make payment summary", function () {
             const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 3 });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
@@ -248,6 +248,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     intendedReceivingAmount: BigInt(-20000),
                     oneToOne: false,
                     transactionStatus: TransactionSuccessStatus.SUCCESS,
+                    toOne: true,
                 },
             },
         },
@@ -320,6 +321,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     intendedReceivingAddress: "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
                     intendedReceivingAmount: BigInt(6664 - 2259),
                     oneToOne: false,
+                    toOne: true,
                 },
             },
         },
@@ -487,6 +489,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     if (summary.response && transData.summary.response) {
                         expect(summary.response.blockTimestamp).to.eq(transData.summary.response.blockTimestamp);
                         expect(summary.response.oneToOne).to.eq(transData.summary.response.oneToOne);
+                        expect(summary.response.toOne).to.eq(transData.summary.response.toOne);
                         expect(summary.response.paymentReference).to.eq(transData.summary.response.paymentReference);
                         expect(summary.response.receivedAmount.toString()).to.eq(transData.summary.response.receivedAmount.toString());
                         expect(summary.response.receivingAddress).to.eq(transData.summary.response.receivingAddress);
