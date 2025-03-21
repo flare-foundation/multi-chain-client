@@ -1,0 +1,28 @@
+stages:
+    - build
+    - test
+
+build:
+    stage: build
+    image: node:20.18.0
+    before_script:
+        - yarn install --frozen-lockfile
+    script:
+        - yarn build
+
+test:
+    stage: test
+    image: node:20.18.0
+    before_script:
+        - yarn install --frozen-lockfile
+    script:
+        - yarn test:all
+
+# lint:
+#   stage: test
+#   image: node:20.18.0
+#   before_script:
+#     - yarn install --frozen-lockfile
+#   script:
+#     - yarn lint:check
+#     - yarn format:check
