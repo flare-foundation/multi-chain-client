@@ -185,7 +185,7 @@ describe(`Merkle Tree`, () => {
 
     describe("Merkle tree for source addresses root XRP", async () => {
         interface MerkleRootTestCase {
-            testTitle: string,
+            testTitle: string;
             testCase: (string | undefined)[];
             expectedRoot: string | undefined;
         }
@@ -203,8 +203,8 @@ describe(`Merkle Tree`, () => {
             },
             {
                 testTitle: "Address and undefined address",
-                testCase:["r8w3LYVt7K5RYKRUpNfXrqQ1ZzXAvrvPezku0GMcOfa", undefined],
-                expectedRoot: "0x548cfe8a3dc9b445c74c1edb403abcabb15d7533a66850f482a1a7554c1a4215"
+                testCase: ["r8w3LYVt7K5RYKRUpNfXrqQ1ZzXAvrvPezku0GMcOfa", undefined],
+                expectedRoot: "0x548cfe8a3dc9b445c74c1edb403abcabb15d7533a66850f482a1a7554c1a4215",
             },
             {
                 testTitle: "Empty source addresses",
@@ -213,7 +213,11 @@ describe(`Merkle Tree`, () => {
             },
             {
                 testTitle: "Btc example 1",
-                testCase: ["bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly", "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu", "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"],
+                testCase: [
+                    "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
+                    "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu",
+                    "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
+                ],
                 expectedRoot: "0xdc96221dab4472356b548379f5babde3efee164827c45f19012cc268a3939c9f",
             },
             {
@@ -223,18 +227,21 @@ describe(`Merkle Tree`, () => {
             },
             {
                 testTitle: "Btc example with undefinde",
-                testCase: ["bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly", undefined, "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu", "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc"],
+                testCase: [
+                    "bc1qtwha4x2kcm6z05z4hn88atye3wq7aatrljrjly",
+                    undefined,
+                    "bc1q0f3qgap02xejfjhj35wv6y5hc4yt9mthcjq5nu",
+                    "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
+                ],
                 expectedRoot: "0x4beda020263f1c5b6c08b98d1f883bda586c1d290b12e1985de2953303af5f64",
             },
-
-            
         ];
 
-        for(const testC of testCases){
+        for (const testC of testCases) {
             it(testC.testTitle, async () => {
                 const tree = merkleTreeFromAddressStrings(testC.testCase);
                 expect(tree.root).to.eq(testC.expectedRoot);
-            })
+            });
         }
-     });
+    });
 });

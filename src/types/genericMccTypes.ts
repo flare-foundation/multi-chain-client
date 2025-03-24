@@ -13,7 +13,7 @@ export interface ReadRpcInterface<
     B extends BlockBase,
     FB extends FullBlockBase<T>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    T extends TransactionBase<any>
+    T extends TransactionBase<any>,
 > extends BaseRpcInterface {
     // General methods
     getNodeStatus(): Promise<INodeStatus>;
@@ -23,11 +23,11 @@ export interface ReadRpcInterface<
     getBottomBlockHeight(): Promise<number>;
 
     // Block data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-redundant-type-constituents
     getBlockHeader(blockNumberOrHash: number | string | any): Promise<BH>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-redundant-type-constituents
     getBlock(blockNumberOrHash: number | string | any): Promise<B>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     getFullBlock(blockNumberOrHash: number | string): Promise<FB>;
     getBlockHeight(): Promise<number>;
 
@@ -71,7 +71,7 @@ export interface RPCInterface<
     B extends BlockBase,
     FB extends FullBlockBase<T>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    T extends TransactionBase<any>
+    T extends TransactionBase<any>,
 > extends ReadRpcInterface<BT, BH, B, FB, T>,
         WriteRpcInterface {}
 
@@ -80,10 +80,10 @@ export interface RPCInterface<
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Parent Class objects that are extended on each unique underlying chain
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IIGetTransactionRes {}
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IIGetBlockRes {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,5 +146,5 @@ export class MccLoggingOptionsFull {
 ////////////////////// Lite blocks /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IEmptyObject {}

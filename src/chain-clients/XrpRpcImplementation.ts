@@ -48,17 +48,15 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
         this.chainType = ChainType.XRP;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getBlockTips?(height_gte: number): Promise<BlockTipBase[]> {
         throw new mccError(mccErrorCode.NotImplemented);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getTopLiteBlocks(branch_len: number, read_main: boolean = true): Promise<BlockTipBase[]> {
         throw new mccError(mccErrorCode.NotImplemented);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     listTransactions?(options?: any) {
         throw new mccError(mccErrorCode.NotImplemented);
     }
@@ -89,8 +87,10 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
         });
         xrp_ensure_data(res.data);
         try {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             const startBlocks = res.data.result.state.complete_ledgers.split(",").map((range: string) => Number(range.split("-")[0]));
 
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             return startBlocks.sort((a: number, b: number) => b - a)[0];
         } catch (e) {
             throw new mccOutsideError(e);
@@ -129,14 +129,13 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
             const res = await this.blockRequestBase(blockNumberOrHash, true);
             xrp_ensure_data(res.data);
             return new XrpFullBlock(res.data);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (e: any) {
+        } catch {
             // TODO: Invalid block error message (unify errors)
             throw new mccError(mccErrorCode.InvalidBlock);
-            if (e.response?.status === 400) {
-                throw new mccError(mccErrorCode.InvalidBlock);
-            }
-            throw e;
+            // if (e.response?.status === 400) {
+            //     throw new mccError(mccErrorCode.InvalidBlock);
+            // }
+            // throw e;
         }
     }
 
@@ -145,14 +144,13 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
             const res = await this.blockRequestBase(blockNumberOrHash, false);
             xrp_ensure_data(res.data);
             return new XrpBlock(res.data);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (e: any) {
+        } catch {
             // TODO: Invalid block error message (unify errors)
             throw new mccError(mccErrorCode.InvalidBlock);
-            if (e.response?.status === 400) {
-                throw new mccError(mccErrorCode.InvalidBlock);
-            }
-            throw e;
+            // if (e.response?.status === 400) {
+            //     throw new mccError(mccErrorCode.InvalidBlock);
+            // }
+            // throw e;
         }
     }
 
@@ -202,6 +200,8 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
         });
 
         xrp_ensure_data(res.data);
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return new XrpTransaction(res.data);
     }
 
@@ -237,6 +237,7 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
             params: [params],
         });
         xrp_ensure_data(res.data);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return res.data;
     }
 
@@ -252,6 +253,7 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
             params: [params],
         });
         xrp_ensure_data(res.data);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return res.data;
     }
 }

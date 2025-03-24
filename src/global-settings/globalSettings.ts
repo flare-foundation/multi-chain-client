@@ -1,7 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type loggingCallbackType = typeof console.log | typeof console.warn | typeof console.error;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function emptyFn(data: any): void {
     return;
 }
@@ -14,7 +13,6 @@ class MccGlobalSettings {
     warningCallback: loggingCallbackType = emptyFn;
     errorCallback: loggingCallbackType = emptyFn;
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     constructor() {}
 
     public set setLoggingCallback(logCallback: loggingCallbackType) {

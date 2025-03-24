@@ -4,6 +4,7 @@ export abstract class BlockTipBase {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(data: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.privateData = data;
     }
 
@@ -11,6 +12,7 @@ export abstract class BlockTipBase {
      * Exposing the private data for the derived classes (dev only/python like privatization)
      */
     public get _data() {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return this.privateData;
     }
 

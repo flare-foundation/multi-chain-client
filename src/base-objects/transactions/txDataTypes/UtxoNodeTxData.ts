@@ -1,44 +1,7 @@
-interface UtxoTxData<T, S> {
-    txid: string;
-    hash?: string;
-    version?: number;
-    size?: number;
-    vsize?: number;
-    weight?: number;
-    locktime?: number;
-    fee?: number;
-    blockhash?: string;
-    confirmations?: number;
-    time?: number;
-    blocktime: number;
-    hex?: string;
-    vin: T[];
-    vout: Vout<S>[];
-}
-
-interface Vout<S> {
-    n: number;
-    value: number;
-    scriptPubKey: S;
-}
-
 interface ScriptPubKeyBasic {
     asm: string;
     hex: string;
     type?: string;
-}
-
-interface ScriptPubKeyBTC extends ScriptPubKeyBasic {
-    reqSigs?: number;
-
-    desc?: string;
-    address?: string;
-}
-
-interface ScriptPubKeyDoge extends ScriptPubKeyBasic {
-    reqSigs?: number;
-
-    addresses?: string[];
 }
 
 interface ScriptPubKeyPrevout extends ScriptPubKeyBasic {

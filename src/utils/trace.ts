@@ -1,35 +1,39 @@
 import { createHook, executionAsyncId, triggerAsyncId } from "async_hooks";
-import { mccError, mccOutsideError, MCC_ERROR } from "./errors";
+import { MCC_ERROR, mccError, mccOutsideError } from "./errors";
 import { StackTrace } from "./strackTrace";
 import { mccJsonStringify } from "./utils";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
 const async_hooks = require("async_hooks");
 
 // forces PromiseHooks to be enabled.
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+
 createHook({ init() {} }).enable();
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 async_hooks
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     .createHook({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         init(asyncId: any, type: any, triggerAsyncId: any) {
             if (TraceManager.enabled) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 TraceManager.async_promise_map.set(asyncId, triggerAsyncId);
             }
         },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         before(asyncId: any) {
             //TraceManager.async_promise_map.set( asyncId , "before" );
         },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         after(asyncId: any) {
             //TraceManager.async_promise_map.set( asyncId , "after" );
         },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         destroy(asyncId: any) {
             //TraceManager.async_promise_map.set( asyncId , "destroy" );
         },
     })
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     .enable();
 
 export enum TraceMethodType {
@@ -121,6 +125,7 @@ export class TraceCall {
         this.method.inclusiveTime += this.traceTime;
 
         this.completed = true;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.ret = ret;
     }
 
@@ -141,6 +146,7 @@ export class TraceCall {
             text = obj;
         } else {
             try {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 text = mccJsonStringify(obj);
             } catch {
                 text = "error stringifying object";
@@ -232,7 +238,6 @@ export class TraceManager {
     public displayRuntimeTrace = false;
     public displayStateOnException = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     public onException = function (error: Error): void {};
 
     private methods: TraceMethod[];
@@ -272,7 +277,7 @@ export class TraceManager {
         const tid = triggerAsyncId();
 
         const parents: number[] = [];
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
         for (let i = tid; i; i = TraceManager.async_promise_map.get(i)!) {
             parents.push(i);
         }
@@ -363,7 +368,9 @@ export class TraceManager {
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         console.log(`EXCEPTION name='${error.name}' message='${error.message}'`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (error.name === `mccError` && error.message === `OutsideError`) {
             const innerError = (error as mccError).innerError as Error;
             if (innerError) {
@@ -377,6 +384,7 @@ export class TraceManager {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     showState(stack: any = undefined) {
         if (stack) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             console.log(`NODE STACK ${stack.stack}`);
         }
 
@@ -402,7 +410,6 @@ export class TraceManager {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     showMethods(indent = false, source = true, timing = false) {
         console.log("\nMETHODS");
         for (const method of this.methods) {
@@ -430,18 +437,14 @@ export class TraceManager {
     }
 
     get firstTrace(): string {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         if (this.main!.trace.length === 0) return "";
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.main!.trace[0].toShortString();
     }
 
     get lastTrace(): string {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         if (this.main!.trace.length === 0) return "";
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.main!.trace[this.main!.trace.length - 1].toShortString();
     }
 }
@@ -452,6 +455,7 @@ const awaitSourceMap = new Map<string, boolean>();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function Stub(className: string, name: string, funct: any, cx: any, args: any[], methodType: TraceMethodType) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const isAsync = funct.constructor.name === "AsyncFunction";
     let isAwait = false;
 
@@ -470,12 +474,15 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
                 isAwait = cached;
             } else {
                 // check if that source file has 'await'
-                // eslint-disable-next-line @typescript-eslint/no-var-requires
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
                 const fs = require("fs");
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
                 const data = fs.readFileSync(stackTrace.source).toString();
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
                 const lines = data.split("\n");
-
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 if (lines && lines.length > stackTrace.line - 1) {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
                     isAwait = lines[stackTrace.line - 1].indexOf(`await `) >= 0;
                 }
 
@@ -485,27 +492,31 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const trace = TraceManager.enabled ? traceManager.start(className, name!, args, methodType, isAsync, isAwait) : undefined;
+    const trace = TraceManager.enabled ? traceManager.start(className, name, args, methodType, isAsync, isAwait) : undefined;
 
     try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         const res = methodType === TraceMethodType.ClassGetter ? funct.apply(cx) : funct.apply(cx, args);
 
         if (!isPromise(res)) {
             traceManager.complete(trace, res);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return res;
         }
         return new Promise((resolve, reject) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             res.then((result: any) => {
                 traceManager.complete(trace, result);
 
                 resolve(result);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any,  @typescript-eslint/no-unsafe-member-access
             }).catch((error: any) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 if (error?.name === MCC_ERROR) {
                     traceManager.showException(error);
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     traceManager.completeError(trace, error);
+                    // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                     reject(error);
                 } else {
                     const newError = new mccOutsideError(error);
@@ -518,8 +529,10 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (error?.name === MCC_ERROR) {
             traceManager.showException(error);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             traceManager.completeError(trace, error);
             throw error;
         } else {
@@ -533,6 +546,7 @@ function Stub(className: string, name: string, funct: any, cx: any, args: any[],
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isPromise(p: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (typeof p === "object" && typeof p.then === "function") {
         return true;
     }
@@ -556,14 +570,17 @@ export function isPromise(p: any) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function RegisterTraceGetter(target: any, name?: string, descriptor?: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (descriptor && descriptor.get) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
         const original = descriptor.get;
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         descriptor.get = function () {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
             return Stub(target.name, name!, original, this, [], TraceMethodType.ClassGetter);
         };
-
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return descriptor;
     }
     return null;
@@ -571,15 +588,18 @@ export function RegisterTraceGetter(target: any, name?: string, descriptor?: any
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function RegisterTraceSetter(target: any, name?: string, descriptor?: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (descriptor && descriptor.set) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
         const original = descriptor.set;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
         descriptor.set = function (...args: any[]) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
             return Stub(target.name, name!, original, this, args, TraceMethodType.ClassSetter);
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return descriptor;
     }
     return null;
@@ -588,12 +608,15 @@ export function RegisterTraceSetter(target: any, name?: string, descriptor?: any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function RegisterTraceClass(targetClass: any) {
     // add tracing capability to all own methods, setters and getters
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     Object.getOwnPropertyNames(targetClass.prototype).forEach((methodName: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         const desc = Object.getOwnPropertyDescriptor(targetClass.prototype, methodName);
 
         // getter
         if (desc?.get) {
             RegisterTraceGetter(targetClass, methodName, desc);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             Object.defineProperty(targetClass.prototype, methodName, desc);
             return;
         }
@@ -601,10 +624,12 @@ export function RegisterTraceClass(targetClass: any) {
         // setter
         if (desc?.set) {
             RegisterTraceSetter(targetClass, methodName, desc);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             Object.defineProperty(targetClass.prototype, methodName, desc);
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         const original = targetClass.prototype[methodName];
 
         // constructor
@@ -622,17 +647,20 @@ export function RegisterTraceClass(targetClass: any) {
         }
 
         // an arrow function can't be used while we have to preserve right 'this'
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
         targetClass.prototype[methodName] = function (...args: any[]) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
             return Stub(targetClass.name, methodName, original, this, args, TraceMethodType.ClassMethod);
         };
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return targetClass;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function traceFunction(funct: any, ...args: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     return Stub("", funct.name, funct, null, args, TraceMethodType.Function);
 }
 

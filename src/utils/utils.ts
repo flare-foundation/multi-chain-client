@@ -2,16 +2,19 @@
 import { TextDecoder } from "util";
 import { toHex as W3ToHex, keccak256, padLeft } from "web3-utils";
 import { MccLoggingOptions, MccLoggingOptionsFull } from "../types/genericMccTypes";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
 const safeStringify = require("fast-safe-stringify");
 
 export const ZERO_BYTES_32 = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 export function MccError(error: any) {
     try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const message = mccJsonStringify(error);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return new Error(message);
     } catch (thisError) {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         return new Error(`MCC stringify error ${thisError}`);
     }
 }
@@ -97,6 +100,7 @@ export function mccJsonStringify(toStringify: any) {
         edgesLimit: 3,
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
     return safeStringify(toStringify, null, 2, options);
 }
 
@@ -115,7 +119,9 @@ export function defaultWarningCallback(message: string): void {
 export function defaultExceptionCallback(error: any, message: string): void {
     console.log(message);
     console.error(error);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (error.stack) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         console.error(error.stack);
     }
 }

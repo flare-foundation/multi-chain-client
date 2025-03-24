@@ -1,4 +1,4 @@
-import { Payment, TransactionMetadata } from "xrpl";
+import { Payment } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
@@ -18,10 +18,10 @@ import {
 } from "../TransactionBase";
 
 // @Managed()
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
     protected get data(): IXrpGetTransactionRes {
-        return this.privateData as IXrpGetTransactionRes;
+        return this.privateData;
     }
 
     public get txid(): string {
@@ -156,11 +156,11 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     if (node.DeletedNode.FinalFields && node.DeletedNode.FinalFields.Account) {
                         if (node.DeletedNode.FinalFields.Balance) {
                             // TODO: this is due to xrpl.js lib mistakes
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
                             const diff =
                                 BigInt(node.DeletedNode.FinalFields.Balance as string) -
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                BigInt(((node.DeletedNode as any).PreviousFields as any).Balance as string);
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+                                BigInt((node.DeletedNode as any).PreviousFields.Balance as string);
                             if (diff < BigInt(0)) {
                                 spendAmounts.push({
                                     address: node.DeletedNode.FinalFields.Account as string,
@@ -169,8 +169,8 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                             }
                         } else {
                             // TODO: this is due to xrpl.js lib mistakes
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
-                            const diff = BigInt(((node.DeletedNode as any).PreviousFields as any).Balance as string);
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+                            const diff = BigInt((node.DeletedNode as any).PreviousFields.Balance as string);
                             if (diff > BigInt(0)) {
                                 spendAmounts.push({
                                     address: node.DeletedNode.FinalFields.Account as string,
@@ -407,7 +407,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                         return TransactionSuccessStatus.SENDER_FAILURE;
                     default:
                         // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-                        // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+
                         ((_: never): void => {})(resultTec);
                 }
                 break;
@@ -426,13 +426,12 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                 return TransactionSuccessStatus.SENDER_FAILURE;
             default:
                 // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-                // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+
                 ((_: never): void => {})(prefix);
         }
         throw new Error(`Unexpected transaction status prefix found ${prefix}`);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public paymentSummary(props: PaymentSummaryProps): PaymentSummaryResponse {
         if (this.type === "Payment" && this.isNativePayment) {
             // Is native transfer
@@ -625,7 +624,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                 if (typeof this.data.result.meta === "string") {
                     return false;
                 }
-                const Meta = this.data.result.meta as TransactionMetadata;
+                const Meta = this.data.result.meta;
                 for (const elem of Meta.AffectedNodes) {
                     if ("CreatedNode" in elem) {
                         if ("Account" in elem.CreatedNode.NewFields) {

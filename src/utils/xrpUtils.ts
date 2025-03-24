@@ -2,7 +2,7 @@ import { AccountRootFlags, PosToFlag } from "../types";
 import { XRP_UTD } from "./constants";
 import { mccError, mccErrorCode } from "./errors";
 import { MccError } from "./utils";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
 const XrpAddress = require("ripple-address-codec");
 
 ////////////////////////////
@@ -11,15 +11,19 @@ const XrpAddress = require("ripple-address-codec");
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function xrp_ensure_data(data: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (data.result.status === "error") {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (data.result.error === "txnNotFound") {
             throw new mccError(mccErrorCode.InvalidTransaction);
         }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (data.result.error === "lgrNotFound") {
             throw new mccError(mccErrorCode.InvalidBlock);
         }
         throw MccError(data);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (data.result.status === "success" && data.result.ledger && (data.result.ledger.closed === false || data.result.validated === false)) {
         throw new mccError(mccErrorCode.InvalidBlock); //the ledger is proposed but not closed yet
     }
@@ -40,6 +44,7 @@ export function processFlags(flag: number): AccountRootFlags[] {
         if ((flag >> posFlag) % 2 === 1) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             altFlags.push(PosToFlag[posFlag]);
         }
     }
@@ -53,10 +58,13 @@ export function processFlags(flag: number): AccountRootFlags[] {
 export function rippleAddressToBytes(address: string) {
     if (address.length > 0) {
         if (address[0] === "r") {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
             return XrpAddress.decodeAccountID(address);
         } else {
             // it is a ripple x address
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
             const classic = XrpAddress.xAddressToClassicAddress(address);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
             return XrpAddress.decodeAccountID(classic.classicAddress);
         }
     }
@@ -66,6 +74,7 @@ export function rippleAddressToBytes(address: string) {
 export function bytesToRippleAddress(byts: Buffer) {
     if (byts.length === 20) {
         // it is a valid address
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
         return XrpAddress.encodeAccountID(byts);
     }
     throw new Error("Not a valid ripple address");

@@ -19,6 +19,7 @@ export class XrpFullBlock extends XrpBlock implements FullBlockBase<XrpTransacti
                     // TODO: this is due to xrpl.js lib mistakes
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,
                     hash: txData.hash,
                     ledger_index: this.number,
                     meta: txData.metaData,

@@ -44,7 +44,7 @@ export function singleHash(val: BytesLike): string {
  * @returns `0x`-prefixed 32-byte hex string (hash)
  */
 export function commitHash(merkleRoot: string, randomNumber: string, address: string): string {
-    return ethers.keccak256(coder.encode(["bytes32", "bytes32", "address"], [merkleRoot, randomNumber, address]))!;
+    return ethers.keccak256(coder.encode(["bytes32", "bytes32", "address"], [merkleRoot, randomNumber, address]));
 }
 
 /**
@@ -127,6 +127,7 @@ export class MerkleTree {
             }
         }
         const n = hashes.length;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this._tree = [...new Array(Math.max(n - 1, 0)).fill(0), ...hashes];
         for (let i = n - 2; i >= 0; i--) {
             this._tree[i] = sortedHashPair(this._tree[2 * i + 1], this._tree[2 * i + 2])!;
@@ -156,6 +157,7 @@ export class MerkleTree {
         while (count > 1) {
             // Invariants: low < high, 2 <= count == high - low == [low .. high].length
             const mid = low + Math.floor(count / 2); // low < mid < high _strictly_
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             hash < this.sortedHashes[mid] ? (high = mid) : (low = mid); // low < high still
             count = high - low; // preserves invariant
         }
@@ -193,7 +195,7 @@ export class MerkleTree {
         let pos = this._tree.length - this.hashCount + i;
         while (pos > 0) {
             proof.push(
-                this._tree[pos + 2 * (pos % 2) - 1], // if pos even, take left sibling at pos - 1, else the right sibling at pos + 1
+                this._tree[pos + 2 * (pos % 2) - 1] // if pos even, take left sibling at pos - 1, else the right sibling at pos + 1
             );
             pos = this.parent(pos);
         }
@@ -219,17 +221,17 @@ export function verifyWithMerkleProof(leaf: string, proof: string[], root: strin
 
 function decodeAsciiString(str: string) {
     const encoder = new TextEncoder();
-    return encoder.encode(str)
+    return encoder.encode(str);
 }
 
 export function merkleTreeFromAddressStrings(addresses: (string | undefined)[]): MerkleTree {
-    const hashedAddresses = []
-    for(const address of addresses) {
-        if(address === undefined){
-            hashedAddresses.push(ZERO_BYTES_32)
+    const hashedAddresses = [];
+    for (const address of addresses) {
+        if (address === undefined) {
+            hashedAddresses.push(ZERO_BYTES_32);
         } else {
-            hashedAddresses.push(singleHash(singleHash(decodeAsciiString(address))))
+            hashedAddresses.push(singleHash(singleHash(decodeAsciiString(address))));
         }
     }
-    return new MerkleTree(hashedAddresses)
+    return new MerkleTree(hashedAddresses);
 }

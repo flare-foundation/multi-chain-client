@@ -13,12 +13,12 @@ export class XrpMccCreate {
     @optional() loggingOptions? = new MccLoggingOptions();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface XrpCreateAddressData {}
 
 export interface IXrpGetTransactionRes extends IIGetTransactionRes, TxResponse {}
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IXrpGetFullTransactionRes extends IXrpGetTransactionRes {}
 export interface IXrpGetBlockRes extends LedgerResponse, IIGetBlockRes {}
 

@@ -35,7 +35,6 @@ export class StackTrace {
     stackTrace: StackTraceCall[] = [];
 
     constructor() {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const stack = Error().stack!;
 
         const trace = stack.split("\n");

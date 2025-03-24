@@ -99,10 +99,8 @@ export type BalanceDecreasingSummaryResponse = TransactionSummaryBase<BalanceDec
 export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus, PaymentSummaryObject>;
 export type PaymentNonexistenceSummaryResponse = TransactionSummaryBase<PaymentNonexistenceSummaryStatus, PaymentNonexistenceSummaryObject>;
 export abstract class TransactionBase<T> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected privateData: T;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(data: T) {
         this.privateData = data;
     }

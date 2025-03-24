@@ -42,7 +42,9 @@ export async function checkTransactionTypes(): Promise<boolean> {
     }
 
     if (transactionTypes.length !== HARDCODED_EXPECTED_TRANSACTIONS_COUNT) {
-        console.log(`Expected transaction types count does not match actual count. Expected: ${HARDCODED_EXPECTED_TRANSACTIONS_COUNT}, actuall: ${transactionTypes.length}`);
+        console.log(
+            `Expected transaction types count does not match actual count. Expected: ${HARDCODED_EXPECTED_TRANSACTIONS_COUNT}, actuall: ${transactionTypes.length}`
+        );
         return false;
     }
 

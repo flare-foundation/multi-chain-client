@@ -157,9 +157,11 @@ export enum WordToOpcode {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function utxo_check_expect_empty(data: any): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (!data || !data.error || !data.error.code) {
         return false;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (data.error.code && data.error.code === -5) {
         return true;
     } else {
@@ -169,10 +171,13 @@ export function utxo_check_expect_empty(data: any): boolean {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function utxo_check_expect_block_out_of_range(data: any): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (data && data.error && data.error.code) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (data.error.code === -8) {
             return true;
         }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (data.error.code === -1) {
             return true;
         } else {
@@ -185,6 +190,7 @@ export function utxo_check_expect_block_out_of_range(data: any): boolean {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function utxo_ensure_data(data: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (data?.error) {
         throw MccError(data);
     }

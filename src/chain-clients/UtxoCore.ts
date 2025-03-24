@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
-import { BlockBase, BlockHeaderBase, BlockTipBase, TransactionBase, UtxoTransaction } from "../base-objects";
+import { BlockBase, BlockHeaderBase, BlockTipBase, UtxoTransaction } from "../base-objects";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
 import { FullBlockBase } from "../base-objects/FullBlockBase";
 import { UtxoNodeStatus } from "../base-objects/status/UtxoStatus";
@@ -33,8 +33,7 @@ export interface objectConstructors<
     BHeadCon extends BlockHeaderBase,
     BlockCon extends BlockBase,
     FBlockCon extends FullBlockBase<TranCon>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    TranCon extends UtxoTransaction
+    TranCon extends UtxoTransaction,
 > {
     transactionConstructor: new (d: IUtxoGetTransactionRes, a?: IUtxoTransactionAdditionalData) => TranCon;
     fullBlockConstructor: new (d: IUtxoGetBlockRes) => FBlockCon;
@@ -48,13 +47,11 @@ export abstract class UtxoCore<
     BHeadCon extends BlockHeaderBase,
     BlockCon extends BlockBase,
     FBlockCon extends FullBlockBase<TranCon>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    TranCon extends UtxoTransaction
+    TranCon extends UtxoTransaction,
 > implements ReadRpcInterface<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>
 {
     client: AxiosInstance;
     inRegTest: boolean;
-    // eslint-disable-next-line prettier/prettier
     constructors: objectConstructors<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>;
     chainType: ChainType;
 
@@ -90,6 +87,7 @@ export abstract class UtxoCore<
      */
 
     async getNodeStatus(): Promise<UtxoNodeStatus> {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const res = await this.getNetworkInfo();
 
         const infoRes = await this.client.post(``, {
@@ -100,6 +98,7 @@ export abstract class UtxoCore<
         });
         utxo_ensure_data(infoRes.data);
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         return new UtxoNodeStatus({ ...infoRes.data.result, ...res.result } as IUtxoNodeStatus);
     }
 
@@ -108,6 +107,7 @@ export abstract class UtxoCore<
      * @returns 0
      */
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     async getBottomBlockHeight(): Promise<number> {
         return 0;
     }
@@ -123,11 +123,11 @@ export abstract class UtxoCore<
     private async blockRequestBase(blockNumberOrHash: string | number, full: boolean) {
         let blockHash: string;
         if (typeof blockNumberOrHash === "string") {
-            blockHash = blockNumberOrHash as string;
+            blockHash = blockNumberOrHash;
         } else if (typeof blockNumberOrHash === "number") {
             try {
-                blockHash = await this.getBlockHashFromHeight(blockNumberOrHash as number);
-            } catch (e) {
+                blockHash = await this.getBlockHashFromHeight(blockNumberOrHash);
+            } catch {
                 throw new mccError(mccErrorCode.InvalidParameter);
             }
         } else {
@@ -153,6 +153,7 @@ export abstract class UtxoCore<
             throw new mccError(mccErrorCode.InvalidBlock);
         }
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
         return new this.constructors.fullBlockConstructor(res.data.result);
     }
 
@@ -168,11 +169,13 @@ export abstract class UtxoCore<
             throw new mccError(mccErrorCode.InvalidBlock);
         }
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
         return new this.constructors.blockConstructor(res.data.result);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-redundant-type-constituents
     async getBlockHeader(blockNumberOrHash: number | string | any): Promise<BHeadCon> {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const header = await this.getBlockHeaderBase(blockNumberOrHash);
         return new this.constructors.blockHeaderConstructor(header);
     }
@@ -190,6 +193,7 @@ export abstract class UtxoCore<
             params: [],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
         return res.data.result;
     }
 
@@ -204,7 +208,6 @@ export abstract class UtxoCore<
      * @returns transaction details
      */
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getTransaction(txId: string, options?: getTransactionOptions): Promise<TranCon> {
         if (PREFIXED_STD_TXID_REGEX.test(txId)) {
             txId = unPrefix0x(txId);
@@ -212,6 +215,7 @@ export abstract class UtxoCore<
         // TODO trow if txid does not match expected input
 
         const unTxId = unPrefix0x(txId);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let params: any[] = [unTxId, 2];
         if (this.chainType === ChainType.DOGE) {
             params = [unTxId, true];
@@ -227,15 +231,20 @@ export abstract class UtxoCore<
             throw new mccError(mccErrorCode.InvalidTransaction);
         }
         // It transaction number of confirmations is not at least 1, we got a transaction from mempool, we don't consider this transaction as valid
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (res.data && res.data.result && res.data.result.confirmations && res.data.result.confirmations < 1) {
             throw new mccError(mccErrorCode.InvalidTransaction);
         }
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
         const blockHeaderBase = await this.getBlockHeaderBase(res.data.result.blockhash);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const transactionData = {
             mediantime: blockHeaderBase.mediantime,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             ...res.data.result,
         };
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return new this.constructors.transactionConstructor(transactionData);
     }
 
@@ -252,14 +261,14 @@ export abstract class UtxoCore<
     async getBlockHeaderBase(blockHashOrHeight: string | number): Promise<IUtxoGetBlockHeaderRes> {
         let blockHash: string | null = null;
         if (typeof blockHashOrHeight === "string") {
-            blockHash = blockHashOrHeight as string;
+            blockHash = blockHashOrHeight;
             if (PREFIXED_STD_BLOCK_HASH_REGEX.test(blockHash)) {
                 blockHash = unPrefix0x(blockHash);
             }
             // TODO match with some regex
         }
         if (typeof blockHashOrHeight === "number") {
-            blockHash = await this.getBlockHashFromHeight(blockHashOrHeight as number);
+            blockHash = await this.getBlockHashFromHeight(blockHashOrHeight);
         }
         const res = await this.client.post("", {
             jsonrpc: "1.0",
@@ -271,6 +280,7 @@ export abstract class UtxoCore<
             throw new mccError(mccErrorCode.InvalidData);
         }
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
 
@@ -311,19 +321,24 @@ export abstract class UtxoCore<
         });
         utxo_ensure_data(res.data);
         const gte_height = option?.height_gte || 0;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         const response = res.data.result.filter((el: IUtxoChainTip) => {
             return el.height >= gte_height;
         });
 
         if (option !== undefined) {
             if (option.all_blocks !== undefined) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                 let extended = response.map((el: IUtxoChainTip) => this.recursive_block_hash(el.hash, el.branchlen));
                 extended = await Promise.all(extended);
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 for (let i = 0; i < response.length; i++) {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                     response[i].all_block_hashes = extended[i];
                 }
             }
         }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return response;
     }
 
@@ -369,6 +384,7 @@ export abstract class UtxoCore<
             throw new mccError(mccErrorCode.InvalidBlock);
         }
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         return res.data.result as string;
     }
 
@@ -395,12 +411,11 @@ export abstract class UtxoCore<
         const allTips = tips.map((UtxoTip: IUtxoChainTip) => {
             const tempTips = [];
             // all_block_hashes exist due to all_blocks: true in getTopBlocks call
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            for (let hashIndex = 0; hashIndex < UtxoTip!.all_block_hashes!.length; hashIndex++) {
+
+            for (let hashIndex = 0; hashIndex < UtxoTip.all_block_hashes!.length; hashIndex++) {
                 tempTips.push(
                     new this.constructors.blockTipConstructor({
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        hash: UtxoTip!.all_block_hashes![hashIndex],
+                        hash: UtxoTip.all_block_hashes![hashIndex],
                         height: UtxoTip.height - hashIndex,
                         branchlen: UtxoTip.branchlen,
                         status: UtxoTip.status,
@@ -410,7 +425,7 @@ export abstract class UtxoCore<
             return tempTips;
         });
         // filter out duplicates
-        const reducedTips = allTips.reduce((acc: BTipCon[], nev: BTipCon[]) => acc.concat(nev), []).concat(mainBranchHashes as any as BTipCon[]);
+        const reducedTips = allTips.reduce((acc: BTipCon[], nev: BTipCon[]) => acc.concat(nev), []).concat(mainBranchHashes as unknown as BTipCon[]);
         const unique = new Set();
         return reducedTips.filter((elem: BTipCon) => {
             const key = `${elem.number}_${elem.blockHash}`;
@@ -444,6 +459,7 @@ export abstract class UtxoCore<
         });
         utxo_ensure_data(res.data);
         // TODO try to import wallet if it already exists but is not imported
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
 
@@ -461,6 +477,7 @@ export abstract class UtxoCore<
             params: [walletLabel],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
 
@@ -480,6 +497,7 @@ export abstract class UtxoCore<
             params: [addressLabel, address_type],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
 
@@ -496,6 +514,7 @@ export abstract class UtxoCore<
             params: [],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
 
@@ -514,9 +533,11 @@ export abstract class UtxoCore<
             params: [addressLabel],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
         const address_labels = Object.keys(res.data.result);
         const response_array: getAddressByLabelResponse[] = [];
         for (const addL of address_labels) {
+            // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             response_array.push({ address: addL, purpose: res.data.result[addL].purpose });
         }
         return response_array;
@@ -540,6 +561,7 @@ export abstract class UtxoCore<
             params: [min, max],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
     /* istanbul ignore next */
@@ -556,6 +578,7 @@ export abstract class UtxoCore<
             voutArr += row;
         }
         voutArr += "]";
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const VoutArr = JSON.parse(voutArr);
         const res = await this.client.post(`wallet/${walletLabel}`, {
             jsonrpc: "1.0",
@@ -564,6 +587,7 @@ export abstract class UtxoCore<
             params: [vin, VoutArr],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
     /* istanbul ignore next */
@@ -575,6 +599,7 @@ export abstract class UtxoCore<
             params: [rawTx, keysList],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
 
@@ -593,6 +618,7 @@ export abstract class UtxoCore<
             params: [signedRawTx],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
 
@@ -611,11 +637,15 @@ export abstract class UtxoCore<
             params: [signedRawTx],
         });
         utxo_ensure_data(res.data);
-        let tx = await this.getTransaction(res.data.result);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        await this.getTransaction(res.data.result);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-member-access
         while (res.data.blockhash) {
             await sleepMs(3000);
-            tx = await this.getTransaction(res.data.result);
+            // eslint-disable-next-line  @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+            await this.getTransaction(res.data.result);
         }
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
 
@@ -635,6 +665,7 @@ export abstract class UtxoCore<
             params: [address],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
 
@@ -709,6 +740,7 @@ export abstract class UtxoCore<
             params: [address, amount],
         });
         utxo_ensure_data(res.data);
+        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return res.data.result;
     }
 }

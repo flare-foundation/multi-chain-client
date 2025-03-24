@@ -192,12 +192,12 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     public paymentSummary({ inUtxo, outUtxo }: PaymentSummaryProps): PaymentSummaryResponse {
         try {
             this.assertValidVinIndex(inUtxo);
-        } catch (e) {
+        } catch {
             return { status: PaymentSummaryStatus.InvalidInUtxo };
         }
         try {
             this.assertValidVoutIndex(outUtxo);
-        } catch (e) {
+        } catch {
             return { status: PaymentSummaryStatus.InvalidOutUtxo };
         }
 
@@ -331,7 +331,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             }
             default:
                 // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
-                // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+
                 ((_: never): void => {})(transactionType);
         }
 
@@ -342,7 +342,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     public paymentNonexistenceSummary(outUtxo: number): PaymentNonexistenceSummaryResponse {
         try {
             this.assertValidVoutIndex(outUtxo);
-        } catch (e) {
+        } catch {
             return { status: PaymentNonexistenceSummaryStatus.InvalidOutUtxo };
         }
 

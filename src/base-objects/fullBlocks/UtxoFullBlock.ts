@@ -3,7 +3,6 @@ import { FullBlockBase } from "../FullBlockBase";
 import { UtxoBlock } from "../blocks/UtxoBlock";
 import { UtxoTransaction } from "../transactions/UtxoTransaction";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class UtxoFullBlock<T extends UtxoTransaction> extends UtxoBlock implements FullBlockBase<T> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transactionConstructor: any;
@@ -24,6 +23,7 @@ export class UtxoFullBlock<T extends UtxoTransaction> extends UtxoBlock implemen
                 blocktime: this.unixTimestamp,
                 ...txData,
             };
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument
             transactions.push(new this.transactionConstructor(modifiedTxData));
         }
         return transactions;

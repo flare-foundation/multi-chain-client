@@ -488,7 +488,5 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             transaction = await MccClient.getTransaction(tx_id);
             expect(transaction.sourceAddressesRoot).to.eq("0xcdbdabb5f4dbb023c42a28a0c63ec021e55727f4e9b67f94b8ce06de5c35083f");
         });
-
     });
-
 });

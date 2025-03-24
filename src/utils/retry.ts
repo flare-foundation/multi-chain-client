@@ -20,7 +20,7 @@ export async function retry<T>(
     backOddTimeout: number = 1000,
     exceptionCallback: backOffTime = defaultExceptionCallback,
     warningCallback: ILoggingCallback = defaultWarningCallback,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+
     failure: (label: string) => void = (label) => {}
 ): Promise<T> {
     try {
