@@ -57,7 +57,7 @@ describe(`doge indexed transaction test ,(${getTestFile(__filename)})`, function
     const tx = new DogeTransaction(json);
 
     it("should compute payment summary", function () {
-        const summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+        const summary = tx.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
 
         expect(summary).to.not.be.undefined;
         expect(summary.status).to.eq(PaymentSummaryStatus.Success);
@@ -67,7 +67,7 @@ describe(`doge indexed transaction test ,(${getTestFile(__filename)})`, function
     });
 
     it("should compute payment summary", function () {
-        const summary = tx.paymentSummary({ inUtxo: 0, outUtxo: 1 });
+        const summary = tx.paymentSummary({ inUtxo: 0n, outUtxo: 1n });
 
         expect(summary).to.not.be.undefined;
         expect(summary.status).to.eq(PaymentSummaryStatus.Success);

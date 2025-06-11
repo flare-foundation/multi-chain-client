@@ -190,33 +190,60 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     }
 
     public paymentSummary({ inUtxo, outUtxo }: PaymentSummaryProps): PaymentSummaryResponse {
-        try {
-            this.assertValidVinIndex(inUtxo);
-        } catch {
-            return { status: PaymentSummaryStatus.InvalidInUtxo };
-        }
-        try {
-            this.assertValidVoutIndex(outUtxo);
-        } catch {
-            return { status: PaymentSummaryStatus.InvalidOutUtxo };
-        }
-
         if (this.type === "coinbase") {
             return { status: PaymentSummaryStatus.Coinbase };
         }
-        const spentAmount = this.spentAmounts[inUtxo];
 
-        if (!spentAmount.address) {
+        // Extract source address
+        let sourceAddress = undefined;
+        const inputCutoff = 2 ** 16;
+        if (inUtxo <= inputCutoff) {
+            try {
+                this.assertValidVinIndex(inUtxo);
+            } catch {
+                return { status: PaymentSummaryStatus.InvalidInUtxo };
+            }
+            const spentAmount = this.spentAmounts[Number(inUtxo)];
+            if (!spentAmount.address) {
+                return { status: PaymentSummaryStatus.NoSpentAmountAddress };
+            }
+            sourceAddress = spentAmount.address;
+        } else {
+            for (const vinAmount of this.spentAmounts) {
+                if (vinAmount.address && unPrefix0x(standardAddressHash(vinAmount.address)) == inUtxo.toString(16)) {
+                    sourceAddress = vinAmount.address;
+                    break;
+                }
+            }
+        }
+        if (sourceAddress === undefined) {
             return { status: PaymentSummaryStatus.NoSpentAmountAddress };
         }
-        const receiveAmount = this.receivedAmounts[outUtxo];
-        if (!receiveAmount.address) {
+
+        // Extract receiving address
+        let receivingAddress = undefined;
+        if (outUtxo <= inputCutoff) {
+            try {
+                this.assertValidVoutIndex(outUtxo);
+            } catch {
+                return { status: PaymentSummaryStatus.InvalidOutUtxo };
+            }
+            const receiveAmount = this.receivedAmounts[Number(outUtxo)];
+            if (!receiveAmount.address) {
+                return { status: PaymentSummaryStatus.NoReceiveAmountAddress };
+            }
+            receivingAddress = receiveAmount.address;
+        } else {
+            for (const voutAmount of this.receivedAmounts) {
+                if (voutAmount.address && unPrefix0x(standardAddressHash(voutAmount.address)) == outUtxo.toString(16)) {
+                    receivingAddress = voutAmount.address;
+                    break;
+                }
+            }
+        }
+        if (receivingAddress === undefined) {
             return { status: PaymentSummaryStatus.NoReceiveAmountAddress };
         }
-
-        // Extract addresses from input and output fields
-        const sourceAddress = spentAmount.address;
-        const receivingAddress = receiveAmount.address;
 
         // We will update this once we iterate over inputs and outputs if we have full transaction
         let oneToOne: boolean = true;
@@ -399,7 +426,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
      * Asserts whether the vin index is in valid range. If not, exception is thrown.
      * @param vinIndex vin index
      */
-    assertValidVinIndex(vinIndex: number) {
+    assertValidVinIndex(vinIndex: number | bigint) {
         if (vinIndex < 0 || vinIndex >= this.sourceAddresses.length) {
             throw new mccError(mccErrorCode.InvalidParameter, Error("Invalid vin index"));
         }
@@ -409,7 +436,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
      * Asserts whether the vout index is in valid range. If not, exception is thrown.
      * @param voutIndex vout index
      */
-    assertValidVoutIndex(voutIndex: number) {
+    assertValidVoutIndex(voutIndex: number | bigint) {
         if (voutIndex < 0 || voutIndex >= this.receivingAddresses.length) {
             throw new mccError(mccErrorCode.InvalidParameter, Error("Invalid vout index"));
         }

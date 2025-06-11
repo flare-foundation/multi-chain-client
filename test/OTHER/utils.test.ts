@@ -8,6 +8,7 @@ import {
     getSimpleRandom,
     isPrefixed0x,
     sleepMs,
+    standardAddressHash,
     toHex,
     unPrefix0x,
 } from "../../src";
@@ -145,4 +146,9 @@ describe(`Utils tests ,(${getTestFile(__filename)})`, () => {
             expect(outputErr[0]).contains("New stack");
         });
     });
+
+    it("Should correctly format standard address hash",() => {
+        const a = standardAddressHash('web3.js')
+        expect(a).to.eq("0x63667efb1961039c9bb0d6ea7a5abdd223a3aca7daa5044ad894226e1f83919a")
+    })
 });

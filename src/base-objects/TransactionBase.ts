@@ -3,8 +3,8 @@ import { TransactionSuccessStatus } from "../types/genericMccTypes";
 import { ZERO_BYTES_32 } from "../utils/utils";
 
 export type PaymentSummaryProps = {
-    inUtxo: number;
-    outUtxo: number;
+    inUtxo: bigint;
+    outUtxo: bigint;
 };
 
 export interface AddressAmount {

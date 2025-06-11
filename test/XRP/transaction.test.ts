@@ -99,7 +99,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary ", function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
             expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
         });
 
@@ -194,7 +194,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary ", function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
             assert(!summary.response);
@@ -284,7 +284,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary ", function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
             expect(summary.response!.sourceAddress).to.eq("r3zUhJWabAMMLT5n631r2wDh9RP3dN1bRy");
@@ -376,7 +376,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary ", function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
             expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
             assert(!summary.response);
         });
@@ -428,9 +428,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary ", function () {
-            const summary1 = transaction1.paymentSummary({ inUtxo: 0, outUtxo: 0 });
-            const summary2 = transaction2.paymentSummary({ inUtxo: 0, outUtxo: 0 });
-            const summary3 = transaction3.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary1 = transaction1.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
+            const summary2 = transaction2.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
+            const summary3 = transaction3.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
             expect(summary1.status).to.eq(PaymentSummaryStatus.NotNativePayment);
             expect(summary2.status).to.eq(PaymentSummaryStatus.NotNativePayment);
             // Transaction failed

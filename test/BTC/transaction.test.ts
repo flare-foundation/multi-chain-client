@@ -136,7 +136,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         });
 
         it("should make payment summary", function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 3 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 3n });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
 
@@ -481,7 +481,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             });
 
             it("Should get payment summary", function () {
-                const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+                const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
 
                 if (summary.status === PaymentSummaryStatus.Success) {
                     console.log("prepeared (expected)");

@@ -23,8 +23,8 @@ describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function
         const dec = transaction.balanceDecreasingSummary(toHex32Bytes(0));
 
         const rep = transaction.paymentSummary({
-            inUtxo: 0,
-            outUtxo: 0,
+            inUtxo: 0n,
+            outUtxo: 0n,
         });
 
         expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.Coinbase);

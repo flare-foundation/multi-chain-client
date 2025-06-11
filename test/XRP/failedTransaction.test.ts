@@ -51,8 +51,8 @@ describe("Failed transactions", function () {
 
         it("Should get payment summary", function () {
             const summary = transaction.paymentSummary({
-                inUtxo: 0,
-                outUtxo: 0,
+                inUtxo: 0n,
+                outUtxo: 0n,
             });
             expect(summary.status, "status").to.eq(PaymentSummaryStatus.Success);
 
@@ -100,8 +100,8 @@ describe("Failed transactions", function () {
 
         it("Should get payment summary", function () {
             const summary = transaction.paymentSummary({
-                inUtxo: 0,
-                outUtxo: 0,
+                inUtxo: 0n,
+                outUtxo: 0n,
             });
             expect(summary.status, "status").to.eq(PaymentSummaryStatus.NotNativePayment);
         });

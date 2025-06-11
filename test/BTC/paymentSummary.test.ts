@@ -35,8 +35,8 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
 
         it("Should get invalid in utxo error", async function () {
             const error = transaction.paymentSummary({
-                inUtxo: -1,
-                outUtxo: 0,
+                inUtxo: -1n,
+                outUtxo: 0n,
             });
             expect(error).to.deep.eq({
                 status: PaymentSummaryStatus.InvalidInUtxo,
@@ -45,8 +45,8 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
 
         it("Should get invalid out utxo error", async function () {
             const error = transaction.paymentSummary({
-                inUtxo: 0,
-                outUtxo: -1,
+                inUtxo: 0n,
+                outUtxo: -1n,
             });
             expect(error).to.deep.eq({
                 status: PaymentSummaryStatus.InvalidOutUtxo,
@@ -68,8 +68,8 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
 
         it("Should get invalid in utxo error", async function () {
             const error = transaction.paymentSummary({
-                inUtxo: 0,
-                outUtxo: 0,
+                inUtxo: 0n,
+                outUtxo: 0n,
             });
             expect(error).to.deep.eq({
                 status: PaymentSummaryStatus.Coinbase,
@@ -91,8 +91,8 @@ describe(`summaries, (${getTestFile(__filename)})`, function () {
 
         it("Should get invalid in utxo error", async function () {
             const error = transaction1.paymentSummary({
-                inUtxo: 0,
-                outUtxo: 0,
+                inUtxo: 0n,
+                outUtxo: 0n,
             });
             expect(error).to.deep.eq({
                 status: PaymentSummaryStatus.NoReceiveAmountAddress,

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BtcTransaction, MCC, PaymentSummaryStatus, UtxoMccCreate } from "../../src";
+import { BtcTransaction, MCC, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const BtcMccConnection = {
@@ -35,7 +35,7 @@ describe.skip(`TESTNET: BTC payment summary with op return, ${getTestFile(__file
     });
 
     it("Should get payment summary", async function () {
-        const ps = await transaction.paymentSummary({ inUtxo: 0, outUtxo: 1 });
+        const ps = await transaction.paymentSummary({ inUtxo: 0n, outUtxo: 1n });
         console.dir(ps, { depth: 10 });
     });
 });

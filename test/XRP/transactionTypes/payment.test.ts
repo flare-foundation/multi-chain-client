@@ -65,7 +65,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get payment summary", function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
             expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
         });
 
@@ -140,7 +140,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get payment summary", function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("1400000010");
             expect(summary.response!.sourceAddressHash).to.eq(standardAddressHash("rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5"));
@@ -194,7 +194,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get payment summary", function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("39");
             expect(summary.response!.sourceAddressHash).to.eq(standardAddressHash("rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p"));
@@ -293,7 +293,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get payment summary", function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
             expect(summary.status).to.eq(PaymentSummaryStatus.NotNativePayment);
         });
 
@@ -365,7 +365,7 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get payment summary", function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             assert(summary.response);
             expect(summary.response.transactionStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);

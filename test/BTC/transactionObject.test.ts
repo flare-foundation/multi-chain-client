@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
-import { BtcTransaction, MCC, PaymentSummaryStatus, UtxoMccCreate } from "../../src";
+import { BtcTransaction, MCC, PaymentSummaryStatus, standardAddressHash, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const BtcMccConnection = {
@@ -101,7 +101,54 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from utxo 0 to utxo 0", async function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
+
+            expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+            expect(summary.response).to.exist;
+
+            expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
+            expect(summary.response!.receivingAddress).to.eq("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
+            expect(summary.response!.spentAmount).to.eq(BigInt(800000000));
+            expect(summary.response!.receivedAmount).to.eq(BigInt(494000000));
+            expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(summary.response!.oneToOne).to.eq(false);
+        });
+
+        it("Should get payment summary from address hash on in utxo 0 to utxo 0", async function () {
+            const sourceAddressHash = standardAddressHash("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a")
+
+            const summary = transaction.paymentSummary({ inUtxo: BigInt(sourceAddressHash), outUtxo: 0n });
+
+            expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+            expect(summary.response).to.exist;
+
+            expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
+            expect(summary.response!.receivingAddress).to.eq("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
+            expect(summary.response!.spentAmount).to.eq(BigInt(800000000));
+            expect(summary.response!.receivedAmount).to.eq(BigInt(494000000));
+            expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(summary.response!.oneToOne).to.eq(false);
+        });
+
+        it("Should get payment summary from utxo 0 to address hash on utxo index 0", async function () {
+            const recievingAddressHash = standardAddressHash("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: BigInt(recievingAddressHash) });
+
+            expect(summary.status).to.eq(PaymentSummaryStatus.Success);
+            expect(summary.response).to.exist;
+
+            expect(summary.response!.sourceAddress).to.eq("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
+            expect(summary.response!.receivingAddress).to.eq("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
+            expect(summary.response!.spentAmount).to.eq(BigInt(800000000));
+            expect(summary.response!.receivedAmount).to.eq(BigInt(494000000));
+            expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(summary.response!.oneToOne).to.eq(false);
+        });
+
+        it("Should get payment summary from address hash on utxo 0 to address hash on utxo index 0", async function () {
+            const sourceAddressHash = standardAddressHash("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a")
+            const recievingAddressHash = standardAddressHash("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
+            const summary = transaction.paymentSummary({ inUtxo: BigInt(sourceAddressHash), outUtxo: BigInt(recievingAddressHash) });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
@@ -115,7 +162,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from utxo 0 to utxo 1", async function () {
-            const summary = transaction.paymentSummary({ inUtxo: 0, outUtxo: 1 });
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 1n });
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
@@ -129,7 +176,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from utxo 1 to utxo 0", async function () {
-            const summary = transaction.paymentSummary({ inUtxo: 1, outUtxo: 0 });
+            const summary = transaction.paymentSummary({ inUtxo: 1n, outUtxo: 0n });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
 
@@ -142,7 +189,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from utxo 1 to utxo 1", async function () {
-            const summary = transaction.paymentSummary({ inUtxo: 1, outUtxo: 1 });
+            const summary = transaction.paymentSummary({ inUtxo: 1n, outUtxo: 1n });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response).to.exist;
 
@@ -152,6 +199,16 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
             expect(summary.response!.receivedAmount).to.eq(BigInt(305960000));
             expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
             expect(summary.response!.oneToOne).to.eq(false);
+        });
+
+        it("Should get invalid in utxo for in utxo index bigger than 2 and smaller than 2**16", async function () {
+            const summary = transaction.paymentSummary({ inUtxo: 100n, outUtxo: 1n });
+            expect(summary.status).to.eq(PaymentSummaryStatus.InvalidInUtxo);
+        });
+
+        it("Should get invalid out utxo for in utxo index bigger than 2 and smaller than 2**16", async function () {
+            const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 100n });
+            expect(summary.status).to.eq(PaymentSummaryStatus.InvalidOutUtxo);
         });
     });
 });
