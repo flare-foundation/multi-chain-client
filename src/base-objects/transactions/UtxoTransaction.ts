@@ -234,7 +234,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             if (receivingAddress && vinAmount.address === receivingAddress) {
                 inFundsOfReceivingAddress = inFundsOfReceivingAddress + vinAmount.amount;
             }
-            if (oneToOne && vinAmount.address != sourceAddress && vinAmount.address != receivingAddress) {
+            if (oneToOne && vinAmount.address != sourceAddress) {
                 oneToOne = false;
             }
         }
