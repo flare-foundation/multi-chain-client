@@ -7,7 +7,6 @@ import {
     TransactionSuccessStatus,
     XrpTransaction,
     standardAddressHash,
-    traceManager,
 } from "../../src";
 import { AddressAmountEqual } from "../testUtils";
 
@@ -19,8 +18,6 @@ const XRPMccConnection = {
 };
 
 describe("Failed transactions", function () {
-    traceManager.displayRuntimeTrace = false;
-    traceManager.displayStateOnException = false;
     const MccClient = new MCC.XRP(XRPMccConnection);
 
     describe("Transaction payment: receiver's fault", function () {

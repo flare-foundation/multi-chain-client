@@ -1,4 +1,4 @@
-import { MCC, PaymentSummaryStatus, retry, traceManager, TransactionSuccessStatus, XrpTransaction } from "../../src";
+import { MCC, PaymentSummaryStatus, retry, TransactionSuccessStatus, XrpTransaction } from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -18,8 +18,6 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
-        traceManager.displayStateOnException = false;
-
         MccClient = new MCC.XRP(XRPMccConnection);
     });
 

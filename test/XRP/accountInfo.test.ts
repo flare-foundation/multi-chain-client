@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import { MCC, SpecialAddresses, retry, traceManager } from "../../src";
+import sinon from "sinon";
+import { MCC, SpecialAddresses, retry } from "../../src";
 import { mccSettings } from "../../src/global-settings/globalSettings";
 import { processFlags } from "../../src/utils/xrpUtils";
 import { getTestFile } from "../testUtils";
-import sinon from "sinon";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -22,8 +22,7 @@ describe(`Xrpl account test mainnet, ${getTestFile(__filename)}`, function () {
 
     before(async function () {
         sinon.stub(console, "error");
-        traceManager.displayRuntimeTrace = false;
-        traceManager.displayStateOnException = false;
+
         MccClient = new MCC.XRP(XRPMccConnection);
         mccSettings.setLoggingCallback = () => {
             return;

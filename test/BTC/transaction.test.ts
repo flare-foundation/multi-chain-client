@@ -4,10 +4,9 @@ import {
     MCC,
     PaymentSummaryStatus,
     standardAddressHash,
-    traceManager,
     TransactionSuccessStatus,
     UtxoMccCreate,
-    ZERO_BYTES_32,
+    ZERO_BYTES_32
 } from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
 
@@ -27,7 +26,7 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
     let MccClient: MCC.BTC;
 
     before(async function () {
-        traceManager.displayStateOnException = false;
+        
         MccClient = new MCC.BTC(BtcMccConnection);
     });
 

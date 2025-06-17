@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, MCC, XrpTransaction, retry, traceManager } from "../../../src";
+import { AddressAmount, MCC, XrpTransaction, retry } from "../../../src";
 import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -13,8 +13,6 @@ describe(`Type where no xrp or assets are transferred, ${getTestFile(__filename)
     let MccClient: MCC.XRP;
 
     before(async function () {
-        traceManager.displayRuntimeTrace = false;
-        traceManager.displayStateOnException = false;
         MccClient = new MCC.XRP(XRPMccConnection);
     });
 

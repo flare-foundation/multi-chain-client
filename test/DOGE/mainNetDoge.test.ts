@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, retry, traceManager, UtxoMccCreate } from "../../src";
+import { MCC, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -17,7 +17,6 @@ const DogeMccConnection = {
 describe(`DOGE mainnet client tests ,(${getTestFile(__filename)})`, () => {
     before(async function () {
         this.timeout(10000); // set timeout to 10 sec from 2 sec
-        traceManager.displayStateOnException = false;
     });
 
     describe("Should initialize", function () {

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MCC, PaymentNonexistenceSummaryStatus, ZERO_BYTES_32, retry, standardAddressHash, traceManager } from "../../src";
+import { MCC, PaymentNonexistenceSummaryStatus, ZERO_BYTES_32, retry, standardAddressHash } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const XRPMccConnection = {
@@ -13,8 +13,6 @@ describe(`summary tests, ${getTestFile(__filename)}`, function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
-        traceManager.displayRuntimeTrace = false;
-        traceManager.displayStateOnException = false;
         MccClient = new MCC.XRP(XRPMccConnection);
     });
 
@@ -67,5 +65,4 @@ describe(`summary tests, ${getTestFile(__filename)}`, function () {
             expect(decRes.isFull).to.eq(true);
         }
     });
-
 });

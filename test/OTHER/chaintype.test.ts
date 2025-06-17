@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ChainType, MCC, traceManager } from "../../src";
+import { ChainType, MCC } from "../../src";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -7,9 +7,7 @@ const chai = require("chai");
 chai.use(require("chai-as-promised"));
 
 describe("Lite block base test ", function () {
-    before(async function () {
-        traceManager.displayStateOnException = false;
-    });
+    before(async function () {});
 
     describe("getChainType", function () {
         it("Should get chainType : default", async function () {

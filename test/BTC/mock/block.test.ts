@@ -1,10 +1,10 @@
 /* This is a mock tests, that requires no underlying chain connectivity */
 import { expect } from "chai";
-import { BtcBlock, MCC, traceManager, UtxoMccCreate } from "../../../src";
+import { BtcBlock, MCC, UtxoMccCreate } from "../../../src";
 
 import MockAdapter from "axios-mock-adapter";
-import { getBlockHashRes, getBlockRes } from "./data.blockTest";
 import { getTestFile } from "../../testUtils";
+import { getBlockHashRes, getBlockRes } from "./data.blockTest";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -24,9 +24,6 @@ describe.skip(`Block Btc base test, ${getTestFile(__filename)}`, function () {
     const blockNumber = 729_409;
 
     before(async function () {
-        traceManager.displayStateOnException = false;
-        traceManager.displayRuntimeTrace = false;
-
         MccClient = new MCC.BTC(BtcMccConnection);
         mock = new MockAdapter(MccClient.client, { onNoMatch: "passthrough" });
 

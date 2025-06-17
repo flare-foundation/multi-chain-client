@@ -9,12 +9,8 @@ export * from "./module";
 export * from "./types";
 // Constants
 export * from "./utils/constants";
-// managed
-export * from "./utils/managed";
 // retry logic
 export * from "./utils/retry";
-// trace
-export * from "./utils/trace";
 // Type reflection
 export * from "./utils/typeReflection";
 // Utils exports

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { BalanceDecreasingSummaryStatus, MCC, UtxoMccCreate, ZERO_BYTES_32, standardAddressHash, toHex32Bytes, traceManager } from "../../src";
+import { BalanceDecreasingSummaryStatus, MCC, UtxoMccCreate, ZERO_BYTES_32, standardAddressHash, toHex32Bytes } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const BtcMccConnection = {
@@ -13,8 +13,6 @@ describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function
     let MccClient: MCC.BTC;
     before(async function () {
         MccClient = new MCC.BTC(BtcMccConnection);
-        traceManager.displayStateOnException = false;
-        traceManager.displayRuntimeTrace = false;
     });
 
     it("Should not create summary for coinbase", async function () {

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ChainType, MCC, traceManager, UtxoMccCreate } from "../../src";
+import { ChainType, MCC, UtxoMccCreate } from "../../src";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const chai = require("chai");
@@ -17,7 +17,6 @@ describe("BTC mainnet client tests", () => {
     let MccClient: MCC.BTC;
     before(async function () {
         this.timeout(10000); // set timeout to 10 sec from 2 sec
-        traceManager.displayStateOnException = false;
         MccClient = new MCC.BTC(BtcMccConnection);
     });
 

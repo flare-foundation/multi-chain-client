@@ -2,7 +2,7 @@
 import { expect } from "chai";
 import { assert } from "console";
 import { TransactionMetadata } from "xrpl";
-import { MCC, PaymentSummaryStatus, traceManager, TransactionSuccessStatus } from "../../src";
+import { MCC, PaymentSummaryStatus, TransactionSuccessStatus } from "../../src";
 import { XrpTransaction } from "../../src/base-objects";
 import { getTestFile } from "../testUtils";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -21,8 +21,6 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
-        traceManager.displayRuntimeTrace = false;
-        traceManager.displayStateOnException = false;
         MccClient = new MCC.XRP(XRPMccConnection);
     });
 

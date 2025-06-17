@@ -1,6 +1,6 @@
 // yarn test test/XRP/transactionTypes/payment.test.ts
 
-import { expect, assert } from "chai";
+import { assert, expect } from "chai";
 import {
     AddressAmount,
     BalanceDecreasingSummaryStatus,
@@ -9,7 +9,6 @@ import {
     TransactionSuccessStatus,
     XrpTransaction,
     standardAddressHash,
-    traceManager,
 } from "../../../src";
 import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
@@ -24,8 +23,6 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
-        traceManager.displayRuntimeTrace = false;
-        traceManager.displayStateOnException = false;
         MccClient = new MCC.XRP(XRPMccConnection);
     });
 

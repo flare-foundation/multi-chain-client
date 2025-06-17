@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash, traceManager } from "../../../src";
+import { AddressAmount, BalanceDecreasingSummaryStatus, MCC, XrpTransaction, standardAddressHash } from "../../../src";
 import { AddressAmountEqual, getTestFile } from "../../testUtils";
 
 const XRPMccConnection = {
@@ -13,8 +13,6 @@ describe(`CheckCash type (${getTestFile(__filename)})`, function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
-        traceManager.displayRuntimeTrace = false;
-        traceManager.displayStateOnException = false;
         MccClient = new MCC.XRP(XRPMccConnection);
     });
 

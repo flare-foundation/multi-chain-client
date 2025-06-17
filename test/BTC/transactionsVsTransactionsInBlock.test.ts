@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { SingleBar } from "cli-progress";
-import { BtcBlock, BtcFullBlock, MCC, UtxoMccCreate, traceManager } from "../../src/index";
+import { BtcBlock, BtcFullBlock, MCC, UtxoMccCreate } from "../../src/index";
 import {
     GETTERS_AMOUNTS,
     GETTERS_BASIC,
@@ -33,8 +33,6 @@ describe(`BTC transactions in full block vs transactions from getTransaction (${
                 client = new MCC.BTC(BtcMccConnection);
                 block = await client.getBlock(blockNumber);
                 fullBlock = (await client.getFullBlock(blockNumber)) as BtcFullBlock;
-                traceManager.displayStateOnException = false;
-                traceManager.displayRuntimeTrace = false;
             });
 
             it("Block and Full block transaction count should be equal", () => {
