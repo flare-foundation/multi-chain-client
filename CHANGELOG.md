@@ -1,9 +1,34 @@
-# 4.0.0
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## \[[Unreleased]\]
+
+### Added
+
+- Reformating according to new handbook and dev structure
+
+# \[[v4.3.0](https://www.npmjs.com/package/@flarenetwork/mcc/v/4.3.0)\] - 2025-04-01  
+
+### Fixed
+* toOne filed for UTXO transactions
+* Typo fixes
+
+
+# \[[v4.0.1](https://www.npmjs.com/package/@flarenetwork/mcc/v/4.0.1)\] - 2023-12-06  
+
+### Changed
 * Adaptation of full indexing on transaction and block objects on BTC and DOGE
   * Every UTXO transaction now has all inputs and outputs with their values
   * All summary methods now assume that feature
 * Removed BN dependency and added BigInt dependency where necessary
 * Using median time on BTC and DOGE chains
+
+## OLD changelog
 
 # 3.2.0
 - Removed un-maintained instances for ALGO and LTC
