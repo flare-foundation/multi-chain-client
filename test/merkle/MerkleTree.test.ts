@@ -87,7 +87,7 @@ describe(`Merkle Tree`, () => {
         });
     });
 
-    describe("Merkle tree for source addresses", async () => {
+    describe("Merkle tree for source addresses", () => {
         const testCases = [
             "r8w3LYVt7K5RYKRUpNfXrqQ1ZzXAvrvPezku0GMcOfa",
             "TCUtQWRHBdcWVdC7JKRWt0nVPxHY4WYBqPppUS3P",
@@ -183,7 +183,7 @@ describe(`Merkle Tree`, () => {
         }
     });
 
-    describe("Merkle tree for source addresses root XRP", async () => {
+    describe("Merkle tree for source addresses root XRP", () => {
         interface MerkleRootTestCase {
             testTitle: string;
             testCase: (string | undefined)[];

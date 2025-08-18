@@ -1,7 +1,6 @@
 import { BlockBase, BlockHeaderBase, BlockTipBase, FullBlockBase, TransactionBase } from "../base-objects";
 import { RPCInterface } from "./genericMccTypes";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DogeRpcInterface<
     BT extends BlockTipBase,
     BH extends BlockHeaderBase,

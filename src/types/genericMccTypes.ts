@@ -43,27 +43,27 @@ export interface ReadRpcInterface<
     // bottom block in connected node (0 if nodes dont support partial history)
 }
 
-export interface WriteRpcInterface extends BaseRpcInterface {
-    // Wallets
+// export interface WriteRpcInterface extends BaseRpcInterface {
+//     // Wallets
 
-    // Addresses
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createAddress(createAddressData: any): any;
+//     // Addresses
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     createAddress(createAddressData: any): any;
 
-    // Transactions
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createRawTransaction(walletLabel: string, vin: any[], out: any[]): any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    signRawTransaction(walletLabel: string, rawTx: string, keysList: string[]): any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    sendRawTransaction(walletLabel: string, signedRawTx: string): any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    sendRawTransactionInBlock(walletLabel: string, signedRawTx: string): any;
+//     // Transactions
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     createRawTransaction(walletLabel: string, vin: any[], out: any[]): any;
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     signRawTransaction(walletLabel: string, rawTx: string, keysList: string[]): any;
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     sendRawTransaction(walletLabel: string, signedRawTx: string): any;
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     sendRawTransactionInBlock(walletLabel: string, signedRawTx: string): any;
 
-    // Faucet
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fundAddress(address: string, amount: number): any;
-}
+//     // Faucet
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     fundAddress(address: string, amount: number): any;
+// }
 
 export interface RPCInterface<
     BT extends BlockTipBase,
@@ -72,8 +72,7 @@ export interface RPCInterface<
     FB extends FullBlockBase<T>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     T extends TransactionBase<any>,
-> extends ReadRpcInterface<BT, BH, B, FB, T>,
-        WriteRpcInterface {}
+> extends ReadRpcInterface<BT, BH, B, FB, T> {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////// MCC base response interfaces ////////////////////////////////////////////////////////////////////

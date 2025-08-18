@@ -1,11 +1,9 @@
 import { expect } from "chai";
 import { BtcBlock, MCC, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
+import chaiAsPromised from "chai-as-promised";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chai = require("chai");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chai.use(require("chai-as-promised"));
+chai.use(chaiAsPromised);
 
 const BtcMccConnection = {
     url: process.env.BTC_URL || "",

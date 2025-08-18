@@ -1,11 +1,9 @@
+import { expect } from "chai";
 import { MCC, XrpBlock } from "../../src";
 import { getTestFile } from "../testUtils";
+import chaiAsPromised from "chai-as-promised";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chai = require("chai");
-const expect = chai.expect;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chai.use(require("chai-as-promised"));
+chai.use(chaiAsPromised);
 
 const XRPMccConnection = {
     url: process.env.XRP_URL || "",
@@ -74,14 +72,14 @@ describe(`Block Xrp base test (${getTestFile(__filename)})`, function () {
     });
 
     it("Should get previousBlockHash", async function () {
-        await expect(block.previousBlockHash).to.eq("D50040A5B66578B80EB8F21D071B3118C3142837E8EBFAD03F9B0960590E2C21");
+        expect(block.previousBlockHash).to.eq("D50040A5B66578B80EB8F21D071B3118C3142837E8EBFAD03F9B0960590E2C21");
     });
 
     it("Should get stdPreviousBlockHash", async function () {
-        await expect(block.stdPreviousBlockHash).to.eq("D50040A5B66578B80EB8F21D071B3118C3142837E8EBFAD03F9B0960590E2C21");
+        expect(block.stdPreviousBlockHash).to.eq("D50040A5B66578B80EB8F21D071B3118C3142837E8EBFAD03F9B0960590E2C21");
     });
 
     it("Should check validity", async function () {
-        await expect(block.isValid).to.eq(true);
+        expect(block.isValid).to.eq(true);
     });
 });

@@ -1,11 +1,6 @@
 import { expect } from "chai";
 import { MCC } from "../../src";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chai = require("chai");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chai.use(require("chai-as-promised"));
-
 const XRPMccConnection = {
     url: process.env.XRP_URL || "https://s1.ripple.com:51234",
     username: process.env.XRP_USERNAME || "",
@@ -20,7 +15,7 @@ describe("XRP testnet client tests", () => {
         client = new MCC.XRP(XRPMccConnection);
     });
 
-    describe("Should be able to get block height", async () => {
+    describe("Should be able to get block height", function () {
         it(`Should be able to get block height `, async () => {
             const height = await client.getBlockHeight();
             expect(height).to.be.greaterThan(70_000_000);

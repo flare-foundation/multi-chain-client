@@ -1,19 +1,9 @@
 import { expect } from "chai";
-import {
-    BtcTransaction,
-    MCC,
-    PaymentSummaryStatus,
-    standardAddressHash,
-    TransactionSuccessStatus,
-    UtxoMccCreate,
-    ZERO_BYTES_32
-} from "../../src";
+import { BtcTransaction, MCC, PaymentSummaryStatus, standardAddressHash, TransactionSuccessStatus, UtxoMccCreate, ZERO_BYTES_32 } from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
+import chaiAsPromised from "chai-as-promised";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chai = require("chai");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chai.use(require("chai-as-promised"));
+chai.use(chaiAsPromised);
 
 const BtcMccConnection = {
     url: process.env.BTC_URL || "",
@@ -26,7 +16,6 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
     let MccClient: MCC.BTC;
 
     before(async function () {
-        
         MccClient = new MCC.BTC(BtcMccConnection);
     });
 

@@ -332,25 +332,4 @@ export interface UtxoRpcInterface<
 > extends RPCInterface<BT, BH, B, FB, T> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getBlockHeaderBase(blockHash: string): any;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createWallet(walletLabel: string): any;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    loadWallet(walletLabel: string): any;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createAddress(walletLabel: string, addressLabel?: string, address_type?: string): any;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    listAllWallets(): any;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    listAllAddressesByLabel(walletLabel: string, addressLabel: string): Promise<any[]>;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    listUnspentTransactions(walletLabel: string, min: number, max: number): any;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getPrivateKey(walletLabel: string, address: string): any;
 }

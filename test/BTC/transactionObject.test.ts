@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
 import { BtcTransaction, MCC, PaymentSummaryStatus, standardAddressHash, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
@@ -115,7 +114,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from address hash on in utxo 0 to utxo 0", async function () {
-            const sourceAddressHash = standardAddressHash("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a")
+            const sourceAddressHash = standardAddressHash("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
 
             const summary = transaction.paymentSummary({ inUtxo: BigInt(sourceAddressHash), outUtxo: 0n });
 
@@ -146,7 +145,7 @@ describe(`Transaction Btc test ,(${getTestFile(__filename)})`, function () {
         });
 
         it("Should get payment summary from address hash on utxo 0 to address hash on utxo index 0", async function () {
-            const sourceAddressHash = standardAddressHash("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a")
+            const sourceAddressHash = standardAddressHash("bc1qdl753ur9ucwa3cgfrud2nqvu7k69dykk3cwwx6g64a5szn3xw92sp8mc7a");
             const recievingAddressHash = standardAddressHash("1KiJkugknjgW6AHXNgVQgNuo3b5DqsVFmk");
             const summary = transaction.paymentSummary({ inUtxo: BigInt(sourceAddressHash), outUtxo: BigInt(recievingAddressHash) });
 

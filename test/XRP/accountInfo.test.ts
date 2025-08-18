@@ -4,11 +4,9 @@ import { MCC, SpecialAddresses, retry } from "../../src";
 import { mccSettings } from "../../src/global-settings/globalSettings";
 import { processFlags } from "../../src/utils/xrpUtils";
 import { getTestFile } from "../testUtils";
+import chaiAsPromised from "chai-as-promised";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chai = require("chai");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chai.use(require("chai-as-promised"));
+chai.use(chaiAsPromised);
 
 const XRPMccConnection = {
     url: process.env.XRP_URL || "",
@@ -29,7 +27,7 @@ describe(`Xrpl account test mainnet, ${getTestFile(__filename)}`, function () {
         };
     });
 
-    describe("account info", async () => {
+    describe("account info", () => {
         it(`Should get account info`, async () => {
             const acc = "rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn";
             const info = await MccClient.getAccountInfo(acc);
@@ -69,13 +67,14 @@ describe(`Xrpl account test mainnet, ${getTestFile(__filename)}`, function () {
         });
     });
 
-    describe("account transactions", async () => {
+    describe("account transactions", () => {
         it(`Should get account transactions`, async () => {
             const acc = "r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd";
             // get account transactions
             const tr = await MccClient.getAccountTransactions(acc, 71_859_000, 71_867_500);
             expect(tr.result.transactions.length).to.eq(73);
         });
+
         it(`Should get account transactions`, async () => {
             const acc = "r4BhzWSGGjTeSdpcXMPoT1AbiCQm76FQGd";
             // get account transactions
@@ -98,7 +97,7 @@ describe.skip(`Xrpl account test testnet (${getTestFile(__filename)})`, function
         MccClient = new MCC.XRP(XRPMccConnectionTest);
     });
 
-    describe.skip("account info", async () => {
+    describe.skip("account info", () => {
         it(`Should get account info`, async () => {
             const info = await MccClient.getAccountInfo("rBwD7GqAPFoZvzz6YaR5HyJWD8TUoaUbJo");
 
@@ -121,7 +120,7 @@ describe.skip(`Xrpl account test testnet (${getTestFile(__filename)})`, function
     });
 
     // Testnet gets reset sometimes
-    describe("step by step account info", async () => {
+    describe("step by step account info", () => {
         const acc = "rD8btyHW512KmJdsQEoD9KFTMxfDbpqkkA"; // my acc
         it.skip(`Should get account info at the begging`, async () => {
             const info = await MccClient.getAccountInfo(acc, 28_014_551);

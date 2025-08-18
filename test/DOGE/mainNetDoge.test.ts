@@ -2,11 +2,6 @@ import { expect } from "chai";
 import { MCC, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chai = require("chai");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chai.use(require("chai-as-promised"));
-
 const DogeMccConnection = {
     url: process.env.DOGE_URL || "",
     username: process.env.DOGE_USERNAME || "",

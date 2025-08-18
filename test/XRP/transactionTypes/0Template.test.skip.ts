@@ -13,7 +13,6 @@ describe.skip("<Type name> type", function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
-        
         MccClient = new MCC.XRP(XRPMccConnection);
     });
 

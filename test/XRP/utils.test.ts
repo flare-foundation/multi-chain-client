@@ -48,6 +48,7 @@ describe("Test utils ", function () {
     it("should not convert from bytes to ripple address", function () {
         const byts = Buffer.from("0x00");
         const fn = () => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return bytesToRippleAddress(byts);
         };
         const er = `Not a valid ripple address`;
@@ -106,7 +107,7 @@ describe("Test utils ", function () {
         });
 
         for (const getters of [GETTERS_AMOUNTS, GETTERS_BASIC, GETTERS_BN, GETTERS_LISTS]) {
-            for (let getter of getters) {
+            for (const getter of getters) {
                 it(`should have getter ${getter}`, function () {
                     expect(getter in tx);
                 });

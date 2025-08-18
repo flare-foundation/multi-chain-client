@@ -546,7 +546,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     sourceAddressHash: standardAddressHash(feeSigner.address),
                     sourceAddress: feeSigner.address,
                     spentAmount: feeSigner.amount,
-                    paymentReference:  this.type === "Payment" ? this.stdPaymentReference : ZERO_BYTES_32,
+                    paymentReference: this.type === "Payment" ? this.stdPaymentReference : ZERO_BYTES_32,
                     transactionStatus: this.successStatus,
                     isFull: true,
                 },

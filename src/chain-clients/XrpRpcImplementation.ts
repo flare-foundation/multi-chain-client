@@ -30,7 +30,7 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
             timeout: createConfig.rateLimitOptions?.timeoutMs || DEFAULT_TIMEOUT,
             headers: { "Content-Type": "application/json", "x-apikey": createConfig.apiTokenKey || "" },
             validateStatus: function (status: number) {
-                return (status >= 200 && status < 300) || status == 500;
+                return (status >= 200 && status < 300) || status === 500;
             },
         };
         if (createConfig.username && createConfig.password) {

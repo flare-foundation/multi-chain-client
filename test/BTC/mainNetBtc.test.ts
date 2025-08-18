@@ -1,10 +1,8 @@
 import { expect } from "chai";
 import { ChainType, MCC, UtxoMccCreate } from "../../src";
+import chaiAsPromised from "chai-as-promised";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chai = require("chai");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chai.use(require("chai-as-promised"));
+chai.use(chaiAsPromised);
 
 const BtcMccConnection = {
     url: process.env.BTC_URL || "",
@@ -40,15 +38,15 @@ describe("BTC mainnet client tests", () => {
         it("Should get block header ", async function () {
             const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c5368";
             const header = await MccClient.getBlockHeaderBase(blockhash);
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            expect(header!.hash).to.eq(blockhash);
+
+            expect(header.hash).to.eq(blockhash);
         });
 
         it("Should get block header 2 ", async function () {
             const blockhash = "00000000000000000009a57dd6ca3b8d18af776732364dfc17b07b5bf67c5368";
             const header = await MccClient.getBlockHeaderBase("0x" + blockhash);
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            expect(header!.hash).to.eq(blockhash);
+
+            expect(header.hash).to.eq(blockhash);
         });
 
         it("Should get null for wrong header ", async function () {
@@ -104,7 +102,7 @@ describe("BTC mainnet client tests", () => {
         });
     });
 
-    describe("BTC ChainTips", async function () {
+    describe("BTC ChainTips", function () {
         it("basic chainTips ", async function () {
             const BtcRpc = new MCC.BTC(BtcMccConnection);
             const chainTips = await BtcRpc.getTopBlocks();

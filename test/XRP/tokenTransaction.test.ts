@@ -1,11 +1,6 @@
+import { expect } from "chai";
 import { MCC, PaymentSummaryStatus, retry, TransactionSuccessStatus, XrpTransaction } from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chai = require("chai");
-const expect = chai.expect;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
     url: process.env.XRP_URL || "",

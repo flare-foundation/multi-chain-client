@@ -5,11 +5,9 @@ import { BtcBlock, MCC, UtxoMccCreate } from "../../../src";
 import MockAdapter from "axios-mock-adapter";
 import { getTestFile } from "../../testUtils";
 import { getBlockHashRes, getBlockRes } from "./data.blockTest";
+import chaiAsPromised from "chai-as-promised";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chai = require("chai");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chai.use(require("chai-as-promised"));
+chai.use(chaiAsPromised);
 
 const BtcMccConnection = {
     url: "",

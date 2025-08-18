@@ -5,7 +5,7 @@ import { BlockBase, BlockHeaderBase, BlockTipBase, UtxoTransaction } from "../ba
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
 import { FullBlockBase } from "../base-objects/FullBlockBase";
 import { UtxoNodeStatus } from "../base-objects/status/UtxoStatus";
-import { getAddressByLabelResponse, IIUtxoVin, IIUtxoVout, IUtxoTransactionListRes, IUtxoWalletRes, UtxoMccCreate } from "../types";
+import { UtxoMccCreate } from "../types";
 import { RateLimitOptions } from "../types/axiosRateLimitTypes";
 import { ChainType, getTransactionOptions, ReadRpcInterface } from "../types/genericMccTypes";
 import {
@@ -20,7 +20,7 @@ import {
 } from "../types/utxoTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { mccError, mccErrorCode } from "../utils/errors";
-import { sleepMs, unPrefix0x } from "../utils/utils";
+import { unPrefix0x } from "../utils/utils";
 import { utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
 
 const DEFAULT_TIMEOUT = 60000;
@@ -68,7 +68,7 @@ export abstract class UtxoCore<
                 password: createConfig.password,
             },
             validateStatus: function (status: number) {
-                return (status >= 200 && status < 300) || status == 500;
+                return (status >= 200 && status < 300) || status === 500;
             },
         });
         this.client = axiosRateLimit(client, {
@@ -436,237 +436,6 @@ export abstract class UtxoCore<
                 return true;
             }
         });
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////
-    // Write part of RPC Client ///////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////
-
-    // Not yet tested or used
-
-    /**
-     * Creates a new wallet on node's database
-     * @param walletLabel label of your wallet used as a reference for future use
-     * @returns name of the created wallet and possible warnings
-     */
-    /* istanbul ignore next */
-    async createWallet(walletLabel: string): Promise<IUtxoWalletRes> {
-        const res = await this.client.post("", {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "createwallet",
-            params: [walletLabel],
-        });
-        utxo_ensure_data(res.data);
-        // TODO try to import wallet if it already exists but is not imported
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return res.data.result;
-    }
-
-    /**
-     * loads the wallet if it exist on node, but it has to be relisted
-     * @param walletLabel wallet label to load
-     * @returns
-     */
-    /* istanbul ignore next */
-    async loadWallet(walletLabel: string): Promise<IUtxoWalletRes> {
-        const res = await this.client.post("", {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "loadwallet",
-            params: [walletLabel],
-        });
-        utxo_ensure_data(res.data);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return res.data.result;
-    }
-
-    /**
-     *
-     * @param walletLabel label of wallet, if you dont have one create one with createWallet
-     * @param label label of address within wallet (default to "")
-     * @param address_type type of address (default to "legacy") options = ["legacy", "p2sh-segwit", "bech32"]
-     * @returns
-     */
-    /* istanbul ignore next */
-    async createAddress(walletLabel: string, addressLabel: string = "", address_type: string = "legacy") {
-        const res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "getnewaddress",
-            params: [addressLabel, address_type],
-        });
-        utxo_ensure_data(res.data);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return res.data.result;
-    }
-
-    /**
-     * List all wallets on node
-     * @returns
-     */
-    /* istanbul ignore next */
-    async listAllWallets(): Promise<string[]> {
-        const res = await this.client.post(``, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "listwallets",
-            params: [],
-        });
-        utxo_ensure_data(res.data);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return res.data.result;
-    }
-
-    /**
-     * List all addresses by their label on provided wallet
-     * @param walletLabel label of the parent wallet we want to list addresses
-     * @param addressLabel label of the addresses we want to list
-     * @returns
-     */
-    /* istanbul ignore next */
-    async listAllAddressesByLabel(walletLabel: string, addressLabel: string = ""): Promise<getAddressByLabelResponse[]> {
-        const res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "getaddressesbylabel",
-            params: [addressLabel],
-        });
-        utxo_ensure_data(res.data);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-        const address_labels = Object.keys(res.data.result);
-        const response_array: getAddressByLabelResponse[] = [];
-        for (const addL of address_labels) {
-            // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-            response_array.push({ address: addL, purpose: res.data.result[addL].purpose });
-        }
-        return response_array;
-    }
-
-    /**
-     * List all unspent transactions that happened between min and max blocks before current block
-     * If we are in block 100 and set min to 10 and max to 40 we will get all transactions that happened
-     * between block 60 and 90
-     * @param walletLabel
-     * @param min min block offset
-     * @param max max block offset
-     * @returns
-     */
-    /* istanbul ignore next */
-    async listUnspentTransactions(walletLabel: string, min: number = 0, max: number = 1e6): Promise<IUtxoTransactionListRes[]> {
-        const res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "listunspent",
-            params: [min, max],
-        });
-        utxo_ensure_data(res.data);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return res.data.result;
-    }
-    /* istanbul ignore next */
-    async createRawTransaction(walletLabel: string, vin: IIUtxoVin[], out: IIUtxoVout[]) {
-        let voutArr = "[";
-        let first = true;
-        for (const i of out) {
-            if (first) {
-                first = false;
-            } else {
-                voutArr += ",";
-            }
-            const row = `{"${i.address}" : ${i.amount}}`;
-            voutArr += row;
-        }
-        voutArr += "]";
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const VoutArr = JSON.parse(voutArr);
-        const res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "createrawtransaction",
-            params: [vin, VoutArr],
-        });
-        utxo_ensure_data(res.data);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return res.data.result;
-    }
-    /* istanbul ignore next */
-    async signRawTransaction(walletLabel: string, rawTx: string, keysList: string[]) {
-        const res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "signrawtransactionwithkey",
-            params: [rawTx, keysList],
-        });
-        utxo_ensure_data(res.data);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return res.data.result;
-    }
-
-    /**
-     * Send raw transaction
-     * @param walletLabel the label of the wallet we are sending the transaction from
-     * @param signedRawTx hash of signed transaction
-     * @returns transaction sending status
-     */
-    /* istanbul ignore next */
-    async sendRawTransaction(walletLabel: string, signedRawTx: string) {
-        const res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "sendrawtransaction",
-            params: [signedRawTx],
-        });
-        utxo_ensure_data(res.data);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return res.data.result;
-    }
-
-    /**
-     * Send raw transaction and wait for it to be in next block
-     * @param walletLabel the label of the wallet we are sending the transaction from
-     * @param signedRawTx hash of signed transaction
-     * @returns transaction sending status
-     */
-    /* istanbul ignore next */
-    async sendRawTransactionInBlock(walletLabel: string, signedRawTx: string) {
-        const res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "sendrawtransaction",
-            params: [signedRawTx],
-        });
-        utxo_ensure_data(res.data);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-        await this.getTransaction(res.data.result);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-member-access
-        while (res.data.blockhash) {
-            await sleepMs(3000);
-            // eslint-disable-next-line  @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-            await this.getTransaction(res.data.result);
-        }
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return res.data.result;
-    }
-
-    /**
-     * Get private key from wallet
-     * @notice Dont share this with anyone
-     * @param walletLabel wallet label that owns the address
-     * @param address
-     * @returns private key
-     */
-    /* istanbul ignore next */
-    async getPrivateKey(walletLabel: string, address: string) {
-        const res = await this.client.post(`wallet/${walletLabel}`, {
-            jsonrpc: "1.0",
-            id: "rpc",
-            method: "dumpprivkey",
-            params: [address],
-        });
-        utxo_ensure_data(res.data);
-        // eslint-disable-next-line  @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-        return res.data.result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////

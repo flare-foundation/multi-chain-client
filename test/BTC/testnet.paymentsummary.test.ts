@@ -35,7 +35,7 @@ describe.skip(`TESTNET: BTC payment summary with op return, ${getTestFile(__file
     });
 
     it("Should get payment summary", async function () {
-        const ps = await transaction.paymentSummary({ inUtxo: 0n, outUtxo: 1n });
+        const ps = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 1n });
         console.dir(ps, { depth: 10 });
     });
 });

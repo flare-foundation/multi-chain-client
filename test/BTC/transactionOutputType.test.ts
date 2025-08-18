@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
 import { BtcTransaction, MCC, PaymentSummaryStatus, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";

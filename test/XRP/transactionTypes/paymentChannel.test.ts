@@ -50,7 +50,7 @@ describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
         });
 
         it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount).to.eq(fee + value);
         });
@@ -104,7 +104,7 @@ describe(`PaymentChannel types (${getTestFile(__filename)})`, function () {
         });
 
         it("should get balanceDecreasingSummary", async function () {
-            const summary = await transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
+            const summary = transaction.balanceDecreasingSummary(standardAddressHash(addressPay));
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount).to.eq(fee + value);
         });

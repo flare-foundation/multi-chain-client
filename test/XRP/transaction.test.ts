@@ -1,14 +1,9 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
 import { assert } from "console";
 import { TransactionMetadata } from "xrpl";
 import { MCC, PaymentSummaryStatus, TransactionSuccessStatus } from "../../src";
 import { XrpTransaction } from "../../src/base-objects";
 import { getTestFile } from "../testUtils";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const chai = require("chai");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-chai.use(require("chai-as-promised"));
 
 const XRPMccConnection = {
     url: process.env.XRP_URL || "",
@@ -407,7 +402,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(transaction1.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
             expect(transaction2.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
             expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
             const metaData: TransactionMetadata = transaction3._data.result.meta || (transaction3._data.result as any).metaData;
             metaData.TransactionResult = "tecDST_TAG_NEEDED";
             expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
@@ -443,10 +438,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             transaction = await MccClient.getTransaction(txid);
         });
         it("References ", () => {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             transaction._data.result.Memos![0] = { Memo: { MemoType: "string" } };
             expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
             transaction._data.result.Memos![0] = { Memo: { MemoData: txid } };
             expect(transaction.stdPaymentReference).to.eq("0x" + txid);
         });

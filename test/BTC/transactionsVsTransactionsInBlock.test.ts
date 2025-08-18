@@ -32,7 +32,7 @@ describe(`BTC transactions in full block vs transactions from getTransaction (${
             before(async () => {
                 client = new MCC.BTC(BtcMccConnection);
                 block = await client.getBlock(blockNumber);
-                fullBlock = (await client.getFullBlock(blockNumber)) as BtcFullBlock;
+                fullBlock = await client.getFullBlock(blockNumber);
             });
 
             it("Block and Full block transaction count should be equal", () => {

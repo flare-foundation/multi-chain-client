@@ -15,7 +15,6 @@ describe(`createOffer type (${getTestFile(__filename)})`, function () {
     let MccClient: MCC.XRP;
 
     before(async function () {
-        
         MccClient = new MCC.XRP(XRPMccConnection);
     });
 

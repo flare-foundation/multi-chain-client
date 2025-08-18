@@ -38,7 +38,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     public get reference(): string[] {
         const references = [];
         for (const vo of this.data.vout) {
-            if (vo.scriptPubKey.hex.substring(0, 2) == unPrefix0x(toHex(WordToOpcode.OP_RETURN))) {
+            if (vo.scriptPubKey.hex.substring(0, 2) === unPrefix0x(toHex(WordToOpcode.OP_RETURN))) {
                 const dataSplit = vo.scriptPubKey.asm.split(" ");
                 references.push(dataSplit[1]);
             }
@@ -89,14 +89,14 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     toBigIntValue(value: number | string | undefined): bigint {
         if (value === undefined) {
             return BigInt(0);
-        } else if (typeof value == "number") {
+        } else if (typeof value === "number") {
             let valueStr = value.toFixed(this.elementaryUnitsExponent);
             valueStr = valueStr.replace(".", "");
             return BigInt(valueStr);
         } else {
             const split = value.split(".");
-            if (split.length == 1) return BigInt(value);
-            else if (split.length == 2) {
+            if (split.length === 1) return BigInt(value);
+            else if (split.length === 2) {
                 const valueStr = split[0].concat(split[1].padEnd(this.elementaryUnitsExponent, "0"));
                 return BigInt(valueStr);
             }
@@ -140,7 +140,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         } else if (hasPrevouts(this.data)) {
             return this.data.vin.map((mapper) => {
                 let amount: bigint;
-                if (mapper == undefined) {
+                if (mapper === undefined) {
                     amount = BigInt(0);
                 } else {
                     amount = this.toBigIntValue(mapper.prevout.value || 0);
@@ -210,7 +210,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             sourceAddress = spentAmount.address;
         } else {
             for (const vinAmount of this.spentAmounts) {
-                if (vinAmount.address && unPrefix0x(standardAddressHash(vinAmount.address)) == inUtxo.toString(16)) {
+                if (vinAmount.address && unPrefix0x(standardAddressHash(vinAmount.address)) === inUtxo.toString(16)) {
                     sourceAddress = vinAmount.address;
                     break;
                 }
@@ -235,7 +235,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             receivingAddress = receiveAmount.address;
         } else {
             for (const voutAmount of this.receivedAmounts) {
-                if (voutAmount.address && unPrefix0x(standardAddressHash(voutAmount.address)) == outUtxo.toString(16)) {
+                if (voutAmount.address && unPrefix0x(standardAddressHash(voutAmount.address)) === outUtxo.toString(16)) {
                     receivingAddress = voutAmount.address;
                     break;
                 }
@@ -261,7 +261,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             if (receivingAddress && vinAmount.address === receivingAddress) {
                 inFundsOfReceivingAddress = inFundsOfReceivingAddress + vinAmount.amount;
             }
-            if (oneToOne && vinAmount.address != sourceAddress) {
+            if (oneToOne && vinAmount.address !== sourceAddress) {
                 oneToOne = false;
             }
         }
@@ -277,7 +277,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             if (oneToOne && !voutAmount.address && voutAmount.amount >= BigInt(0)) {
                 oneToOne = false;
             }
-            if (oneToOne && voutAmount.address && voutAmount.address != sourceAddress && voutAmount.address != receivingAddress) {
+            if (oneToOne && voutAmount.address && voutAmount.address !== sourceAddress && voutAmount.address !== receivingAddress) {
                 oneToOne = false;
             }
         }
@@ -300,7 +300,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                 intendedReceivingAddress: receivingAddress,
                 intendedReceivingAmount: outFunds - inFundsOfReceivingAddress,
                 oneToOne,
-                toOne: numOfOutputs == 1,
+                toOne: numOfOutputs === 1,
             },
         };
     }
@@ -414,7 +414,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                 intendedReceivingAddressHash: standardAddressHash(receivingAddress),
                 intendedReceivingAddress: receivingAddress,
                 intendedReceivingAmount: outFunds - inFundsOfReceivingAddress,
-                toOne: nuOfOuts == 1,
+                toOne: nuOfOuts === 1,
             },
         };
     }

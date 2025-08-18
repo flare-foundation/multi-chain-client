@@ -122,7 +122,7 @@ export class MerkleTree {
 
         const hashes = [];
         for (let i = 0; i < sorted.length; i++) {
-            if (i == 0 || sorted[i] !== sorted[i - 1]) {
+            if (i === 0 || sorted[i] !== sorted[i - 1]) {
                 hashes.push(sorted[i]);
             }
         }
@@ -153,7 +153,7 @@ export class MerkleTree {
     private binarySearch(hash: string): number | undefined {
         let [low, high] = [0, this.hashCount];
         let count = high;
-        if (count == 0) return undefined;
+        if (count === 0) return undefined;
         while (count > 1) {
             // Invariants: low < high, 2 <= count == high - low == [low .. high].length
             const mid = low + Math.floor(count / 2); // low < mid < high _strictly_
@@ -162,7 +162,7 @@ export class MerkleTree {
             count = high - low; // preserves invariant
         }
         const i = low; // Only element left: count == 1, since 0 != count <= 1
-        if (hash != this.sortedHashes[i]) return undefined;
+        if (hash !== this.sortedHashes[i]) return undefined;
         return i;
     }
 
@@ -216,7 +216,7 @@ export function verifyWithMerkleProof(leaf: string, proof: string[], root: strin
     for (const pair of proof) {
         hash = sortedHashPair(pair, hash)!;
     }
-    return hash == root;
+    return hash === root;
 }
 
 function decodeAsciiString(str: string) {
