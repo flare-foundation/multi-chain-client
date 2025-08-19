@@ -23,10 +23,13 @@ export function xrp_ensure_data(data: any) {
         }
         throw MccError(data);
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     if (
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         data.result.status === "success" &&
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         data.result.ledger &&
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         (data.result.ledger.closed === false || data.result.validated === false)
     ) {
         throw new mccError(mccErrorCode.InvalidBlock); //the ledger is proposed but not closed yet

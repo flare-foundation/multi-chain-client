@@ -84,6 +84,7 @@ export class XRPImplementation
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             const startBlocks = res.data.result.state.complete_ledgers
                 .split(",")
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 .map((range: string) => Number(range.split("-")[0]));
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
