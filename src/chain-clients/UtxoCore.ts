@@ -1,12 +1,10 @@
 import axios, { AxiosInstance } from "axios";
 
-import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
 import { BlockBase, BlockHeaderBase, BlockTipBase, UtxoTransaction } from "../base-objects";
 import { UtxoBlockTip } from "../base-objects/blockTips/UtxoBlockTip";
 import { FullBlockBase } from "../base-objects/FullBlockBase";
 import { UtxoNodeStatus } from "../base-objects/status/UtxoStatus";
 import { UtxoMccCreate } from "../types";
-import { RateLimitOptions } from "../types/axiosRateLimitTypes";
 import { ChainType, getTransactionOptions, ReadRpcInterface } from "../types/genericMccTypes";
 import {
     IUtxoChainTip,
@@ -24,9 +22,6 @@ import { unPrefix0x } from "../utils/utils";
 import { utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../utils/utxoUtils";
 
 const DEFAULT_TIMEOUT = 60000;
-const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
-    maxRPS: 5,
-};
 
 export interface objectConstructors<
     BTipCon extends BlockTipBase,
@@ -56,9 +51,9 @@ export abstract class UtxoCore<
     chainType: ChainType;
 
     constructor(createConfig: UtxoMccCreate, constructors: objectConstructors<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>) {
-        const client = axios.create({
+        this.client = axios.create({
             baseURL: createConfig.url,
-            timeout: createConfig.rateLimitOptions?.timeoutMs || DEFAULT_TIMEOUT,
+            timeout: DEFAULT_TIMEOUT,
             headers: {
                 "Content-Type": "application/json",
                 "x-apikey": createConfig.apiTokenKey || "",
@@ -70,10 +65,6 @@ export abstract class UtxoCore<
             validateStatus: function (status: number) {
                 return (status >= 200 && status < 300) || status === 500;
             },
-        });
-        this.client = axiosRateLimit(client, {
-            ...DEFAULT_RATE_LIMIT_OPTIONS,
-            ...createConfig.rateLimitOptions,
         });
         this.inRegTest = createConfig.inRegTest || false;
 
@@ -419,7 +410,7 @@ export abstract class UtxoCore<
                         height: UtxoTip.height - hashIndex,
                         branchlen: UtxoTip.branchlen,
                         status: UtxoTip.status,
-                    })
+                    }),
                 );
             }
             return tempTips;
@@ -479,7 +470,7 @@ export abstract class UtxoCore<
                         branchlen: tip.branchLen,
                         status: tip.chainTipStatus,
                     }),
-                    processHeight - 1
+                    processHeight - 1,
                 )
             ).concat([tempTip]);
         }

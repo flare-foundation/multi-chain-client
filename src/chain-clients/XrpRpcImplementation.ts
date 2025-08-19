@@ -1,22 +1,17 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { AccountInfoResponse, AccountTxResponse, LedgerResponse, ServerStateResponse } from "xrpl";
-import axiosRateLimit from "../axios-rate-limiter/axios-rate-limit";
+import { XrpBlock, XrpNodeStatus, XrpTransaction } from "../base-objects";
 import { BlockHeaderBase, BlockTipBase } from "../base-objects/BlockBase";
 import { XrpFullBlock } from "../base-objects/fullBlocks/XrpFullBlock";
 import { mccSettings } from "../global-settings/globalSettings";
 import { IAccountInfoRequest, IAccountTxRequest, XrpBlockReqParams, XrpMccCreate } from "../types";
+import { ChainType, ReadRpcInterface, getTransactionOptions } from "../types/genericMccTypes";
 import { PREFIXED_STD_BLOCK_HASH_REGEX, PREFIXED_STD_TXID_REGEX } from "../utils/constants";
 import { mccError, mccErrorCode, mccOutsideError } from "../utils/errors";
 import { mccJsonStringify, unPrefix0x } from "../utils/utils";
 import { xrp_ensure_data } from "../utils/xrpUtils";
-import { XrpBlock, XrpNodeStatus, XrpTransaction } from "../base-objects";
-import { ChainType, ReadRpcInterface, getTransactionOptions } from "../types/genericMccTypes";
-import { RateLimitOptions } from "../types/axiosRateLimitTypes";
 
 const DEFAULT_TIMEOUT = 15000;
-const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
-    maxRPS: 5,
-};
 
 export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHeaderBase, XrpBlock, XrpFullBlock, XrpTransaction> {
     client: AxiosInstance;
@@ -27,7 +22,7 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
     constructor(createConfig: XrpMccCreate) {
         const createAxiosConfig: AxiosRequestConfig = {
             baseURL: createConfig.url,
-            timeout: createConfig.rateLimitOptions?.timeoutMs || DEFAULT_TIMEOUT,
+            timeout: DEFAULT_TIMEOUT,
             headers: { "Content-Type": "application/json", "x-apikey": createConfig.apiTokenKey || "" },
             validateStatus: function (status: number) {
                 return (status >= 200 && status < 300) || status === 500;
@@ -40,10 +35,7 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
             };
         }
         const client = axios.create(createAxiosConfig);
-        this.client = axiosRateLimit(client, {
-            ...DEFAULT_RATE_LIMIT_OPTIONS,
-            ...createConfig.rateLimitOptions,
-        });
+        this.client = client
         this.inRegTest = createConfig.inRegTest || false;
         this.chainType = ChainType.XRP;
     }

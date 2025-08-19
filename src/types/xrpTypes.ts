@@ -1,7 +1,6 @@
 import { AccountInfoRequest, AccountTxRequest, LedgerRequest, LedgerResponse, TxResponse } from "xrpl";
 import { optional } from "../utils/typeReflection";
 import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions } from "./genericMccTypes";
-import { RateLimitOptions } from "./axiosRateLimitTypes";
 
 export class XrpMccCreate {
     url: string = "";
@@ -9,7 +8,6 @@ export class XrpMccCreate {
     @optional() username?: string = "";
     @optional() password?: string = "";
     @optional() inRegTest?: boolean = false;
-    @optional() rateLimitOptions? = new RateLimitOptions();
     @optional() loggingOptions? = new MccLoggingOptions();
 }
 

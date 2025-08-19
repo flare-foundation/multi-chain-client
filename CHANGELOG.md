@@ -17,6 +17,7 @@ and this project adheres to
 ### Fixed
 * toOne filed for UTXO transactions
 * Typo fixes
+* Removed Axios rate limiter object
 
 
 # \[[v4.0.1](https://www.npmjs.com/package/@flarenetwork/mcc/v/4.0.1)\] - 2023-12-06  

@@ -2,7 +2,6 @@ import { BlockBase, BlockHeaderBase, BlockTipBase } from "../base-objects/BlockB
 import { FullBlockBase } from "../base-objects/FullBlockBase";
 import { TransactionBase } from "../base-objects/TransactionBase";
 import { optional } from "../utils/typeReflection";
-import { RateLimitOptions } from "./axiosRateLimitTypes";
 import { IIGetBlockRes, IIGetTransactionRes, MccLoggingOptions, RPCInterface } from "./genericMccTypes";
 
 export class UtxoMccCreate {
@@ -11,7 +10,6 @@ export class UtxoMccCreate {
     password: string = "";
     @optional() apiTokenKey?: string = "";
     @optional() inRegTest?: boolean;
-    @optional() rateLimitOptions? = new RateLimitOptions();
     @optional() loggingOptions? = new MccLoggingOptions();
 }
 
