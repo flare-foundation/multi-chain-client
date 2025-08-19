@@ -37,7 +37,8 @@ export class XrpBlock extends BlockBase {
     public get transactionIds(): string[] {
         if (!this.data.result.ledger.transactions) return [];
         if (this.data.result.ledger.transactions.length === 0) return [];
-        if (typeof this.data.result.ledger.transactions[0] === "string") return this.data.result.ledger.transactions as string[];
+        if (typeof this.data.result.ledger.transactions[0] === "string")
+            return this.data.result.ledger.transactions as string[];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return this.data.result.ledger.transactions.map((tx: any) => tx.hash);
     }

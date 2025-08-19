@@ -95,9 +95,15 @@ export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
     isFull: boolean;
 }
 
-export type BalanceDecreasingSummaryResponse = TransactionSummaryBase<BalanceDecreasingSummaryStatus, BalanceDecreasingSummaryObject>;
+export type BalanceDecreasingSummaryResponse = TransactionSummaryBase<
+    BalanceDecreasingSummaryStatus,
+    BalanceDecreasingSummaryObject
+>;
 export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus, PaymentSummaryObject>;
-export type PaymentNonexistenceSummaryResponse = TransactionSummaryBase<PaymentNonexistenceSummaryStatus, PaymentNonexistenceSummaryObject>;
+export type PaymentNonexistenceSummaryResponse = TransactionSummaryBase<
+    PaymentNonexistenceSummaryStatus,
+    PaymentNonexistenceSummaryObject
+>;
 export abstract class TransactionBase<T> {
     protected privateData: T;
 

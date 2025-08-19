@@ -153,7 +153,9 @@ export interface IUtxoInBlockTransactionGen<T> extends IIGetTransactionRes {
     hex?: string;
 }
 
-export type IUtxoInBlockTransaction = IUtxoInBlockTransactionGen<IUtxoVinTransactionPrevout> | IUtxoInBlockTransactionGen<IUtxoVinTransactionCoinbase>;
+export type IUtxoInBlockTransaction =
+    | IUtxoInBlockTransactionGen<IUtxoVinTransactionPrevout>
+    | IUtxoInBlockTransactionGen<IUtxoVinTransactionCoinbase>;
 
 export function isCoinbase(tx: IUtxoInBlockTransaction): tx is IUtxoInBlockTransactionGen<IUtxoVinTransactionCoinbase> {
     return (
@@ -187,7 +189,9 @@ export interface IUtxoGetTransactionResGen<T> extends IIGetTransactionRes {
     mediantime: number;
 }
 
-export type IUtxoGetTransactionRes = IUtxoGetTransactionResGen<IUtxoVinTransactionPrevout> | IUtxoGetTransactionResGen<IUtxoVinTransactionCoinbase>;
+export type IUtxoGetTransactionRes =
+    | IUtxoGetTransactionResGen<IUtxoVinTransactionPrevout>
+    | IUtxoGetTransactionResGen<IUtxoVinTransactionCoinbase>;
 
 export interface IUtxoGetAlternativeBlocksOptions {
     height_gte?: number; // We only want tips / blocks that happened after specified height

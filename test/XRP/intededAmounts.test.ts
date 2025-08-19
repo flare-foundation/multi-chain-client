@@ -18,7 +18,9 @@ describe("Xrp bottom block ", function () {
 
     before(async function () {
         MccClient = new MCC.XRP(XRPMccConnection);
-        transaction = await MccClient.getTransaction("B918C0796F0C31CD0B201A775C47FDFC479C1CAF48AC152BA9264062034BFBD5");
+        transaction = await MccClient.getTransaction(
+            "B918C0796F0C31CD0B201A775C47FDFC479C1CAF48AC152BA9264062034BFBD5"
+        );
     });
 
     it("Should get intended spend amounts", async function () {

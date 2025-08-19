@@ -7,11 +7,17 @@ export async function checkTransactionTypes(): Promise<boolean> {
     // Iterate over all files in folder that end with .d.ts
     const transactionTypes = [];
     // check if folder exists
-    if (!fs.existsSync(path.join(__dirname, "..", "..", "node_modules", "xrpl", "dist", "npm", "models", "transactions"))) {
+    if (
+        !fs.existsSync(
+            path.join(__dirname, "..", "..", "node_modules", "xrpl", "dist", "npm", "models", "transactions")
+        )
+    ) {
         console.log("Transactions folder does not exist");
         return false;
     }
-    const files = fs.readdirSync(path.join(__dirname, "..", "..", "node_modules", "xrpl", "dist", "npm", "models", "transactions"));
+    const files = fs.readdirSync(
+        path.join(__dirname, "..", "..", "node_modules", "xrpl", "dist", "npm", "models", "transactions")
+    );
     for (const file of files) {
         if (file.endsWith(".d.ts")) {
             // Open file and read contents and parse line that contains "TransactionType"
@@ -51,7 +57,9 @@ export async function checkTransactionTypes(): Promise<boolean> {
     //  console.log("Transaction Types: ", transactionTypes);
 
     // open and read src/types/xrpTypes.ts and parse out the union type called XrpTransactionTypeUnion
-    const xrpTypesFileContents = fs.readFileSync(path.join(__dirname, "..", "..", "src", "types", "xrpTypes.ts"), "utf8").replace(/(\r\n|\n|\r)/gm, "");
+    const xrpTypesFileContents = fs
+        .readFileSync(path.join(__dirname, "..", "..", "src", "types", "xrpTypes.ts"), "utf8")
+        .replace(/(\r\n|\n|\r)/gm, "");
     const xrpTransactionTypeUnionMatch = xrpTypesFileContents.match(/XrpTransactionTypeUnion =([^;]*);/);
     if (!xrpTransactionTypeUnionMatch || !xrpTransactionTypeUnionMatch[1]) {
         console.log("XrpTransactionTypeUnion Match not found");

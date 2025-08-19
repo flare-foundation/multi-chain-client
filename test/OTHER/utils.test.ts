@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import chai, { expect } from "chai";
 import {
     defaultExceptionCallback,
     defaultLoggingCallback,

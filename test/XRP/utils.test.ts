@@ -1,4 +1,10 @@
-import { MCC, bytesToRippleAddress, rippleAddressToBytes, rippleTimeToUnixEpoch, unixEpochToRippleTime } from "../../src";
+import {
+    MCC,
+    bytesToRippleAddress,
+    rippleAddressToBytes,
+    rippleTimeToUnixEpoch,
+    unixEpochToRippleTime,
+} from "../../src";
 import { assert, expect } from "chai";
 import { GETTERS_AMOUNTS, GETTERS_BASIC, GETTERS_BN, GETTERS_LISTS } from "../testUtils";
 import { checkTransactionTypes } from "./xrplJsTransactionTypesCheck";

@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import chai, { expect } from "chai";
 import sinon from "sinon";
 import { MCC, SpecialAddresses, retry } from "../../src";
 import { mccSettings } from "../../src/global-settings/globalSettings";

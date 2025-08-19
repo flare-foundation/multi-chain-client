@@ -1,5 +1,13 @@
-import { expect } from "chai";
-import { BtcTransaction, MCC, PaymentSummaryStatus, standardAddressHash, TransactionSuccessStatus, UtxoMccCreate, ZERO_BYTES_32 } from "../../src";
+import chai, { expect } from "chai";
+import {
+    BtcTransaction,
+    MCC,
+    PaymentSummaryStatus,
+    standardAddressHash,
+    TransactionSuccessStatus,
+    UtxoMccCreate,
+    ZERO_BYTES_32,
+} from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
 import chaiAsPromised from "chai-as-promised";
 
@@ -52,7 +60,9 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         });
 
         it("Should get standardized transaction reference ", function () {
-            expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(transaction.stdPaymentReference).to.eq(
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
         });
 
         it("Should get transaction timestamp ", function () {
@@ -61,9 +71,15 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
 
         it("Should get source address ", function () {
             expect(transaction.sourceAddresses.length).to.eq(3);
-            expect(transaction.sourceAddresses[0]).to.eq("bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk");
-            expect(transaction.sourceAddresses[1]).to.eq("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw");
-            expect(transaction.sourceAddresses[2]).to.eq("bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw");
+            expect(transaction.sourceAddresses[0]).to.eq(
+                "bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk"
+            );
+            expect(transaction.sourceAddresses[1]).to.eq(
+                "bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw"
+            );
+            expect(transaction.sourceAddresses[2]).to.eq(
+                "bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw"
+            );
         });
 
         it("Should get receiving address ", function () {
@@ -77,19 +93,25 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
 
         it("Should spend amount 0", function () {
             expect(transaction.spentAmounts.length).to.eq(3);
-            expect(transaction.spentAmounts[0].address).to.eq("bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk");
+            expect(transaction.spentAmounts[0].address).to.eq(
+                "bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk"
+            );
             expect(transaction.spentAmounts[0].amount).to.eq(BigInt(7424891554));
         });
 
         it("Should spend amount 1", function () {
             expect(transaction.spentAmounts.length).to.eq(3);
-            expect(transaction.spentAmounts[1].address).to.eq("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw");
+            expect(transaction.spentAmounts[1].address).to.eq(
+                "bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw"
+            );
             expect(transaction.spentAmounts[1].amount).to.eq(BigInt(7424900255));
         });
 
         it("Should spend amount 2", function () {
             expect(transaction.spentAmounts.length).to.eq(3);
-            expect(transaction.spentAmounts[2].address).to.eq("bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw");
+            expect(transaction.spentAmounts[2].address).to.eq(
+                "bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw"
+            );
             expect(transaction.spentAmounts[2].amount).to.eq(BigInt(7426316499));
         });
 
@@ -97,9 +119,13 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             expect(transaction.receivedAmounts.length).to.eq(6);
             expect(transaction.receivedAmounts[0].address).to.eq("19Vxz7mg6YSgQhVB96YvXFsES1e8aXewHp");
             expect(transaction.receivedAmounts[0].amount).to.eq(BigInt(237272503));
-            expect(transaction.receivedAmounts[3].address).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
+            expect(transaction.receivedAmounts[3].address).to.eq(
+                "bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97"
+            );
             expect(transaction.receivedAmounts[3].amount).to.eq(BigInt(7299851943));
-            expect(transaction.receivedAmounts[4].address).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
+            expect(transaction.receivedAmounts[4].address).to.eq(
+                "bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97"
+            );
             expect(transaction.receivedAmounts[4].amount).to.eq(BigInt(7299851943));
         });
 
@@ -132,14 +158,18 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
             expect(resp.oneToOne).to.be.false;
 
             expect(resp.receivingAddress).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
-            expect(resp.intendedReceivingAddress).to.eq("bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97");
+            expect(resp.intendedReceivingAddress).to.eq(
+                "bc1qe6mf8plmea4u6nun90qnw5gq6g3yp3sdr6gjkwt2jehuksr4vq3s8ykz97"
+            );
 
             expect(resp.receivedAmount).to.eq(BigInt(2 * 7299851943));
             expect(resp.intendedReceivingAmount).to.eq(BigInt(2 * 7299851943));
         });
 
         it("Should make balance decreasing summary for acc at vin 1", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("bc1q6l2lz73tt4rzgaa08f6lyjrr67qkeynyqhn6hc66dncgh8c885fskxfkqw")
+            );
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
 
@@ -152,7 +182,9 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         });
 
         it("Should make balance decreasing summary for acc at vin 0", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("bc1q38lr3a45xtlz8032sz8xwc72gs652wfcq046pzxtxx6c70nvpessnc8dyk")
+            );
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
 
@@ -165,7 +197,9 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         });
 
         it("Should make balance decreasing summary for acc at vin 2", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("bc1q3952vvsc27n6sg57t85vwapjy0t6vr6ugru7fkqu5ae46c6xyc9q7r5scw")
+            );
 
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
 
@@ -256,7 +290,10 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                     "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
                 ],
                 sourceAddressesRoot: "0xdc96221dab4472356b548379f5babde3efee164827c45f19012cc268a3939c9f",
-                receivingAddresses: ["bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc", "14PbdXD3gRMnrrsP4CnS66fYKHSb1aawea"],
+                receivingAddresses: [
+                    "bc1q7ydxwryw7u6xkkzhlddugv8hyzsd6u6c8zr7rc",
+                    "14PbdXD3gRMnrrsP4CnS66fYKHSb1aawea",
+                ],
                 isFeeError: false,
                 fee: "828", // number as a string
                 spentAmounts: [
@@ -479,13 +516,19 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
                         expect(summary.response.oneToOne).to.eq(transData.summary.response.oneToOne);
                         expect(summary.response.toOne).to.eq(transData.summary.response.toOne);
                         expect(summary.response.paymentReference).to.eq(transData.summary.response.paymentReference);
-                        expect(summary.response.receivedAmount.toString()).to.eq(transData.summary.response.receivedAmount.toString());
+                        expect(summary.response.receivedAmount.toString()).to.eq(
+                            transData.summary.response.receivedAmount.toString()
+                        );
                         expect(summary.response.receivingAddress).to.eq(transData.summary.response.receivingAddress);
-                        expect(summary.response.spentAmount.toString()).to.eq(transData.summary.response.spentAmount.toString());
+                        expect(summary.response.spentAmount.toString()).to.eq(
+                            transData.summary.response.spentAmount.toString()
+                        );
                         expect(summary.response.sourceAddress).to.eq(transData.summary.response.sourceAddress);
                         expect(summary.response.transactionHash).to.eq(transData.summary.response.transactionHash);
                         expect(summary.response.sourceAddressHash).to.eq(transData.summary.response.sourceAddressHash);
-                        expect(summary.response.receivingAddressHash).to.eq(transData.summary.response.receivingAddressHash);
+                        expect(summary.response.receivingAddressHash).to.eq(
+                            transData.summary.response.receivingAddressHash
+                        );
                         expect(summary.response.transactionStatus).to.eq(transData.summary.response.transactionStatus);
                     }
                 }
@@ -581,7 +624,9 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
         });
 
         it("Should get same sourceAddressesRoot as UTXO Indexer 1", function () {
-            expect(tx_cb.sourceAddressesRoot).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(tx_cb.sourceAddressesRoot).to.eq(
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
         });
 
         it("Should get same sourceAddressesRoot as UTXO Indexer 2", function () {

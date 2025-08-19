@@ -1,7 +1,15 @@
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 import { IUtxoGetTransactionRes, IUtxoVoutTransaction, hasPrevouts, isCoinbase } from "../../types/utxoTypes";
 import { mccError, mccErrorCode } from "../../utils/errors";
-import { MccError, ZERO_BYTES_32, isValidBytes32Hex, prefix0x, standardAddressHash, toHex, unPrefix0x } from "../../utils/utils";
+import {
+    MccError,
+    ZERO_BYTES_32,
+    isValidBytes32Hex,
+    prefix0x,
+    standardAddressHash,
+    toHex,
+    unPrefix0x,
+} from "../../utils/utils";
 import { WordToOpcode } from "../../utils/utxoUtils";
 import {
     AddressAmount,
@@ -235,7 +243,10 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             receivingAddress = receiveAmount.address;
         } else {
             for (const voutAmount of this.receivedAmounts) {
-                if (voutAmount.address && unPrefix0x(standardAddressHash(voutAmount.address)) === outUtxo.toString(16)) {
+                if (
+                    voutAmount.address &&
+                    unPrefix0x(standardAddressHash(voutAmount.address)) === outUtxo.toString(16)
+                ) {
                     receivingAddress = voutAmount.address;
                     break;
                 }
@@ -277,7 +288,12 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
             if (oneToOne && !voutAmount.address && voutAmount.amount >= BigInt(0)) {
                 oneToOne = false;
             }
-            if (oneToOne && voutAmount.address && voutAmount.address !== sourceAddress && voutAmount.address !== receivingAddress) {
+            if (
+                oneToOne &&
+                voutAmount.address &&
+                voutAmount.address !== sourceAddress &&
+                voutAmount.address !== receivingAddress
+            ) {
                 oneToOne = false;
             }
         }
@@ -323,7 +339,8 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                 for (const vinAmount of this.spentAmounts) {
                     if (
                         vinAmount.address &&
-                        unPrefix0x(standardAddressHash(vinAmount.address)).toLowerCase() === unPrefix0x(sourceAddressIndicator).toLowerCase()
+                        unPrefix0x(standardAddressHash(vinAmount.address)).toLowerCase() ===
+                            unPrefix0x(sourceAddressIndicator).toLowerCase()
                     ) {
                         foundAddress = vinAmount.address;
                         inFunds = inFunds + vinAmount.amount;
@@ -332,7 +349,8 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
                 for (const voutAmount of this.receivedAmounts) {
                     if (
                         voutAmount.address &&
-                        unPrefix0x(standardAddressHash(voutAmount.address)).toLowerCase() === unPrefix0x(sourceAddressIndicator).toLowerCase()
+                        unPrefix0x(standardAddressHash(voutAmount.address)).toLowerCase() ===
+                            unPrefix0x(sourceAddressIndicator).toLowerCase()
                     ) {
                         returnFunds = returnFunds + voutAmount.amount;
                     }

@@ -1,5 +1,12 @@
 import { expect } from "chai";
-import { BtcBlockTip, MCC, UtxoMccCreate, utxo_check_expect_block_out_of_range, utxo_check_expect_empty, utxo_ensure_data } from "../../src";
+import {
+    BtcBlockTip,
+    MCC,
+    UtxoMccCreate,
+    utxo_check_expect_block_out_of_range,
+    utxo_check_expect_empty,
+    utxo_ensure_data,
+} from "../../src";
 
 describe("UTXO utils tests ", function () {
     let mccClient: MCC.BTC;
@@ -26,7 +33,10 @@ describe("UTXO utils tests ", function () {
     });
 
     it("should return empty array if hash is empty 2", async () => {
-        const res = await mccClient.recursive_block_tip(new BtcBlockTip({ hash: "", height: 0, branchlen: 0, status: "active" }), 1);
+        const res = await mccClient.recursive_block_tip(
+            new BtcBlockTip({ hash: "", height: 0, branchlen: 0, status: "active" }),
+            1
+        );
         expect(res.length).to.be.equal(0);
     });
 

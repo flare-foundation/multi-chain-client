@@ -1,5 +1,11 @@
 import { expect } from "chai";
-import { BtcTransaction, MCC, PaymentNonexistenceSummaryStatus, TransactionSuccessStatus, UtxoMccCreate } from "../../src";
+import {
+    BtcTransaction,
+    MCC,
+    PaymentNonexistenceSummaryStatus,
+    TransactionSuccessStatus,
+    UtxoMccCreate,
+} from "../../src";
 import { getTestFile } from "../testUtils";
 import exp from "constants";
 

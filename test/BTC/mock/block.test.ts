@@ -1,5 +1,5 @@
 /* This is a mock tests, that requires no underlying chain connectivity */
-import { expect } from "chai";
+import chai, { expect } from "chai";
 import { BtcBlock, MCC, UtxoMccCreate } from "../../../src";
 
 import MockAdapter from "axios-mock-adapter";

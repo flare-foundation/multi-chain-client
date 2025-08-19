@@ -19,7 +19,9 @@ describe(`CheckCash type (${getTestFile(__filename)})`, function () {
     describe("CheckCash happy path", function () {
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await MccClient.getTransaction("67B71B13601CDA5402920691841AC27A156463678E106FABD45357175F9FF406");
+            transaction = await MccClient.getTransaction(
+                "67B71B13601CDA5402920691841AC27A156463678E106FABD45357175F9FF406"
+            );
         });
 
         it("should correctly parse sourceAddresses", async function () {
@@ -44,7 +46,9 @@ describe(`CheckCash type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get balanceDecreasingSummary", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("rw57FJjcRdZ6r3qgwxMNGCD8EJtVkjw1Am")
+            );
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("12");
         });

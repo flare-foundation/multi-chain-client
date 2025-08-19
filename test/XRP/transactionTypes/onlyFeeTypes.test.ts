@@ -19,7 +19,9 @@ describe(`Type where no xrp or assets are transferred, ${getTestFile(__filename)
     describe("AccountSet", function () {
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await retry("", () => MccClient.getTransaction("327FD263132A4D08170E1B01FE1BB2E21D0126CE58165C97A9173CA9551BCD70"));
+            transaction = await retry("", () =>
+                MccClient.getTransaction("327FD263132A4D08170E1B01FE1BB2E21D0126CE58165C97A9173CA9551BCD70")
+            );
         });
 
         it("should correctly parse sourceAddresses", async function () {
@@ -61,7 +63,9 @@ describe(`Type where no xrp or assets are transferred, ${getTestFile(__filename)
         // TODO: Find example where account delete transfers both native XRP and an issued token (Asset)
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await MccClient.getTransaction("D3328000315C6DCEC1426E4E549288E3672752385D86A40D56856DBD10382953");
+            transaction = await MccClient.getTransaction(
+                "D3328000315C6DCEC1426E4E549288E3672752385D86A40D56856DBD10382953"
+            );
         });
 
         it("should correctly parse sourceAddresses", async function () {
@@ -86,7 +90,9 @@ describe(`Type where no xrp or assets are transferred, ${getTestFile(__filename)
         // TODO: Find example where account delete transfers both native XRP and an issued token (Asset)
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await MccClient.getTransaction("4E0AA11CBDD1760DE95B68DF2ABBE75C9698CEB548BEA9789053FCB3EBD444FB");
+            transaction = await MccClient.getTransaction(
+                "4E0AA11CBDD1760DE95B68DF2ABBE75C9698CEB548BEA9789053FCB3EBD444FB"
+            );
         });
 
         it("should correctly parse sourceAddresses", async function () {

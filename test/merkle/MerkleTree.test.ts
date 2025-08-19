@@ -1,10 +1,16 @@
 import { assert, expect } from "chai";
 import { ethers } from "ethers";
 import { ZERO_BYTES_32 } from "../../src";
-import { commitHash, MerkleTree, merkleTreeFromAddressStrings, verifyWithMerkleProof } from "../../src/merkle/MerkleTree";
+import {
+    commitHash,
+    MerkleTree,
+    merkleTreeFromAddressStrings,
+    verifyWithMerkleProof,
+} from "../../src/merkle/MerkleTree";
 
 describe(`Merkle Tree`, () => {
-    const makeHashes = (i: number, shiftSeed = 0) => new Array(i).fill(0).map((x, i) => ethers.keccak256(ethers.toBeHex(shiftSeed + i)));
+    const makeHashes = (i: number, shiftSeed = 0) =>
+        new Array(i).fill(0).map((x, i) => ethers.keccak256(ethers.toBeHex(shiftSeed + i)));
 
     describe("General functionalities", () => {
         it("Should be able to create empty tree form empty array", () => {

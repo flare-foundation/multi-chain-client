@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import chai, { expect } from "chai";
 import { MCC, XrpBlock } from "../../src";
 import { getTestFile } from "../testUtils";
 import chaiAsPromised from "chai-as-promised";

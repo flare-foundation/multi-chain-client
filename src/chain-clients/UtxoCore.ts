@@ -50,7 +50,10 @@ export abstract class UtxoCore<
     constructors: objectConstructors<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>;
     chainType: ChainType;
 
-    constructor(createConfig: UtxoMccCreate, constructors: objectConstructors<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>) {
+    constructor(
+        createConfig: UtxoMccCreate,
+        constructors: objectConstructors<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>
+    ) {
         this.client = axios.create({
             baseURL: createConfig.url,
             timeout: DEFAULT_TIMEOUT,
@@ -410,13 +413,15 @@ export abstract class UtxoCore<
                         height: UtxoTip.height - hashIndex,
                         branchlen: UtxoTip.branchlen,
                         status: UtxoTip.status,
-                    }),
+                    })
                 );
             }
             return tempTips;
         });
         // filter out duplicates
-        const reducedTips = allTips.reduce((acc: BTipCon[], nev: BTipCon[]) => acc.concat(nev), []).concat(mainBranchHashes as unknown as BTipCon[]);
+        const reducedTips = allTips
+            .reduce((acc: BTipCon[], nev: BTipCon[]) => acc.concat(nev), [])
+            .concat(mainBranchHashes as unknown as BTipCon[]);
         const unique = new Set();
         return reducedTips.filter((elem: BTipCon) => {
             const key = `${elem.number}_${elem.blockHash}`;
@@ -470,7 +475,7 @@ export abstract class UtxoCore<
                         branchlen: tip.branchLen,
                         status: tip.chainTipStatus,
                     }),
-                    processHeight - 1,
+                    processHeight - 1
                 )
             ).concat([tempTip]);
         }

@@ -1,5 +1,12 @@
 import { expect } from "chai";
-import { BalanceDecreasingSummaryStatus, MCC, UtxoMccCreate, ZERO_BYTES_32, standardAddressHash, toHex32Bytes } from "../../src";
+import {
+    BalanceDecreasingSummaryStatus,
+    MCC,
+    UtxoMccCreate,
+    ZERO_BYTES_32,
+    standardAddressHash,
+    toHex32Bytes,
+} from "../../src";
 import { getTestFile } from "../testUtils";
 
 const BtcMccConnection = {
@@ -16,7 +23,9 @@ describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function
     });
 
     it("Should not create summary for coinbase", async function () {
-        const transaction = await MccClient.getTransaction("8cd014efa1265fe23983083220c3793968ca5bcd89d7c4c2561e171fa52e5fa0");
+        const transaction = await MccClient.getTransaction(
+            "8cd014efa1265fe23983083220c3793968ca5bcd89d7c4c2561e171fa52e5fa0"
+        );
 
         const dec = transaction.balanceDecreasingSummary(toHex32Bytes(0));
 
@@ -30,7 +39,9 @@ describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function
     });
 
     it("Should detect balance decreasing for 8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684", async function () {
-        const transaction = await MccClient.getTransaction("8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684");
+        const transaction = await MccClient.getTransaction(
+            "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684"
+        );
         const dec = transaction.balanceDecreasingSummary(standardAddressHash("1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg"));
         // console.dir(dec, { depth: null });
         expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.Success);
@@ -47,7 +58,9 @@ describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function
     });
 
     it("Should detect balance decreasing for 5e245d1c690b9a5686414b3c486500c6bd1ddbc6a37eb70be2cf81639b39c1d4", async function () {
-        const transaction = await MccClient.getTransaction("5e245d1c690b9a5686414b3c486500c6bd1ddbc6a37eb70be2cf81639b39c1d4");
+        const transaction = await MccClient.getTransaction(
+            "5e245d1c690b9a5686414b3c486500c6bd1ddbc6a37eb70be2cf81639b39c1d4"
+        );
         const dec = transaction.balanceDecreasingSummary(standardAddressHash("1Lm4XEmHNsNCeKdPS7bc4RGHdAAtBjBjtF"));
         // console.dir(dec, { depth: null });
         expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.Success);
@@ -64,8 +77,12 @@ describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function
     });
 
     it("Should detect balance decreasing for 64238c5599bf0bda690db001172a9e142e8b2b9a542e747570c191788a585d1e", async function () {
-        const transaction = await MccClient.getTransaction("64238c5599bf0bda690db001172a9e142e8b2b9a542e747570c191788a585d1e");
-        const dec = transaction.balanceDecreasingSummary(standardAddressHash("bc1q32sxnq5hecdurfzgzp5x0zh8du86v9x84wdqdx"));
+        const transaction = await MccClient.getTransaction(
+            "64238c5599bf0bda690db001172a9e142e8b2b9a542e747570c191788a585d1e"
+        );
+        const dec = transaction.balanceDecreasingSummary(
+            standardAddressHash("bc1q32sxnq5hecdurfzgzp5x0zh8du86v9x84wdqdx")
+        );
         // console.dir(dec, { depth: null });
         expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.Success);
         if (dec.response) {
@@ -81,13 +98,17 @@ describe(`Balance decrease test for BTC, (${getTestFile(__filename)})`, function
     });
 
     it("Should detect balance decreasing for 2765f45b93095878a5b48f6726b13d622a7f6135aafdc34e88d05865cd60e68c", async function () {
-        const transaction = await MccClient.getTransaction("2765f45b93095878a5b48f6726b13d622a7f6135aafdc34e88d05865cd60e68c");
+        const transaction = await MccClient.getTransaction(
+            "2765f45b93095878a5b48f6726b13d622a7f6135aafdc34e88d05865cd60e68c"
+        );
         const dec = transaction.balanceDecreasingSummary(standardAddressHash("3KmebwJQM1QP48oHcUVKgCzc46wbhizSnN"));
         expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.NoSourceAddress);
     });
 
     it("Should detect balance decreasing for 2765f45b93095878a5b48f6726b13d622a7f6135aafdc34e88d05865cd60e68c", async function () {
-        const transaction = await MccClient.getTransaction("2765f45b93095878a5b48f6726b13d622a7f6135aafdc34e88d05865cd60e68c");
+        const transaction = await MccClient.getTransaction(
+            "2765f45b93095878a5b48f6726b13d622a7f6135aafdc34e88d05865cd60e68c"
+        );
         const dec = transaction.balanceDecreasingSummary("0x");
         expect(dec.status).to.eq(BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat);
     });

@@ -47,7 +47,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get standardized transaction reference ", function () {
-            expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(transaction.stdPaymentReference).to.eq(
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
         });
 
         it("Should get transaction timestamp ", function () {
@@ -136,7 +138,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get standardized transaction reference ", async function () {
-            expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(transaction.stdPaymentReference).to.eq(
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
         });
 
         it("Should get transaction timestamp ", async function () {
@@ -223,7 +227,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get standardized transaction reference ", function () {
-            expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(transaction.stdPaymentReference).to.eq(
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
         });
 
         it("Should get transaction timestamp ", function () {
@@ -284,7 +290,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(summary.response!.receivingAddress).to.eq("rpE6gE8jEN1trDwQwe47VmgDL5y6m3XX2n");
             expect(summary.response!.spentAmount).to.eq(BigInt(342390045));
             expect(summary.response!.receivedAmount).to.eq(BigInt(342390000));
-            expect(summary.response!.paymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(summary.response!.paymentReference).to.eq(
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
             expect(summary.response!.oneToOne).to.eq(true);
         });
     });
@@ -318,7 +326,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should get standardized transaction reference ", function () {
-            expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(transaction.stdPaymentReference).to.eq(
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
         });
 
         it("Should get transaction timestamp ", function () {
@@ -403,7 +413,8 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(transaction2.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
             expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
 
-            const metaData: TransactionMetadata = transaction3._data.result.meta || (transaction3._data.result as any).metaData;
+            const metaData: TransactionMetadata =
+                transaction3._data.result.meta || (transaction3._data.result as any).metaData;
             metaData.TransactionResult = "tecDST_TAG_NEEDED";
             expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);
             metaData.TransactionResult = "tecNO_DST";
@@ -439,7 +450,9 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
         it("References ", () => {
             transaction._data.result.Memos![0] = { Memo: { MemoType: "string" } };
-            expect(transaction.stdPaymentReference).to.eq("0x0000000000000000000000000000000000000000000000000000000000000000");
+            expect(transaction.stdPaymentReference).to.eq(
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
             transaction._data.result.Memos![0] = { Memo: { MemoData: txid } };
             expect(transaction.stdPaymentReference).to.eq("0x" + txid);
@@ -448,7 +461,8 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
 
     describe("Transaction not found ", function () {
         it("Should not found", async () => {
-            await expect(MccClient.getTransaction("93D194C45CC60B2C17B8747BA50F1C028B637CFD9C5813918DBA73D2C21C2F20")).to.be.rejected;
+            await expect(MccClient.getTransaction("93D194C45CC60B2C17B8747BA50F1C028B637CFD9C5813918DBA73D2C21C2F20"))
+                .to.be.rejected;
         });
     });
 
@@ -468,17 +482,23 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         it("Should get same sourceAddressesRoot for xrp transaction as xrp indexer (test 1)", async function () {
             const tx_id = "1f572e746a69edde0c134824491567cc438cfb18a40aa0fd321e8143e70e9064";
             transaction = await MccClient.getTransaction(tx_id);
-            expect(transaction.sourceAddressesRoot).to.eq("0x674fa9a46079864ce1744486bd1a7069794c8aade76b2d0424c4e716fba4f4ef");
+            expect(transaction.sourceAddressesRoot).to.eq(
+                "0x674fa9a46079864ce1744486bd1a7069794c8aade76b2d0424c4e716fba4f4ef"
+            );
         });
         it("Should get same sourceAddressesRoot for xrp transaction as xrp indexer (test 2)", async function () {
             const tx_id = "53040eb07116518d9866e3e6de504aa718f162b19a441e80c5045f68492b385b";
             transaction = await MccClient.getTransaction(tx_id);
-            expect(transaction.sourceAddressesRoot).to.eq("0x7c7efcd5e28a5f7b9b5ade3dd16008deaae30e3588d854be8e0dff1cad3c5aa0");
+            expect(transaction.sourceAddressesRoot).to.eq(
+                "0x7c7efcd5e28a5f7b9b5ade3dd16008deaae30e3588d854be8e0dff1cad3c5aa0"
+            );
         });
         it("Should get same sourceAddressesRoot for xrp transaction as xrp indexer (test 3)", async function () {
             const tx_id = "6a460d8c7919608c1d10883c6d9ad9d48c9e82b7058969039d94f42c7cfe49bf";
             transaction = await MccClient.getTransaction(tx_id);
-            expect(transaction.sourceAddressesRoot).to.eq("0xcdbdabb5f4dbb023c42a28a0c63ec021e55727f4e9b67f94b8ce06de5c35083f");
+            expect(transaction.sourceAddressesRoot).to.eq(
+                "0xcdbdabb5f4dbb023c42a28a0c63ec021e55727f4e9b67f94b8ce06de5c35083f"
+            );
         });
     });
 });

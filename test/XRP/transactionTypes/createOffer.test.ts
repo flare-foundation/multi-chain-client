@@ -21,7 +21,9 @@ describe(`createOffer type (${getTestFile(__filename)})`, function () {
     describe("Offer not accepted at the time", function () {
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await MccClient.getTransaction("0CD69FD1F0A890CC57CDA430213FD294F7D65FF4A0F379A0D09D07A222D324E6");
+            transaction = await MccClient.getTransaction(
+                "0CD69FD1F0A890CC57CDA430213FD294F7D65FF4A0F379A0D09D07A222D324E6"
+            );
         });
         const sourceAddress = "rJkg989h7fPaJLm9CEyAsdvwgZYtKs2zzz";
 
@@ -44,7 +46,9 @@ describe(`createOffer type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get balanceDecreasingSummary", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rJkg989h7fPaJLm9CEyAsdvwgZYtKs2zzz"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("rJkg989h7fPaJLm9CEyAsdvwgZYtKs2zzz")
+            );
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("12");
         });

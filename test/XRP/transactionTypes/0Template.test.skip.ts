@@ -19,7 +19,9 @@ describe.skip("<Type name> type", function () {
     describe("<Type name> happy path", function () {
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await MccClient.getTransaction("1AF19BF9717DA0B05A3BFC5007873E7743BA54C0311CCCCC60776AAEAC5C4635");
+            transaction = await MccClient.getTransaction(
+                "1AF19BF9717DA0B05A3BFC5007873E7743BA54C0311CCCCC60776AAEAC5C4635"
+            );
         });
 
         it("should correctly parse sourceAddresses", function () {

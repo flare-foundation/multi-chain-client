@@ -3,7 +3,13 @@ import { UtxoMccCreate, UtxoRpcInterface } from "../types";
 import { ChainType } from "../types/genericMccTypes";
 import { UtxoCore, objectConstructors } from "./UtxoCore";
 
-export const btcObjectConstructors: objectConstructors<BtcBlockTip, BtcBlockHeader, BtcBlock, BtcFullBlock, BtcTransaction> = {
+export const btcObjectConstructors: objectConstructors<
+    BtcBlockTip,
+    BtcBlockHeader,
+    BtcBlock,
+    BtcFullBlock,
+    BtcTransaction
+> = {
     transactionConstructor: BtcTransaction,
     fullBlockConstructor: BtcFullBlock,
     blockConstructor: BtcBlock,

@@ -24,7 +24,11 @@ export function xrp_ensure_data(data: any) {
         throw MccError(data);
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (data.result.status === "success" && data.result.ledger && (data.result.ledger.closed === false || data.result.validated === false)) {
+    if (
+        data.result.status === "success" &&
+        data.result.ledger &&
+        (data.result.ledger.closed === false || data.result.validated === false)
+    ) {
         throw new mccError(mccErrorCode.InvalidBlock); //the ledger is proposed but not closed yet
     }
 }

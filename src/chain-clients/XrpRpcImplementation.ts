@@ -13,7 +13,9 @@ import { xrp_ensure_data } from "../utils/xrpUtils";
 
 const DEFAULT_TIMEOUT = 15000;
 
-export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHeaderBase, XrpBlock, XrpFullBlock, XrpTransaction> {
+export class XRPImplementation
+    implements ReadRpcInterface<BlockTipBase, BlockHeaderBase, XrpBlock, XrpFullBlock, XrpTransaction>
+{
     client: AxiosInstance;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     inRegTest: any;
@@ -35,7 +37,7 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
             };
         }
         const client = axios.create(createAxiosConfig);
-        this.client = client
+        this.client = client;
         this.inRegTest = createConfig.inRegTest || false;
         this.chainType = ChainType.XRP;
     }
@@ -80,7 +82,9 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
         xrp_ensure_data(res.data);
         try {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-            const startBlocks = res.data.result.state.complete_ledgers.split(",").map((range: string) => Number(range.split("-")[0]));
+            const startBlocks = res.data.result.state.complete_ledgers
+                .split(",")
+                .map((range: string) => Number(range.split("-")[0]));
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             return startBlocks.sort((a: number, b: number) => b - a)[0];
@@ -233,7 +237,11 @@ export class XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHe
         return res.data;
     }
 
-    async getAccountTransactions(account: string, lowerBound: number = -1, upperBound: number = -1): Promise<AccountTxResponse> {
+    async getAccountTransactions(
+        account: string,
+        lowerBound: number = -1,
+        upperBound: number = -1
+    ): Promise<AccountTxResponse> {
         const params = {
             account: account,
         } as IAccountTxRequest;

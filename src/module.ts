@@ -20,7 +20,10 @@ export module MCC {
         }
     }
 
-    export class XRP extends XRPImplementation implements ReadRpcInterface<BlockTipBase, BlockHeaderBase, XrpBlock, XrpFullBlock, XrpTransaction> {
+    export class XRP
+        extends XRPImplementation
+        implements ReadRpcInterface<BlockTipBase, BlockHeaderBase, XrpBlock, XrpFullBlock, XrpTransaction>
+    {
         constructor(options: XrpMccCreate) {
             super(options);
         }

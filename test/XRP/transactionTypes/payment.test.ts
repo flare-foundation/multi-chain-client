@@ -29,7 +29,9 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
     describe("Payment Transaction Token", function () {
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await MccClient.getTransaction("7BF105CFE4EFE78ADB63FE4E03A851440551FE189FD4B51CAAD9279C9F534F0E");
+            transaction = await MccClient.getTransaction(
+                "7BF105CFE4EFE78ADB63FE4E03A851440551FE189FD4B51CAAD9279C9F534F0E"
+            );
         });
 
         it("should correctly parse sourceAddresses", function () {
@@ -67,13 +69,17 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get balanceDecreasingSummary #1", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn")
+            );
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("10");
         });
 
         it("should not  get balanceDecreasingSummary #2", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jrn"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jrn")
+            );
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.NoSourceAddress);
         });
 
@@ -102,7 +108,9 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
     describe("Payment Founding address example", function () {
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await MccClient.getTransaction("0E8C600BB375A62708E662F6B7D1F096CA364793F655A8DBB358F8D723A59AB7");
+            transaction = await MccClient.getTransaction(
+                "0E8C600BB375A62708E662F6B7D1F096CA364793F655A8DBB358F8D723A59AB7"
+            );
             //  console.dir(transaction, { depth: null });
         });
 
@@ -143,12 +151,16 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             expect(summary.response!.sourceAddressHash).to.eq(standardAddressHash("rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5"));
 
             expect(summary.response!.receivedAmount.toString()).to.eq("1400000000");
-            expect(summary.response!.receivingAddressHash).to.eq(standardAddressHash("r14f8Luu4dYKzNEwFYV2KfA74YZcWVS5F"));
+            expect(summary.response!.receivingAddressHash).to.eq(
+                standardAddressHash("r14f8Luu4dYKzNEwFYV2KfA74YZcWVS5F")
+            );
             expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
         });
 
         it("should get balanceDecreasingSummary", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("rDM9x1ehphbwXX8UhvF2j8tyuJY2VVnm5")
+            );
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("1400000010");
         });
@@ -157,7 +169,9 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
     describe("Payment Transaction Native", function () {
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await MccClient.getTransaction("160426BB861B2E1AD7A4214EE12B41A3C9C4EEBCC15B4D8A5C41E9405E288CDB");
+            transaction = await MccClient.getTransaction(
+                "160426BB861B2E1AD7A4214EE12B41A3C9C4EEBCC15B4D8A5C41E9405E288CDB"
+            );
         });
 
         it("should correctly parse sourceAddresses", function () {
@@ -194,15 +208,21 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
             const summary = transaction.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
             expect(summary.status).to.eq(PaymentSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("39");
-            expect(summary.response!.sourceAddressHash).to.eq(standardAddressHash("rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p"));
+            expect(summary.response!.sourceAddressHash).to.eq(
+                standardAddressHash("rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p")
+            );
 
             expect(summary.response!.receivedAmount.toString()).to.eq("27");
-            expect(summary.response!.receivingAddressHash).to.eq(standardAddressHash("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"));
+            expect(summary.response!.receivingAddressHash).to.eq(
+                standardAddressHash("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn")
+            );
             expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
         });
 
         it("should get balanceDecreasingSummary", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("rpAepkGqJnQSNTxozKSu9KPrxHVgyLpL8p")
+            );
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("39");
             expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SUCCESS);
@@ -264,7 +284,11 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
         it("Should get spentAmounts", function () {
             const spentAmounts = transaction.spentAmounts;
-            assert(AddressAmountEqual(spentAmounts, [{ address: "r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB", amount: BigInt(10) }]));
+            assert(
+                AddressAmountEqual(spentAmounts, [
+                    { address: "r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB", amount: BigInt(10) },
+                ])
+            );
         });
 
         it("Should get receivingAddress", function () {
@@ -295,7 +319,9 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get balanceDecreasingSummary", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("r9ZrUqa98hycMA4QCuz2twW5x7JhiHYhxB")
+            );
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("10");
             expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
@@ -336,7 +362,11 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
         it("Should get spentAmounts", function () {
             const spentAmounts = transaction.spentAmounts;
-            assert(AddressAmountEqual(spentAmounts, [{ address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2", amount: BigInt(10) }]));
+            assert(
+                AddressAmountEqual(spentAmounts, [
+                    { address: "rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2", amount: BigInt(10) },
+                ])
+            );
         });
 
         it("Should get receivingAddress", function () {
@@ -373,7 +403,9 @@ describe(`Payment transaction type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get balanceDecreasingSummary", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("rJF9FcJbVuq79FSjqHuM9rBSxXSQFtRLu2")
+            );
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount.toString()).to.eq("10");
             expect(summary.response!.transactionStatus).to.eq(TransactionSuccessStatus.RECEIVER_FAILURE);

@@ -19,7 +19,9 @@ describe(`Account delete type (${getTestFile(__filename)})`, function () {
     describe("Account delete happy path", function () {
         let transaction: XrpTransaction;
         before(async function () {
-            transaction = await MccClient.getTransaction("1AF19BF9717DA0B05A3BFC5007873E7743BA54C0311CCCCC60776AAEAC5C4635");
+            transaction = await MccClient.getTransaction(
+                "1AF19BF9717DA0B05A3BFC5007873E7743BA54C0311CCCCC60776AAEAC5C4635"
+            );
             //  console.dir(transaction.data, { depth: null });
         });
 
@@ -32,7 +34,9 @@ describe(`Account delete type (${getTestFile(__filename)})`, function () {
         });
 
         it("should correctly parse spentAmounts", function () {
-            const expected = [{ address: "rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre", amount: BigInt("2000000") + BigInt("12665795") }];
+            const expected = [
+                { address: "rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre", amount: BigInt("2000000") + BigInt("12665795") },
+            ];
             expect(AddressAmountEqual(transaction.spentAmounts, expected)).to.be.true;
         });
 
@@ -42,7 +46,9 @@ describe(`Account delete type (${getTestFile(__filename)})`, function () {
         });
 
         it("should get balanceDecreasingSummary", function () {
-            const summary = transaction.balanceDecreasingSummary(standardAddressHash("rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre"));
+            const summary = transaction.balanceDecreasingSummary(
+                standardAddressHash("rf2c74F1Z2BrvL1dV7WMHYo6Jyaw446Fre")
+            );
             expect(summary.status).to.eq(BalanceDecreasingSummaryStatus.Success);
             expect(summary.response!.spentAmount).to.eq(BigInt("2000000") + BigInt("12665795"));
         });

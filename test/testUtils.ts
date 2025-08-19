@@ -64,7 +64,12 @@ export function round_for_ltc(input: number) {
 // }
 
 export function singleAddressAmountEqual(a: AddressAmount, b: AddressAmount) {
-    return a.address === b.address && a.amount.toString() === b.amount.toString() && a.elementaryUnits === b.elementaryUnits && a.utxo === b.utxo;
+    return (
+        a.address === b.address &&
+        a.amount.toString() === b.amount.toString() &&
+        a.elementaryUnits === b.elementaryUnits &&
+        a.utxo === b.utxo
+    );
 }
 
 export function AddressAmountEqual(a: AddressAmount[], b: AddressAmount[]) {

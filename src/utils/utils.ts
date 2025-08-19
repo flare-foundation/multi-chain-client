@@ -140,7 +140,9 @@ export function fillWithDefault(partialMccLogging: MccLoggingOptions): MccLoggin
         mode: partialMccLogging.mode ? partialMccLogging.mode : "develop",
         loggingCallback: partialMccLogging.loggingCallback ? partialMccLogging.loggingCallback : defaultLoggingCallback,
         warningCallback: partialMccLogging.warningCallback ? partialMccLogging.warningCallback : defaultWarningCallback,
-        exceptionCallback: partialMccLogging.exceptionCallback ? partialMccLogging.exceptionCallback : defaultExceptionCallback,
+        exceptionCallback: partialMccLogging.exceptionCallback
+            ? partialMccLogging.exceptionCallback
+            : defaultExceptionCallback,
     };
 }
 

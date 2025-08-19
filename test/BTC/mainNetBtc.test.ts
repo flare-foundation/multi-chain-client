@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import chai, { expect } from "chai";
 import { ChainType, MCC, UtxoMccCreate } from "../../src";
 import chaiAsPromised from "chai-as-promised";
 

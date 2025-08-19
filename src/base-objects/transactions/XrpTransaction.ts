@@ -2,9 +2,21 @@ import { Payment } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
-import { IXrpGetTransactionRes, XrpTransactionStatusPrefixes, XrpTransactionStatusTec, XrpTransactionTypeUnion } from "../../types/xrpTypes";
+import {
+    IXrpGetTransactionRes,
+    XrpTransactionStatusPrefixes,
+    XrpTransactionStatusTec,
+    XrpTransactionTypeUnion,
+} from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
-import { ZERO_BYTES_32, bytesAsHexToString, isValidBytes32Hex, prefix0x, standardAddressHash, unPrefix0x } from "../../utils/utils";
+import {
+    ZERO_BYTES_32,
+    bytesAsHexToString,
+    isValidBytes32Hex,
+    prefix0x,
+    standardAddressHash,
+    unPrefix0x,
+} from "../../utils/utils";
 import {
     AddressAmount,
     BalanceDecreasingSummaryResponse,
@@ -138,7 +150,9 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     node.ModifiedNode.PreviousFields.Balance
                 ) {
                     // TODO: this is due to xrpl.js lib mistakes
-                    const diff = BigInt(node.ModifiedNode.FinalFields.Balance as string) - BigInt(node.ModifiedNode.PreviousFields.Balance as string);
+                    const diff =
+                        BigInt(node.ModifiedNode.FinalFields.Balance as string) -
+                        BigInt(node.ModifiedNode.PreviousFields.Balance as string);
                     if (diff < BigInt(0)) {
                         spendAmounts.push({
                             address: node.ModifiedNode.FinalFields.Account as string,
@@ -265,7 +279,9 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     node.ModifiedNode.PreviousFields.Balance
                 ) {
                     // TODO: this is due to xrpl.js lib mistakes
-                    const diff = BigInt(node.ModifiedNode.FinalFields.Balance as string) - BigInt(node.ModifiedNode.PreviousFields.Balance as string);
+                    const diff =
+                        BigInt(node.ModifiedNode.FinalFields.Balance as string) -
+                        BigInt(node.ModifiedNode.PreviousFields.Balance as string);
                     if (diff > BigInt(0)) {
                         receivedAmounts.push({
                             address: node.ModifiedNode.FinalFields.Account as string,
@@ -274,7 +290,11 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     }
                 }
             } else if (isCreatedNode(node)) {
-                if (node.CreatedNode.LedgerEntryType === "AccountRoot" && node.CreatedNode.NewFields && node.CreatedNode.NewFields.Account) {
+                if (
+                    node.CreatedNode.LedgerEntryType === "AccountRoot" &&
+                    node.CreatedNode.NewFields &&
+                    node.CreatedNode.NewFields.Account
+                ) {
                     if (node.CreatedNode.NewFields.Balance) {
                         receivedAmounts.push({
                             address: node.CreatedNode.NewFields.Account as string,
@@ -436,7 +456,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         if (this.type === "Payment" && this.isNativePayment) {
             // Is native transfer
             // Successful transaction of type payment always only one source and one receiving address
-            if (TransactionSuccessStatus.SUCCESS && (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1)) {
+            if (
+                TransactionSuccessStatus.SUCCESS &&
+                (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1)
+            ) {
                 return {
                     status: PaymentSummaryStatus.UnexpectedNumberOfParticipants,
                 };
@@ -487,7 +510,8 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     receivingAddress: receiveAddress,
                     spentAmount: spendAmount.amount,
                     // TODO: Check if intended sent value can be set
-                    receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : BigInt(0),
+                    receivedAmount:
+                        this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : BigInt(0),
                     transactionStatus: this.successStatus,
                     // For transactions that are not successful but still in block
                     intendedSourceAmount: BigInt(intendedSpendAmounts.amount),
@@ -515,7 +539,8 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         for (const spendAmount of spentAmounts) {
             if (
                 spendAmount.address &&
-                unPrefix0x(standardAddressHash(spendAmount.address)).toLowerCase() === unPrefix0x(sourceAddressIndicator).toLowerCase()
+                unPrefix0x(standardAddressHash(spendAmount.address)).toLowerCase() ===
+                    unPrefix0x(sourceAddressIndicator).toLowerCase()
             ) {
                 // We found the address we are looking for
                 return {
@@ -596,11 +621,14 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     sourceAddressesRoot: this.sourceAddressesRoot,
                     receivingAddressHash: receiveAddress ? standardAddressHash(receiveAddress) : ZERO_BYTES_32,
                     receivingAddress: receiveAddress,
-                    receivedAmount: this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : BigInt(0),
+                    receivedAmount:
+                        this.successStatus === TransactionSuccessStatus.SUCCESS ? receiveAmount.amount : BigInt(0),
                     transactionStatus: this.successStatus,
                     // For transactions that are not successful but still in block
                     intendedReceivingAddress: intendedReceivedAmounts.address,
-                    intendedReceivingAddressHash: intendedReceivedAmounts.address ? standardAddressHash(intendedReceivedAmounts.address) : ZERO_BYTES_32,
+                    intendedReceivingAddressHash: intendedReceivedAmounts.address
+                        ? standardAddressHash(intendedReceivedAmounts.address)
+                        : ZERO_BYTES_32,
 
                     intendedReceivingAmount: BigInt(intendedReceivedAmounts.amount),
 

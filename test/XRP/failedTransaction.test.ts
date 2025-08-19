@@ -37,7 +37,9 @@ describe("Failed transactions", function () {
         });
 
         it("Should get intendedSpentAmounts", function () {
-            const expected: AddressAmount[] = [{ address: "rKbb74HAdKBWPyJC6Q7p8m2BMrBgRs5uWT", amount: BigInt("142") }];
+            const expected: AddressAmount[] = [
+                { address: "rKbb74HAdKBWPyJC6Q7p8m2BMrBgRs5uWT", amount: BigInt("142") },
+            ];
             assert(AddressAmountEqual(transaction.intendedSpentAmounts, expected));
         });
 

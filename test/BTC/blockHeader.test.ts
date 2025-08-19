@@ -25,7 +25,9 @@ describe(`Block Header BTC base,(${getTestFile(__filename)})`, function () {
     });
 
     it("Should get block header from hash ", async function () {
-        const blockHeader = await MccClient.getBlockHeader("00000000000000000000eefe8d88fc63c6154c495cfa4f319e0c746f81597af0");
+        const blockHeader = await MccClient.getBlockHeader(
+            "00000000000000000000eefe8d88fc63c6154c495cfa4f319e0c746f81597af0"
+        );
         expect(blockHeader).to.not.eq(undefined);
     });
 });
@@ -64,6 +66,8 @@ describe(`Block Header BTC getters ,(${getTestFile(__filename)})`, function () {
     });
 
     it("Should test stdPreviousBlockHash getter ", async function () {
-        expect(blockHeader.stdPreviousBlockHash).to.eq("000000000000000000036a4cc18f3bb1416fe5b5cf1dc77ffc3e0dab1cdb771a");
+        expect(blockHeader.stdPreviousBlockHash).to.eq(
+            "000000000000000000036a4cc18f3bb1416fe5b5cf1dc77ffc3e0dab1cdb771a"
+        );
     });
 });

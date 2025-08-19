@@ -41,12 +41,16 @@ describe("XRP testnet client tests", () => {
         });
 
         it("Should return transaction if exists", async () => {
-            const txResponse = await client.getTransaction("0x0569969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2");
+            const txResponse = await client.getTransaction(
+                "0x0569969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2"
+            );
             expect(txResponse).to.not.equal(null);
         });
 
         it("Should return null if transaction does not exist", async () => {
-            const txResponse = client.getTransaction("0669969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2");
+            const txResponse = client.getTransaction(
+                "0669969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2"
+            );
             await expect(txResponse).to.be.rejectedWith("InvalidTransaction");
         });
     });

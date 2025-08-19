@@ -64,7 +64,9 @@ describe(`XRP transactions in full block vs transactions from getTransaction (${
                     const transaction = transactions[randomIndex];
                     i++;
                     b1.increment();
-                    const transObject = await retry("get test transactions", () => client.getTransaction(transaction.txid));
+                    const transObject = await retry("get test transactions", () =>
+                        client.getTransaction(transaction.txid)
+                    );
 
                     for (const getter of GETTERS_BASIC) {
                         throwOrReturnSameGetter(transaction, transObject, getter);
