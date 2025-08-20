@@ -9,7 +9,6 @@ const XRPMccConnection = {
     url: process.env.XRP_URL || "",
     username: process.env.XRP_USERNAME || "",
     password: process.env.XRP_PASSWORD || "",
-    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
 describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
@@ -471,7 +470,6 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             url: process.env.XRP_URL_TESTNET || "",
             username: process.env.XRP_USERNAME || "",
             password: process.env.XRP_PASSWORD || "",
-            apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
         };
         let transaction: XrpTransaction;
 

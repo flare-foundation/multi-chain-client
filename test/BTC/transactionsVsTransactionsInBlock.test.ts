@@ -18,7 +18,6 @@ const BtcMccConnection = {
     url: process.env.BTC_URL || "",
     username: process.env.BTC_USERNAME || "",
     password: process.env.BTC_PASSWORD || "",
-    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
 describe(`BTC transactions in full block vs transactions from getTransaction (${getTestFile(__filename)})`, () => {

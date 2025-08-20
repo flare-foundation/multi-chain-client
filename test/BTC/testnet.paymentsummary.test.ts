@@ -3,7 +3,6 @@ import { BtcTransaction, MCC, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const BtcMccConnection = {
-    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
     url: process.env.TESTNET_BTC_URL || "",
     username: process.env.TESTNET_BTC_USERNAME || "",
     password: process.env.TESTNET_BTC_PASSWORD || "",

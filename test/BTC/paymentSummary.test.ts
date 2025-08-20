@@ -1,17 +1,8 @@
 import { expect } from "chai";
-import {
-    BtcTransaction,
-    MCC,
-    PaymentNonexistenceSummaryStatus,
-    PaymentSummaryStatus,
-    UtxoMccCreate,
-    ZERO_BYTES_32,
-} from "../../src";
+import { BtcTransaction, MCC, PaymentSummaryStatus, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
-import { execSync } from "child_process";
 
 const BtcMccConnection = {
-    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
     url: process.env.BTC_URL || "",
     username: process.env.BTC_USERNAME || "",
     password: process.env.BTC_PASSWORD || "",

@@ -7,7 +7,6 @@ const XRPMccConnection = {
     url: process.env.XRP_URL || "",
     username: process.env.XRP_USERNAME || "",
     password: process.env.XRP_PASSWORD || "",
-    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
 describe("XRP ripple client tests", () => {

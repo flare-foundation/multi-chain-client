@@ -5,7 +5,6 @@ const XRPMccConnection = {
     url: process.env.XRP_URL || "https://s1.ripple.com:51234",
     username: process.env.XRP_USERNAME || "",
     password: process.env.XRP_PASSWORD || "",
-    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 };
 
 describe("XRP testnet client tests", () => {

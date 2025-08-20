@@ -65,27 +65,54 @@ We name interfaces as follows:
 
 ## Linting and formatting
 
-<!-- This section must describe
-* how to run the linter and formatter
-* how to configure the linter and formatter in your IDE if applicable -->
+To run the linter and formatter, use the following command:
+
+To check
+```sh
+yarn lint:check
+yarn format:check
+```
+
+To fix isses that are fixable by linter and formatter automatically
+```sh
+yarn lint:fix
+yarn format:fix
+```
+
+Make sure to check both linter, formatter and run tests before committing.
 
 ## Testing
 
 In order to run the tests one needs a connection to a running DOGE node (mainnet), BTC node (mainnet), XRP node (mainnet) and XRP node (testnet). Provide the url and possible basic auth credentials as variables in env.
 ```sh
 # BITCOIN
+
 BTC_URL=url
 BTC_USERNAME=user
 BTC_PASSWORD=pass
+
+BTC_URL_REGTEST=url
+BTC_USERNAME_REGTEST=user
+BTC_PASSWORD_REGTEST=pass
+
+
 # DOGECOIN
+
 DOGE_URL=url
 DOGE_USERNAME=user
 DOGE_PASSWORD=pass
+
+DOGE_URL_REGTEST=url
+DOGE_USERNAME_REGTEST=user
+DOGE_PASSWORD_REGTEST=pass
+
+
 # XRP
+
 XRP_URL=url
 XRP_USERNAME=user
 XRP_PASSWORD=pass
-# XRP TESTNET
+
 XRP_URL_TESTNET=url
 XRP_USERNAME_TESTNET=user
 XRP_PASSWORD_TESTNET=pass
