@@ -19,6 +19,10 @@ We recommend to deploy nodes from our docker [repo](https://github.com/flare-fou
 
 [Want to contribute?](./CONTRIBUTING.md)
 
+## Security
+
+If you have found a possible vulnerability please see [SECURITY.md](./SECURITY.md)
+
 
 # How to use
 
