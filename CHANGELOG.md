@@ -10,7 +10,17 @@ and this project adheres to
 
 ### Added
 
-- Reformating according to new handbook and dev structure
+
+# \[[v4.4.0-rc.0](https://www.npmjs.com/package/@flarenetwork/mcc/v/4.4.0-rc.0)\] 
+
+### Added
+
+* Reformating according to new handbook and dev structure
+* Removing axios rate limiting
+* Balance decreasing logic update for xrp transactions
+* Payment update for utxo for inUtxo and outUtxo to work as standard address hash indicators for values above 2**16, and is backwards compatible for values below that threshold.
+* Upgrading ontToOne extraction according to spec
+
 
 # \[[v4.3.0](https://www.npmjs.com/package/@flarenetwork/mcc/v/4.3.0)\] - 2025-04-01  
 
