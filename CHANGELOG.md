@@ -11,7 +11,7 @@ and this project adheres to
 ### Added
 
 
-# \[[v4.4.0-rc.0](https://www.npmjs.com/package/@flarenetwork/mcc/v/4.4.0-rc.0)\] 
+# \[[v4.4.0](https://www.npmjs.com/package/@flarenetwork/mcc/v/4.4.0)\] 
 
 ### Added
 
