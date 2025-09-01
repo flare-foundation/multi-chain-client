@@ -1,6 +1,6 @@
 import chai, { expect } from "chai";
-import { ChainType, MCC, UtxoMccCreate } from "../../src";
 import chaiAsPromised from "chai-as-promised";
+import { ChainType, MCC, UtxoMccCreate } from "../../src";
 
 chai.use(chaiAsPromised);
 
@@ -8,7 +8,6 @@ const BtcMccConnection = {
     url: process.env.BTC_URL || "",
     username: process.env.BTC_USERNAME || "",
     password: process.env.BTC_PASSWORD || "",
-    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
 describe("BTC mainnet client tests", () => {

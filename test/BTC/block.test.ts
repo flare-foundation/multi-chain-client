@@ -1,7 +1,7 @@
 import chai, { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { BtcBlock, MCC, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
-import chaiAsPromised from "chai-as-promised";
 
 chai.use(chaiAsPromised);
 
@@ -9,7 +9,6 @@ const BtcMccConnection = {
     url: process.env.BTC_URL || "",
     username: process.env.BTC_USERNAME || "",
     password: process.env.BTC_PASSWORD || "",
-    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
 } as UtxoMccCreate;
 
 describe(`Block Btc base test ${getTestFile(__filename)}`, function () {

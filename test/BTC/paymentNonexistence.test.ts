@@ -7,10 +7,8 @@ import {
     UtxoMccCreate,
 } from "../../src";
 import { getTestFile } from "../testUtils";
-import exp from "constants";
 
 const BtcMccConnection = {
-    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
     url: process.env.BTC_URL || "",
     username: process.env.BTC_USERNAME || "",
     password: process.env.BTC_PASSWORD || "",

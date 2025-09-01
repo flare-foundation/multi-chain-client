@@ -1,9 +1,8 @@
 import { expect } from "chai";
-import { BtcBlockHeader, MCC, UtxoMccCreate, UtxoNodeStatus } from "../../src";
+import { BtcBlockHeader, MCC, UtxoMccCreate } from "../../src";
 import { getTestFile } from "../testUtils";
 
 const BtcMccConnection = {
-    apiTokenKey: process.env.FLARE_API_PORTAL_KEY || "",
     url: process.env.BTC_URL || "",
     username: process.env.BTC_USERNAME || "",
     password: process.env.BTC_PASSWORD || "",
