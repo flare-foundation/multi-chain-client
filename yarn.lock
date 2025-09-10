@@ -253,18 +253,18 @@
     "@eslint/core" "^0.12.0"
     levn "^0.4.1"
 
-"@flarenetwork/eslint-config-flare@^0.0.1-rc.4":
-  version "0.0.1-rc.4"
-  resolved "https://registry.yarnpkg.com/@flarenetwork/eslint-config-flare/-/eslint-config-flare-0.0.1-rc.4.tgz#803967fa7f5c6916955086bb394bf696a11d1e49"
-  integrity sha512-cQiCudfxbj+VgUEilQguh82TkJ9xRT51AYXmhAA5G+SxfqsuGXch6n+92I3PXYevLTnOc1woAZyTL7VV6cppkw==
+"@flarenetwork/eslint-config-flare@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@flarenetwork/eslint-config-flare/-/eslint-config-flare-0.0.1.tgz#ed95329fdac0dfd2ff0ed66a0be9924c505738ea"
+  integrity sha512-X3c6qSE42Vr86je0Xbvfoqab5P5tsqm1Mo98g1trRnqH/Ckwc9KGAe8TqgD1B8boxiis1XQ7+FLgdqxIraViVw==
   dependencies:
     "@eslint/js" "^9.33.0"
     typescript-eslint "^8.39.0"
 
-"@flarenetwork/prettier-config-flare@^0.0.1-rc.2":
-  version "0.0.1-rc.2"
-  resolved "https://registry.yarnpkg.com/@flarenetwork/prettier-config-flare/-/prettier-config-flare-0.0.1-rc.2.tgz#4cb21f43cd16cd8ae2cb5574383f93f15b109fd0"
-  integrity sha512-FVxxuSUQIw0oMAssZNU4M44HhP2rIJj51bj91oSaA6pnIcF5TT2ClsFGB/rY4rr/MF5qCGUnEH1ktd+Xsimjmw==
+"@flarenetwork/prettier-config-flare@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@flarenetwork/prettier-config-flare/-/prettier-config-flare-0.0.1.tgz#ec9f14e2ab8972f2a27c7e0102e2429c53847e1d"
+  integrity sha512-Akt/nlsHRKely09L3x2JdboohEC7Kd3ciAcyu7ffDkH1qOj8s5Xu2MGl9WyZte2cWxKbP663UM8ISDTfzRtC/g==
 
 "@humanfs/core@^0.19.1":
   version "0.19.1"
