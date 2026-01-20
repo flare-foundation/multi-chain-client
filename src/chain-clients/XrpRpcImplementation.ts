@@ -13,9 +13,13 @@ import { xrp_ensure_data } from "../utils/xrpUtils";
 
 const DEFAULT_TIMEOUT = 15000;
 
-export class XRPImplementation
-    implements ReadRpcInterface<BlockTipBase, BlockHeaderBase, XrpBlock, XrpFullBlock, XrpTransaction>
-{
+export class XRPImplementation implements ReadRpcInterface<
+    BlockTipBase,
+    BlockHeaderBase,
+    XrpBlock,
+    XrpFullBlock,
+    XrpTransaction
+> {
     client: AxiosInstance;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     inRegTest: any;

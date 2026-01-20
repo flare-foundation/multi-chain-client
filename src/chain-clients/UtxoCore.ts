@@ -43,8 +43,7 @@ export abstract class UtxoCore<
     BlockCon extends BlockBase,
     FBlockCon extends FullBlockBase<TranCon>,
     TranCon extends UtxoTransaction,
-> implements ReadRpcInterface<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>
-{
+> implements ReadRpcInterface<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon> {
     client: AxiosInstance;
     inRegTest: boolean;
     constructors: objectConstructors<BTipCon, BHeadCon, BlockCon, FBlockCon, TranCon>;

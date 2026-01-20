@@ -17,6 +17,7 @@ build:
     stage: build
     image: node:$NODE_VERSION
     before_script:
+        - corepack enable pnpm
         - pnpm install --frozen-lockfile
     script:
         - pnpm build
@@ -25,6 +26,7 @@ test:
     stage: test
     image: node:$NODE_VERSION
     before_script:
+        - corepack enable pnpm
         - pnpm install --frozen-lockfile
     script:
         - pnpm test:all
@@ -33,6 +35,7 @@ lint:
   stage: test
   image: node:$NODE_VERSION
   before_script:
+    - corepack enable pnpm
     - pnpm install --frozen-lockfile
   script:
     - pnpm lint:check
@@ -42,22 +45,13 @@ lint:
   script:
     - result=$(grep -Pc "$PATTERN_FULL" <<< $CI_COMMIT_TAG) || true
     - if [ $result -eq 0 ]; then echo "Tag has wrong format"; exit 1; fi 
+
 .compare-versions_template:
   script:
     - apt-get update
     - apt-get install jq -y
     - pver=$(echo "v$(jq -r .version package.json)")
     - if [ $pver != $CI_COMMIT_TAG ]; then echo "Tag and package.json versions do not match"; exit 1; fi;
-.publish-npm_template:
-  image: node:$NODE_VERSION
-  script:
-    - apt-get update
-    - apt-get install -y gettext
-    - envsubst <<< '//registry.npmjs.org/:_authToken=$AUTH_TOKEN' > .npmrc
-    - result=$(grep -Pc "$PATTERN_SEMI" <<< "$CI_COMMIT_TAG") || true
-    - pnpm install --frozen-lockfile --prod
-    - pnpm build
-    - if [ $result -eq 1 ]; then npm publish --access public; else npm publish --tag beta --access public; fi;
 
 .publish-npm_template:
   image: node:$NODE_VERSION
@@ -70,6 +64,7 @@ lint:
     - apt-get update
     - apt-get install -y gettext
     - result=$(grep -Pc "$PATTERN_SEMI" <<< "$CI_COMMIT_TAG") || true
+    - corepack enable pnpm
     - pnpm install --frozen-lockfile --prod
     - pnpm build
     - if [ ! -d dist ] || [ ! -f dist/index.js ]; then echo "Dist folder or dist/index.js missing"; exit 1; fi;
