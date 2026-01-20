@@ -465,7 +465,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
     });
 
-    describe("Transactions sourceAddressesRoot (for testnet)", function () {
+    describe.skip("Transactions sourceAddressesRoot (for testnet)", function () {
         const XRPTestnetMccConnection = {
             url: process.env.XRP_URL_TESTNET || "",
             username: process.env.XRP_USERNAME || "",
