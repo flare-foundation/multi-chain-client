@@ -1,6 +1,6 @@
 {
     "name": "@flarenetwork/mcc",
-    "version": "4.4.1-alpha.5",
+    "version": "4.4.1-rc.0",
     "description": "Multi chain client",
     "author": "Flare Networks",
     "homepage": "https://github.com/flare-foundation/multi-chain-client",
