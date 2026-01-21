@@ -1,15 +1,19 @@
 {
     "name": "@flarenetwork/mcc",
-    "version": "4.4.1-alpha.0",
+    "version": "4.4.1-alpha.5",
     "description": "Multi chain client",
-    "main": "dist/src/index.js",
-    "types": "dist/src/index.d.ts",
     "author": "Flare Networks",
     "homepage": "https://github.com/flare-foundation/multi-chain-client",
     "repository": {
         "type": "git",
         "url": "https://github.com/flare-foundation/multi-chain-client"
     },
+    "main": "dist/src/index.js",
+    "types": "dist/src/index.d.ts",
+    "files": [
+        "/dist",
+        "/src"
+    ],
     "license": "MIT",
     "prettier": "@flarenetwork/prettier-config-flare",
     "nyc": {
@@ -42,15 +46,10 @@
         ],
         "report-dir": "coverage"
     },
-    "files": [
-        "/dist",
-        "/src"
-    ],
     "scripts": {
         "----------PREBUILD-HEALTH-CHECKS----------": "----------PREBUILD-HEALTH-CHECKS----------",
         "health_check:xrpl_OLD": "yarn ts-node src/scripts/xrplJsTransactionTypesCheck.ts",
         "----------BUILD----------": "----------BUILD----------",
-        "prebuild": "rimraf dist",
         "build": "tsc --allowJs",
         "----------PUBLISH----------": "----------PUBLISH----------",
         "publish": "echo npm publish",
@@ -66,7 +65,8 @@
         "test:doge": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/DOGE/**/*.test.ts\" ",
         "test:btc": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/BTC/**/*.test.ts\" ",
         "test:all": "mocha -r ts-node/register -r dotenv/config -r source-map-support/register --recursive -t 1000000 \"test/**/*.test.ts\" ",
-        "test:coverage": "yarn nyc yarn test:all",
+        "test:coverage": "nyc pnpm test:all",
+        "test:package": "pnpm pack && dpdm --exit-code --no-tree --no-circular ./flarenetwork-mcc-*.tgz",
         "----------TESTNET-LOGIC-CHECK----------": "----------TESTNET-LOGIC-CHECK----------",
         "run_test_chain": "yarn ts-node -r dotenv/config"
     },
