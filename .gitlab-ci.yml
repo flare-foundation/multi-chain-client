@@ -3,31 +3,10 @@ stages:
   - release
   - sbom
    
-# include:
+ include:
 #  - component: gitlab.com/flarenetwork/infra-public/ci-components/dependency-track@~latest
 #  - component: gitlab.com/flarenetwork/ci-components-private/lint-pnpm@2
 #  - component: gitlab.com/flarenetwork/ci-components-private/test-pnpm@2
-#  - component: gitlab.com/flarenetwork/ci-components-private/release-pnpm@pnpm-release-fix
-#    inputs:
-#      npm_access: public
-
-
-publish-npm:
-  stage: release
-  rules:
-    - if: '$CI_COMMIT_TAG'
-  image: node:24
-  id_tokens:
-    NPM_ID_TOKEN:
-      aud: "npm:registry.npmjs.org"
-    SIGSTORE_ID_TOKEN:
-      aud: sigstore
-  script:
-    - apt-get update
-    - apt-get install -y gettext
-    - result=$(grep -Pc "$PATTERN_SEMI" <<< "$CI_COMMIT_TAG") || true
-    - corepack enable pnpm
-    - pnpm install --frozen-lockfile
-    - pnpm build
-    - pnpm publish --tag beta --no-git-checks
-
+  - component: gitlab.com/flarenetwork/ci-components-private/release-pnpm@pnpm-release-fix
+    inputs:
+      npm_access: public
