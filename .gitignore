@@ -3,7 +3,7 @@
 node_modules
 dist
 
-### VisualStudioCode template
+### IDE
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

@@ -14,7 +14,6 @@ MCC or Multi-Chain Client is a Typescript library that:
 
 We recommend to deploy nodes from our docker [repo](https://github.com/flare-foundation/connected-chains-docker)
 
-
 ## Development notes
 
 [Want to contribute?](./CONTRIBUTING.md)
@@ -23,6 +22,24 @@ We recommend to deploy nodes from our docker [repo](https://github.com/flare-fou
 
 If you have found a possible vulnerability please see [SECURITY.md](./SECURITY.md)
 
+## Installation
+
+The package is published to the NPM registry as [`@flarenetwork/mcc`](https://www.npmjs.com/package/@flarenetwork/mcc).
+
+### Verification of published package
+
+Each release is published with [NPM provenance](https://docs.npmjs.com/viewing-package-provenance),
+which links the published package to the exact source commit and CI pipeline that built it.
+
+To verify the integrity of the published package, you can use the following command:
+
+```bash
+npm audit signatures
+```
+
+This command checks the registry signatures and provenance attestations.
+If a package has missing or invalid signatures or attestations, it returns an error.
+This could indicate that a package has been tampered with.
 
 # How to use
 
