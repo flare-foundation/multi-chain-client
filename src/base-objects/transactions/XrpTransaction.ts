@@ -367,6 +367,9 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
             throw new Error("Transaction meta is not available thus transaction status cannot be extracted");
         }
         const result = this.data.result.meta.TransactionResult;
+        if (typeof result !== "string" || result.length < 3) {
+            throw new Error(`Unexpected TransactionResult value: ${String(result)}`);
+        }
         const prefix = result.slice(0, 3) as XrpTransactionStatusPrefixes;
         // TODO: update
         // about statuses https://xrpl.org/transaction-results.html
@@ -424,6 +427,16 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     case "tecUNFUNDED_ADD":
                     case "tecUNFUNDED_PAYMENT":
                     case "tecUNFUNDED_OFFER":
+                    case "tecAMM_UNFUNDED": // AMM amendment
+                    case "tecAMM_BALANCE":
+                    case "tecAMM_FAILED":
+                    case "tecAMM_INVALID_TOKENS":
+                    case "tecAMM_EMPTY":
+                    case "tecAMM_NOT_EMPTY":
+                    case "tecAMM_ACCOUNT":
+                    case "tecINCOMPLETE":
+                    case "tecEMPTY_DID": // DID amendment
+                    case "tecINVALID_UPDATE_TIME":
                         return TransactionSuccessStatus.SENDER_FAILURE;
                     default:
                         // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases
@@ -457,7 +470,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
             // Is native transfer
             // Successful transaction of type payment always only one source and one receiving address
             if (
-                TransactionSuccessStatus.SUCCESS &&
+                this.successStatus === TransactionSuccessStatus.SUCCESS &&
                 (this.spentAmounts.length !== 1 || this.receivedAmounts.length !== 1)
             ) {
                 return {
@@ -475,7 +488,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                 };
             }
             // Successful payment transaction always has a receiving address
-            if (TransactionSuccessStatus.SUCCESS && receiveAddress) {
+            if (this.successStatus === TransactionSuccessStatus.SUCCESS && !receiveAddress) {
                 return {
                     status: PaymentSummaryStatus.NoReceiveAmountAddress,
                 };
@@ -585,7 +598,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         if (this.type === "Payment" && this.isNativePayment) {
             // Is native transfer
             // Successful transaction of type payment always only one source and one receiving address
-            if (TransactionSuccessStatus.SUCCESS && this.receivedAmounts.length !== 1) {
+            if (this.successStatus === TransactionSuccessStatus.SUCCESS && this.receivedAmounts.length !== 1) {
                 return {
                     status: PaymentNonexistenceSummaryStatus.UnexpectedNumberOfParticipants,
                 };
@@ -595,7 +608,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
             const receiveAddress = receiveAmount && receiveAmount.address ? receiveAmount.address : "";
 
             // Successful payment transaction always has a receiving address
-            if (TransactionSuccessStatus.SUCCESS && receiveAddress) {
+            if (this.successStatus === TransactionSuccessStatus.SUCCESS && !receiveAddress) {
                 return {
                     status: PaymentNonexistenceSummaryStatus.NoReceiveAmountAddress,
                 };

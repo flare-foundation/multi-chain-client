@@ -48,7 +48,9 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         for (const vo of this.data.vout) {
             if (vo.scriptPubKey.hex.substring(0, 2) === unPrefix0x(toHex(WordToOpcode.OP_RETURN))) {
                 const dataSplit = vo.scriptPubKey.asm.split(" ");
-                references.push(dataSplit[1]);
+                if (dataSplit.length >= 2) {
+                    references.push(dataSplit[1]);
+                }
             }
         }
         return references;

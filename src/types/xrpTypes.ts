@@ -28,7 +28,7 @@ export interface IXrpGetBlockHeaderRes extends LedgerResponse, IIGetBlockRes {}
 
 export type XrpTransactionStatusPrefixes = "tes" | "ter" | "tem" | "tel" | "tef" | "tec";
 
-// According to https://xrpl.org/tec-codes.html
+// According to https://github.com/XRPLF/rippled/blob/develop/include/xrpl/protocol/TER.h
 export type XrpTransactionStatusTec =
     | "tecCANT_ACCEPT_OWN_NFTOKEN_OFFER"
     | "tecCLAIM"
@@ -75,7 +75,50 @@ export type XrpTransactionStatusTec =
     | "tecUNFUNDED"
     | "tecUNFUNDED_ADD"
     | "tecUNFUNDED_PAYMENT"
-    | "tecUNFUNDED_OFFER";
+    | "tecUNFUNDED_OFFER"
+    // AMM amendment
+    | "tecAMM_UNFUNDED"
+    | "tecAMM_BALANCE"
+    | "tecAMM_FAILED"
+    | "tecAMM_INVALID_TOKENS"
+    | "tecAMM_EMPTY"
+    | "tecAMM_NOT_EMPTY"
+    | "tecAMM_ACCOUNT"
+    | "tecINCOMPLETE"
+    // DID amendment
+    | "tecEMPTY_DID"
+    | "tecINVALID_UPDATE_TIME";
+// XChain bridge amendment
+// | "tecXCHAIN_BAD_TRANSFER_ISSUE"
+// | "tecXCHAIN_NO_CLAIM_ID"
+// | "tecXCHAIN_BAD_CLAIM_ID"
+// | "tecXCHAIN_CLAIM_NO_QUORUM"
+// | "tecXCHAIN_PROOF_UNKNOWN_KEY"
+// | "tecXCHAIN_CREATE_ACCOUNT_NONXRP_ISSUE"
+// | "tecXCHAIN_WRONG_CHAIN"
+// | "tecXCHAIN_REWARD_MISMATCH"
+// | "tecXCHAIN_NO_SIGNERS_LIST"
+// | "tecXCHAIN_SENDING_ACCOUNT_MISMATCH"
+// | "tecXCHAIN_INSUFF_CREATE_AMOUNT"
+// | "tecXCHAIN_ACCOUNT_CREATE_PAST"
+// | "tecXCHAIN_ACCOUNT_CREATE_TOO_MANY"
+// | "tecXCHAIN_PAYMENT_FAILED"
+// | "tecXCHAIN_SELF_COMMIT"
+// | "tecXCHAIN_BAD_PUBLIC_KEY_ACCOUNT_PAIR"
+// | "tecXCHAIN_CREATE_ACCOUNT_DISABLED"
+// Hooks amendment (active on Xahau, not XRPL mainnet)
+// | "tecHOOK_REJECTED"
+// Other newer amendments
+// | "tecLOCKED"
+// | "tecBAD_CREDENTIALS"
+// | "tecTOKEN_PAIR_NOT_FOUND"
+// | "tecARRAY_EMPTY"
+// | "tecARRAY_TOO_LARGE"
+// | "tecWRONG_ASSET"
+// | "tecLIMIT_EXCEEDED"
+// | "tecPSEUDO_ACCOUNT"
+// | "tecPRECISION_LOSS"
+// | "tecNO_DELEGATE_PERMISSION";
 
 export type XrpTransactionTypeUnion =
     | "NFTokenAcceptOffer"
