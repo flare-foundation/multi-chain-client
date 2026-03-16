@@ -681,4 +681,8 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         }
         return false;
     }
+
+    public get destinationTag(): number | undefined {
+        return (this.data.result as Payment).DestinationTag;
+    }
 }

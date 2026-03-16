@@ -145,6 +145,13 @@ export abstract class TransactionBase<T> {
     public abstract get stdPaymentReference(): string; // Hex string
 
     /**
+     * Destination tag for the transaction, if applicable.
+     */
+    public get destinationTag(): number | undefined {
+        return undefined;
+    }
+
+    /**
      * Returns unix timestamp of the transaction (block of the transaction).
      */
     public abstract get unixTimestamp(): number;
