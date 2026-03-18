@@ -20,6 +20,7 @@ const TX_FIXTURES: TxFixture[] = [
     { txid: "3DA3F56A9FA75552DD6C26A590183817BB1C0E659DEFB650542E07819B70F9A1", expectedDestinationTag: 289317105 },
     { txid: "24350AC3A8AE84AAD7BF161A94B273FD7D38747B555442C0B64E8FB0C2F6F430", expectedDestinationTag: 0 },
     { txid: "19C010BA18361BF1C696BB1E9CBB7654DD0FC0C19B5DFC9BF66C21D4C5D9912A", expectedDestinationTag: undefined },
+    { txid: "9D8E4327A96DE1577D071D322AE905E5039B64B82C55AE4186F22F658B46B332", expectedDestinationTag: undefined },
 ];
 
 describe(`destinationTag fixture tests (${getTestFile(__filename)})`, () => {
