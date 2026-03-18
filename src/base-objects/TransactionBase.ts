@@ -135,9 +135,17 @@ export abstract class TransactionBase<T> {
     public abstract get stdTxid(): string;
 
     /**
-     * Array of all references found in transactions
+     * Array of all references found in transactions in order they appear in the transaction.
      */
     public abstract get reference(): string[];
+
+    /**
+     * Returns the first reference (hex string) from the transaction, or undefined if none exist.
+     */
+    public get firstReference(): string | undefined {
+        // Array[0] returns undefined on an empty array — no explicit length check needed.
+        return this.reference[0];
+    }
 
     /**
      * Returns standardized payment reference, if it exists, or null reference.

@@ -1,6 +1,7 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { ChainType, MCC, UtxoMccCreate } from "../../src";
+import { getTestFile } from "../testUtils";
 
 chai.use(chaiAsPromised);
 
@@ -10,7 +11,7 @@ const BtcMccConnection = {
     password: process.env.BTC_PASSWORD || "",
 } as UtxoMccCreate;
 
-describe("BTC mainnet client tests", () => {
+describe(`BTC mainnet client tests (${getTestFile(__filename)})`, () => {
     let MccClient: MCC.BTC;
     before(async function () {
         this.timeout(10000); // set timeout to 10 sec from 2 sec
@@ -68,7 +69,7 @@ describe("BTC mainnet client tests", () => {
             if (trans) {
                 const reference = trans.reference;
                 expect(reference.length).to.eq(1);
-                expect(reference[0]).to.eq("636861726c6579206c6f766573206865696469");
+                expect(reference[0]).to.eq("6a13636861726c6579206c6f766573206865696469");
             } else {
                 expect(trans).to.eq(null);
             }

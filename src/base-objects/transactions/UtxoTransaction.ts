@@ -47,10 +47,7 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
         const references = [];
         for (const vo of this.data.vout) {
             if (vo.scriptPubKey.hex.substring(0, 2) === unPrefix0x(toHex(WordToOpcode.OP_RETURN))) {
-                const dataSplit = vo.scriptPubKey.asm.split(" ");
-                if (dataSplit.length >= 2) {
-                    references.push(dataSplit[1]);
-                }
+                references.push(vo.scriptPubKey.hex);
             }
         }
         return references;
@@ -58,7 +55,12 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
 
     public get stdPaymentReference(): string {
         let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
-        if (!isValidBytes32Hex(paymentReference)) {
+        // Check it has the correct flare standard payment refference definition OP_RETURN OP_PUSHBYTES_32 <32 bytes of data>
+        const is_std_reference =
+            paymentReference.substring(0, 2) === prefix0x(toHex(WordToOpcode.OP_RETURN)) &&
+            paymentReference.substring(2, 4) === prefix0x(toHex(32)) &&
+            isValidBytes32Hex(paymentReference.substring(4));
+        if (!is_std_reference) {
             paymentReference = ZERO_BYTES_32;
         }
         return paymentReference;

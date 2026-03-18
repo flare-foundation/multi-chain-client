@@ -10,6 +10,8 @@ MCC or Multi-Chain Client is a Typescript library that:
 * Retrieved data is encapsulated in objects that hold all the original information and allow adding static, named properties.
 * Implements a set of common methods used in FDC to calculate accounting information, such as balances, source and destination addresses, etc.
 
+The main focus of the library is the block and transaction data structures and their associated methods for FDC attestation. The library is designed to be used in the Flare ecosystem but can also be used independently for blockchain data querying and processing.
+
 ## Underlying nodes
 
 We recommend to deploy nodes from our docker [repo](https://github.com/flare-foundation/connected-chains-docker)
