@@ -1,5 +1,5 @@
 import { assert, expect } from "chai";
-import { AddressAmount, PaymentSummaryResponse } from "../src";
+import { AddressAmount, PaymentSummaryObject, PaymentSummaryStatus } from "../src";
 import { TransactionSuccessStatus } from "../src/types";
 
 export const expectThrow = async (method: any, errorMessage: any) => {
@@ -173,7 +173,7 @@ export interface transactionTestCases {
     txid: string;
     expect: expectTransactionTestCase;
     makeFull?: boolean;
-    summary: PaymentSummaryResponse;
+    summary: { status: PaymentSummaryStatus; response?: PaymentSummaryObject };
 }
 
 export interface expectTransactionTestCase {

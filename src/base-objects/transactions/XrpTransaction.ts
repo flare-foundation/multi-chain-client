@@ -27,6 +27,7 @@ import {
     PaymentSummaryResponse,
     PaymentSummaryStatus,
     TransactionBase,
+    XrpPaymentSummaryResponse,
 } from "../TransactionBase";
 
 // @Managed()
@@ -68,6 +69,10 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
             }
             return ZERO_BYTES_32;
         }
+    }
+
+    public get destinationTag(): number | undefined {
+        return (this.data.result as Payment).DestinationTag;
     }
 
     public get unixTimestamp(): number {
@@ -196,30 +201,6 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                 }
             }
         }
-        // // Check if signer is already in source amounts
-        // const feeSigner = this.data.result.Account;
-        // for (const spendAmount of spendAmounts) {
-        //    if (spendAmount.address === feeSigner) {
-        //       return spendAmounts;
-        //    }
-        // }
-        // // Check if singer got positive amount
-        // const receivedAmounts = this.receivedAmounts;
-        // for (const receivedAmount of receivedAmounts) {
-        //    if (receivedAmount.address === feeSigner) {
-        //       const { amount, ...rest } = receivedAmount;
-        //       spendAmounts.push({
-        //          amount: amount.neg(),
-        //          ...rest,
-        //       });
-        //       return spendAmounts;
-        //    }
-        // }
-        // // You cash a check for exactly fee amount
-        // spendAmounts.push({
-        //    amount: toBN(0),
-        //    address: feeSigner,
-        // });
         return spendAmounts;
     }
 
@@ -544,6 +525,25 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         };
     }
 
+    public xrpPaymentSummary(): XrpPaymentSummaryResponse {
+        const paymentSummary = this.paymentSummary({ inUtxo: 0n, outUtxo: 0n });
+        if (paymentSummary.status !== PaymentSummaryStatus.Success) {
+            return {
+                status: paymentSummary.status,
+            };
+        }
+        return {
+            status: PaymentSummaryStatus.Success,
+            response: {
+                ...paymentSummary.response,
+                hasDestinationTag: this.destinationTag !== undefined,
+                destinationTag: this.destinationTag ?? 0,
+                hasMemoData: this.firstReference !== undefined,
+                memoData: this.firstReference ?? "",
+            },
+        };
+    }
+
     public balanceDecreasingSummary(sourceAddressIndicator: string): BalanceDecreasingSummaryResponse {
         if (!isValidBytes32Hex(sourceAddressIndicator)) {
             return { status: BalanceDecreasingSummaryStatus.NotValidSourceAddressFormat };
@@ -680,9 +680,5 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
             return false;
         }
         return false;
-    }
-
-    public get destinationTag(): number | undefined {
-        return (this.data.result as Payment).DestinationTag;
     }
 }

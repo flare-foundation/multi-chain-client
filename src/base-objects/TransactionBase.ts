@@ -14,10 +14,19 @@ export interface AddressAmount {
     utxo?: number;
 }
 
-interface TransactionSummaryBase<ST, TO> {
-    status: ST;
-    response?: TO;
-}
+type TransactionSummarySuccess<SuccessStatus, TO> = {
+    status: SuccessStatus;
+    response: TO;
+};
+
+type TransactionSummaryFailure<ST, SuccessStatus> = {
+    status: Exclude<ST, SuccessStatus>;
+    response?: undefined;
+};
+
+type TransactionSummaryBase<ST, TO, SuccessStatus> =
+    | TransactionSummarySuccess<SuccessStatus, TO>
+    | TransactionSummaryFailure<ST, SuccessStatus>;
 
 export enum PaymentNonexistenceSummaryStatus {
     Success = "success",
@@ -75,6 +84,15 @@ export interface PaymentSummaryObject extends SummaryObjectBase {
     toOne: boolean;
 }
 
+export interface XrpPaymentSummaryObject extends PaymentSummaryObject {
+    hasDestinationTag: boolean;
+    // Zero if no destination tag, otherwise the destination tag value
+    destinationTag: number;
+    hasMemoData: boolean;
+    // Empty string if no memo data, otherwise the hex string of the memo data
+    memoData: string;
+}
+
 export interface PaymentNonexistenceSummaryObject {
     blockTimestamp: number;
     transactionHash: string;
@@ -97,12 +115,23 @@ export interface BalanceDecreasingSummaryObject extends SummaryObjectBase {
 
 export type BalanceDecreasingSummaryResponse = TransactionSummaryBase<
     BalanceDecreasingSummaryStatus,
-    BalanceDecreasingSummaryObject
+    BalanceDecreasingSummaryObject,
+    BalanceDecreasingSummaryStatus.Success
 >;
-export type PaymentSummaryResponse = TransactionSummaryBase<PaymentSummaryStatus, PaymentSummaryObject>;
+export type PaymentSummaryResponse = TransactionSummaryBase<
+    PaymentSummaryStatus,
+    PaymentSummaryObject,
+    PaymentSummaryStatus.Success
+>;
+export type XrpPaymentSummaryResponse = TransactionSummaryBase<
+    PaymentSummaryStatus,
+    XrpPaymentSummaryObject,
+    PaymentSummaryStatus.Success
+>;
 export type PaymentNonexistenceSummaryResponse = TransactionSummaryBase<
     PaymentNonexistenceSummaryStatus,
-    PaymentNonexistenceSummaryObject
+    PaymentNonexistenceSummaryObject,
+    PaymentNonexistenceSummaryStatus.Success
 >;
 export abstract class TransactionBase<T> {
     protected privateData: T;
