@@ -1,5 +1,12 @@
 import { expect } from "chai";
-import { MCC, XrpTransaction, PaymentSummaryStatus, TransactionSuccessStatus, standardAddressHash } from "../../src";
+import {
+    MCC,
+    XrpTransaction,
+    PaymentSummaryStatus,
+    TransactionSuccessStatus,
+    standardAddressHash,
+    ZERO_BYTES_32,
+} from "../../src";
 import { getTestFile } from "../testUtils";
 
 const XRPMccConnection = {
@@ -68,8 +75,7 @@ const TX_FIXTURES: TxFixture[] = [
             transactionHash: "C38B67406B0C34BD18FE775135132DCF0F08F87165D812DFBA4AA81B3774744D",
             sourceAddress: "rNp4GS9MuLnFPH7aXheCQ18Vxc4rAyNeKN",
             spentAmount: "10010012",
-            paymentReference:
-                "0x4642505266410001000000000000000000000000000000000000000000010A1D",
+            paymentReference: "0x4642505266410001000000000000000000000000000000000000000000010A1D",
             transactionStatus: TransactionSuccessStatus.SUCCESS,
             sourceAddressesRoot: "0xd829e6c47b88a7deb71bb92c18f111f379fea068f13369c3d0b768f03c1461e0",
             receivingAddress: "rEUvL6uJ1NYqa81tGxjH6BnLCQRzqT1aR7",
@@ -110,6 +116,91 @@ const TX_FIXTURES: TxFixture[] = [
             memoData: "",
         },
     },
+    {
+        // Token (non-native) payment — Amount is IssuedCurrencyAmount
+        txid: "041DCB1F45EE585E322D0DC9E7EAF5516276D77AA60F573AA95ACEDC92149865",
+        expectedStatus: PaymentSummaryStatus.NotNativePayment,
+    },
+    {
+        // Non-Payment transaction type (OfferCreate)
+        txid: "03BED73A8CC08F456F0DDE8DA32AB4687189553A6107C6E44575D571E9C9B203",
+        expectedStatus: PaymentSummaryStatus.NotNativePayment,
+    },
+    {
+        // Failed native payment (tecUNFUNDED_PAYMENT) — only fee charged, intended amounts differ
+        txid: "25D477BFDF5E2AC0945BC94020A17BBAECF7565CC099F750BE599F2C20B8A88D",
+        expectedStatus: PaymentSummaryStatus.Success,
+        expectedResponse: {
+            blockTimestamp: 1774009341,
+            transactionHash: "25D477BFDF5E2AC0945BC94020A17BBAECF7565CC099F750BE599F2C20B8A88D",
+            sourceAddress: "rUg8ac5ikpTaWk5RPei8xuYkNEyUs53G1i",
+            spentAmount: "12",
+            paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+            transactionStatus: TransactionSuccessStatus.SENDER_FAILURE,
+            sourceAddressesRoot: "0x793faa5313c626264c4afa8aa1a92622a5eeffbe31d4cab85cc4408a8df0f084",
+            receivingAddress: "",
+            receivedAmount: "0",
+            intendedSourceAmount: "1479",
+            intendedReceivingAddress: "rJn2zAPdFA193sixJwuFixRkYDUtx3apQh",
+            intendedReceivingAmount: "1467",
+            oneToOne: true,
+            toOne: true,
+            hasDestinationTag: true,
+            destinationTag: 500304425,
+            hasMemoData: false,
+            memoData: "",
+        },
+    },
+    {
+        // Native XRP payment with both memo (non-32-byte) and destination tag
+        txid: "5E5313BA3C55755ED3FDACB53C53A7143997D997DAF5FB5C24B83C6B995D6363",
+        expectedStatus: PaymentSummaryStatus.Success,
+        expectedResponse: {
+            blockTimestamp: 1754785822,
+            transactionHash: "5E5313BA3C55755ED3FDACB53C53A7143997D997DAF5FB5C24B83C6B995D6363",
+            sourceAddress: "r4Sut5JyyLg1Kuvv5iXcYytuLH1QjhHxgt",
+            spentAmount: "100012",
+            paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+            transactionStatus: TransactionSuccessStatus.SUCCESS,
+            sourceAddressesRoot: "0xf29486ac001386a9026cce30c03e0de155f2ae80aa8a34f3ea9e384023b1cfe1",
+            receivingAddress: "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+            receivedAmount: "100000",
+            intendedSourceAmount: "100012",
+            intendedReceivingAddress: "rLNaPoKeeBjZe2qs6x52yVPZpZ8td4dc6w",
+            intendedReceivingAmount: "100000",
+            oneToOne: true,
+            toOne: true,
+            hasDestinationTag: true,
+            destinationTag: 1337,
+            hasMemoData: true,
+            memoData: "506C6174666F726D2074726164696E6720666565",
+        },
+    },
+    {
+        // Native XRP payment with short memo (not valid 32-byte hex), no destination tag
+        txid: "40027B84516C765760F978893F1CD0F6429A687702D09A84A47811EC6C6E7E11",
+        expectedStatus: PaymentSummaryStatus.Success,
+        expectedResponse: {
+            blockTimestamp: 1774009341,
+            transactionHash: "40027B84516C765760F978893F1CD0F6429A687702D09A84A47811EC6C6E7E11",
+            sourceAddress: "rNYt2yMY1h4Zjcc57uVjDsRyZunFSQUrJp",
+            spentAmount: "90012",
+            paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+            transactionStatus: TransactionSuccessStatus.SUCCESS,
+            sourceAddressesRoot: "0xff31f8f021003519a929a7d8fcb581befb0eb714070581a502eb56cc9757fd38",
+            receivingAddress: "ryouhapPYV5KNHmFUKrjNqsjxhnxvQiVt",
+            receivedAmount: "90000",
+            intendedSourceAmount: "90012",
+            intendedReceivingAddress: "ryouhapPYV5KNHmFUKrjNqsjxhnxvQiVt",
+            intendedReceivingAmount: "90000",
+            oneToOne: true,
+            toOne: true,
+            hasDestinationTag: false,
+            destinationTag: 0,
+            hasMemoData: true,
+            memoData: "58616D616E205365727669636520466565",
+        },
+    },
 ];
 
 describe(`xrpPaymentSummary fixture tests (${getTestFile(__filename)})`, () => {
@@ -127,34 +218,98 @@ describe(`xrpPaymentSummary fixture tests (${getTestFile(__filename)})`, () => {
             });
 
             if (expectedResponse) {
-                it("should return expected response fields", () => {
+                it("should have response defined", () => {
                     const summary = transaction.xrpPaymentSummary();
                     expect(summary.response).to.not.be.undefined;
-                    const response = summary.response!;
+                });
 
-                    // SummaryObjectBase fields
+                it("should match blockTimestamp", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
                     expect(response.blockTimestamp).to.eq(expectedResponse.blockTimestamp);
-                    expect(response.transactionHash).to.eq(expectedResponse.transactionHash);
-                    expect(response.sourceAddressHash).to.eq(standardAddressHash(expectedResponse.sourceAddress));
-                    expect(response.spentAmount.toString()).to.eq(expectedResponse.spentAmount);
-                    expect(response.paymentReference).to.eq(expectedResponse.paymentReference);
-                    expect(response.transactionStatus).to.eq(expectedResponse.transactionStatus);
+                });
 
-                    // PaymentSummaryObject fields
+                it("should match transactionHash", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
+                    expect(response.transactionHash).to.eq(expectedResponse.transactionHash);
+                });
+
+                it("should match sourceAddress and sourceAddressHash", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
+                    expect(response.sourceAddressHash).to.eq(standardAddressHash(expectedResponse.sourceAddress));
+                });
+
+                it("should match spentAmount", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
+                    expect(response.spentAmount.toString()).to.eq(expectedResponse.spentAmount);
+                });
+
+                it("should match paymentReference", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
+                    expect(response.paymentReference).to.eq(expectedResponse.paymentReference);
+                });
+
+                it("should match transactionStatus", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
+                    expect(response.transactionStatus).to.eq(expectedResponse.transactionStatus);
+                });
+
+                it("should match sourceAddressesRoot", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
                     expect(response.sourceAddressesRoot).to.eq(expectedResponse.sourceAddressesRoot);
-                    expect(response.receivingAddressHash).to.eq(standardAddressHash(expectedResponse.receivingAddress));
+                });
+
+                it("should match receivingAddress and receivingAddressHash", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
+                    if (expectedResponse.receivingAddress === "") {
+                        expect(response.receivingAddressHash).to.eq(ZERO_BYTES_32);
+                        expect(response.receivingAddress).to.eq("");
+                    } else {
+                        expect(response.receivingAddressHash).to.eq(
+                            standardAddressHash(expectedResponse.receivingAddress)
+                        );
+                    }
+                });
+
+                it("should match receivedAmount", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
                     expect(response.receivedAmount.toString()).to.eq(expectedResponse.receivedAmount);
+                });
+
+                it("should match intendedSourceAmount", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
                     expect(response.intendedSourceAmount.toString()).to.eq(expectedResponse.intendedSourceAmount);
+                });
+
+                it("should match intendedReceivingAddress and intendedReceivingAddressHash", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
                     expect(response.intendedReceivingAddressHash).to.eq(
                         standardAddressHash(expectedResponse.intendedReceivingAddress)
                     );
-                    expect(response.intendedReceivingAmount.toString()).to.eq(expectedResponse.intendedReceivingAmount);
-                    expect(response.oneToOne).to.eq(expectedResponse.oneToOne);
-                    expect(response.toOne).to.eq(expectedResponse.toOne);
+                });
 
-                    // XrpPaymentSummaryObject fields
+                it("should match intendedReceivingAmount", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
+                    expect(response.intendedReceivingAmount.toString()).to.eq(expectedResponse.intendedReceivingAmount);
+                });
+
+                it("should match oneToOne", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
+                    expect(response.oneToOne).to.eq(expectedResponse.oneToOne);
+                });
+
+                it("should match toOne", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
+                    expect(response.toOne).to.eq(expectedResponse.toOne);
+                });
+
+                it("should match hasDestinationTag and destinationTag", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
                     expect(response.hasDestinationTag).to.eq(expectedResponse.hasDestinationTag);
                     expect(response.destinationTag).to.eq(expectedResponse.destinationTag);
+                });
+
+                it("should match hasMemoData and memoData", () => {
+                    const response = transaction.xrpPaymentSummary().response!;
                     expect(response.hasMemoData).to.eq(expectedResponse.hasMemoData);
                     expect(response.memoData).to.eq(expectedResponse.memoData);
                 });
