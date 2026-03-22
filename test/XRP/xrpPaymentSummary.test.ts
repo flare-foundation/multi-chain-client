@@ -201,6 +201,61 @@ const TX_FIXTURES: TxFixture[] = [
             memoData: "58616D616E205365727669636520466565",
         },
     },
+    {
+        // Token (non-native) payment with SourceTag and multiple memos
+        txid: "3255B72043649284ED1CB1EB6A3C04FB423C8FD896B3351E9EA86AD7BB255B37",
+        expectedStatus: PaymentSummaryStatus.NotNativePayment,
+    },
+    {
+        // Native XRP payment with destination tag and memo (non-32-byte), successful
+        txid: "BD68A2A9FE47AF15948546FFDDE90C731E346983F559B25B6A9B4F38E7E8BD3B",
+        expectedStatus: PaymentSummaryStatus.Success,
+        expectedResponse: {
+            blockTimestamp: 1774169631,
+            transactionHash: "BD68A2A9FE47AF15948546FFDDE90C731E346983F559B25B6A9B4F38E7E8BD3B",
+            sourceAddress: "rw7xfeKdaPjeExHbotrMkAXraKh5yrzkTh",
+            spentAmount: "1000000012",
+            paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+            transactionStatus: TransactionSuccessStatus.SUCCESS,
+            sourceAddressesRoot: "0x33130fa66ea9fe618d7fffbd58cd1f4ed00070e1fb8cf8e20c22f08a8a49e1b8",
+            receivingAddress: "rNxp4h8apvRis6mJf9Sh8C6iRxfrDWN7AV",
+            receivedAmount: "1000000000",
+            intendedSourceAmount: "1000000012",
+            intendedReceivingAddress: "rNxp4h8apvRis6mJf9Sh8C6iRxfrDWN7AV",
+            intendedReceivingAmount: "1000000000",
+            oneToOne: true,
+            toOne: true,
+            hasDestinationTag: true,
+            destinationTag: 485359384,
+            hasMemoData: true,
+            memoData: "343835333539333834",
+        },
+    },
+    {
+        // Native XRP payment with destination tag and long memo (40-byte), successful
+        txid: "8782615413487AFEA56AB6051D145A4CA3C127EAB8A1FC7D8E857513B525488D",
+        expectedStatus: PaymentSummaryStatus.Success,
+        expectedResponse: {
+            blockTimestamp: 1774170071,
+            transactionHash: "8782615413487AFEA56AB6051D145A4CA3C127EAB8A1FC7D8E857513B525488D",
+            sourceAddress: "rPBJGLCysYLSrfH6SttjoWkYW3Pvu2qPR",
+            spentAmount: "1410804",
+            paymentReference: "0x0000000000000000000000000000000000000000000000000000000000000000",
+            transactionStatus: TransactionSuccessStatus.SUCCESS,
+            sourceAddressesRoot: "0x1339873c3302c32ce3153f42984d8936382451535d0bed5a894621f507649fcb",
+            receivingAddress: "rw2ciyaNshpHe7bCHo4bRWq6pqqynnWKQg",
+            receivedAmount: "1405533",
+            intendedSourceAmount: "1410804",
+            intendedReceivingAddress: "rw2ciyaNshpHe7bCHo4bRWq6pqqynnWKQg",
+            intendedReceivingAmount: "1405533",
+            oneToOne: true,
+            toOne: true,
+            hasDestinationTag: true,
+            destinationTag: 3751335421,
+            hasMemoData: true,
+            memoData: "446562742052656170696E673B205250525F564F54455F52554E7C323032362D30332D3232543039",
+        },
+    },
 ];
 
 describe(`xrpPaymentSummary fixture tests (${getTestFile(__filename)})`, () => {
