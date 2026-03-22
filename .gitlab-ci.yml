@@ -1,10 +1,10 @@
 stages:
   - test
   - release
-  - sbom
+  # - sbom
    
 include:
-  - component: gitlab.com/flarenetwork/infra-public/ci-components/dependency-track@~latest
+  # - component: gitlab.com/flarenetwork/infra-public/ci-components/dependency-track@~latest
   - component: gitlab.com/flarenetwork/ci-components-private/lint-pnpm@2
   - component: gitlab.com/flarenetwork/ci-components-private/test-pnpm@2
   - component: gitlab.com/flarenetwork/ci-components-private/release-pnpm@2
