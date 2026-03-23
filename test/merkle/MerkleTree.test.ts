@@ -1,12 +1,8 @@
 import { assert, expect } from "chai";
 import { ethers } from "ethers";
 import { ZERO_BYTES_32 } from "../../src";
-import {
-    commitHash,
-    MerkleTree,
-    merkleTreeFromAddressStrings,
-    verifyWithMerkleProof,
-} from "../../src/merkle/MerkleTree";
+import { merkleTreeFromAddressStrings } from "../../src/merkle/MerkleTree";
+import { verifyWithMerkleProof, commitHash, MerkleTree } from "@flarenetwork/js-flare-common"
 
 describe(`Merkle Tree`, () => {
     const makeHashes = (i: number, shiftSeed = 0) =>

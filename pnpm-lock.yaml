@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@flarenetwork/js-flare-common':
+        specifier: ^0.0.3
+        version: 0.0.3
       axios:
         specifier: ^1.6.7
         version: 1.13.2
@@ -244,6 +247,9 @@ packages:
 
   '@flarenetwork/eslint-config-flare@0.0.1':
     resolution: {integrity: sha512-X3c6qSE42Vr86je0Xbvfoqab5P5tsqm1Mo98g1trRnqH/Ckwc9KGAe8TqgD1B8boxiis1XQ7+FLgdqxIraViVw==}
+
+  '@flarenetwork/js-flare-common@0.0.3':
+    resolution: {integrity: sha512-2wheHGlStK1fbeq+NBwb4m+VeYX08WPjPRUaQ6OFjb6FrMr/zEteTa3KVniw7EYcMNa4+Q7b7faBoknSoz/pAw==}
 
   '@flarenetwork/prettier-config-flare@0.0.1':
     resolution: {integrity: sha512-Akt/nlsHRKely09L3x2JdboohEC7Kd3ciAcyu7ffDkH1qOj8s5Xu2MGl9WyZte2cWxKbP663UM8ISDTfzRtC/g==}
@@ -2228,6 +2234,13 @@ snapshots:
       - eslint
       - supports-color
       - typescript
+
+  '@flarenetwork/js-flare-common@0.0.3':
+    dependencies:
+      ethers: 6.16.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   '@flarenetwork/prettier-config-flare@0.0.1(prettier@3.8.0)':
     dependencies:
