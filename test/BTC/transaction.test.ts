@@ -6,6 +6,7 @@ import {
     standardAddressHash,
     TransactionSuccessStatus,
     UtxoMccCreate,
+    UtxoTransaction,
     ZERO_BYTES_32,
 } from "../../src";
 import { getTestFile, transactionTestCases } from "../testUtils";
@@ -630,6 +631,81 @@ describe(`Transaction Btc base test, ,(${getTestFile(__filename)})`, function ()
 
         it("Should get same sourceAddressesRoot as UTXO Indexer 2", function () {
             expect(tx.sourceAddressesRoot).to.eq("0x23699dbbba39d81c44489afe2da832f67038c710fbfb04a2be5a1a0e663da6be");
+        });
+    });
+
+    describe("transaction with standard payment reference", function () {
+        // has modified OP_RETURN vout
+        const json = {
+            txid: "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684",
+            hash: "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684",
+            time: 1404107109,
+            mediantime: 1404102830,
+            version: 1,
+            size: 254,
+            vsize: 254,
+            weight: 1016,
+            locktime: 0,
+            vin: [
+                {
+                    txid: "8e40bb1db9029dd648432c56c295788221c1dd97fe1dbee52f767d605fba58c8",
+                    vout: 1,
+                    scriptSig: {
+                        asm: "30450220446df4e6b875af246800c8c976de7cd6d7d95016c4a8f7bcdbba81679cbda242022100c1ccfacfeb5e83087894aa8d9e37b11f5c054a75d030d5bfd94d17c5bc953d4a[ALL] 045901f6367ea950a5665335065342b952c5d5d60607b3cdc6c69a03df1a6b915aa02eb5e07095a2548a98dcdd84d875c6a3e130bafadfd45e694a3474e71405a4",
+                        hex: "4830450220446df4e6b875af246800c8c976de7cd6d7d95016c4a8f7bcdbba81679cbda242022100c1ccfacfeb5e83087894aa8d9e37b11f5c054a75d030d5bfd94d17c5bc953d4a0141045901f6367ea950a5665335065342b952c5d5d60607b3cdc6c69a03df1a6b915aa02eb5e07095a2548a98dcdd84d875c6a3e130bafadfd45e694a3474e71405a4",
+                    },
+                    prevout: {
+                        generated: false,
+                        height: 308526,
+                        value: 0.0022,
+                        scriptPubKey: {
+                            asm: "OP_DUP OP_HASH160 b8268ce4d481413c4e848ff353cd16104291c45b OP_EQUALVERIFY OP_CHECKSIG",
+                            desc: "addr(1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg)#yw4vml5n",
+                            hex: "76a914b8268ce4d481413c4e848ff353cd16104291c45b88ac",
+                            address: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
+                            type: "pubkeyhash",
+                        },
+                    },
+                    sequence: 4294967295,
+                },
+            ],
+            vout: [
+                {
+                    value: 0.0,
+                    n: 0,
+                    scriptPubKey: {
+                        asm: "OP_RETURN b64b76e648a22ba0809429c99871bbeb353d042f962f0f740796cd4b2b19dded",
+                        desc: "raw(6a20b64b76e648a22ba0809429c99871bbeb353d042f962f0f740796cd4b2b19dded)#30wemlfw",
+                        hex: "6a20b64b76e648a22ba0809429c99871bbeb353d042f962f0f740796cd4b2b19dded",
+                        type: "nulldata",
+                    },
+                },
+                {
+                    value: 0.002,
+                    n: 1,
+                    scriptPubKey: {
+                        asm: "OP_DUP OP_HASH160 b8268ce4d481413c4e848ff353cd16104291c45b OP_EQUALVERIFY OP_CHECKSIG",
+                        desc: "addr(1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg)#yw4vml5n",
+                        hex: "76a914b8268ce4d481413c4e848ff353cd16104291c45b88ac",
+                        address: "1HnhWpkMHMjgt167kvgcPyurMmsCQ2WPgg",
+                        type: "pubkeyhash",
+                    },
+                },
+            ],
+            fee: 0.0002,
+            hex: "0100000001c858ba5f607d762fe5be1dfe97ddc121827895c2562c4348d69d02b91dbb408e010000008b4830450220446df4e6b875af246800c8c976de7cd6d7d95016c4a8f7bcdbba81679cbda242022100c1ccfacfeb5e83087894aa8d9e37b11f5c054a75d030d5bfd94d17c5bc953d4a0141045901f6367ea950a5665335065342b952c5d5d60607b3cdc6c69a03df1a6b915aa02eb5e07095a2548a98dcdd84d875c6a3e130bafadfd45e694a3474e71405a4ffffffff020000000000000000156a13636861726c6579206c6f766573206865696469400d0300000000001976a914b8268ce4d481413c4e848ff353cd16104291c45b88ac00000000",
+            blockhash: "000000000000000004c31376d7619bf0f0d65af6fb028d3b4a410ea39d22554c",
+            confirmations: 633298,
+            blocktime: 1404107109,
+        };
+
+        const tx = new BtcTransaction(json);
+
+        it("Should have standard pau,emt referece", function () {
+            expect(tx.stdPaymentReference).to.have.length(66);
+            expect(tx.stdPaymentReference).to.be.eq(
+                "0xb64b76e648a22ba0809429c99871bbeb353d042f962f0f740796cd4b2b19dded"
+            );
         });
     });
 });

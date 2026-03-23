@@ -54,16 +54,18 @@ export abstract class UtxoTransaction extends TransactionBase<IUtxoGetTransactio
     }
 
     public get stdPaymentReference(): string {
-        let paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
-        // Check it has the correct flare standard payment refference definition OP_RETURN OP_PUSHBYTES_32 <32 bytes of data>
+        const paymentReference = this.reference.length === 1 ? this.reference[0] : "";
+        // Check it has the correct flare standard payment reference definition OP_RETURN OP_PUSHBYTES_32 <32 bytes of data>
+
         const is_std_reference =
-            paymentReference.substring(0, 2) === prefix0x(toHex(WordToOpcode.OP_RETURN)) &&
-            paymentReference.substring(2, 4) === prefix0x(toHex(32)) &&
+            paymentReference.substring(0, 2) === unPrefix0x(toHex(WordToOpcode.OP_RETURN)) &&
+            paymentReference.substring(2, 4) === unPrefix0x(toHex(32)) &&
             isValidBytes32Hex(paymentReference.substring(4));
         if (!is_std_reference) {
-            paymentReference = ZERO_BYTES_32;
+            return ZERO_BYTES_32;
         }
-        return paymentReference;
+
+        return prefix0x(paymentReference.substring(4));
     }
 
     public get unixTimestamp(): number {
