@@ -1,7 +1,6 @@
 import { singleHash, MerkleTree } from "@flarenetwork/js-flare-common";
 import { ZERO_BYTES_32 } from "../utils/utils";
 
-
 function decodeAsciiString(str: string) {
     const encoder = new TextEncoder();
     return encoder.encode(str);

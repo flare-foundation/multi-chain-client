@@ -1,4 +1,3 @@
-
 import { merkleTreeFromAddressStrings } from "../merkle/MerkleTree";
 import { TransactionSuccessStatus } from "../types/genericMccTypes";
 import { ZERO_BYTES_32 } from "../utils/utils";
