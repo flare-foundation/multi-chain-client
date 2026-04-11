@@ -19,7 +19,7 @@ chai.use(chaiAsPromised);
 
 describe(`Utils tests ,(${getTestFile(__filename)})`, () => {
     it("should return '0x0' if no tx", () => {
-        const expected = "0x0";
+        const expected = "";
         const res = unPrefix0x("");
         expect(res).to.be.equal(expected);
     });
@@ -145,5 +145,28 @@ describe(`Utils tests ,(${getTestFile(__filename)})`, () => {
     it("Should correctly format standard address hash", () => {
         const a = standardAddressHash("web3.js");
         expect(a).to.eq("0x63667efb1961039c9bb0d6ea7a5abdd223a3aca7daa5044ad894226e1f83919a");
+    });
+
+    it("Should calculate standard address hashes", () => {
+        const addresses = [
+            {
+                address: "rHdGZxwdeVhbCKZd5HHfKrq7MZcncM1eZZ",
+                hash: "0xa9dbf89442e23798f865df898940fae9ffe6550282bbc840e72bc105917c1087",
+            },
+            {
+                address: "rN7n3473SaZBCG4dFL83w7p1W9cgZB6eDc",
+                hash: "0xc5cb98417bbd3dbc4f01aee8bb9ecc09693dd46466aa91f35e70a3c54252fcf5",
+            },
+            {
+                address: "rfDf6s4CQzpdX2ZvkCFaBjsWQMXyoxLe4x",
+                hash: "0x1868c86a054737a8fbd437b333e92ad207ffcb42ff2a0c183725707039827d13",
+            },
+        ];
+
+        for (const { address, hash } of addresses) {
+            const calculatedHash = standardAddressHash(address);
+            // console.log(`Address: ${address}, Hash: ${calculatedHash}`);
+            expect(calculatedHash).to.eq(hash);
+        }
     });
 });

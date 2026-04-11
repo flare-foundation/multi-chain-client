@@ -28,10 +28,7 @@ export async function sleepMs(ms: number) {
 }
 
 export function unPrefix0x(tx: string) {
-    if (!tx) {
-        return "0x0";
-    }
-    return tx.startsWith("0x") ? tx.slice(2) : tx;
+    return tx.replace(/^0x/i, "");
 }
 
 export function prefix0x(tx: string) {
