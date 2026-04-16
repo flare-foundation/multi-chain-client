@@ -5,6 +5,8 @@ on:
     tags:
       - 'v*'
 
+
+      
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -19,6 +21,25 @@ jobs:
           cache: 'true'
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:all
+        env:
+          BTC_URL: ${{ secrets.BTC_URL }}
+          BTC_USERNAME: ${{ secrets.BTC_USERNAME }}
+          BTC_PASSWORD: ${{ secrets.BTC_PASSWORD }}
+          BTC_URL_REGTEST: ${{ secrets.BTC_URL_REGTEST }}
+          BTC_USERNAME_REGTEST: ${{ secrets.BTC_USERNAME_REGTEST }}
+          BTC_PASSWORD_REGTEST: ${{ secrets.BTC_PASSWORD_REGTEST }}
+          DOGE_URL: ${{ secrets.DOGE_URL }}
+          DOGE_USERNAME: ${{ secrets.DOGE_USERNAME }}
+          DOGE_PASSWORD: ${{ secrets.DOGE_PASSWORD }}
+          DOGE_URL_REGTEST: ${{ secrets.DOGE_URL_REGTEST }}
+          DOGE_USERNAME_REGTEST: ${{ secrets.DOGE_USERNAME_REGTEST }}
+          DOGE_PASSWORD_REGTEST: ${{ secrets.DOGE_PASSWORD_REGTEST }}
+          XRP_URL: ${{ secrets.XRP_URL }}
+          XRP_USERNAME: ${{ secrets.XRP_USERNAME }}
+          XRP_PASSWORD: ${{ secrets.XRP_PASSWORD }}
+          XRP_URL_TESTNET: ${{ secrets.XRP_URL_TESTNET }}
+          XRP_USERNAME_TESTNET: ${{ secrets.XRP_USERNAME_TESTNET }}
+          XRP_PASSWORD_TESTNET: ${{ secrets.XRP_PASSWORD_TESTNET }}
 
   publish:
     needs: test
