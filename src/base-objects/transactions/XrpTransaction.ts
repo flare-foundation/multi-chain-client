@@ -212,31 +212,21 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
             case "Payment": {
                 const payment = this.data.result as Payment;
                 if (this.isNativePayment) {
-                    if (typeof payment.Amount === "string") {
-                        return [
-                            {
-                                address: payment.Account,
-                                amount: BigInt(payment.Amount) + this.fee,
-                            },
-                        ];
-                    } // Token transfer since Amount is IssuedCurrencyAmount
-                    else {
-                        return [
-                            {
-                                address: payment.Account,
-                                amount: this.fee,
-                            },
-                        ];
-                    }
-                } else {
-                    // Token transfer
+                    // isNativePayment guarantees payment.Amount is a string.
                     return [
                         {
                             address: payment.Account,
-                            amount: this.fee,
+                            amount: BigInt(payment.Amount as string) + this.fee,
                         },
                     ];
                 }
+                // Token transfer or cross-currency payment
+                return [
+                    {
+                        address: payment.Account,
+                        amount: this.fee,
+                    },
+                ];
             }
             default:
                 // TODO: what should be returned here?
@@ -300,16 +290,15 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                 const payment = this.data.result as Payment;
 
                 if (this.isNativePayment) {
-                    if (typeof payment.Amount === "string") {
-                        return [
-                            {
-                                address: payment.Destination,
-                                amount: BigInt(payment.Amount),
-                            },
-                        ];
-                    }
+                    // isNativePayment guarantees payment.Amount is a string.
+                    return [
+                        {
+                            address: payment.Destination,
+                            amount: BigInt(payment.Amount as string),
+                        },
+                    ];
                 }
-                // Token transfer was intended
+                // Token transfer or cross-currency payment was intended
                 return [];
             }
             default:
@@ -322,10 +311,34 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
     }
 
     public get isNativePayment(): boolean {
-        return this.currencyName === XRP_NATIVE_TOKEN_NAME;
+        // Mirrors rippled's `xrpDirect` in Payment::preflight: a payment is
+        // native XRP-to-XRP only when both the delivered amount and the
+        // (effective) source amount are native XRP. In xrpl.js serialization
+        // XRP amounts are strings (drops) and IOU amounts are objects.
+        if (this.type !== "Payment") {
+            return false;
+        }
+        const payment = this.data.result as Payment;
+        // Destination must receive XRP.
+        if (typeof payment.Amount !== "string") {
+            return false;
+        }
+        // Source must send XRP. If SendMax is present and is an
+        // IssuedCurrencyAmount, the sender debits an IOU even though the
+        // destination receives XRP (cross-currency via paths/DEX).
+        if (payment.SendMax !== undefined && typeof payment.SendMax !== "string") {
+            return false;
+        }
+        return true;
     }
 
     //!!! issuer is sometimes important !!!
+    // NOTE: reports the *delivered* currency only — derived from the Payment's
+    // `Amount` field. For cross-currency payments (e.g. `Amount=XRP`,
+    // `SendMax=IOU`) the source debits a different currency, so
+    // `currencyName === "XRP"` no longer implies `isNativePayment === true`.
+    // Use `isNativePayment` (which also inspects `SendMax`) to check for true
+    // XRP-to-XRP payments.
     public get currencyName(): string {
         // With ripple this is currency code
         if (this.type === "Payment") {

@@ -8,6 +8,16 @@ and this project adheres to
 
 ## \[[Unreleased]\]
 
+### Fixed
+
+* `XrpTransaction.isNativePayment` now requires XRP on both sides of a Payment.
+  Previously only the delivered `Amount` was inspected, so cross-currency
+  payments (`Amount=XRP`, `SendMax=IOU`) where the sender debits an IOU but the
+  destination receives XRP were misclassified as native. They are now treated
+  as non-native, and downstream methods (`paymentSummary`,
+  `paymentNonexistenceSummary`) return `NotNativePayment` for them. This
+  matches rippled's `xrpDirect` rule in `Payment::preflight`.
+
 ### Added
 
 
