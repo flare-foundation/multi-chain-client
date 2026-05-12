@@ -17,6 +17,12 @@ and this project adheres to
   as non-native, and downstream methods (`paymentSummary`,
   `paymentNonexistenceSummary`) return `NotNativePayment` for them. This
   matches rippled's `xrpDirect` rule in `Payment::preflight`.
+* `XrpTransaction.isNativePayment` additionally rejects any Payment carrying
+  the `tfPartialPayment` flag. Rippled already rejects this combination at
+  preflight (`temBAD_SEND_XRP_PARTIAL`) so it cannot appear in a validated
+  ledger, but the local guard enforces the invariant defensively and lets
+  callers rely on `payment.Amount` being the delivered amount rather than a
+  cap.
 
 ### Added
 

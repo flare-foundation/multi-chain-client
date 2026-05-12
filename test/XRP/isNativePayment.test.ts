@@ -141,6 +141,62 @@ describe(`XrpTransaction.isNativePayment (${getTestFile(__filename)})`, function
         expect(tx.isNativePayment).to.eq(false);
     });
 
+    it("returns false when tfPartialPayment flag is set (Flags as number)", function () {
+        // Defense-in-depth: rippled rejects this combination at preflight
+        // (`temBAD_SEND_XRP_PARTIAL`), so it cannot appear in a validated
+        // ledger. The test pins the local invariant — `isNativePayment`
+        // refuses to classify any tfPartialPayment tx as native, so callers
+        // can treat `Amount` as the delivered amount without inspecting flags.
+        const tx = makeTx({
+            TransactionType: "Payment",
+            Account: "r3zUhJWabAMMLT5n631r2wDh9RP3dN1bRy",
+            Destination: "rpE6gE8jEN1trDwQwe47VmgDL5y6m3XX2n",
+            Amount: "1000000",
+            Flags: 0x00020000, // tfPartialPayment
+            Fee: "10",
+            hash: "AAAA000000000000000000000000000000000000000000000000000000000005",
+            meta: SUCCESS_META,
+        });
+
+        expect(tx.isNativePayment).to.eq(false);
+    });
+
+    it("returns false when tfPartialPayment flag is set (Flags as object)", function () {
+        // xrpl.js typing allows `Flags` to be a PaymentFlagsInterface object
+        // (used during construction). Validated ledgers serialize Flags as a
+        // number, so this shape shouldn't reach us — but the local guard
+        // handles it defensively all the same.
+        const tx = makeTx({
+            TransactionType: "Payment",
+            Account: "r3zUhJWabAMMLT5n631r2wDh9RP3dN1bRy",
+            Destination: "rpE6gE8jEN1trDwQwe47VmgDL5y6m3XX2n",
+            Amount: "1000000",
+            Flags: { tfPartialPayment: true },
+            Fee: "10",
+            hash: "AAAA000000000000000000000000000000000000000000000000000000000006",
+            meta: SUCCESS_META,
+        });
+
+        expect(tx.isNativePayment).to.eq(false);
+    });
+
+    it("returns true when Flags is set but tfPartialPayment bit is not", function () {
+        // Other Payment flags (e.g. tfNoDirectRipple = 0x00010000) do not
+        // change native classification.
+        const tx = makeTx({
+            TransactionType: "Payment",
+            Account: "r3zUhJWabAMMLT5n631r2wDh9RP3dN1bRy",
+            Destination: "rpE6gE8jEN1trDwQwe47VmgDL5y6m3XX2n",
+            Amount: "1000000",
+            Flags: 0x00010000, // tfNoDirectRipple
+            Fee: "10",
+            hash: "AAAA000000000000000000000000000000000000000000000000000000000007",
+            meta: SUCCESS_META,
+        });
+
+        expect(tx.isNativePayment).to.eq(true);
+    });
+
     it("returns false for a non-Payment transaction (OfferCreate)", function () {
         const tx = makeTx({
             TransactionType: "OfferCreate",

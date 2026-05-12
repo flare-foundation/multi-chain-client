@@ -1,4 +1,4 @@
-import { Payment } from "xrpl";
+import { Payment, PaymentFlags } from "xrpl";
 import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
@@ -327,6 +327,19 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         // IssuedCurrencyAmount, the sender debits an IOU even though the
         // destination receives XRP (cross-currency via paths/DEX).
         if (payment.SendMax !== undefined && typeof payment.SendMax !== "string") {
+            return false;
+        }
+        // Defense-in-depth: rippled rejects an XRP-direct Payment carrying
+        // `tfPartialPayment` at preflight as `temBAD_SEND_XRP_PARTIAL`, so a
+        // validated-ledger transaction reaching this branch cannot have the
+        // flag set. Reject it explicitly anyway so the invariant is enforced
+        // locally and callers can rely on `payment.Amount` being the
+        // delivered amount (rather than a cap).
+        const flags = payment.Flags;
+        if (typeof flags === "number" && (flags & PaymentFlags.tfPartialPayment) !== 0) {
+            return false;
+        }
+        if (typeof flags === "object" && flags !== null && flags.tfPartialPayment === true) {
             return false;
         }
         return true;
