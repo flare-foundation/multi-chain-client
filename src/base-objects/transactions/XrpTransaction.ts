@@ -449,7 +449,7 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     case "tecUNFUNDED_ADD":
                     case "tecUNFUNDED_PAYMENT":
                     case "tecUNFUNDED_OFFER":
-                    case "tecAMM_UNFUNDED": // AMM amendment
+                    case "tecUNFUNDED_AMM": // AMM amendment
                     case "tecAMM_BALANCE":
                     case "tecAMM_FAILED":
                     case "tecAMM_INVALID_TOKENS":
@@ -459,6 +459,38 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     case "tecINCOMPLETE":
                     case "tecEMPTY_DID": // DID amendment
                     case "tecINVALID_UPDATE_TIME":
+                    // XChain bridge amendment — sender-side: bad params, wrong chain,
+                    // premature claim, or bridge op the sender shouldn't have attempted.
+                    // falls through
+                    case "tecXCHAIN_BAD_TRANSFER_ISSUE":
+                    case "tecXCHAIN_NO_CLAIM_ID":
+                    case "tecXCHAIN_BAD_CLAIM_ID":
+                    case "tecXCHAIN_CLAIM_NO_QUORUM":
+                    case "tecXCHAIN_PROOF_UNKNOWN_KEY":
+                    case "tecXCHAIN_CREATE_ACCOUNT_NONXRP_ISSUE":
+                    case "tecXCHAIN_WRONG_CHAIN":
+                    case "tecXCHAIN_REWARD_MISMATCH":
+                    case "tecXCHAIN_NO_SIGNERS_LIST":
+                    case "tecXCHAIN_SENDING_ACCOUNT_MISMATCH":
+                    case "tecXCHAIN_INSUFF_CREATE_AMOUNT":
+                    case "tecXCHAIN_ACCOUNT_CREATE_PAST":
+                    case "tecXCHAIN_ACCOUNT_CREATE_TOO_MANY":
+                    case "tecXCHAIN_PAYMENT_FAILED":
+                    case "tecXCHAIN_SELF_COMMIT":
+                    case "tecXCHAIN_BAD_PUBLIC_KEY_ACCOUNT_PAIR":
+                    case "tecXCHAIN_CREATE_ACCOUNT_DISABLED":
+                    // Oracle / PriceOracle amendment — sender's params reference
+                    // unknown pair or malformed array.
+                    // falls through
+                    case "tecTOKEN_PAIR_NOT_FOUND":
+                    case "tecARRAY_EMPTY":
+                    case "tecARRAY_TOO_LARGE":
+                    case "tecLOCKED": //can be receivers fault, but so far irrelevant
+                    case "tecBAD_CREDENTIALS":
+                    case "tecWRONG_ASSET":
+                    case "tecLIMIT_EXCEEDED":
+                    case "tecPSEUDO_ACCOUNT": //destination being a pseudo-account, but follow conservative convention
+                    case "tecPRECISION_LOSS":
                         return TransactionSuccessStatus.SENDER_FAILURE;
                     default:
                         // exhaustive switch guard: if a compile time error appears here, you have forgotten one of the cases

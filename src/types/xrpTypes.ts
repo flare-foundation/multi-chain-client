@@ -77,7 +77,7 @@ export type XrpTransactionStatusTec =
     | "tecUNFUNDED_PAYMENT"
     | "tecUNFUNDED_OFFER"
     // AMM amendment
-    | "tecAMM_UNFUNDED"
+    | "tecUNFUNDED_AMM"
     | "tecAMM_BALANCE"
     | "tecAMM_FAILED"
     | "tecAMM_INVALID_TOKENS"
@@ -87,38 +87,39 @@ export type XrpTransactionStatusTec =
     | "tecINCOMPLETE"
     // DID amendment
     | "tecEMPTY_DID"
-    | "tecINVALID_UPDATE_TIME";
-// XChain bridge amendment
-// | "tecXCHAIN_BAD_TRANSFER_ISSUE"
-// | "tecXCHAIN_NO_CLAIM_ID"
-// | "tecXCHAIN_BAD_CLAIM_ID"
-// | "tecXCHAIN_CLAIM_NO_QUORUM"
-// | "tecXCHAIN_PROOF_UNKNOWN_KEY"
-// | "tecXCHAIN_CREATE_ACCOUNT_NONXRP_ISSUE"
-// | "tecXCHAIN_WRONG_CHAIN"
-// | "tecXCHAIN_REWARD_MISMATCH"
-// | "tecXCHAIN_NO_SIGNERS_LIST"
-// | "tecXCHAIN_SENDING_ACCOUNT_MISMATCH"
-// | "tecXCHAIN_INSUFF_CREATE_AMOUNT"
-// | "tecXCHAIN_ACCOUNT_CREATE_PAST"
-// | "tecXCHAIN_ACCOUNT_CREATE_TOO_MANY"
-// | "tecXCHAIN_PAYMENT_FAILED"
-// | "tecXCHAIN_SELF_COMMIT"
-// | "tecXCHAIN_BAD_PUBLIC_KEY_ACCOUNT_PAIR"
-// | "tecXCHAIN_CREATE_ACCOUNT_DISABLED"
-// Hooks amendment (active on Xahau, not XRPL mainnet)
-// | "tecHOOK_REJECTED"
-// Other newer amendments
-// | "tecLOCKED"
-// | "tecBAD_CREDENTIALS"
-// | "tecTOKEN_PAIR_NOT_FOUND"
-// | "tecARRAY_EMPTY"
-// | "tecARRAY_TOO_LARGE"
-// | "tecWRONG_ASSET"
-// | "tecLIMIT_EXCEEDED"
-// | "tecPSEUDO_ACCOUNT"
-// | "tecPRECISION_LOSS"
-// | "tecNO_DELEGATE_PERMISSION";
+    | "tecINVALID_UPDATE_TIME"
+    // XChain bridge amendment
+    | "tecXCHAIN_BAD_TRANSFER_ISSUE"
+    | "tecXCHAIN_NO_CLAIM_ID"
+    | "tecXCHAIN_BAD_CLAIM_ID"
+    | "tecXCHAIN_CLAIM_NO_QUORUM"
+    | "tecXCHAIN_PROOF_UNKNOWN_KEY"
+    | "tecXCHAIN_CREATE_ACCOUNT_NONXRP_ISSUE"
+    | "tecXCHAIN_WRONG_CHAIN"
+    | "tecXCHAIN_REWARD_MISMATCH"
+    | "tecXCHAIN_NO_SIGNERS_LIST"
+    | "tecXCHAIN_SENDING_ACCOUNT_MISMATCH"
+    | "tecXCHAIN_INSUFF_CREATE_AMOUNT"
+    | "tecXCHAIN_ACCOUNT_CREATE_PAST"
+    | "tecXCHAIN_ACCOUNT_CREATE_TOO_MANY"
+    | "tecXCHAIN_PAYMENT_FAILED"
+    | "tecXCHAIN_SELF_COMMIT"
+    | "tecXCHAIN_BAD_PUBLIC_KEY_ACCOUNT_PAIR"
+    | "tecXCHAIN_CREATE_ACCOUNT_DISABLED"
+    // Oracle / PriceOracle amendment
+    | "tecTOKEN_PAIR_NOT_FOUND"
+    | "tecARRAY_EMPTY"
+    | "tecARRAY_TOO_LARGE"
+    // Other newer amendments (Credentials, MPTokens, Lending, etc.)
+    | "tecLOCKED"
+    | "tecBAD_CREDENTIALS"
+    | "tecWRONG_ASSET"
+    | "tecLIMIT_EXCEEDED"
+    | "tecPSEUDO_ACCOUNT"
+    | "tecPRECISION_LOSS";
+// Hooks amendment is Xahau-only (not XRPL mainnet), so tecHOOK_REJECTED is not included.
+// terNO_DELEGATE_PERMISSION (Delegate amendment) has the `ter` prefix, not `tec`,
+// and is handled by the `case "ter"` branch in successStatus().
 
 export type XrpTransactionTypeUnion =
     | "NFTokenAcceptOffer"
