@@ -166,7 +166,7 @@ export abstract class TransactionBase<T> {
     /**
      * Array of all references found in transactions in order they appear in the transaction.
      */
-    public abstract get reference(): string[];
+    public abstract get reference(): (string | undefined)[];
 
     /**
      * Returns the first reference (hex string) from the transaction, or undefined if none exist.

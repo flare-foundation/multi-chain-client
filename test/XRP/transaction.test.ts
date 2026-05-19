@@ -468,6 +468,7 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
     describe("Reference tests ", function () {
         let transaction: XrpTransaction;
         const txid = "C32ACF8CCF4F48B7AE097873AA2B7672DC66E05D4F1B3133DA90D1F476B1EAC6";
+        const ZERO = "0x" + "0".repeat(64);
         before(async function () {
             transaction = await MccClient.getTransaction(txid);
         });
@@ -482,18 +483,51 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
         });
 
         it("Should not ASCII-decode an oversized MemoData to a bytes32 reference", () => {
-            // Regression for HIGH-02: previously MCC would UTF-8-decode the raw memo
-            // bytes and accept the resulting 64-character hex string as the payment
-            // reference, while the XRP indexer (which canonicalizes only on a 64-hex
-            // MemoData) would not. This enabled contradictory Payment /
-            // ReferencedPaymentNonexistence results. The fallback is now removed.
-            const asciiReference = "1".repeat(64);
-            const memoHex = Buffer.from(asciiReference, "ascii").toString("hex");
-            expect(memoHex.length).to.eq(128);
+            // Regression: previously decoded ASCII memo bytes were accepted as a hex reference.
+            const memoHex = Buffer.from("1".repeat(64), "ascii").toString("hex");
             transaction._data.result.Memos![0] = { Memo: { MemoData: memoHex } };
-            expect(transaction.stdPaymentReference).to.eq(
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
-            );
+            expect(transaction.stdPaymentReference).to.eq(ZERO);
+        });
+
+        it("Returns ZERO when there are no Memos at all", () => {
+            const originalMemos = transaction._data.result.Memos;
+            delete transaction._data.result.Memos;
+            try {
+                expect(transaction.stdPaymentReference).to.eq(ZERO);
+            } finally {
+                transaction._data.result.Memos = originalMemos;
+            }
+        });
+
+        it("Returns ZERO when there are multiple Memos", () => {
+            const originalMemos = transaction._data.result.Memos;
+            transaction._data.result.Memos = [{ Memo: { MemoData: txid } }, { Memo: { MemoData: txid } }];
+            try {
+                expect(transaction.stdPaymentReference).to.eq(ZERO);
+            } finally {
+                transaction._data.result.Memos = originalMemos;
+            }
+        });
+
+        it("Returns ZERO when MemoData is missing (undefined)", () => {
+            transaction._data.result.Memos![0] = { Memo: { MemoType: "deadbeef" } };
+            expect(transaction.stdPaymentReference).to.eq(ZERO);
+        });
+
+        it("Returns ZERO for a short hex MemoData", () => {
+            transaction._data.result.Memos![0] = { Memo: { MemoData: "deadbeef" } };
+            expect(transaction.stdPaymentReference).to.eq(ZERO);
+        });
+
+        it("Returns ZERO for a 64-char MemoData containing non-hex characters", () => {
+            transaction._data.result.Memos![0] = { Memo: { MemoData: "g".repeat(64) } };
+            expect(transaction.stdPaymentReference).to.eq(ZERO);
+        });
+
+        it("Accepts a MemoData that already carries a 0x prefix", () => {
+            const prefixed = "0x" + txid;
+            transaction._data.result.Memos![0] = { Memo: { MemoData: prefixed } };
+            expect(transaction.stdPaymentReference).to.eq(prefixed);
         });
     });
 

@@ -42,20 +42,27 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         return this.data.result.hash;
     }
 
-    public get reference(): string[] {
+    public get reference(): (string | undefined)[] {
         if (this.data.result.Memos) {
             return this.data.result.Memos.map((memoObj: Memo) => {
-                return memoObj.Memo.MemoData || "";
+                return memoObj.Memo.MemoData;
             });
         }
         return [];
     }
 
     public get stdPaymentReference(): string {
-        // FDC spec: memoData must be a hex string representing exactly 32 bytes.
-        // No ASCII/UTF-8 fallback — that diverges from the XRP indexer's canonicalization
-        // and can produce contradictory Payment / ReferencedPaymentNonexistence results.
-        const paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
+        // Do NOT ASCII-decode raw memo bytes — diverges from the XRP indexer
+        // and can produce contradictory FDC attestations.
+        if (this.reference.length !== 1) {
+            return ZERO_BYTES_32;
+        }
+        const firstReference = this.reference[0];
+        if (firstReference === undefined) {
+            return ZERO_BYTES_32;
+        }
+
+        const paymentReference = prefix0x(firstReference);
         if (isValidBytes32Hex(paymentReference)) {
             return paymentReference;
         }
