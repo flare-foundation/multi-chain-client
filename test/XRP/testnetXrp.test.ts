@@ -1,10 +1,18 @@
 import { expect } from "chai";
-import { MCC } from "../../src";
+import { TransactionMetadata } from "xrpl";
+import { MCC, TransactionSuccessStatus } from "../../src";
+import { XrpTransaction } from "../../src/base-objects";
 
 const XRPMccConnection = {
     url: process.env.XRP_URL || "https://s1.ripple.com:51234",
     username: process.env.XRP_USERNAME || "",
     password: process.env.XRP_PASSWORD || "",
+};
+
+const XRPTestnetConnection = {
+    url: process.env.XRP_URL_TESTNET || "https://s.altnet.rippletest.net:51234/",
+    username: process.env.XRP_USERNAME_TESTNET || "",
+    password: process.env.XRP_PASSWORD_TESTNET || "",
 };
 
 describe("XRP testnet client tests", () => {
@@ -51,6 +59,40 @@ describe("XRP testnet client tests", () => {
                 "0669969AFDAF91BFCFF709D49FE23DD5656335AFD0A3879C03C8EFADEF83A0C2"
             );
             await expect(txResponse).to.be.rejectedWith("InvalidTransaction");
+        });
+    });
+
+    describe("DomainID-driven tecNO_PERMISSION classification (testnet)", function () {
+        // https://testnet.xrpl.org/transactions/C935D183BC7D63C3D91AD8AE73564A42315E2EE0C5C9A4E0B1F67A28F517FE25
+        // XRP -> XRP Payment from a plain-funded sender to a plain-funded receiver,
+        // carrying a random DomainID that no PermissionedDomain object exists for.
+        // rippled returns tecNO_PERMISSION (Payment.cpp:391-397); MCC must report
+        // SENDER_FAILURE because only the sender can attach sfDomainID.
+        const txid = "C935D183BC7D63C3D91AD8AE73564A42315E2EE0C5C9A4E0B1F67A28F517FE25";
+        let testnetClient: MCC.XRP;
+        let transaction: XrpTransaction;
+
+        before(async function () {
+            testnetClient = new MCC.XRP(XRPTestnetConnection);
+            transaction = await testnetClient.getTransaction(txid);
+        });
+
+        it("Fetches the transaction", function () {
+            expect(transaction.txid).to.eq(txid);
+        });
+
+        it("Has TransactionResult = tecNO_PERMISSION", function () {
+            const meta = transaction._data.result.meta as TransactionMetadata;
+            expect(meta.TransactionResult).to.eq("tecNO_PERMISSION");
+        });
+
+        it("Carries sfDomainID on the transaction", function () {
+            const txData = transaction._data.result as { DomainID?: string };
+            expect(txData.DomainID).to.be.a("string");
+        });
+
+        it("Classifies as SENDER_FAILURE", function () {
+            expect(transaction.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
         });
     });
 });
