@@ -480,6 +480,21 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             transaction._data.result.Memos![0] = { Memo: { MemoData: txid } };
             expect(transaction.stdPaymentReference).to.eq("0x" + txid);
         });
+
+        it("Should not ASCII-decode an oversized MemoData to a bytes32 reference", () => {
+            // Regression for HIGH-02: previously MCC would UTF-8-decode the raw memo
+            // bytes and accept the resulting 64-character hex string as the payment
+            // reference, while the XRP indexer (which canonicalizes only on a 64-hex
+            // MemoData) would not. This enabled contradictory Payment /
+            // ReferencedPaymentNonexistence results. The fallback is now removed.
+            const asciiReference = "1".repeat(64);
+            const memoHex = Buffer.from(asciiReference, "ascii").toString("hex");
+            expect(memoHex.length).to.eq(128);
+            transaction._data.result.Memos![0] = { Memo: { MemoData: memoHex } };
+            expect(transaction.stdPaymentReference).to.eq(
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+        });
     });
 
     describe("Transaction not found ", function () {

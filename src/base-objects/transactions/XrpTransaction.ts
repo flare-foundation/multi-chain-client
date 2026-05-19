@@ -9,14 +9,7 @@ import {
     XrpTransactionTypeUnion,
 } from "../../types/xrpTypes";
 import { XRP_MDU, XRP_NATIVE_TOKEN_NAME, XRP_UTD } from "../../utils/constants";
-import {
-    ZERO_BYTES_32,
-    bytesAsHexToString,
-    isValidBytes32Hex,
-    prefix0x,
-    standardAddressHash,
-    unPrefix0x,
-} from "../../utils/utils";
+import { ZERO_BYTES_32, isValidBytes32Hex, prefix0x, standardAddressHash, unPrefix0x } from "../../utils/utils";
 import {
     AddressAmount,
     BalanceDecreasingSummaryResponse,
@@ -59,16 +52,14 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
     }
 
     public get stdPaymentReference(): string {
+        // FDC spec: memoData must be a hex string representing exactly 32 bytes.
+        // No ASCII/UTF-8 fallback — that diverges from the XRP indexer's canonicalization
+        // and can produce contradictory Payment / ReferencedPaymentNonexistence results.
         const paymentReference = this.reference.length === 1 ? prefix0x(this.reference[0]) : "";
         if (isValidBytes32Hex(paymentReference)) {
             return paymentReference;
-        } else {
-            const alternative = bytesAsHexToString(paymentReference);
-            if (isValidBytes32Hex(alternative)) {
-                return alternative;
-            }
-            return ZERO_BYTES_32;
         }
+        return ZERO_BYTES_32;
     }
 
     public get destinationTag(): number | undefined {
