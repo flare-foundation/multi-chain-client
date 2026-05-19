@@ -390,8 +390,23 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
                     case "tecDST_TAG_NEEDED": //can be perceived as sender's fault if destination tag was specified
                     case "tecNO_DST":
                     case "tecNO_DST_INSUF_XRP":
-                    case "tecNO_PERMISSION": //can be perceived as sender's fault if DepositPreauth tag specifically required
                         return TransactionSuccessStatus.RECEIVER_FAILURE;
+                    case "tecNO_PERMISSION": {
+                        // tecNO_PERMISSION is returned from multiple sites in rippled's
+                        // Payment transactor under a single result code. For XRP→XRP
+                        // Payments it can be reached from:
+                        //   1. tx carries sfDomainID and either endpoint is not in the
+                        //      named PermissionedDomain (Payment.cpp:391-397) —
+                        //      sender-fault: only the sender can attach DomainID
+                        //   2. dst has lsfDepositAuth set and sender lacks DepositPreauth
+                        //      (CredentialHelpers.cpp:382 via Payment.cpp:664) —
+                        //      receiver-fault: only the receiver can set the flag
+                        // Disambiguate using the only on-tx signal: presence of DomainID.
+                        const hasDomainID = (this.data.result as { DomainID?: unknown }).DomainID != null;
+                        return hasDomainID
+                            ? TransactionSuccessStatus.SENDER_FAILURE
+                            : TransactionSuccessStatus.RECEIVER_FAILURE;
+                    }
                     case "tecCANT_ACCEPT_OWN_NFTOKEN_OFFER":
                     case "tecCLAIM": //unsure
                     case "tecCRYPTOCONDITION_ERROR":

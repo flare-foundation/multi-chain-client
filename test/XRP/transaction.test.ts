@@ -422,6 +422,30 @@ describe(`Transaction Xrp tests (${getTestFile(__filename)})`, function () {
             expect(transaction3.successStatus).to.eq(TransactionSuccessStatus.SENDER_FAILURE);
         });
 
+        it("Should split tecNO_PERMISSION by sfDomainID presence", function () {
+            // Site-aware classification: rippled returns tecNO_PERMISSION from two
+            // structurally opposite sites — sender-attached sfDomainID with neither
+            // endpoint in the named PermissionedDomain (Payment.cpp:391-397), and
+            // receiver-set lsfDepositAuth without preauth (CredentialHelpers.cpp:382).
+            // The only on-tx signal is the DomainID field.
+            const meta: TransactionMetadata =
+                transaction3._data.result.meta || (transaction3._data.result as any).metaData;
+            const resultData = transaction3._data.result as { DomainID?: string };
+            meta.TransactionResult = "tecNO_PERMISSION";
+
+            delete resultData.DomainID;
+            expect(transaction3.successStatus, "no DomainID → receiver-fault").to.eq(
+                TransactionSuccessStatus.RECEIVER_FAILURE
+            );
+
+            resultData.DomainID = "F87A3B8DC378345F9FDD0B7259EEF797318B4665567AE59C2F9D3E4E912A8D88";
+            expect(transaction3.successStatus, "DomainID present → sender-fault").to.eq(
+                TransactionSuccessStatus.SENDER_FAILURE
+            );
+
+            delete resultData.DomainID;
+        });
+
         it.skip("Should not get transaction status ", function () {
             delete transaction2._data.result.meta;
             const fn = () => {
