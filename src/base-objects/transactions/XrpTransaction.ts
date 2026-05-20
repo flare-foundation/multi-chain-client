@@ -1,5 +1,5 @@
 import { Payment, PaymentFlags } from "xrpl";
-import { IssuedCurrencyAmount, Memo } from "xrpl/dist/npm/models/common";
+import { Memo } from "xrpl/dist/npm/models/common";
 import { isCreatedNode, isDeletedNode, isModifiedNode } from "xrpl/dist/npm/models/transactions/metadata";
 import { TransactionSuccessStatus } from "../../types/genericMccTypes";
 import {
@@ -343,23 +343,28 @@ export class XrpTransaction extends TransactionBase<IXrpGetTransactionRes> {
         return true;
     }
 
-    //!!! issuer is sometimes important !!!
-    // NOTE: reports the *delivered* currency only — derived from the Payment's
-    // `Amount` field. For cross-currency payments (e.g. `Amount=XRP`,
-    // `SendMax=IOU`) the source debits a different currency, so
-    // `currencyName === "XRP"` no longer implies `isNativePayment === true`.
-    // Use `isNativePayment` (which also inspects `SendMax`) to check for true
-    // XRP-to-XRP payments.
+    // Lossy label: "XRP" / IOU `currency` (3-char or 40-hex, verbatim) /
+    // MPT `mpt_issuance_id` (48-hex) / "" for non-Payment.
+    // Issuer is dropped — two issuers minting "USD" collapse to one label;
+    // use a future `tokenIdentifier` getter for identity.
+    // Partial-payment caveat: `Amount` is the attempted delivery, so
+    // cross-currency partial payments can deliver a different currency
+    // (see `meta.delivered_amount`). Use `isNativePayment` for XRP-to-XRP.
     public get currencyName(): string {
-        // With ripple this is currency code
-        if (this.type === "Payment") {
-            if (((this.data.result as Payment).Amount as IssuedCurrencyAmount).currency) {
-                return ((this.data.result as Payment).Amount as IssuedCurrencyAmount).currency;
-            }
+        if (this.type !== "Payment") {
+            return "";
+        }
+        const amount = (this.data.result as Payment).Amount;
+        if (typeof amount === "string") {
             return XRP_NATIVE_TOKEN_NAME;
         }
-        // TODO Check for other types of transactions
-        return "";
+        // MPT detected structurally — xrpl 2.14 types don't model it but
+        // rippled can still deliver MPT amounts.
+        const mptId = (amount as { mpt_issuance_id?: unknown }).mpt_issuance_id;
+        if (typeof mptId === "string") {
+            return mptId;
+        }
+        return amount.currency;
     }
 
     public get elementaryUnits(): number {
