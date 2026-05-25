@@ -10,6 +10,29 @@ and this project adheres to
 
 ### Fixed
 
+### Added
+
+
+# \[[v4.5.0](https://www.npmjs.com/package/@flarenetwork/mcc/v/4.5.0)\] - 2026-06-01
+
+### Added
+
+* XRP specific `XRPpaymentSummary` implementation matching the FDC attestation spec.
+* XRP destination-tag getter on `XrpTransaction`.
+* XRP first-reference helper used by payment summaries to pick the canonical
+  payment reference from MemoData.
+* Type-safe handling of every `Payment.Amount` shape per the XRPL
+  currency-formats spec: XRP drops (string), IOU (3-char or 40-hex currency),
+  and MPT (detected structurally via `mpt_issuance_id` so MPT is recognized on
+  `xrpl` 2.14 despite the lib not modeling it). Replaces the unsafe
+  `as IssuedCurrencyAmount` cast in `currencyName`.
+* Merkle tree implementation imported from `js-flare-common` instead of being
+  maintained locally; source-addresses-root tests cross-checked against the
+  XRP indexer counterpart.
+* npm releases are now published with provenance.
+
+### Fixed
+
 * `XrpTransaction.isNativePayment` now requires XRP on both sides of a Payment.
   Previously only the delivered `Amount` was inspected, so cross-currency
   payments (`Amount=XRP`, `SendMax=IOU`) where the sender debits an IOU but the
@@ -23,8 +46,31 @@ and this project adheres to
   ledger, but the local guard enforces the invariant defensively and lets
   callers rely on `payment.Amount` being the delivered amount rather than a
   cap.
-
-### Added
+* `stdPaymentReference` no longer falls back to UTF-8-decoding non-hex
+  `MemoData`. Any `MemoData` that is not already a literal 32-byte hex string
+  now resolves to `ZERO_BYTES_32`, matching the XRP indexer used as ground
+  truth by the FDC attestation pipeline (previously MCC and the indexer could
+  disagree on the same transaction).
+* Missing `MemoData` on an XRPL memo is now treated as `undefined` rather than
+  producing a spurious value.
+* `tec` result-code taxonomy refreshed against current rippled:
+  * `tecAMM_UNFUNDED` renamed to `tecUNFUNDED_AMM` to match the wire value
+    (the prior spelling never matched, so AMM funding failures fell through
+    the exhaustive-switch guard).
+  * Added XChain bridge codes, Oracle/PriceOracle codes, and newer-amendment
+    codes (`tecLOCKED`, `tecBAD_CREDENTIALS`, `tecWRONG_ASSET`,
+    `tecLIMIT_EXCEEDED`, `tecPSEUDO_ACCOUNT`, `tecPRECISION_LOSS`), all
+    classified as `SENDER_FAILURE`.
+  * Documented why `tecHOOK_REJECTED` (Xahau-only) and
+    `terNO_DELEGATE_PERMISSION` (handled by the `ter`-prefix branch) are
+    deliberately excluded from the `tec` union.
+* `tecNO_PERMISSION` is now disambiguated by the presence of `DomainID`:
+  sender-attached `sfDomainID` failures (permissioned-DEX, sender's choice)
+  are classified as `SENDER_FAILURE`; destination-side `lsfDepositAuth`
+  failures remain `RECEIVER_FAILURE`. Previously all `tecNO_PERMISSION`
+  results were attributed to the receiver.
+* UTXO `stdPaymentReference` corrected.
+* `unPrefix0x` made consistent across call sites.
 
 
 # \[[v4.4.0](https://www.npmjs.com/package/@flarenetwork/mcc/v/4.4.0)\] 
